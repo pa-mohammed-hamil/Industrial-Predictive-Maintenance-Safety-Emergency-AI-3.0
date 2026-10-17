@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Industrial Telemetry",
+  "type": "object",
+  "required": [
+    "asset_id",
+    "timestamp"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "temperature": {
+      "type": "number"
+    },
+    "vibration": {
+      "type": "number"
+    },
+    "pressure": {
+      "type": "number"
+    },
+    "current": {
+      "type": "number"
+    },
+    "energy": {
+      "type": "number"
+    }
+  },
+  "additionalProperties": true
+}

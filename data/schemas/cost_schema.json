@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Industrial Cost Record",
+  "type": "object",
+  "required": [
+    "asset_id",
+    "total_cost"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string"
+    },
+    "repair_cost": {
+      "type": "number",
+      "minimum": 0
+    },
+    "downtime_cost": {
+      "type": "number",
+      "minimum": 0
+    },
+    "production_loss": {
+      "type": "number",
+      "minimum": 0
+    },
+    "total_cost": {
+      "type": "number",
+      "minimum": 0
+    }
+  }
+}

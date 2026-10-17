@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: industrial-ai-ingress
+  labels:
+    app: industrial-ai
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "25m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+
+spec:
+  ingressClassName: nginx
+
+  rules:
+    - host: industrial-ai.example.com
+      http:
+        paths:
+          # FastAPI backend
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: industrial-ai-api
+                port:
+                  number: 8000
+
+          # Frontend
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: industrial-ai-frontend
+                port:
+                  number: 80

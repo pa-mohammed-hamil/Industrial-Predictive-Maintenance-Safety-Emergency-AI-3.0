@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: industrial-ai-frontend
+  labels:
+    app: industrial-ai-frontend
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: industrial-ai-frontend
+
+  template:
+    metadata:
+      labels:
+        app: industrial-ai-frontend
+
+    spec:
+      containers:
+        - name: frontend
+          image: industrial-ai-frontend:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 80
+              name: http
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: industrial-ai-frontend
+  labels:
+    app: industrial-ai-frontend
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: industrial-ai-frontend
+
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP

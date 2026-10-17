@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: industrial-ai-worker
+  namespace: industrial-ai
+  labels:
+    app: industrial-ai-worker
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: industrial-ai-worker
+
+  template:
+    metadata:
+      labels:
+        app: industrial-ai-worker
+
+    spec:
+      terminationGracePeriodSeconds: 120
+
+      containers:
+        - name: worker
+          image: industrial-ai-worker:latest
+          imagePullPolicy: IfNotPresent
+
+          command:
+            - celery
+
+          args:
+            - -A
+            - app.workers.celery_app:celery_app
+            - worker
+            - --loglevel=info
+            - --concurrency=2
+            - --hostname=worker@%h
+
+          envFrom:
+            - configMapRef:
+                name: industrial-ai-config
+            - secretRef:
+                name: industrial-ai-secrets
+
+          env:
+            - name: CELERY_BROKER_URL
+              value: "redis://redis:6379/0"
+
+            - name: CELERY_RESULT_BACKEND
+              value: "redis://redis:6379/1"
+
+            - name: PYTHONUNBUFFERED
+              value: "1"
+
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+
+          startupProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "celery -A app.workers.celery_app:celery_app inspect ping --destination=worker@$HOSTNAME --timeout=5 | grep -q pong"
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 12
+
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "celery -A app.workers.celery_app:celery_app inspect ping --destination=worker@$HOSTNAME --timeout=5 | grep -q pong"
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL

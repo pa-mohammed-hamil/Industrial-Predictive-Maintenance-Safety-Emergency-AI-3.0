@@ -1,0 +1,323 @@
+# ============================================================
+# Industrial AI - Kubernetes Network Policies
+# Namespace: industrial-ai
+# ============================================================
+
+# Default: deny all ingress and egress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: industrial-ai-default-deny
+  namespace: industrial-ai
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+# Allow DNS resolution for all pods
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: industrial-ai-allow-dns
+  namespace: industrial-ai
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# Frontend: accept traffic from Nginx Ingress Controller
+# and connect to FastAPI
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: industrial-ai-frontend-policy
+  namespace: industrial-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: industrial-ai-frontend
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: ingress-nginx
+              app.kubernetes.io/component: controller
+      ports:
+        - protocol: TCP
+          port: 80
+
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: industrial-ai-api
+      ports:
+        - protocol: TCP
+          port: 8000
+
+---
+# FastAPI: accept Ingress Controller and frontend traffic
+# and access backend infrastructure
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: industrial-ai-api-policy
+  namespace: industrial-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: industrial-ai-api
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: ingress-nginx
+              app.kubernetes.io/component: controller
+        - podSelector:
+            matchLabels:
+              app: industrial-ai-frontend
+      ports:
+        - protocol: TCP
+          port: 8000
+
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+
+    - to:
+        - podSelector:
+            matchLabels:
+              app: kafka
+      ports:
+        - protocol: TCP
+          port: 9092
+
+    - to:
+        - podSelector:
+            matchLabels:
+              app: qdrant
+      ports:
+        - protocol: TCP
+          port: 6333
+
+---
+# Celery workers: access database, Redis, Kafka and Qdrant
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: industrial-ai-worker-policy
+  namespace: industrial-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: industrial-ai-worker
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+
+    - to:
+        - podSelector:
+            matchLabels:
+              app: kafka
+      ports:
+        - protocol: TCP
+          port: 9092
+
+    - to:
+        - podSelector:
+            matchLabels:
+              app: qdrant
+      ports:
+        - protocol: TCP
+          port: 6333
+
+---
+# Kafka: permit clients and broker/controller communication
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: industrial-ai-kafka-policy
+  namespace: industrial-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: kafka
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: industrial-ai-api
+        - podSelector:
+            matchLabels:
+              app: industrial-ai-worker
+        - podSelector:
+            matchLabels:
+              app: kafka
+      ports:
+        - protocol: TCP
+          port: 9092
+
+    - from:
+        - podSelector:
+            matchLabels:
+              app: kafka
+      ports:
+        - protocol: TCP
+          port: 9093
+
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: kafka
+      ports:
+        - protocol: TCP
+          port: 9092
+        - protocol: TCP
+          port: 9093
+
+---
+# Redis: only API and workers can connect
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: industrial-ai-redis-policy
+  namespace: industrial-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: industrial-ai-api
+        - podSelector:
+            matchLabels:
+              app: industrial-ai-worker
+      ports:
+        - protocol: TCP
+          port: 6379
+
+---
+# PostgreSQL: only API and workers can connect
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: industrial-ai-postgres-policy
+  namespace: industrial-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: industrial-ai-api
+        - podSelector:
+            matchLabels:
+              app: industrial-ai-worker
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+# Qdrant: only API and workers can connect
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: industrial-ai-qdrant-policy
+  namespace: industrial-ai
+spec:
+  podSelector:
+    matchLabels:
+      app: qdrant
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: industrial-ai-api
+        - podSelector:
+            matchLabels:
+              app: industrial-ai-worker
+      ports:
+        - protocol: TCP
+          port: 6333

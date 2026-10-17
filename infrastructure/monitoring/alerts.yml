@@ -1,0 +1,229 @@
+groups:
+  - name: industrial-ai-application
+    rules:
+      - alert: IndustrialAPIUnavailable
+        expr: up{job="industrial-ai-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "Industrial AI API unavailable"
+          description: "Prometheus cannot scrape the API for over 2 minutes."
+
+      - alert: IndustrialAPIHighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{
+              job="industrial-ai-api",
+              status=~"5.."
+            }[5m]))
+            /
+            clamp_min(
+              sum(rate(http_requests_total{
+                job="industrial-ai-api"
+              }[5m])),
+              0.001
+            )
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "High API error rate"
+          description: "More than 5% of API requests are returning HTTP 5xx."
+
+      - alert: IndustrialAPIHighLatency
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (
+              rate(http_request_duration_seconds_bucket{
+                job="industrial-ai-api"
+              }[5m])
+            )
+          ) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "High API latency"
+          description: "95th percentile API response time exceeds 2 seconds."
+
+  - name: industrial-ai-infrastructure
+    rules:
+      - alert: IndustrialPodRestarting
+        expr: |
+          increase(kube_pod_container_status_restarts_total{
+            namespace="industrial-ai"
+          }[15m]) > 3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Frequent container restarts"
+          description: "Pod {{ $labels.pod }} has restarted repeatedly."
+
+      - alert: IndustrialDeploymentUnavailable
+        expr: |
+          kube_deployment_status_replicas_available{
+            namespace="industrial-ai"
+          }
+          <
+          kube_deployment_spec_replicas{
+            namespace="industrial-ai"
+          }
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Deployment has unavailable replicas"
+          description: "Deployment {{ $labels.deployment }} is below its desired replica count."
+
+      - alert: IndustrialPVCAlmostFull
+        expr: |
+          (
+            kubelet_volume_stats_used_bytes{
+              namespace="industrial-ai"
+            }
+            /
+            kubelet_volume_stats_capacity_bytes{
+              namespace="industrial-ai"
+            }
+          ) > 0.85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Persistent volume almost full"
+          description: "PVC {{ $labels.persistentvolumeclaim }} exceeds 85% capacity."
+
+  - name: industrial-ai-ml
+    rules:
+      - alert: IndustrialModelInferenceHighLatency
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (model, le) (
+              rate(industrial_ml_inference_duration_seconds_bucket[5m])
+            )
+          ) > 3
+        for: 5m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "High ML inference latency"
+          description: "Model {{ $labels.model }} has p95 inference latency above 3 seconds."
+
+      - alert: IndustrialModelInferenceFailures
+        expr: |
+          sum by (model) (
+            rate(industrial_ml_inference_errors_total[5m])
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          component: ml
+        annotations:
+          summary: "ML inference failures"
+          description: "Model {{ $labels.model }} has elevated inference errors."
+
+      - alert: IndustrialModelDriftDetected
+        expr: industrial_ml_data_drift_score > 0.7
+        for: 15m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "Model data drift detected"
+          description: "Model {{ $labels.model }} exceeded its configured drift threshold."
+
+  - name: industrial-ai-rag
+    rules:
+      - alert: IndustrialRAGHighLatency
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (
+              rate(industrial_rag_request_duration_seconds_bucket[5m])
+            )
+          ) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: rag
+        annotations:
+          summary: "RAG response latency high"
+          description: "RAG p95 response time exceeds 10 seconds."
+
+      - alert: IndustrialRAGRetrievalFailures
+        expr: |
+          sum(rate(industrial_rag_retrieval_errors_total[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: rag
+        annotations:
+          summary: "RAG retrieval failures"
+          description: "Equipment manual or knowledge retrieval errors are elevated."
+
+  - name: industrial-ai-workers
+    rules:
+      - alert: IndustrialCeleryQueueBacklog
+        expr: industrial_celery_queue_length > 100
+        for: 10m
+        labels:
+          severity: warning
+          component: worker
+        annotations:
+          summary: "Celery queue backlog"
+          description: "Queue {{ $labels.queue }} contains more than 100 pending tasks."
+
+      - alert: IndustrialCeleryTaskFailures
+        expr: |
+          sum by (task_name) (
+            rate(industrial_celery_task_failures_total[5m])
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: worker
+        annotations:
+          summary: "Celery task failures"
+          description: "Task {{ $labels.task_name }} has an elevated failure rate."
+
+  - name: industrial-ai-safety
+    rules:
+      - alert: IndustrialCriticalSafetyEvent
+        expr: industrial_safety_critical_events_total > 0
+        for: 1m
+        labels:
+          severity: critical
+          component: safety
+        annotations:
+          summary: "Critical industrial safety event"
+          description: "A critical safety event counter is nonzero; investigate the current event stream."
+
+      - alert: IndustrialEmergencyEvent
+        expr: |
+          increase(industrial_emergency_events_total[5m]) > 0
+        labels:
+          severity: critical
+          component: emergency
+        annotations:
+          summary: "Industrial emergency event detected"
+          description: "An emergency event was recorded in the last 5 minutes."
+
+      - alert: IndustrialTelemetryMissing
+        expr: |
+          time() - industrial_telemetry_last_received_timestamp_seconds > 300
+        for: 2m
+        labels:
+          severity: warning
+          component: telemetry
+        annotations:
+          summary: "Industrial telemetry missing"
+          description: "Asset {{ $labels.asset_id }} has not reported telemetry for over 5 minutes."

@@ -1,0 +1,13 @@
+FROM nginx:1.27-alpine
+
+# Remove default Nginx page
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy frontend files
+COPY frontend/ /usr/share/nginx/html/
+
+# Expose frontend port
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]

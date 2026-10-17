@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Industrial Asset",
+  "type": "object",
+  "required": [
+    "asset_id",
+    "name"
+  ],
+  "properties": {
+    "asset_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "site_id": {
+      "type": "string"
+    },
+    "asset_type": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    }
+  }
+}

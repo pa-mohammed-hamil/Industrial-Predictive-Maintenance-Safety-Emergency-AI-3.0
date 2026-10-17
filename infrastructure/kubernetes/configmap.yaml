@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: industrial-ai-config
+  labels:
+    app: industrial-ai
+    component: configuration
+
+data:
+  # Application
+  APP_NAME: "Industrial Predictive Maintenance AI"
+  APP_ENV: "production"
+  DEBUG: "false"
+  LOG_LEVEL: "INFO"
+  API_HOST: "0.0.0.0"
+  API_PORT: "8000"
+
+  # Database (credentials stored in Kubernetes Secret)
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_NAME: "industrial_ai"
+
+  # Redis
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+
+  # Kafka
+  KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+
+  # MQTT
+  MQTT_BROKER_HOST: "mqtt"
+  MQTT_BROKER_PORT: "1883"
+
+  # AI / ML
+  MODEL_DIR: "/app/artifacts/models"
+  ENABLE_ANOMALY_DETECTION: "true"
+  ENABLE_FAILURE_PREDICTION: "true"
+  ENABLE_RUL_PREDICTION: "true"
+  ENABLE_SAFETY_DETECTION: "true"
+
+  # RAG
+  ENABLE_RAG: "true"
+  RAG_CHUNK_SIZE: "450"
+  RAG_CHUNK_OVERLAP: "75"
+  RAG_TOP_K: "5"
+  EMBEDDING_MODEL: "sentence-transformers/all-MiniLM-L6-v2"
+
+  # Vector Database
+  QDRANT_URL: "http://qdrant:6333"
+  QDRANT_COLLECTION: "industrial_documents"
+
+  # Celery
+  CELERY_WORKER_CONCURRENCY: "2"
+
+  # Monitoring
+  ENABLE_METRICS: "true"
+  METRICS_PORT: "9090"
+  ENABLE_TRACING: "true"
+  OTEL_SERVICE_NAME: "industrial-ai-api"
+
+  # Notifications
+  ENABLE_EMAIL_NOTIFICATIONS: "true"
+  ENABLE_SMS_NOTIFICATIONS: "false"
+  ENABLE_PUSH_NOTIFICATIONS: "true"
+
+  # Safety
+  SAFETY_ALERTS_ENABLED: "true"
+  EMERGENCY_ALERTS_ENABLED: "true"
+  HUMAN_APPROVAL_REQUIRED: "true"
+
+  # Security
+  ENABLE_AUDIT_LOGGING: "true"
+  ENABLE_RATE_LIMITING: "true"
+  ENABLE_PII_PROTECTION: "true"
+
+  # CORS
+  CORS_ORIGINS: "http://localhost:3000"

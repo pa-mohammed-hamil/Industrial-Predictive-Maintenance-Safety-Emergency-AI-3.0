@@ -1,0 +1,218 @@
+# ============================================================
+# Industrial Predictive Maintenance, Safety &
+# Emergency Intelligence AI
+#
+# Prometheus Monitoring Configuration
+# ============================================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+  external_labels:
+    application: industrial-ai
+    environment: production
+
+# ============================================================
+# Alert Rules
+# ============================================================
+
+rule_files:
+  - /etc/prometheus/alerts.yml
+
+# ============================================================
+# Alertmanager
+# ============================================================
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# ============================================================
+# Scrape Configurations
+# ============================================================
+
+scrape_configs:
+
+  # Prometheus self-monitoring
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+
+  # FastAPI backend
+  - job_name: industrial-ai-api
+    metrics_path: /metrics
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - industrial-ai-api:8000
+
+  # Celery worker metrics exporter
+  - job_name: industrial-ai-worker
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - celery-exporter:9808
+
+  # PostgreSQL exporter
+  - job_name: postgres
+    static_configs:
+      - targets:
+          - postgres-exporter:9187
+
+  # Redis exporter
+  - job_name: redis
+    static_configs:
+      - targets:
+          - redis-exporter:9121
+
+  # Kafka exporter
+  - job_name: kafka
+    static_configs:
+      - targets:
+          - kafka-exporter:9308
+
+  # Qdrant vector database
+  - job_name: qdrant
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - qdrant:6333
+
+  # Node exporter
+  - job_name: node-exporter
+    static_configs:
+      - targets:
+          - node-exporter:9100
+
+  # Kubernetes pod monitoring
+  - job_name: kubernetes-pods
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+            - industrial-ai
+
+    relabel_configs:
+      - source_labels:
+          - __meta_kubernetes_pod_annotation_prometheus_io_scrape
+        action: keep
+        regex: "true"
+
+      - source_labels:
+          - __meta_kubernetes_pod_annotation_prometheus_io_path
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+
+      - source_labels:
+          - __meta_kubernetes_pod_ip
+          - __meta_kubernetes_pod_annotation_prometheus_io_port
+        separator: ":"
+        action: replace
+        target_label: __address__
+        regex: (.+):([0-9]+)
+        replacement: $1:$2
+
+      - source_labels:
+          - __meta_kubernetes_namespace
+        target_label: namespace
+
+      - source_labels:
+          - __meta_kubernetes_pod_name
+        target_label: pod
+
+  # Kubernetes service monitoring
+  - job_name: kubernetes-services
+    kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+            - industrial-ai
+
+    relabel_configs:
+      - source_labels:
+          - __meta_kubernetes_service_annotation_prometheus_io_scrape
+        action: keep
+        regex: "true"
+
+      - source_labels:
+          - __meta_kubernetes_service_annotation_prometheus_io_path
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+
+      - source_labels:
+          - __meta_kubernetes_service_annotation_prometheus_io_port
+        action: keep
+        regex: "[0-9]+"
+
+      - source_labels:
+          - __meta_kubernetes_namespace
+        target_label: namespace
+
+      - source_labels:
+          - __meta_kubernetes_service_name
+        target_label: service
+
+  # Kubernetes state metrics
+  - job_name: kube-state-metrics
+    static_configs:
+      - targets:
+          - kube-state-metrics.kube-system.svc.cluster.local:8080
+
+  # Industrial telemetry monitoring
+  - job_name: industrial-telemetry
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - industrial-ai-api:8000
+
+    metric_relabel_configs:
+      - source_labels:
+          - __name__
+        regex: "industrial_telemetry_.*"
+        action: keep
+
+  # ML model monitoring
+  - job_name: industrial-ml
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - industrial-ai-api:8000
+
+    metric_relabel_configs:
+      - source_labels:
+          - __name__
+        regex: "industrial_ml_.*"
+        action: keep
+
+  # RAG monitoring
+  - job_name: industrial-rag
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - industrial-ai-api:8000
+
+    metric_relabel_configs:
+      - source_labels:
+          - __name__
+        regex: "industrial_rag_.*"
+        action: keep
+
+  # Safety and emergency monitoring
+  - job_name: industrial-safety
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - industrial-ai-api:8000
+
+    metric_relabel_configs:
+      - source_labels:
+          - __name__
+        regex: "industrial_safety_.*|industrial_emergency_.*"
+        action: keep
