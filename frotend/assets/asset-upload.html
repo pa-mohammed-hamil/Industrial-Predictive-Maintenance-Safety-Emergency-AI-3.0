@@ -1,0 +1,1233 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Asset Upload | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / assets</p><h1 id="page-title">Asset Upload</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Asset Upload workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Asset Upload | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px Arial,Helvetica,sans-serif
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{
+ background:var(--purple);color:white
+}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;
+ box-shadow:0 5px 20px #10152d05
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:16px
+}
+.grid-2{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));gap:16px
+}
+.flex{
+ display:flex;align-items:center;
+ justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;color:#69738e;
+ border-radius:9px;padding:10px 13px;font-size:11px;font-weight:700
+}
+.btn.primary{
+ background:var(--purple);border-color:var(--purple);color:white
+}
+.btn.danger{
+ background:#ffedf0;border-color:#ffedf0;color:#d84b63
+}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+textarea.input{min-height:85px;resize:vertical}
+label{
+ display:block;color:#69738e;font-size:11px;
+ font-weight:700;margin-bottom:7px
+}
+.badge{
+ display:inline-block;padding:7px 10px;
+ border-radius:8px;font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.form-grid{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));gap:15px
+}
+.field{min-width:0}
+.field.full{grid-column:1/-1}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);
+ text-align:left;padding:13px;white-space:nowrap
+}
+td{
+ padding:13px;border-bottom:1px solid #eef0f6;
+ white-space:nowrap
+}
+tbody tr:hover{background:#faf9ff}
+.dropzone{
+ border:2px dashed #c8c4f6;border-radius:14px;
+ padding:35px;text-align:center;background:#faf9ff;
+ cursor:pointer;transition:.2s
+}
+.dropzone.dragover{
+ border-color:var(--purple);background:#efedff
+}
+.dropzone strong{display:block;font-size:16px;margin-bottom:8px}
+.dropzone p{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:20px}
+.tab.active{background:var(--purple);color:white}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.preview-image{
+ width:140px;height:110px;object-fit:contain;
+ border:1px solid var(--border);border-radius:10px;
+ background:#f8f9fd;margin-top:10px
+}
+.progress{
+ height:8px;background:#edf0f7;
+ border-radius:8px;overflow:hidden
+}
+.progress span{
+ display:block;height:100%;background:var(--purple)
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:11px;
+ padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;
+ background:var(--navy);color:white;
+ padding:13px 17px;border-radius:10px;
+ display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}.mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+ .form-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.form-grid{grid-template-columns:1fr}
+ .hero h1{font-size:21px}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">ASSET MANAGEMENT</div>
+ <a class="nav-link" href="asset-management.html">◆ Asset Management</a>
+ <a class="nav-link active" href="asset-upload.html">▦ Asset Upload</a>
+ <a class="nav-link" href="asset-details.html">◇ Asset Details</a>
+ <a class="nav-link" href="asset-health.html">◉ Asset Health</a>
+ <a class="nav-link" href="asset-history.html">◆ Asset History</a>
+ <a class="nav-link" href="asset-inspection.html">▦ Asset Inspection</a>
+ <a class="nav-link" href="asset-lifecycle.html">◇ Asset Lifecycle</a>
+ <a class="nav-link" href="asset-comparison.html">◉ Asset Comparison</a>
+
+ <div class="nav-title">MAINTENANCE</div>
+ <a class="nav-link" href="predictive-maintenance.html">◆ Predictive Maintenance</a>
+ <a class="nav-link" href="work-orders.html">▦ Work Orders</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◇ Cost Intelligence</a>
+ <a class="nav-link" href="repair-cost.html">◉ Repair Cost</a>
+ <a class="nav-link" href="replacement-cost.html">◆ Replacement Cost</a>
+ <a class="nav-link" href="total-cost-ownership.html">▦ Total Cost of Ownership</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Asset Management / Equipment Registration</div>
+   <strong>Industrial Asset Upload & Import</strong>
+  </div>
+ </div>
+ <span class="badge purple">LOCAL DEMO WORKSPACE</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / EQUIPMENT DATA INGESTION
+ </div>
+ <h1>Asset Upload & Equipment Registration</h1>
+ <p>
+  Register industrial equipment, import asset inventories,
+  validate technical information, attach equipment photographs
+  and maintenance documents, and prepare records for asset
+  health monitoring, predictive maintenance and lifecycle analysis.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Equipment Registration Workspace</h3>
+  <div class="muted">Manual registration, structured bulk import and asset data validation</div>
+ </div>
+ <div class="actions">
+  <button class="btn" id="templateBtn">Download CSV Template</button>
+  <button class="btn" id="exportCsvBtn">Export Assets CSV</button>
+  <button class="btn" id="exportJsonBtn">Export Assets JSON</button>
+  <button class="btn danger" id="clearBtn">Clear Imported Assets</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Registered Assets</div>
+  <div class="stat-value" id="totalKpi">0</div>
+  <div class="stat-note">Stored in this browser</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Assets Across Plants</div>
+  <div class="stat-value" id="plantsKpi">0</div>
+  <div class="stat-note">Unique plant locations</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Valid Import Records</div>
+  <div class="stat-value" id="validKpi">0</div>
+  <div class="stat-note">Ready for import from current file</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Rejected Import Records</div>
+  <div class="stat-value" id="rejectedKpi">0</div>
+  <div class="stat-note">Validation or duplicate issues</div>
+ </div>
+</section>
+
+<section class="panel mb">
+ <div class="tabs">
+  <button class="btn tab active" data-tab="manual">Manual Asset Registration</button>
+  <button class="btn tab" data-tab="bulk">Bulk CSV / JSON Import</button>
+  <button class="btn tab" data-tab="attachments">Equipment Attachments</button>
+ </div>
+
+ <div class="tab-panel active" id="tab-manual">
+  <h3>Register New Industrial Equipment</h3>
+  <p class="muted">Required fields are marked with an asterisk.</p>
+
+  <form id="assetForm">
+   <div class="form-grid">
+    <div class="field">
+     <label for="assetId">Asset ID *</label>
+     <input class="input" id="assetId" required maxlength="40"
+      placeholder="MTR-010">
+    </div>
+    <div class="field">
+     <label for="assetName">Equipment Name *</label>
+     <input class="input" id="assetName" required maxlength="120"
+      placeholder="Main Drive Motor">
+    </div>
+    <div class="field">
+     <label for="assetType">Equipment Category *</label>
+     <select class="input" id="assetType" required>
+      <option value="">Select Category</option>
+      <option>Electric Motor</option>
+      <option>Air Compressor</option>
+      <option>Industrial Fan</option>
+      <option>Generator</option>
+      <option>Centrifugal Pump</option>
+      <option>Industrial Gearbox</option>
+      <option>Hydraulic System</option>
+      <option>Conveyor Drive</option>
+      <option>Other</option>
+     </select>
+    </div>
+    <div class="field">
+     <label for="plant">Plant *</label>
+     <select class="input" id="plant" required>
+      <option value="">Select Plant</option>
+      <option>Plant A</option>
+      <option>Plant B</option>
+      <option>Plant C</option>
+     </select>
+    </div>
+    <div class="field">
+     <label for="location">Equipment Location *</label>
+     <input class="input" id="location" required maxlength="120"
+      placeholder="Production Line A1">
+    </div>
+    <div class="field">
+     <label for="manufacturer">Manufacturer</label>
+     <input class="input" id="manufacturer" maxlength="100"
+      placeholder="Equipment Manufacturer">
+    </div>
+    <div class="field">
+     <label for="model">Equipment Model</label>
+     <input class="input" id="model" maxlength="100"
+      placeholder="Industrial Series">
+    </div>
+    <div class="field">
+     <label for="serial">Serial Number</label>
+     <input class="input" id="serial" maxlength="100"
+      placeholder="SN-2026-0001">
+    </div>
+    <div class="field">
+     <label for="installed">Installation Date</label>
+     <input class="input" id="installed" type="date">
+    </div>
+    <div class="field">
+     <label for="ratedPower">Rated Power (kW)</label>
+     <input class="input" id="ratedPower" type="number"
+      min="0" step=".01" placeholder="75">
+    </div>
+    <div class="field">
+     <label for="operatingHours">Operating Hours</label>
+     <input class="input" id="operatingHours" type="number"
+      min="0" step=".1" placeholder="12000">
+    </div>
+    <div class="field">
+     <label for="acquisitionCost">Acquisition Cost (INR)</label>
+     <input class="input" id="acquisitionCost" type="number"
+      min="0" step=".01" placeholder="520000">
+    </div>
+    <div class="field">
+     <label for="criticality">Equipment Criticality</label>
+     <select class="input" id="criticality">
+      <option>Medium</option>
+      <option>Low</option>
+      <option>High</option>
+      <option>Critical</option>
+     </select>
+    </div>
+    <div class="field">
+     <label for="status">Operational Status</label>
+     <select class="input" id="status">
+      <option>Operational</option>
+      <option>Maintenance</option>
+      <option>Standby</option>
+      <option>Out of Service</option>
+     </select>
+    </div>
+    <div class="field full">
+     <label for="notes">Equipment Description / Notes</label>
+     <textarea class="input" id="notes"
+      placeholder="Technical specifications, inspection notes and operating context"></textarea>
+    </div>
+   </div>
+
+   <div class="actions" style="margin-top:20px">
+    <button type="submit" class="btn primary">Register Equipment</button>
+    <button type="reset" class="btn">Clear Form</button>
+   </div>
+  </form>
+ </div>
+
+ <div class="tab-panel" id="tab-bulk">
+  <h3>Bulk Equipment Data Import</h3>
+  <p class="muted">
+   Upload UTF-8 CSV or JSON records. Preview and validate before importing.
+  </p>
+
+  <div class="dropzone" id="dropzone" tabindex="0"
+   role="button" aria-label="Choose asset import file">
+   <strong>⬆ Drop CSV or JSON File Here</strong>
+   <p>Or click to browse · Maximum 5 MB</p>
+   <span class="badge purple">CSV / JSON</span>
+  </div>
+
+  <input id="fileInput" type="file"
+   accept=".csv,.json,text/csv,application/json" hidden>
+
+  <div class="flex" style="margin-top:20px">
+   <div>
+    <h3>Import Validation Preview</h3>
+    <p class="muted" id="fileSummary">No import file selected.</p>
+   </div>
+   <button class="btn primary" id="importBtn" disabled>
+    Import Valid Assets
+   </button>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Row</th><th>Asset ID</th><th>Name</th>
+      <th>Plant</th><th>Category</th><th>Validation</th>
+     </tr>
+    </thead>
+    <tbody id="previewTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="tab-panel" id="tab-attachments">
+  <h3>Equipment Images & Document Attachments</h3>
+  <p class="muted">
+   Select an existing asset and attach equipment photographs,
+   inspection records, manuals or technical documents.
+   Files are previewed locally; they are not uploaded to a server.
+  </p>
+
+  <div class="form-grid">
+   <div class="field">
+    <label for="attachmentAsset">Select Equipment</label>
+    <select class="input" id="attachmentAsset"></select>
+   </div>
+   <div class="field">
+    <label for="imageFile">Equipment Image</label>
+    <input class="input" id="imageFile" type="file"
+     accept="image/png,image/jpeg,image/webp">
+   </div>
+   <div class="field">
+    <label for="documentFile">Equipment Document</label>
+    <input class="input" id="documentFile" type="file"
+     accept=".pdf,.txt,.csv,.docx,.xlsx">
+   </div>
+  </div>
+
+  <div class="actions" style="margin-top:18px">
+   <button class="btn primary" id="attachBtn">
+    Add Attachment Metadata
+   </button>
+  </div>
+
+  <div id="imagePreview"></div>
+  <h3 style="margin-top:20px">Attachment Register</h3>
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Asset</th><th>Filename</th><th>Type</th>
+      <th>Size</th><th>Added</th>
+     </tr>
+    </thead>
+    <tbody id="attachmentTable"></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<section class="panel mb">
+ <div class="flex mb">
+  <div>
+   <h3>Registered Industrial Asset Inventory</h3>
+   <p class="muted">Browse and manage equipment registered in this demo workspace</p>
+  </div>
+  <input class="input" id="searchInput"
+   style="max-width:260px" placeholder="Search equipment...">
+ </div>
+
+ <div class="table-wrap">
+  <table>
+   <thead>
+    <tr>
+     <th>Asset ID</th><th>Equipment</th><th>Category</th>
+     <th>Plant</th><th>Location</th><th>Manufacturer</th>
+     <th>Criticality</th><th>Status</th><th>Acquisition</th>
+     <th>Actions</th>
+    </tr>
+   </thead>
+   <tbody id="assetTable"></tbody>
+  </table>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Import Activity History</h3>
+  <div id="importHistory"></div>
+ </div>
+ <div class="panel">
+  <h3>Asset Data Quality Checks</h3>
+  <div id="qualitySummary"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Data storage and security:</strong>
+ This is a standalone frontend demonstration. Registered asset
+ records, attachment filenames and import history are stored in
+ browser localStorage. Actual image and document file contents
+ are not persisted or transmitted. Avoid using confidential
+ equipment information in this demo. Production deployment
+ requires authenticated uploads, server-side validation,
+ file type verification, malware scanning, object storage,
+ role-based permissions, audit trails and PostgreSQL integration.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const KEY="industra-asset-upload-v1";
+const MAX_FILE=5*1024*1024;
+
+const SAMPLE=[
+ {
+  id:"MTR-001",name:"Main Drive Motor",type:"Electric Motor",
+  plant:"Plant A",location:"Production Line A1",
+  manufacturer:"Siemens",model:"Industrial Drive",
+  serial:"SIM-001",installed:"2021-03-15",
+  ratedPower:75,operatingHours:28500,acquisitionCost:520000,
+  criticality:"High",status:"Operational",notes:"Demo equipment"
+ },
+ {
+  id:"CMP-001",name:"Air Compressor",type:"Air Compressor",
+  plant:"Plant A",location:"Utility Bay A",
+  manufacturer:"Atlas Copco",model:"Rotary Screw",
+  serial:"CMP-001",installed:"2020-08-10",
+  ratedPower:90,operatingHours:32500,acquisitionCost:440000,
+  criticality:"High",status:"Operational",notes:"Demo equipment"
+ },
+ {
+  id:"GEN-001",name:"Power Generator",type:"Generator",
+  plant:"Plant B",location:"Power House B",
+  manufacturer:"Cummins",model:"Industrial Power",
+  serial:"GEN-001",installed:"2018-05-20",
+  ratedPower:375,operatingHours:41200,acquisitionCost:1100000,
+  criticality:"Critical",status:"Maintenance",notes:"Demo equipment"
+ }
+];
+
+let assets=[];
+let attachments=[];
+let history=[];
+let staged=[];
+let toastTimer;
+let previewUrl=null;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(value){return currency.format(value||0)}
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function persist(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify({
+   assets,attachments,history
+  }));
+  return true;
+ }catch{
+  notify("Browser storage limit reached.");
+  return false;
+ }
+}
+
+function load(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+  if(saved&&Array.isArray(saved.assets)){
+   assets=saved.assets;
+   attachments=Array.isArray(saved.attachments)?
+    saved.attachments:[];
+   history=Array.isArray(saved.history)?saved.history:[];
+   return;
+  }
+ }catch{}
+ assets=SAMPLE.map(x=>({...x}));
+ persist();
+}
+
+function validNumber(value){
+ const n=Number(value);
+ return Number.isFinite(n)&&n>=0?n:0;
+}
+
+function normalize(raw){
+ return{
+  id:String(raw.id||"").trim().toUpperCase(),
+  name:String(raw.name||"").trim(),
+  type:String(raw.type||"").trim(),
+  plant:String(raw.plant||"").trim(),
+  location:String(raw.location||"").trim(),
+  manufacturer:String(raw.manufacturer||"").trim(),
+  model:String(raw.model||"").trim(),
+  serial:String(raw.serial||"").trim(),
+  installed:String(raw.installed||"").trim(),
+  ratedPower:validNumber(raw.ratedPower),
+  operatingHours:validNumber(raw.operatingHours),
+  acquisitionCost:validNumber(raw.acquisitionCost),
+  criticality:String(raw.criticality||"Medium"),
+  status:String(raw.status||"Operational"),
+  notes:String(raw.notes||"")
+ };
+}
+
+function validate(a,existingIds,batchIds){
+ const errors=[];
+
+ if(!/^[A-Z0-9][A-Z0-9_-]{1,39}$/.test(a.id)){
+  errors.push("Invalid asset ID");
+ }
+ if(!a.name)errors.push("Missing name");
+ if(!a.type)errors.push("Missing category");
+ if(!["Plant A","Plant B","Plant C"].includes(a.plant)){
+  errors.push("Invalid plant");
+ }
+ if(!a.location)errors.push("Missing location");
+ if(existingIds.has(a.id))errors.push("Already registered");
+ if(batchIds.has(a.id))errors.push("Duplicate in file");
+
+ return errors;
+}
+
+function renderKpis(){
+ $("totalKpi").textContent=assets.length;
+ $("plantsKpi").textContent=
+  new Set(assets.map(a=>a.plant)).size;
+ $("validKpi").textContent=staged.filter(x=>x.valid).length;
+ $("rejectedKpi").textContent=staged.filter(x=>!x.valid).length;
+}
+
+function renderInventory(){
+ const body=$("assetTable");
+ body.replaceChildren();
+
+ const q=$("searchInput").value.trim().toLowerCase();
+ const list=assets.filter(a=>
+  [a.id,a.name,a.type,a.plant,a.location,a.manufacturer]
+   .some(value=>String(value).toLowerCase().includes(q))
+ );
+
+ list.forEach(a=>{
+  const tr=el("tr");
+
+  [
+   a.id,a.name,a.type,a.plant,a.location,
+   a.manufacturer||"--"
+  ].forEach(value=>tr.append(el("td","",value)));
+
+  const criticality=el("td");
+  criticality.append(el(
+   "span",
+   "badge "+(a.criticality==="Critical"?"red":
+    a.criticality==="High"?"orange":"green"),
+   a.criticality
+  ));
+  tr.append(criticality);
+
+  tr.append(el("td","",a.status));
+  tr.append(el("td","",money(a.acquisitionCost)));
+
+  const actions=el("td");
+  const open=el("a","btn primary","Details");
+  open.href="asset-details.html?id="+encodeURIComponent(a.id);
+
+  const remove=el("button","btn danger","Delete");
+  remove.style.marginLeft="5px";
+
+  remove.onclick=()=>{
+   if(!confirm("Delete asset "+a.id+" from local demo storage?"))return;
+   assets=assets.filter(x=>x.id!==a.id);
+   attachments=attachments.filter(x=>x.assetId!==a.id);
+   persist();
+   render();
+   notify("Asset removed.");
+  };
+
+  actions.append(open,remove);
+  tr.append(actions);
+  body.append(tr);
+ });
+
+ if(!list.length){
+  const tr=el("tr");
+  const td=el("td","","No registered assets found.");
+  td.colSpan=10;
+  tr.append(td);
+  body.append(tr);
+ }
+}
+
+function renderAttachmentSelect(){
+ const select=$("attachmentAsset");
+ const previous=select.value;
+ select.replaceChildren();
+
+ assets.forEach(a=>{
+  const option=el("option","",a.name+" · "+a.id);
+  option.value=a.id;
+  select.append(option);
+ });
+
+ if(assets.some(a=>a.id===previous)){
+  select.value=previous;
+ }
+}
+
+function renderAttachments(){
+ const body=$("attachmentTable");
+ body.replaceChildren();
+
+ attachments.forEach(a=>{
+  const tr=el("tr");
+  [
+   a.assetId,a.filename,a.type,
+   (a.size/1024).toFixed(1)+" KB",a.added
+  ].forEach(value=>tr.append(el("td","",value)));
+  body.append(tr);
+ });
+
+ if(!attachments.length){
+  const tr=el("tr");
+  const td=el("td","","No attachments registered.");
+  td.colSpan=5;
+  tr.append(td);
+  body.append(tr);
+ }
+}
+
+function renderHistory(){
+ const box=$("importHistory");
+ box.replaceChildren();
+
+ if(!history.length){
+  box.append(el("p","muted","No bulk imports yet."));
+  return;
+ }
+
+ history.slice().reverse().slice(0,10).forEach(item=>{
+  const card=el("div","record");
+  card.append(el("strong","",item.filename));
+  card.append(el("p","muted",
+   item.date+" · Imported "+item.imported+
+   " assets · Rejected "+item.rejected));
+  box.append(card);
+ });
+}
+
+function renderQuality(){
+ const box=$("qualitySummary");
+ box.replaceChildren();
+
+ const checks=[
+  ["Assets with Manufacturer",
+   assets.filter(a=>a.manufacturer).length],
+  ["Assets with Serial Number",
+   assets.filter(a=>a.serial).length],
+  ["Assets with Installation Date",
+   assets.filter(a=>a.installed).length],
+  ["Assets with Acquisition Cost",
+   assets.filter(a=>a.acquisitionCost>0).length],
+  ["High / Critical Equipment",
+   assets.filter(a=>["High","Critical"].includes(a.criticality)).length]
+ ];
+
+ checks.forEach(([label,count])=>{
+  const row=el("div","flex");
+  row.style.padding="12px 0";
+  row.style.borderBottom="1px solid #eef0f6";
+  row.append(
+   el("span","muted",label),
+   el("strong","",String(count)+" / "+assets.length)
+  );
+  box.append(row);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderInventory();
+ renderAttachmentSelect();
+ renderAttachments();
+ renderHistory();
+ renderQuality();
+}
+
+$("assetForm").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ const ids=[
+  "assetId","assetName","assetType","plant","location",
+  "manufacturer","model","serial","installed","ratedPower",
+  "operatingHours","acquisitionCost","criticality","status","notes"
+ ];
+
+ const values=Object.fromEntries(
+  ids.map(id=>[id,$(id).value])
+ );
+
+ const a=normalize({
+  id:values.assetId,name:values.assetName,
+  type:values.assetType,plant:values.plant,
+  location:values.location,
+  manufacturer:values.manufacturer,
+  model:values.model,serial:values.serial,
+  installed:values.installed,
+  ratedPower:values.ratedPower,
+  operatingHours:values.operatingHours,
+  acquisitionCost:values.acquisitionCost,
+  criticality:values.criticality,
+  status:values.status,notes:values.notes
+ });
+
+ const errors=validate(
+  a,new Set(assets.map(x=>x.id)),new Set()
+ );
+
+ if(errors.length){
+  notify(errors.join("; "));
+  return;
+ }
+
+ assets.push(a);
+ if(!persist()){
+  assets.pop();
+  return;
+ }
+
+ $("assetForm").reset();
+ render();
+ notify("Equipment registered successfully.");
+});
+
+function parseCSV(text){
+ const rows=[];
+ let row=[],field="",quoted=false;
+
+ for(let i=0;i<text.length;i++){
+  const c=text[i];
+
+  if(quoted){
+   if(c==='"'&&text[i+1]==='"'){
+    field+='"';i++;
+   }else if(c==='"'){
+    quoted=false;
+   }else{
+    field+=c;
+   }
+  }else if(c==='"'){
+   quoted=true;
+  }else if(c===","){
+   row.push(field);field="";
+  }else if(c==="\n"){
+   row.push(field.replace(/\r$/,""));
+   rows.push(row);
+   row=[];field="";
+  }else{
+   field+=c;
+  }
+ }
+
+ if(quoted)throw Error("Unclosed quoted CSV field.");
+
+ if(field.length||row.length){
+  row.push(field.replace(/\r$/,""));
+  rows.push(row);
+ }
+
+ const nonempty=rows.filter(r=>r.some(x=>x.trim()));
+ if(!nonempty.length)return [];
+
+ const headers=nonempty.shift().map(
+  h=>h.replace(/^\uFEFF/,"").trim()
+ );
+
+ return nonempty.map(values=>
+  Object.fromEntries(headers.map((h,i)=>[h,values[i]||""]))
+ );
+}
+
+function stageRecords(records,filename){
+ if(!Array.isArray(records)){
+  throw Error("Expected an array of asset records.");
+ }
+ if(records.length>5000){
+  throw Error("Maximum 5,000 records per import.");
+ }
+
+ const existing=new Set(assets.map(a=>a.id));
+ const batch=new Set();
+
+ staged=records.map((raw,index)=>{
+  const a=normalize(raw||{});
+  const errors=validate(a,existing,batch);
+  batch.add(a.id);
+  return{
+   row:index+1,asset:a,valid:errors.length===0,errors
+  };
+ });
+
+ $("fileSummary").textContent=
+  filename+" · "+records.length+" records";
+
+ renderPreview();
+ renderKpis();
+}
+
+function renderPreview(){
+ const body=$("previewTable");
+ body.replaceChildren();
+
+ staged.slice(0,200).forEach(item=>{
+  const tr=el("tr");
+  [
+   item.row,item.asset.id,item.asset.name,
+   item.asset.plant,item.asset.type
+  ].forEach(value=>tr.append(el("td","",value)));
+
+  const status=el("td");
+  status.append(el(
+   "span","badge "+(item.valid?"green":"red"),
+   item.valid?"Valid":item.errors.join("; ")
+  ));
+  tr.append(status);
+  body.append(tr);
+ });
+
+ $("importBtn").disabled=!staged.some(x=>x.valid);
+}
+
+async function handleFile(file){
+ if(!file)return;
+
+ if(file.size>MAX_FILE){
+  notify("File exceeds the 5 MB limit.");
+  return;
+ }
+
+ const lower=file.name.toLowerCase();
+ if(!lower.endsWith(".csv")&&!lower.endsWith(".json")){
+  notify("Choose a CSV or JSON file.");
+  return;
+ }
+
+ try{
+  const content=await file.text();
+  const records=lower.endsWith(".json")?
+   JSON.parse(content.replace(/^\uFEFF/,"")):
+   parseCSV(content);
+
+  stageRecords(records,file.name);
+  $("importBtn").dataset.filename=file.name;
+  notify("Import file validated.");
+ }catch(error){
+  staged=[];
+  renderPreview();
+  renderKpis();
+  notify("Import error: "+error.message);
+ }
+}
+
+$("dropzone").onclick=()=>$("fileInput").click();
+
+$("dropzone").onkeydown=event=>{
+ if(event.key==="Enter"||event.key===" "){
+  event.preventDefault();
+  $("fileInput").click();
+ }
+};
+
+$("dropzone").ondragover=event=>{
+ event.preventDefault();
+ $("dropzone").classList.add("dragover");
+};
+
+$("dropzone").ondragleave=()=>{
+ $("dropzone").classList.remove("dragover");
+};
+
+$("dropzone").ondrop=event=>{
+ event.preventDefault();
+ $("dropzone").classList.remove("dragover");
+ handleFile(event.dataTransfer.files[0]);
+};
+
+$("fileInput").onchange=event=>{
+ handleFile(event.target.files[0]);
+};
+
+$("importBtn").onclick=()=>{
+ const valid=staged.filter(x=>x.valid);
+ if(!valid.length)return;
+
+ const imported=valid.map(x=>x.asset);
+ const existing=new Set(assets.map(x=>x.id));
+ const unique=imported.filter(x=>!existing.has(x.id));
+
+ const previous=assets;
+ assets=[...assets,...unique];
+
+ if(!persist()){
+  assets=previous;
+  return;
+ }
+
+ history.push({
+  filename:$("importBtn").dataset.filename||"asset-import",
+  date:new Date().toISOString(),
+  imported:unique.length,
+  rejected:staged.length-unique.length
+ });
+
+ persist();
+ staged=[];
+ $("fileSummary").textContent="Import completed.";
+ renderPreview();
+ render();
+ notify(unique.length+" assets imported.");
+};
+
+function previewImage(file){
+ if(previewUrl)URL.revokeObjectURL(previewUrl);
+ const box=$("imagePreview");
+ box.replaceChildren();
+
+ if(!file)return;
+ if(!["image/png","image/jpeg","image/webp"].includes(file.type)){
+  notify("Unsupported image type.");
+  return;
+ }
+ if(file.size>MAX_FILE){
+  notify("Image exceeds the 5 MB limit.");
+  return;
+ }
+
+ previewUrl=URL.createObjectURL(file);
+ const image=el("img","preview-image");
+ image.src=previewUrl;
+ image.alt="Selected equipment preview";
+ box.append(image);
+}
+
+$("imageFile").onchange=event=>{
+ previewImage(event.target.files[0]);
+};
+
+$("attachBtn").onclick=()=>{
+ const assetId=$("attachmentAsset").value;
+ if(!assetId){
+  notify("Register an asset first.");
+  return;
+ }
+
+ const files=[
+  $("imageFile").files[0],
+  $("documentFile").files[0]
+ ].filter(Boolean);
+
+ if(!files.length){
+  notify("Choose an image or document.");
+  return;
+ }
+
+ const allowedImages=new Set([
+  "image/png","image/jpeg","image/webp"
+ ]);
+ const allowedExtensions=new Set([
+  "pdf","txt","csv","docx","xlsx"
+ ]);
+
+ for(const file of files){
+  const extension=file.name.split(".").pop().toLowerCase();
+  const allowed=allowedImages.has(file.type)||
+   allowedExtensions.has(extension);
+
+  if(!allowed||file.size>MAX_FILE){
+   notify("Unsupported attachment or file over 5 MB.");
+   return;
+  }
+ }
+
+ const previous=attachments;
+ attachments=[
+  ...attachments,
+  ...files.map(file=>({
+   assetId,filename:file.name,type:file.type||"Document",
+   size:file.size,added:new Date().toISOString()
+  }))
+ ];
+
+ if(!persist()){
+  attachments=previous;
+  return;
+ }
+
+ $("imageFile").value="";
+ $("documentFile").value="";
+ if(previewUrl)URL.revokeObjectURL(previewUrl);
+ previewUrl=null;
+ $("imagePreview").replaceChildren();
+
+ renderAttachments();
+ notify("Attachment metadata registered locally.");
+};
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+ a.href=url;a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+const FIELDS=[
+ "id","name","type","plant","location","manufacturer",
+ "model","serial","installed","ratedPower","operatingHours",
+ "acquisitionCost","criticality","status","notes"
+];
+
+function csvEncode(rows){
+ return rows.map(row=>row.map(value=>
+  '"'+String(value??"").replaceAll('"','""')+'"'
+ ).join(",")).join("\r\n");
+}
+
+$("templateBtn").onclick=()=>{
+ download(
+  "industra-asset-import-template.csv",
+  "\uFEFF"+csvEncode([
+   FIELDS,
+   [
+    "MTR-010","Industrial Motor","Electric Motor","Plant A",
+    "Line A2","Example Manufacturer","Model X","SN-010",
+    "2026-01-01",75,1000,520000,"High","Operational","Example"
+   ]
+  ]),
+  "text/csv;charset=utf-8"
+ );
+};
+
+$("exportCsvBtn").onclick=()=>{
+ download(
+  "industra-assets.csv",
+  "\uFEFF"+csvEncode([
+   FIELDS,
+   ...assets.map(a=>FIELDS.map(key=>a[key]))
+  ]),
+  "text/csv;charset=utf-8"
+ );
+};
+
+$("exportJsonBtn").onclick=()=>{
+ download(
+  "industra-assets.json",
+  JSON.stringify(assets,null,2),
+  "application/json"
+ );
+};
+
+$("clearBtn").onclick=()=>{
+ if(!confirm("Delete all locally registered assets and attachments?")){
+  return;
+ }
+ assets=[];
+ attachments=[];
+ staged=[];
+ history=[];
+ persist();
+ renderPreview();
+ render();
+ notify("Local asset inventory cleared.");
+};
+
+$("searchInput").oninput=renderInventory;
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+document.querySelectorAll(".tab").forEach(button=>{
+ button.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(tab=>{
+   tab.classList.remove("active");
+  });
+  document.querySelectorAll(".tab-panel").forEach(panel=>{
+   panel.classList.remove("active");
+  });
+
+  button.classList.add("active");
+  $("tab-"+button.dataset.tab).classList.add("active");
+ };
+});
+
+load();
+render();
+</script>
+</body>
+</html>

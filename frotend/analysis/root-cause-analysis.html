@@ -1,0 +1,731 @@
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Root Cause Analysis - Industrial AI Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e3c72;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .confidence-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .confidence-very-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .confidence-high {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .confidence-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .confidence-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .primary-cause {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .primary-cause h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .primary-cause p {
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .cause-category {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .evidence-list {
+            list-style: none;
+        }
+
+        .evidence-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .evidence-item.high-relevance {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .evidence-item.medium-relevance {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .evidence-type {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #667eea;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .evidence-description {
+            color: #333;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .evidence-meta {
+            color: #666;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 5px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .timeline-time {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .timeline-description {
+            color: #333;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .recommendation-list {
+            list-style: none;
+        }
+
+        .recommendation-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .recommendation-icon {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .recommendation-text {
+            flex: 1;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .analysis-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #d1ecf1;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            background: #17a2b8;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .status-text {
+            flex: 1;
+        }
+
+        .status-title {
+            font-weight: 600;
+            color: #0c5460;
+            margin-bottom: 4px;
+        }
+
+        .status-subtitle {
+            color: #0c5460;
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .secondary-causes {
+            margin-top: 20px;
+        }
+
+        .secondary-cause-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #6c757d;
+        }
+
+        .secondary-cause-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .secondary-cause-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .secondary-cause-description {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <span>🔍</span>
+                Automatic Root Cause Analysis
+            </h1>
+            <p class="header-subtitle">AI-powered failure investigation and causal analysis</p>
+        </div>
+
+        <!-- Analysis Status -->
+        <div class="analysis-status">
+            <div class="status-icon">✓</div>
+            <div class="status-text">
+                <div class="status-title">Analysis Complete</div>
+                <div class="status-subtitle">Asset: MOTOR-001 | Failure detected at 2027-01-15 14:23:45 | Analysis time: 3.7s</div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">92%</div>
+                <div class="stat-label">Overall Confidence</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">47</div>
+                <div class="stat-label">Evidence Sources</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">8</div>
+                <div class="stat-label">Similar Cases</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3.7s</div>
+                <div class="stat-label">Analysis Time</div>
+            </div>
+        </div>
+
+        <!-- Analysis Grid -->
+        <div class="analysis-grid">
+            <!-- Primary Root Cause -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span>🎯</span>
+                        Primary Root Cause
+                    </h2>
+                    <span class="confidence-badge confidence-very-high">Very High Confidence (92%)</span>
+                </div>
+                
+                <div class="primary-cause">
+                    <h3>Identified Root Cause</h3>
+                    <p>Bearing degradation due to insufficient lubrication combined with excessive vibration from misalignment</p>
+                    <span class="cause-category">MECHANICAL</span>
+                </div>
+
+                <div class="secondary-causes">
+                    <h3 style="margin-bottom: 15px; color: #1e3c72;">Contributing Factors</h3>
+                    <ul style="list-style: none;">
+                        <li style="padding: 8px 0; color: #666;">• Overdue maintenance (scheduled maintenance missed 3 weeks ago)</li>
+                        <li style="padding: 8px 0; color: #666;">• Operating temperature 15°C above normal baseline</li>
+                        <li style="padding: 8px 0; color: #666;">• Vibration levels increased 240% over 48 hours</li>
+                        <li style="padding: 8px 0; color: #666;">• Current draw anomaly detected 6 hours before failure</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Causal Timeline -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span>📅</span>
+                        Causal Timeline
+                    </h2>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">72 hours before</div>
+                        <div class="timeline-description">Vibration baseline exceeded by 15% - early warning sign</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">48 hours before</div>
+                        <div class="timeline-description">Temperature rise detected (5°C above normal)</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">24 hours before</div>
+                        <div class="timeline-description">Vibration levels increased 150% - critical threshold</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">6 hours before</div>
+                        <div class="timeline-description">Current draw anomaly - motor struggling</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">2 hours before</div>
+                        <div class="timeline-description">Temperature reached 85°C - danger zone</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">Failure event</div>
+                        <div class="timeline-description">Motor shutdown - bearing seized</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Evidence -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span>📊</span>
+                        Key Evidence
+                    </h2>
+                </div>
+                
+                <ul class="evidence-list">
+                    <li class="evidence-item high-relevance">
+                        <div>
+                            <span class="evidence-type">Telemetry</span>
+                            <span style="color: #28a745; font-weight: 600;">95% Relevance</span>
+                        </div>
+                        <div class="evidence-description">
+                            Vibration increased 240% over 48-hour period, indicating rapid mechanical degradation
+                        </div>
+                        <div class="evidence-meta">Source: Vibration Sensor VS-001 | Detected: 48h before failure</div>
+                    </li>
+
+                    <li class="evidence-item high-relevance">
+                        <div>
+                            <span class="evidence-type">Telemetry</span>
+                            <span style="color: #28a745; font-weight: 600;">88% Relevance</span>
+                        </div>
+                        <div class="evidence-description">
+                            Temperature exceeded 85°C, 15°C above normal operating range
+                        </div>
+                        <div class="evidence-meta">Source: Temperature Sensor TS-001 | Detected: 6h before failure</div>
+                    </li>
+
+                    <li class="evidence-item medium-relevance">
+                        <div>
+                            <span class="evidence-type">Maintenance</span>
+                            <span style="color: #ffc107; font-weight: 600;">75% Relevance</span>
+                        </div>
+                        <div class="evidence-description">
+                            Scheduled maintenance overdue by 3 weeks - lubrication interval missed
+                        </div>
+                        <div class="evidence-meta">Source: Maintenance Database | Last service: 11 weeks ago</div>
+                    </li>
+
+                    <li class="evidence-item medium-relevance">
+                        <div>
+                            <span class="evidence-type">Historical</span>
+                            <span style="color: #ffc107; font-weight: 600;">72% Relevance</span>
+                        </div>
+                        <div class="evidence-description">
+                            8 similar bearing failures in fleet with identical symptom pattern
+                        </div>
+                        <div class="evidence-meta">Source: Historical Database | Match confidence: 87%</div>
+                    </li>
+
+                    <li class="evidence-item">
+                        <div>
+                            <span class="evidence-type">Visual</span>
+                            <span style="font-weight: 600;">65% Relevance</span>
+                        </div>
+                        <div class="evidence-description">
+                            Inspection image from 2 months ago showed early signs of wear
+                        </div>
+                        <div class="evidence-meta">Source: Computer Vision | Image: IMG-2024-11-15</div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Secondary Root Causes -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span>🔗</span>
+                        Secondary Root Causes
+                    </h2>
+                </div>
+
+                <div class="secondary-causes">
+                    <div class="secondary-cause-item">
+                        <div class="secondary-cause-header">
+                            <span class="secondary-cause-title">Shaft Misalignment</span>
+                            <span class="confidence-badge confidence-high">High (78%)</span>
+                        </div>
+                        <div class="secondary-cause-description">
+                            Coupling misalignment contributed to increased vibration, accelerating bearing wear
+                        </div>
+                    </div>
+
+                    <div class="secondary-cause-item">
+                        <div class="secondary-cause-header">
+                            <span class="secondary-cause-title">Inadequate Maintenance Schedule</span>
+                            <span class="confidence-badge confidence-medium">Medium (65%)</span>
+                        </div>
+                        <div class="secondary-cause-description">
+                            Current 8-week lubrication interval insufficient for operating load conditions
+                        </div>
+                    </div>
+
+                    <div class="secondary-cause-item">
+                        <div class="secondary-cause-header">
+                            <span class="secondary-cause-title">Environmental Factors</span>
+                            <span class="confidence-badge confidence-medium">Medium (58%)</span>
+                        </div>
+                        <div class="secondary-cause-description">
+                            Elevated ambient temperature (38°C) and high dust levels contributed to lubrication breakdown
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corrective Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span>🔧</span>
+                        Corrective Actions
+                    </h2>
+                </div>
+                
+                <ul class="recommendation-list">
+                    <li class="recommendation-item">
+                        <div class="recommendation-icon">1</div>
+                        <div class="recommendation-text">
+                            Replace bearing assembly and verify proper lubrication level
+                        </div>
+                    </li>
+                    <li class="recommendation-item">
+                        <div class="recommendation-icon">2</div>
+                        <div class="recommendation-text">
+                            Perform shaft alignment check and adjust coupling to within specification
+                        </div>
+                    </li>
+                    <li class="recommendation-item">
+                        <div class="recommendation-icon">3</div>
+                        <div class="recommendation-text">
+                            Inspect motor mount bolts and foundation for looseness or degradation
+                        </div>
+                    </li>
+                    <li class="recommendation-item">
+                        <div class="recommendation-icon">4</div>
+                        <div class="recommendation-text">
+                            Clean cooling vents and verify ambient temperature is within acceptable range
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Preventive Measures -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span>🛡️</span>
+                        Preventive Measures
+                    </h2>
+                </div>
+                
+                <ul class="recommendation-list">
+                    <li class="recommendation-item">
+                        <div class="recommendation-icon">1</div>
+                        <div class="recommendation-text">
+                            Reduce lubrication interval from 8 weeks to 4 weeks for all similar assets
+                        </div>
+                    </li>
+                    <li class="recommendation-item">
+                        <div class="recommendation-icon">2</div>
+                        <div class="recommendation-text">
+                            Implement continuous vibration monitoring with early warning alerts (threshold: +20%)
+                        </div>
+                    </li>
+                    <li class="recommendation-item">
+                        <div class="recommendation-icon">3</div>
+                        <div class="recommendation-text">
+                            Schedule quarterly alignment verification for all rotating equipment
+                        </div>
+                    </li>
+                    <li class="recommendation-item">
+                        <div class="recommendation-icon">4</div>
+                        <div class="recommendation-text">
+                            Install temperature alerts at 75°C threshold to enable proactive intervention
+                        </div>
+                    </li>
+                    <li class="recommendation-item">
+                        <div class="recommendation-icon">5</div>
+                        <div class="recommendation-text">
+                            Conduct training session on early bearing failure indicators for maintenance team
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card">
+            <div class="action-buttons">
+                <button class="btn btn-primary">📄 Export Full Report</button>
+                <button class="btn btn-primary">📧 Share with Team</button>
+                <button class="btn btn-secondary">🔄 Reanalyze with New Data</button>
+                <button class="btn btn-secondary">📋 Create Work Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Root Cause Analysis dashboard loaded');
+            
+            // Add click handlers for buttons
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    alert('Feature: ' + this.textContent.trim());
+                });
+            });
+        });
+    </script>
+</body>
+</html>

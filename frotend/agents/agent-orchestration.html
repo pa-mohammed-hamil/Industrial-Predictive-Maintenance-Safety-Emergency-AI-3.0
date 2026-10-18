@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Orchestration - Industrial AI Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .orchestration-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .execution-flow {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .stage {
+            margin-bottom: 40px;
+        }
+
+        .stage-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stage-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .stage-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .stage-agents {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            padding-left: 55px;
+        }
+
+        .agent-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .agent-card.running {
+            border-left-color: #ffc107;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffe9a3 100%);
+            animation: pulse 2s infinite;
+        }
+
+        .agent-card.completed {
+            border-left-color: #28a745;
+            background: linear-gradient(135deg, #e8f5e9 0%, #a5d6a7 100%);
+        }
+
+        .agent-card.failed {
+            border-left-color: #dc3545;
+            background: linear-gradient(135deg, #ffebee 0%, #ef9a9a 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .agent-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .agent-task {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .agent-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.idle { background: #6c757d; }
+        .status-dot.running { background: #ffc107; }
+        .status-dot.completed { background: #28a745; }
+        .status-dot.failed { background: #dc3545; }
+
+        .agent-metrics {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .agent-registry {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .registry-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .registry-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .registry-capabilities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .capability-tag {
+            padding: 4px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .registry-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 40px;
+            bottom: -20px;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 18px;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            flex: 1;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .timeline-description {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .execution-mode-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .results-summary {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #28a745;
+        }
+
+        .results-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1b5e20;
+            margin-bottom: 15px;
+        }
+
+        .results-list {
+            list-style: none;
+        }
+
+        .results-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            color: #333;
+        }
+
+        .results-list li:last-child {
+            border-bottom: none;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .orchestration-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .agent-registry {
+                grid-template-columns: 1fr;
+            }
+
+            .stage-agents {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <span>🤖</span>
+                Advanced Multi-Agent Orchestration
+            </h1>
+            <p class="header-subtitle">Intelligent coordination of specialized AI agents with parallel execution</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🤖</div>
+                <div class="stat-value">10</div>
+                <div class="stat-label">Active Agents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value">3.2s</div>
+                <div class="stat-label">Avg Response Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value">96%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value">1,247</div>
+                <div class="stat-label">Total Executions</div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="orchestration-grid">
+            <!-- Execution Flow -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span>🔄</span>
+                        Current Orchestration
+                    </h2>
+                    <span class="execution-mode-badge">PARALLEL MODE</span>
+                </div>
+
+                <div class="execution-flow">
+                    <!-- Stage 1 -->
+                    <div class="stage">
+                        <div class="stage-header">
+                            <div class="stage-number">1</div>
+                            <div class="stage-title">Initial Analysis (Parallel)</div>
+                        </div>
+                        <div class="stage-agents">
+                            <div class="agent-card completed">
+                                <div class="agent-name">🎯 Asset Health Agent</div>
+                                <div class="agent-task">Analyzing equipment condition and degradation</div>
+                                <div class="agent-status">
+                                    <span class="status-dot completed"></span>
+                                    Completed
+                                </div>
+                                <div class="agent-metrics">
+                                    <div class="metric-item">
+                                        <div class="metric-value">2.1s</div>
+                                        <div class="metric-label">Duration</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">92%</div>
+                                        <div class="metric-label">Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="agent-card completed">
+                                <div class="agent-name">🦺 Safety Agent</div>
+                                <div class="agent-task">Assessing safety conditions and risks</div>
+                                <div class="agent-status">
+                                    <span class="status-dot completed"></span>
+                                    Completed
+                                </div>
+                                <div class="agent-metrics">
+                                    <div class="metric-item">
+                                        <div class="metric-value">1.8s</div>
+                                        <div class="metric-label">Duration</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">88%</div>
+                                        <div class="metric-label">Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="agent-card completed">
+                                <div class="agent-name">👁️ Inspection Agent</div>
+                                <div class="agent-task">Analyzing visual inspection data</div>
+                                <div class="agent-status">
+                                    <span class="status-dot completed"></span>
+                                    Completed
+                                </div>
+                                <div class="agent-metrics">
+                                    <div class="metric-item">
+                                        <div class="metric-value">2.5s</div>
+                                        <div class="metric-label">Duration</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">85%</div>
+                                        <div class="metric-label">Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 2 -->
+                    <div class="stage">
+                        <div class="stage-header">
+                            <div class="stage-number">2</div>
+                            <div class="stage-title">Dependent Analysis (Parallel)</div>
+                        </div>
+                        <div class="stage-agents">
+                            <div class="agent-card running">
+                                <div class="agent-name">🔧 Maintenance Agent</div>
+                                <div class="agent-task">Planning maintenance activities</div>
+                                <div class="agent-status">
+                                    <span class="status-dot running"></span>
+                                    Running
+                                </div>
+                                <div class="agent-metrics">
+                                    <div class="metric-item">
+                                        <div class="metric-value">1.2s</div>
+                                        <div class="metric-label">Elapsed</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">--</div>
+                                        <div class="metric-label">Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="agent-card running">
+                                <div class="agent-name">💰 Cost Agent</div>
+                                <div class="agent-task">Analyzing financial impact and ROI</div>
+                                <div class="agent-status">
+                                    <span class="status-dot running"></span>
+                                    Running
+                                </div>
+                                <div class="agent-metrics">
+                                    <div class="metric-item">
+                                        <div class="metric-value">0.9s</div>
+                                        <div class="metric-label">Elapsed</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">--</div>
+                                        <div class="metric-label">Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="agent-card running">
+                                <div class="agent-name">🔄 Repair/Replacement Agent</div>
+                                <div class="agent-task">Comparing repair vs replacement options</div>
+                                <div class="agent-status">
+                                    <span class="status-dot running"></span>
+                                    Running
+                                </div>
+                                <div class="agent-metrics">
+                                    <div class="metric-item">
+                                        <div class="metric-value">1.0s</div>
+                                        <div class="metric-label">Elapsed</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">--</div>
+                                        <div class="metric-label">Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 3 -->
+                    <div class="stage">
+                        <div class="stage-header">
+                            <div class="stage-number">3</div>
+                            <div class="stage-title">Final Synthesis</div>
+                        </div>
+                        <div class="stage-agents">
+                            <div class="agent-card">
+                                <div class="agent-name">📊 Supervisor Agent</div>
+                                <div class="agent-task">Aggregating results and resolving conflicts</div>
+                                <div class="agent-status">
+                                    <span class="status-dot idle"></span>
+                                    Waiting
+                                </div>
+                                <div class="agent-metrics">
+                                    <div class="metric-item">
+                                        <div class="metric-value">--</div>
+                                        <div class="metric-label">Duration</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">--</div>
+                                        <div class="metric-label">Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="agent-card">
+                                <div class="agent-name">📝 Report Agent</div>
+                                <div class="agent-task">Generating comprehensive report</div>
+                                <div class="agent-status">
+                                    <span class="status-dot idle"></span>
+                                    Waiting
+                                </div>
+                                <div class="agent-metrics">
+                                    <div class="metric-item">
+                                        <div class="metric-value">--</div>
+                                        <div class="metric-label">Duration</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-value">--</div>
+                                        <div class="metric-label">Confidence</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Execution Timeline -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span>📅</span>
+                        Execution Timeline
+                    </h2>
+                </div>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon">✓</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Request Received</div>
+                            <div class="timeline-description">
+                                Multi-agent analysis request decomposed into 8 tasks
+                            </div>
+                            <div class="timeline-time">0.0s</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">✓</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Stage 1 Complete</div>
+                            <div class="timeline-description">
+                                3 agents completed initial analysis in parallel
+                            </div>
+                            <div class="timeline-time">2.5s</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">⚡</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Stage 2 Running</div>
+                            <div class="timeline-description">
+                                3 agents executing dependent analysis tasks
+                            </div>
+                            <div class="timeline-time">3.8s (current)</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">⏱️</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Stage 3 Pending</div>
+                            <div class="timeline-description">
+                                Final synthesis and report generation
+                            </div>
+                            <div class="timeline-time">Est. 2.0s remaining</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent Registry -->
+        <div class="card full-width">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <span>📋</span>
+                    Registered Agents
+                </h2>
+            </div>
+
+            <div class="agent-registry">
+                <div class="registry-item">
+                    <div class="registry-name">🎯 Asset Health Agent</div>
+                    <div class="registry-capabilities">
+                        <span class="capability-tag">Health Scoring</span>
+                        <span class="capability-tag">Degradation Analysis</span>
+                        <span class="capability-tag">Component Tracking</span>
+                    </div>
+                    <div class="registry-stats">
+                        <span>⚡ Avg: 2.3s</span>
+                        <span>✅ Success: 94%</span>
+                        <span>📊 Executions: 156</span>
+                    </div>
+                </div>
+
+                <div class="registry-item">
+                    <div class="registry-name">🔧 Maintenance Agent</div>
+                    <div class="registry-capabilities">
+                        <span class="capability-tag">Work Planning</span>
+                        <span class="capability-tag">Scheduling</span>
+                        <span class="capability-tag">Resource Allocation</span>
+                    </div>
+                    <div class="registry-stats">
+                        <span>⚡ Avg: 1.8s</span>
+                        <span>✅ Success: 96%</span>
+                        <span>📊 Executions: 203</span>
+                    </div>
+                </div>
+
+                <div class="registry-item">
+                    <div class="registry-name">🦺 Safety Agent</div>
+                    <div class="registry-capabilities">
+                        <span class="capability-tag">Risk Assessment</span>
+                        <span class="capability-tag">Compliance</span>
+                        <span class="capability-tag">Incident Analysis</span>
+                    </div>
+                    <div class="registry-stats">
+                        <span>⚡ Avg: 2.1s</span>
+                        <span>✅ Success: 98%</span>
+                        <span>📊 Executions: 189</span>
+                    </div>
+                </div>
+
+                <div class="registry-item">
+                    <div class="registry-name">💰 Cost Intelligence Agent</div>
+                    <div class="registry-capabilities">
+                        <span class="capability-tag">Cost Analysis</span>
+                        <span class="capability-tag">ROI Calculation</span>
+                        <span class="capability-tag">Forecasting</span>
+                    </div>
+                    <div class="registry-stats">
+                        <span>⚡ Avg: 1.5s</span>
+                        <span>✅ Success: 97%</span>
+                        <span>📊 Executions: 178</span>
+                    </div>
+                </div>
+
+                <div class="registry-item">
+                    <div class="registry-name">👁️ Inspection Agent</div>
+                    <div class="registry-capabilities">
+                        <span class="capability-tag">Image Analysis</span>
+                        <span class="capability-tag">Defect Detection</span>
+                        <span class="capability-tag">Quality Assessment</span>
+                    </div>
+                    <div class="registry-stats">
+                        <span>⚡ Avg: 3.2s</span>
+                        <span>✅ Success: 91%</span>
+                        <span>📊 Executions: 142</span>
+                    </div>
+                </div>
+
+                <div class="registry-item">
+                    <div class="registry-name">🚨 Emergency Response Agent</div>
+                    <div class="registry-capabilities">
+                        <span class="capability-tag">Incident Management</span>
+                        <span class="capability-tag">Response Planning</span>
+                        <span class="capability-tag">Escalation</span>
+                    </div>
+                    <div class="registry-stats">
+                        <span>⚡ Avg: 1.2s</span>
+                        <span>✅ Success: 99%</span>
+                        <span>📊 Executions: 67</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Summary -->
+        <div class="card full-width">
+            <div class="results-summary">
+                <div class="results-title">📊 Aggregated Results (Partial)</div>
+                <ul class="results-list">
+                    <li>✅ Asset Health: 3 motors showing signs of bearing wear - preventive action recommended</li>
+                    <li>✅ Safety Assessment: No critical risks detected, 2 minor recommendations</li>
+                    <li>✅ Visual Inspection: Corrosion detected on 5 components, severity: medium</li>
+                    <li>⏳ Maintenance Plan: Being generated based on asset and inspection data...</li>
+                    <li>⏳ Cost Analysis: Calculating total maintenance costs and ROI...</li>
+                    <li>⏳ Repair vs Replace: Evaluating optimal strategy for identified issues...</li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary">📄 View Full Report</button>
+                <button class="btn btn-primary">🔄 Rerun Orchestration</button>
+                <button class="btn btn-primary">⚙️ Modify Agent Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate real-time updates
+        let elapsedTime = 3.8;
+
+        function updateTimeline() {
+            elapsedTime += 0.1;
+            // Update UI in real application
+        }
+
+        setInterval(updateTimeline, 100);
+
+        // Button handlers
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                alert('Feature: ' + this.textContent.trim());
+            });
+        });
+
+        console.log('Multi-Agent Orchestration dashboard loaded');
+    </script>
+</body>
+</html>

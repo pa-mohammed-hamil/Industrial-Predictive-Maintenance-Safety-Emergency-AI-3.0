@@ -1,0 +1,1730 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agent Tool Calls | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / agents</p><h1 id="page-title">Agent Tool Calls</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Agent Tool Calls workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f6fb">
+<title>Agent Tool Calls | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple2:#8b7af9;
+ --green:#16b88a;
+ --orange:#f2a53a;
+ --red:#eb6174;
+ --blue:#438df5;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8b93aa;
+ --border:#e9ebf3;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5,h6{
+ font-family:"Manrope",sans-serif;
+ letter-spacing:-.6px;
+}
+a{text-decoration:none}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible{
+ outline:3px solid #a89aff!important;
+ outline-offset:2px;
+}
+.sidebar{
+ position:fixed;
+ inset:0 auto 0 0;
+ width:var(--sidebar);
+ background:var(--navy);
+ color:#aab1ce;
+ z-index:1050;
+ display:flex;
+ flex-direction:column;
+ transition:transform .25s;
+}
+.brand{
+ height:83px;
+ padding:21px 23px;
+ display:flex;
+ align-items:center;
+ gap:12px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-mark{
+ width:43px;
+ height:43px;
+ border-radius:14px;
+ background:linear-gradient(135deg,#9c83ff,#5a48e4);
+ color:white;
+ display:grid;
+ place-items:center;
+ font-size:22px;
+}
+.brand strong{color:white;font-size:17px}
+.brand small{
+ display:block;
+ font-size:9px;
+ letter-spacing:2px;
+ color:#7883b0;
+}
+.sidebar-body{
+ overflow-y:auto;
+ flex:1;
+ padding:16px 12px;
+}
+.sidebar-label{
+ color:#687397;
+ text-transform:uppercase;
+ font-size:9px;
+ font-weight:800;
+ letter-spacing:2px;
+ padding:20px 15px 9px;
+}
+.side-link{
+ display:flex;
+ align-items:center;
+ gap:13px;
+ padding:11px 14px;
+ margin:3px 0;
+ color:#9da8ca;
+ border-radius:11px;
+ font-size:12px;
+ font-weight:600;
+ transition:.2s;
+}
+.side-link i{
+ font-size:17px;
+ width:21px;
+ text-align:center;
+}
+.side-link:hover{
+ background:#ffffff10;
+ color:white;
+}
+.side-link.active{
+ background:linear-gradient(90deg,#6b59e8,#5346ba);
+ color:white;
+}
+.sidebar-foot{
+ padding:18px;
+ border-top:1px solid #ffffff12;
+}
+.sidebar-status{
+ border-radius:13px;
+ padding:13px;
+ background:#ffffff09;
+ border:1px solid #ffffff12;
+}
+.status-dot{
+ display:inline-block;
+ width:8px;
+ height:8px;
+ border-radius:50%;
+ background:#2cdaa2;
+ margin-right:7px;
+}
+.app{
+ margin-left:var(--sidebar);
+ min-height:100vh;
+}
+.topbar{
+ background:white;
+ min-height:76px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:15px;
+ padding:15px 30px;
+ border-bottom:1px solid var(--border);
+ position:sticky;
+ top:0;
+ z-index:100;
+}
+.topbar-title{font-size:15px;font-weight:800}
+.topbar-sub{
+ color:var(--muted);
+ font-size:11px;
+ margin-top:3px;
+}
+.top-actions{
+ display:flex;
+ align-items:center;
+ gap:12px;
+}
+.top-icon{
+ height:39px;
+ width:39px;
+ display:grid;
+ place-items:center;
+ border-radius:12px;
+ border:1px solid var(--border);
+ background:#fafaff;
+ color:#555e7b;
+ font-size:16px;
+}
+.top-icon:hover{
+ background:#eeecff;
+ color:var(--purple);
+}
+.avatar{
+ height:39px;
+ width:39px;
+ border-radius:13px;
+ display:grid;
+ place-items:center;
+ color:white;
+ font-weight:800;
+ background:linear-gradient(135deg,#7e6bf4,#a18dff);
+}
+.content{
+ padding:29px;
+ max-width:1850px;
+ margin:auto;
+}
+.eyebrow{
+ text-transform:uppercase;
+ letter-spacing:2px;
+ font-size:10px;
+ font-weight:800;
+ color:var(--purple);
+}
+.page-title{
+ font-size:29px;
+ font-weight:800;
+ margin:9px 0 6px;
+}
+.page-description{
+ color:var(--muted);
+ line-height:1.7;
+}
+.btn-premium{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+ background:var(--purple);
+ color:white;
+ border:1px solid var(--purple);
+ border-radius:11px;
+ padding:11px 17px;
+ font-size:12px;
+ font-weight:700;
+}
+.btn-premium:hover{
+ background:#5642d7;
+ color:white;
+}
+.btn-soft{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+ background:white;
+ color:#5e6680;
+ border:1px solid var(--border);
+ border-radius:11px;
+ padding:11px 15px;
+ font-size:12px;
+ font-weight:700;
+}
+.btn-soft:hover{
+ background:#f1efff;
+ color:var(--purple);
+}
+.surface{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:18px;
+ box-shadow:0 8px 30px #24305b08;
+}
+.hero{
+ position:relative;
+ overflow:hidden;
+ background:linear-gradient(115deg,#6651e9,#8e74f4 65%,#a894ff);
+ color:white;
+ border-radius:22px;
+ padding:31px 33px;
+ box-shadow:0 15px 35px #7564ea28;
+}
+.hero:after{
+ content:"";
+ position:absolute;
+ width:330px;
+ height:330px;
+ right:-60px;
+ top:-145px;
+ border:1px solid #ffffff45;
+ border-radius:50%;
+ box-shadow:0 0 0 45px #ffffff0b,0 0 0 95px #ffffff09;
+ pointer-events:none;
+}
+.hero h2{
+ font-size:25px;
+ font-weight:800;
+}
+.hero p{
+ max-width:680px;
+ color:#eeeaff;
+ line-height:1.8;
+}
+.hero-chip{
+ display:inline-flex;
+ align-items:center;
+ gap:7px;
+ background:#ffffff23;
+ border:1px solid #ffffff30;
+ padding:8px 12px;
+ border-radius:9px;
+ font-size:10px;
+ font-weight:700;
+}
+.metric{
+ padding:21px;
+ height:100%;
+}
+.metric-top{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
+.metric-label{
+ color:#8a92a8;
+ font-size:11px;
+ font-weight:700;
+}
+.metric-icon{
+ width:44px;
+ height:44px;
+ border-radius:14px;
+ display:grid;
+ place-items:center;
+ font-size:20px;
+}
+.metric-value{
+ font-size:29px;
+ font-family:"Manrope",sans-serif;
+ font-weight:800;
+ margin:14px 0 6px;
+}
+.metric-foot{
+ font-size:10px;
+ color:#9aa1b3;
+}
+.section-title{
+ font-size:17px;
+ font-weight:800;
+}
+.section-sub{
+ font-size:11px;
+ color:var(--muted);
+}
+.chart-wrap{
+ height:280px;
+ position:relative;
+}
+.status-badge{
+ display:inline-flex;
+ align-items:center;
+ gap:5px;
+ padding:6px 10px;
+ border-radius:8px;
+ font-size:9px;
+ font-weight:800;
+}
+.status-success{
+ background:#e5f8f0;
+ color:#13a776;
+}
+.status-failed{
+ background:#ffebee;
+ color:#df4d64;
+}
+.status-running{
+ background:#eaf2ff;
+ color:#438df5;
+}
+.status-pending{
+ background:#fff4e2;
+ color:#d58c20;
+}
+.table thead th{
+ background:#fafbfe;
+ color:#9099ae;
+ font-size:10px;
+ text-transform:uppercase;
+ letter-spacing:.7px;
+ padding:15px 18px;
+ white-space:nowrap;
+ border-bottom:1px solid var(--border);
+}
+.table tbody td{
+ padding:16px 18px;
+ font-size:11px;
+ color:#66708a;
+ vertical-align:middle;
+ border-color:#f0f1f7;
+}
+.table-title{
+ font-weight:800;
+ color:#252c48;
+}
+.table-sub{
+ font-size:9px;
+ color:#9ca4b8;
+ margin-top:5px;
+}
+.small-action{
+ border:1px solid var(--border);
+ background:white;
+ border-radius:8px;
+ padding:7px 10px;
+ color:#66718d;
+ font-size:10px;
+ font-weight:700;
+}
+.small-action:hover{
+ background:#eeebff;
+ color:var(--purple);
+}
+.filter-input,.filter-select{
+ border:1px solid var(--border);
+ background:white;
+ border-radius:11px;
+ padding:11px 14px;
+ font-size:12px;
+ color:#505a79;
+ min-height:42px;
+}
+.filter-input:focus,.filter-select:focus{
+ border-color:#a69aff;
+ box-shadow:0 0 0 3px #6855eb12;
+ outline:none;
+}
+.tool-row{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:14px 0;
+ border-bottom:1px solid var(--border);
+}
+.tool-row:last-child{border-bottom:0}
+.tool-icon{
+ width:40px;
+ height:40px;
+ border-radius:12px;
+ background:#eeebff;
+ color:var(--purple);
+ display:grid;
+ place-items:center;
+ font-size:18px;
+ flex-shrink:0;
+}
+.tool-name{
+ font-size:11px;
+ font-weight:800;
+}
+.tool-description{
+ color:var(--muted);
+ font-size:10px;
+ margin-top:4px;
+}
+.progress{
+ height:7px;
+ background:#eef0f7;
+ border-radius:10px;
+}
+.progress-bar{border-radius:10px}
+.trace-code{
+ background:#141a31;
+ color:#dce6ff;
+ border-radius:13px;
+ padding:18px;
+ font:11px/1.8 monospace;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+ max-height:350px;
+ overflow:auto;
+}
+.trace-label{
+ font-size:10px;
+ font-weight:800;
+ color:#77819a;
+ text-transform:uppercase;
+ letter-spacing:.8px;
+ margin-bottom:10px;
+}
+.detail-grid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px;
+}
+.detail-box{
+ background:#f7f8fd;
+ border:1px solid var(--border);
+ border-radius:12px;
+ padding:14px;
+}
+.detail-box small{
+ display:block;
+ color:var(--muted);
+ font-size:10px;
+ margin-bottom:7px;
+}
+.detail-box strong{
+ font-size:12px;
+ overflow-wrap:anywhere;
+}
+.activity-row{
+ display:flex;
+ gap:12px;
+ padding:13px 0;
+ border-bottom:1px solid var(--border);
+}
+.activity-row:last-child{border-bottom:0}
+.activity-dot{
+ width:9px;
+ height:9px;
+ border-radius:50%;
+ flex-shrink:0;
+ margin-top:5px;
+}
+.activity-row strong{font-size:11px}
+.activity-row p{
+ font-size:10px;
+ color:var(--muted);
+ margin:5px 0;
+}
+.form-label{
+ font-size:11px;
+ font-weight:800;
+ color:#5b6480;
+}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;
+ padding:11px 12px;
+ font-size:12px;
+}
+.form-control:focus,.form-select:focus{
+ border-color:#a69aff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+.modal-content{
+ border:0;
+ border-radius:18px;
+}
+.modal-header,.modal-footer{
+ border-color:var(--border);
+}
+.footer{
+ padding:23px 30px;
+ border-top:1px solid var(--border);
+ color:#9aa2b5;
+ font-size:10px;
+ display:flex;
+ justify-content:space-between;
+ gap:12px;
+}
+.mobile-shade{display:none}
+@media(max-width:1199px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .app{margin-left:0}
+ .mobile-shade.show{
+  display:block;
+  position:fixed;
+  inset:0;
+  background:#0008;
+  z-index:1040;
+ }
+}
+@media(max-width:575px){
+ .content{padding:17px}
+ .topbar{padding:13px 17px}
+ .page-title{font-size:23px}
+ .hero{padding:23px}
+ .hero h2{font-size:20px}
+ .metric-value{font-size:25px}
+ .detail-grid{grid-template-columns:1fr}
+ .footer{flex-direction:column;padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-shade" id="shade"></div>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div class="brand-mark"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a997ff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <nav class="sidebar-body" aria-label="Main navigation">
+  <div class="sidebar-label">Main Menu</div>
+  <a class="side-link" href="../index.html"><i class="bi bi-house-door"></i>Home</a>
+  <a class="side-link" href="../dashboard.html"><i class="bi bi-grid-1x2"></i>Dashboard</a>
+  <a class="side-link" href="../command-center.html"><i class="bi bi-broadcast"></i>Command Center</a>
+  <a class="side-link" href="../analytics.html"><i class="bi bi-bar-chart-line"></i>Analytics Studio</a>
+  <a class="side-link" href="../reports.html"><i class="bi bi-file-earmark-bar-graph"></i>Reports</a>
+  <a class="side-link" href="../notifications.html"><i class="bi bi-bell"></i>Notifications</a>
+
+  <div class="sidebar-label">Operations</div>
+  <a class="side-link" href="../assets/assets.html"><i class="bi bi-cpu"></i>Asset Intelligence</a>
+  <a class="side-link" href="../telemetry/live-telemetry.html"><i class="bi bi-activity"></i>Live Telemetry</a>
+  <a class="side-link" href="../predictive-maintenance/maintenance-dashboard.html"><i class="bi bi-tools"></i>Predictive Maintenance</a>
+  <a class="side-link" href="../computer-vision/vision-dashboard.html"><i class="bi bi-eye"></i>Computer Vision</a>
+  <a class="side-link" href="../maintenance/work-orders.html"><i class="bi bi-clipboard-check"></i>Work Orders</a>
+  <a class="side-link" href="../production/production-dashboard.html"><i class="bi bi-buildings"></i>Production & OEE</a>
+  <a class="side-link" href="../energy/energy-dashboard.html"><i class="bi bi-lightning-charge"></i>Energy Analytics</a>
+
+  <div class="sidebar-label">Risk & Intelligence</div>
+  <a class="side-link" href="../safety/safety-dashboard.html"><i class="bi bi-shield-check"></i>Safety Intelligence</a>
+  <a class="side-link" href="../emergency/emergency-dashboard.html"><i class="bi bi-exclamation-triangle"></i>Emergency Response</a>
+  <a class="side-link" href="../cost-intelligence/cost-dashboard.html"><i class="bi bi-currency-rupee"></i>Cost Intelligence</a>
+  <a class="side-link" href="../copilot/ai-copilot.html"><i class="bi bi-stars"></i>AI Copilot</a>
+  <a class="side-link" href="agent-dashboard.html"><i class="bi bi-diagram-3"></i>AI Agents</a>
+  <a class="side-link" href="agent-evaluation.html"><i class="bi bi-clipboard-data"></i>Agent Evaluation</a>
+  <a class="side-link" href="agent-executions.html"><i class="bi bi-play-circle"></i>Agent Executions</a>
+  <a class="side-link active" href="agent-tool-calls.html" aria-current="page"><i class="bi bi-wrench-adjustable"></i>Agent Tool Calls</a>
+  <a class="side-link" href="../rag/knowledge-base.html"><i class="bi bi-journal-text"></i>Knowledge & RAG</a>
+  <a class="side-link" href="../mlops/mlops-dashboard.html"><i class="bi bi-boxes"></i>MLOps</a>
+  <a class="side-link" href="../evaluation/evaluation-dashboard.html"><i class="bi bi-check2-circle"></i>Evaluation Center</a>
+
+  <div class="sidebar-label">Administration</div>
+  <a class="side-link" href="../observability/observability-dashboard.html"><i class="bi bi-speedometer2"></i>Observability</a>
+  <a class="side-link" href="../security/security-dashboard.html"><i class="bi bi-lock"></i>Security</a>
+  <a class="side-link" href="../settings/settings.html"><i class="bi bi-gear"></i>Settings</a>
+ </nav>
+
+ <div class="sidebar-foot">
+  <div class="sidebar-status">
+   <div class="fw-bold text-white small"><span class="status-dot"></span>Tool Call Inspector</div>
+   <div class="mt-2" style="font-size:10px">Simulation mode · No real tools invoked</div>
+  </div>
+ </div>
+</aside>
+
+<div class="app">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon d-xl-none" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="topbar-title">Agent Tool Calls & Trace Inspector</div>
+   <div class="topbar-sub">Workspace / Agent Intelligence / Tool Calls</div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="d-none d-md-inline text-secondary small">Demo tool-call monitoring</span>
+  <button class="top-icon" id="resetButton" aria-label="Reset demo">
+   <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <a href="../notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <a href="../settings/profile.html" class="avatar" aria-label="Profile">AI</a>
+ </div>
+</header>
+
+<main class="content">
+
+ <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div>
+   <div class="eyebrow">Agent Tool Observability & Debugging</div>
+   <h1 class="page-title">Agent Tool Calls <span style="color:var(--purple)">✦</span></h1>
+   <div class="page-description">
+    Inspect tool invocation history, analyze request and response payloads, and monitor simulated tool reliability.
+   </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-soft" id="exportButton">
+    <i class="bi bi-download"></i> Export CSV
+   </button>
+   <button class="btn-premium" data-bs-toggle="modal" data-bs-target="#simulateModal">
+    <i class="bi bi-play-circle"></i> Simulate Tool Call
+   </button>
+  </div>
+ </div>
+
+ <section class="hero mb-4">
+  <div class="position-relative" style="z-index:1">
+   <div class="text-uppercase fw-bold mb-3" style="font-size:10px;letter-spacing:2px">
+    <i class="bi bi-stars me-1"></i> Tool Invocation Intelligence
+   </div>
+   <h2>Every tool call.<br>Complete execution visibility.</h2>
+   <p class="mt-3 mb-4">
+    Explore tool-call traces across maintenance, safety, emergency,
+    inspection, asset health, and cost intelligence agents.
+    Review simulated inputs, outputs, latency, execution status and tool usage patterns.
+   </p>
+   <div class="d-flex flex-wrap gap-2">
+    <span class="hero-chip"><i class="bi bi-tools"></i> Tool Invocation</span>
+    <span class="hero-chip"><i class="bi bi-braces"></i> JSON Inspection</span>
+    <span class="hero-chip"><i class="bi bi-stopwatch"></i> Latency Tracking</span>
+    <span class="hero-chip"><i class="bi bi-shield-check"></i> Audit Visibility</span>
+    <span class="hero-chip"><i class="bi bi-info-circle"></i> Simulated Data</span>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4" aria-label="Tool-call metrics">
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Total Tool Calls</span>
+     <span class="metric-icon" style="background:#eeebff;color:var(--purple)">
+      <i class="bi bi-wrench-adjustable"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="totalCalls">0</div>
+    <div class="metric-foot">Recorded demo invocations</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Success Rate</span>
+     <span class="metric-icon" style="background:#e5f8f0;color:var(--green)">
+      <i class="bi bi-check-circle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="successRate">0%</div>
+    <div class="metric-foot">Successful / completed calls</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Failed Calls</span>
+     <span class="metric-icon" style="background:#ffebee;color:var(--red)">
+      <i class="bi bi-exclamation-circle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="failedCalls">0</div>
+    <div class="metric-foot">Illustrative tool errors</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Average Latency</span>
+     <span class="metric-icon" style="background:#fff4e2;color:var(--orange)">
+      <i class="bi bi-stopwatch"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="averageLatency">—</div>
+    <div class="metric-foot">Completed demo calls</div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-8">
+   <div class="surface p-4 h-100">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h2 class="section-title mb-1">Tool Call Activity</h2>
+      <p class="section-sub mb-0">Illustrative call volume by interval</p>
+     </div>
+     <span class="status-badge status-running">DEMO ANALYTICS</span>
+    </div>
+    <div class="chart-wrap">
+     <canvas id="activityChart" role="img" aria-label="Tool call activity chart"></canvas>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-4">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Call Status Distribution</h2>
+    <p class="section-sub mb-3">Current simulated invocation states</p>
+    <div class="chart-wrap" style="height:240px">
+     <canvas id="statusChart" role="img" aria-label="Tool call status chart"></canvas>
+    </div>
+    <div class="d-flex justify-content-center flex-wrap gap-3 mt-3" style="font-size:10px;color:#8790a6">
+     <span><i class="bi bi-circle-fill me-1" style="color:#16b88a"></i>Success</span>
+     <span><i class="bi bi-circle-fill me-1" style="color:#eb6174"></i>Failed</span>
+     <span><i class="bi bi-circle-fill me-1" style="color:#438df5"></i>Running</span>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="surface mb-4">
+  <div class="p-4 pb-3">
+   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+     <h2 class="section-title mb-1">Tool Invocation History</h2>
+     <p class="section-sub mb-0" id="historyCount">Tool-call records</p>
+    </div>
+    <a href="agent-executions.html" class="btn-soft">
+     <i class="bi bi-play-circle"></i> Execution Monitor
+    </a>
+   </div>
+
+   <div class="row g-2">
+    <div class="col-lg-5">
+     <input id="searchInput" class="filter-input w-100" type="search"
+      placeholder="Search tool, agent, execution ID..."
+      aria-label="Search tool calls">
+    </div>
+    <div class="col-lg-4">
+     <select id="agentFilter" class="filter-select w-100" aria-label="Filter by agent">
+      <option value="all">All Agents</option>
+     </select>
+    </div>
+    <div class="col-lg-3">
+     <select id="statusFilter" class="filter-select w-100" aria-label="Filter by status">
+      <option value="all">All Statuses</option>
+      <option value="Success">Success</option>
+      <option value="Failed">Failed</option>
+      <option value="Running">Running</option>
+     </select>
+    </div>
+   </div>
+  </div>
+
+  <div class="table-responsive">
+   <table class="table mb-0">
+    <thead>
+     <tr>
+      <th>Tool Call</th>
+      <th>Agent</th>
+      <th>Execution ID</th>
+      <th>Status</th>
+      <th>Latency</th>
+      <th>Inspect</th>
+     </tr>
+    </thead>
+    <tbody id="toolCallTable"></tbody>
+   </table>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center gap-3 p-3 px-4">
+   <span class="section-sub" id="paginationInfo">Page 1</span>
+   <div class="d-flex gap-2">
+    <button class="small-action" id="prevPage">Previous</button>
+    <button class="small-action" id="nextPage">Next</button>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-8">
+   <div class="surface p-4 h-100">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h2 class="section-title mb-1">Tool Call Trace Inspector</h2>
+      <p class="section-sub mb-0">Request and response details for selected invocation</p>
+     </div>
+     <span id="inspectorStatus" class="status-badge status-success">SUCCESS</span>
+    </div>
+
+    <div class="detail-grid mb-4">
+     <div class="detail-box">
+      <small>Call ID</small>
+      <strong id="detailCallId">—</strong>
+     </div>
+     <div class="detail-box">
+      <small>Tool Name</small>
+      <strong id="detailToolName">—</strong>
+     </div>
+     <div class="detail-box">
+      <small>Assigned Agent</small>
+      <strong id="detailAgent">—</strong>
+     </div>
+     <div class="detail-box">
+      <small>Latency</small>
+      <strong id="detailLatency">—</strong>
+     </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+     <div class="trace-label mb-0">Request Arguments</div>
+     <button class="small-action" id="copyRequestButton">
+      <i class="bi bi-copy"></i> Copy
+     </button>
+    </div>
+    <pre class="trace-code mb-4" id="requestJson"></pre>
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+     <div class="trace-label mb-0">Response Payload</div>
+     <button class="small-action" id="copyResponseButton">
+      <i class="bi bi-copy"></i> Copy
+     </button>
+    </div>
+    <pre class="trace-code mb-0" id="responseJson"></pre>
+   </div>
+  </div>
+
+  <div class="col-xl-4">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Most Used Tools</h2>
+    <p class="section-sub mb-3">Tool invocation frequency in current dataset</p>
+    <div id="topTools"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Tool Latency Comparison</h2>
+    <p class="section-sub mb-3">Average simulated execution latency by tool</p>
+    <div class="chart-wrap" style="height:300px">
+     <canvas id="latencyChart" role="img" aria-label="Tool latency comparison"></canvas>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Tool Monitoring Activity</h2>
+    <p class="section-sub mb-3">Recent demonstration events</p>
+    <div id="activityList"></div>
+   </div>
+  </div>
+ </section>
+
+</main>
+
+<footer class="footer">
+ <span>© 2026 INDUSTRA AI · Agent Tool Call Observability</span>
+ <span>Simulated traces · No actual tools or devices invoked</span>
+</footer>
+
+</div>
+
+<!-- Simulate Tool Call Modal -->
+<div class="modal fade" id="simulateModal" tabindex="-1"
+ aria-labelledby="simulateModalTitle" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+   <div class="modal-header px-4 py-3">
+    <h5 class="modal-title fw-bold" id="simulateModalTitle">Simulate Agent Tool Call</h5>
+    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+   </div>
+
+   <form id="simulateForm">
+    <div class="modal-body p-4">
+     <div class="mb-3">
+      <label class="form-label" for="simulateAgent">Select Agent</label>
+      <select id="simulateAgent" class="form-select" required></select>
+     </div>
+
+     <div class="mb-3">
+      <label class="form-label" for="simulateTool">Select Tool</label>
+      <select id="simulateTool" class="form-select" required></select>
+     </div>
+
+     <div class="mb-3">
+      <label class="form-label" for="simulateExecutionId">Execution ID</label>
+      <input id="simulateExecutionId" class="form-control"
+       maxlength="60" value="EXE-2000" required>
+     </div>
+
+     <div class="mb-3">
+      <label class="form-label" for="simulateArguments">Request Arguments (JSON)</label>
+      <textarea id="simulateArguments" class="form-control"
+       rows="5" spellcheck="false" required>{
+  "asset_id": "PUMP-12",
+  "mode": "demo"
+}</textarea>
+      <div class="form-text">
+       Valid JSON object required. Values remain local to this browser session.
+      </div>
+     </div>
+
+     <div class="p-3 rounded-3"
+      style="background:#f4f2ff;color:var(--purple);font-size:11px;line-height:1.8">
+      This simulation creates a synthetic result and trace.
+      It never sends requests to an agent, database, external tool, or industrial controller.
+     </div>
+    </div>
+
+    <div class="modal-footer px-4">
+     <button class="btn-soft" type="button" data-bs-dismiss="modal">Cancel</button>
+     <button class="btn-premium" type="submit">
+      <i class="bi bi-play-circle"></i> Simulate Call
+     </button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1200">
+ <div class="toast border-0 shadow" id="appToast" role="status" aria-live="polite">
+  <div class="toast-body d-flex align-items-center gap-2">
+   <i class="bi bi-info-circle text-primary"></i>
+   <span id="toastMessage"></span>
+  </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ AGENT TOOL CALLS — DEMONSTRATION MODE
+
+ No real agent/tool execution is performed.
+
+ Suggested future FastAPI endpoints (not yet verified):
+ GET /api/v1/agents/tool-calls
+ GET /api/v1/agents/tool-calls/{id}
+ GET /api/v1/agents/tools
+ GET /api/v1/agents/tool-calls/metrics
+
+ Production integration:
+ - Authenticate all requests
+ - Apply RBAC and tenant isolation
+ - Redact PII, secrets, tokens and credentials
+ - Record tool arguments, results and error codes safely
+ - Include trace_id, span_id, execution_id
+ - Enforce tool allowlists and schema validation
+ - Require approvals for consequential industrial actions
+*/
+
+const $=id=>document.getElementById(id);
+
+const agents=[
+ {id:"supervisor",name:"Supervisor Agent"},
+ {id:"maintenance",name:"Maintenance Agent"},
+ {id:"safety",name:"Safety Agent"},
+ {id:"emergency",name:"Emergency Response Agent"},
+ {id:"inspection",name:"Inspection Agent"},
+ {id:"cost",name:"Cost Intelligence Agent"},
+ {id:"asset",name:"Asset Health Agent"},
+ {id:"report",name:"Reporting Agent"},
+ {id:"failure",name:"Failure Analysis Agent"},
+ {id:"incident",name:"Incident Analysis Agent"}
+];
+
+const tools=[
+ {id:"telemetry_reader",name:"Telemetry Reader",icon:"bi-activity"},
+ {id:"anomaly_detector",name:"Anomaly Detector",icon:"bi-graph-up"},
+ {id:"maintenance_knowledge",name:"Maintenance Knowledge",icon:"bi-journal-text"},
+ {id:"vision_inspection",name:"Vision Inspection",icon:"bi-eye"},
+ {id:"safety_policy",name:"Safety Policy Search",icon:"bi-shield-check"},
+ {id:"thermal_monitor",name:"Thermal Monitor",icon:"bi-thermometer-half"},
+ {id:"emergency_protocols",name:"Emergency Protocol Search",icon:"bi-exclamation-triangle"},
+ {id:"repair_cost_engine",name:"Repair Cost Engine",icon:"bi-calculator"},
+ {id:"replacement_cost_engine",name:"Replacement Cost Engine",icon:"bi-currency-rupee"},
+ {id:"asset_database",name:"Asset Database",icon:"bi-database"},
+ {id:"report_generator",name:"Report Generator",icon:"bi-file-earmark-bar-graph"},
+ {id:"failure_predictor",name:"Failure Predictor",icon:"bi-cpu"}
+];
+
+const seedCalls=[
+ {
+  id:"CALL-1012",tool:"telemetry_reader",agent:"maintenance",
+  execution:"EXE-1008",status:"Success",latency:240,
+  request:{asset_id:"MOTOR-12",sensor:"vibration",window:"15m"},
+  response:{mode:"demo",asset_id:"MOTOR-12",vibration_rms:4.2,unit:"mm/s",records:120}
+ },
+ {
+  id:"CALL-1011",tool:"anomaly_detector",agent:"maintenance",
+  execution:"EXE-1008",status:"Success",latency:410,
+  request:{asset_id:"MOTOR-12",model:"isolation_forest"},
+  response:{mode:"demo",anomaly_detected:true,anomaly_score:0.82}
+ },
+ {
+  id:"CALL-1010",tool:"safety_policy",agent:"safety",
+  execution:"EXE-1007",status:"Success",latency:180,
+  request:{query:"PPE inspection requirements"},
+  response:{mode:"demo",matches:4,review_required:true}
+ },
+ {
+  id:"CALL-1009",tool:"vision_inspection",agent:"inspection",
+  execution:"EXE-1007",status:"Success",latency:780,
+  request:{asset_id:"CAM-04",inspection_type:"ppe"},
+  response:{mode:"demo",detections:3,confidence:0.91}
+ },
+ {
+  id:"CALL-1008",tool:"repair_cost_engine",agent:"cost",
+  execution:"EXE-1005",status:"Success",latency:320,
+  request:{asset_id:"PUMP-12",currency:"INR"},
+  response:{mode:"demo",estimated_cost:24500,currency:"INR"}
+ },
+ {
+  id:"CALL-1007",tool:"replacement_cost_engine",agent:"cost",
+  execution:"EXE-1005",status:"Success",latency:290,
+  request:{asset_id:"PUMP-12",currency:"INR"},
+  response:{mode:"demo",estimated_cost:92000,currency:"INR"}
+ },
+ {
+  id:"CALL-1006",tool:"thermal_monitor",agent:"emergency",
+  execution:"EXE-1003",status:"Failed",latency:850,
+  request:{asset_id:"FURNACE-02",sensor:"temperature"},
+  response:{mode:"demo",error:"SENSOR_TIMEOUT",message:"Synthetic timeout for demonstration"}
+ },
+ {
+  id:"CALL-1005",tool:"asset_database",agent:"asset",
+  execution:"EXE-1006",status:"Success",latency:140,
+  request:{asset_group:"production_line_A"},
+  response:{mode:"demo",assets_found:18}
+ },
+ {
+  id:"CALL-1004",tool:"report_generator",agent:"report",
+  execution:"EXE-1006",status:"Success",latency:520,
+  request:{report_type:"asset_health",period:"weekly"},
+  response:{mode:"demo",report_id:"RPT-DEMO-104",sections:8}
+ },
+ {
+  id:"CALL-1003",tool:"failure_predictor",agent:"failure",
+  execution:"EXE-1004",status:"Failed",latency:620,
+  request:{asset_id:"HYD-08",horizon_hours:72},
+  response:{mode:"demo",error:"INSUFFICIENT_DATA",message:"Synthetic missing-history error"}
+ },
+ {
+  id:"CALL-1002",tool:"maintenance_knowledge",agent:"maintenance",
+  execution:"EXE-1008",status:"Success",latency:210,
+  request:{query:"bearing vibration diagnosis"},
+  response:{mode:"demo",documents_found:6,citations:4}
+ },
+ {
+  id:"CALL-1001",tool:"emergency_protocols",agent:"emergency",
+  execution:"EXE-1003",status:"Success",latency:195,
+  request:{incident_type:"overheating",site:"Plant A"},
+  response:{mode:"demo",protocols_found:2,human_review_required:true}
+ }
+];
+
+let calls=seedCalls.map(c=>({
+ ...c,
+ request:{...c.request},
+ response:{...c.response}
+}));
+
+let selectedCallId="CALL-1012";
+let nextCallId=2000;
+let currentPage=1;
+const pageSize=7;
+
+let activities=[
+ {title:"Tool-call workspace initialized",detail:"Illustrative tool traces loaded",color:"#6855eb"},
+ {title:"Telemetry tool sample completed",detail:"CALL-1012 · Synthetic response",color:"#16b88a"},
+ {title:"Thermal tool sample failed",detail:"CALL-1006 · Synthetic timeout",color:"#eb6174"}
+];
+
+let activityChart=null;
+let statusChart=null;
+let latencyChart=null;
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast"),{delay:3000}).show();
+}
+
+function agentName(id){
+ return agents.find(a=>a.id===id)?.name||id;
+}
+
+function toolName(id){
+ return tools.find(t=>t.id===id)?.name||id;
+}
+
+function statusBadge(status){
+ const badge=document.createElement("span");
+ const classes={
+  Success:"status-success",
+  Failed:"status-failed",
+  Running:"status-running"
+ };
+ badge.className="status-badge "+(classes[status]||"status-pending");
+ badge.textContent=status;
+ return badge;
+}
+
+function renderKpis(){
+ const total=calls.length;
+ const successful=calls.filter(c=>c.status==="Success").length;
+ const failed=calls.filter(c=>c.status==="Failed").length;
+ const completed=calls.filter(c=>c.status!=="Running");
+
+ const avg=completed.length
+  ?completed.reduce((sum,c)=>sum+c.latency,0)/completed.length
+  :null;
+
+ $("totalCalls").textContent=total;
+ $("successRate").textContent=
+  completed.length?((successful/completed.length)*100).toFixed(1)+"%":"—";
+ $("failedCalls").textContent=failed;
+ $("averageLatency").textContent=
+  avg===null?"—":Math.round(avg)+"ms";
+}
+
+function renderActivityChart(){
+ if(typeof Chart==="undefined")return;
+
+ // Illustrative buckets; not timestamp-derived telemetry.
+ const total=calls.length;
+ const values=[
+  Math.max(0,total-8),
+  Math.max(0,total-6),
+  Math.max(0,total-4),
+  Math.max(0,total-3),
+  Math.max(0,total-1),
+  total
+ ];
+
+ if(activityChart){
+  activityChart.data.datasets[0].data=values;
+  activityChart.update();
+  return;
+ }
+
+ activityChart=new Chart($("activityChart"),{
+  type:"line",
+  data:{
+   labels:["Interval 1","Interval 2","Interval 3","Interval 4","Interval 5","Current"],
+   datasets:[{
+    label:"Demo tool calls",
+    data:values,
+    borderColor:"#6855eb",
+    backgroundColor:"rgba(104,85,235,.10)",
+    fill:true,
+    tension:.4,
+    pointRadius:5,
+    pointBackgroundColor:"#6855eb",
+    borderWidth:3
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   plugins:{legend:{display:false}},
+   scales:{
+    y:{beginAtZero:true,grid:{color:"#eef0f7"},ticks:{precision:0,color:"#8992aa"}},
+    x:{grid:{display:false},ticks:{color:"#8992aa"}}
+   }
+  }
+ });
+}
+
+function renderStatusChart(){
+ if(typeof Chart==="undefined")return;
+
+ const labels=["Success","Failed","Running"];
+ const values=labels.map(s=>calls.filter(c=>c.status===s).length);
+
+ if(statusChart){
+  statusChart.data.datasets[0].data=values;
+  statusChart.update();
+  return;
+ }
+
+ statusChart=new Chart($("statusChart"),{
+  type:"doughnut",
+  data:{
+   labels,
+   datasets:[{
+    data:values,
+    backgroundColor:["#16b88a","#eb6174","#438df5"],
+    borderWidth:0,
+    hoverOffset:6
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   cutout:"73%",
+   plugins:{legend:{display:false}}
+  }
+ });
+}
+
+function renderLatencyChart(){
+ if(typeof Chart==="undefined")return;
+
+ const grouped=new Map();
+
+ calls.filter(c=>c.status!=="Running").forEach(c=>{
+  if(!grouped.has(c.tool))grouped.set(c.tool,[]);
+  grouped.get(c.tool).push(c.latency);
+ });
+
+ const rows=[...grouped.entries()]
+  .map(([tool,values])=>({
+   tool,
+   latency:Math.round(values.reduce((a,b)=>a+b,0)/values.length)
+  }))
+  .sort((a,b)=>b.latency-a.latency)
+  .slice(0,7);
+
+ const labels=rows.map(r=>toolName(r.tool));
+ const values=rows.map(r=>r.latency);
+
+ if(latencyChart){
+  latencyChart.data.labels=labels;
+  latencyChart.data.datasets[0].data=values;
+  latencyChart.update();
+  return;
+ }
+
+ latencyChart=new Chart($("latencyChart"),{
+  type:"bar",
+  data:{
+   labels,
+   datasets:[{
+    label:"Average latency (ms)",
+    data:values,
+    backgroundColor:"#8b7af9",
+    borderRadius:7,
+    barThickness:16
+   }]
+  },
+  options:{
+   indexAxis:"y",
+   responsive:true,
+   maintainAspectRatio:false,
+   plugins:{legend:{display:false}},
+   scales:{
+    x:{
+     beginAtZero:true,
+     grid:{color:"#eef0f7"},
+     ticks:{color:"#8992aa",callback:v=>v+"ms"}
+    },
+    y:{
+     grid:{display:false},
+     ticks:{color:"#65708d",font:{size:10}}
+    }
+   }
+  }
+ });
+}
+
+function filteredCalls(){
+ const query=$("searchInput").value.trim().toLowerCase();
+ const agentFilter=$("agentFilter").value;
+ const statusFilter=$("statusFilter").value;
+
+ return calls.filter(c=>{
+  if(agentFilter!=="all"&&c.agent!==agentFilter)return false;
+  if(statusFilter!=="all"&&c.status!==statusFilter)return false;
+  if(query&&!`${c.id} ${c.tool} ${toolName(c.tool)} ${c.execution} ${agentName(c.agent)}`
+   .toLowerCase().includes(query))return false;
+  return true;
+ });
+}
+
+function renderTable(){
+ const filtered=filteredCalls();
+ const totalPages=Math.max(1,Math.ceil(filtered.length/pageSize));
+ currentPage=Math.min(currentPage,totalPages);
+
+ const start=(currentPage-1)*pageSize;
+ const pageRows=filtered.slice(start,start+pageSize);
+
+ $("historyCount").textContent=
+  filtered.length+" of "+calls.length+" illustrative tool calls";
+
+ const root=$("toolCallTable");
+ root.replaceChildren();
+
+ if(!pageRows.length){
+  const tr=document.createElement("tr");
+  const td=document.createElement("td");
+  td.colSpan=6;
+  td.className="text-center py-5 text-secondary";
+  td.textContent="No matching tool calls.";
+  tr.append(td);
+  root.append(tr);
+ }
+
+ pageRows.forEach(c=>{
+  const row=document.createElement("tr");
+
+  const toolCell=document.createElement("td");
+  const title=document.createElement("div");
+  title.className="table-title";
+  title.textContent=toolName(c.tool);
+  const sub=document.createElement("div");
+  sub.className="table-sub";
+  sub.textContent=c.id;
+  toolCell.append(title,sub);
+
+  const agentCell=document.createElement("td");
+  agentCell.textContent=agentName(c.agent);
+
+  const executionCell=document.createElement("td");
+  executionCell.textContent=c.execution;
+
+  const statusCell=document.createElement("td");
+  statusCell.append(statusBadge(c.status));
+
+  const latencyCell=document.createElement("td");
+  latencyCell.textContent=c.latency+"ms";
+
+  const actionCell=document.createElement("td");
+  const button=document.createElement("button");
+  button.type="button";
+  button.className="small-action";
+  button.textContent="Inspect";
+  button.addEventListener("click",()=>{
+   selectedCallId=c.id;
+   renderInspector();
+   $("detailCallId").scrollIntoView({behavior:"smooth",block:"center"});
+  });
+  actionCell.append(button);
+
+  row.append(toolCell,agentCell,executionCell,statusCell,latencyCell,actionCell);
+  root.append(row);
+ });
+
+ $("paginationInfo").textContent=`Page ${currentPage} of ${totalPages}`;
+ $("prevPage").disabled=currentPage<=1;
+ $("nextPage").disabled=currentPage>=totalPages;
+}
+
+function renderInspector(){
+ const c=calls.find(item=>item.id===selectedCallId);
+
+ if(!c){
+  ["detailCallId","detailToolName","detailAgent","detailLatency"]
+   .forEach(id=>$(id).textContent="—");
+  $("requestJson").textContent="";
+  $("responseJson").textContent="";
+  $("inspectorStatus").textContent="NO SELECTION";
+  return;
+ }
+
+ $("detailCallId").textContent=c.id;
+ $("detailToolName").textContent=toolName(c.tool);
+ $("detailAgent").textContent=agentName(c.agent);
+ $("detailLatency").textContent=c.latency+"ms";
+
+ $("requestJson").textContent=JSON.stringify(c.request,null,2);
+ $("responseJson").textContent=JSON.stringify(c.response,null,2);
+
+ const badge=$("inspectorStatus");
+ badge.className="status-badge "+({
+  Success:"status-success",
+  Failed:"status-failed",
+  Running:"status-running"
+ }[c.status]||"status-pending");
+ badge.textContent=c.status.toUpperCase();
+}
+
+function renderTopTools(){
+ const counts=new Map();
+ calls.forEach(c=>counts.set(c.tool,(counts.get(c.tool)||0)+1));
+
+ const ranked=[...counts.entries()]
+  .sort((a,b)=>b[1]-a[1])
+  .slice(0,7);
+
+ const root=$("topTools");
+ root.replaceChildren();
+
+ const max=Math.max(1,...ranked.map(r=>r[1]));
+
+ ranked.forEach(([id,count])=>{
+  const wrapper=document.createElement("div");
+  wrapper.className="mb-4";
+
+  const top=document.createElement("div");
+  top.className="d-flex justify-content-between mb-2";
+
+  const name=document.createElement("span");
+  name.className="tool-name";
+  name.textContent=toolName(id);
+
+  const value=document.createElement("span");
+  value.className="section-sub";
+  value.textContent=count+" calls";
+
+  top.append(name,value);
+
+  const progress=document.createElement("div");
+  progress.className="progress";
+
+  const bar=document.createElement("div");
+  bar.className="progress-bar";
+  bar.style.width=(count/max*100)+"%";
+  bar.style.background="#6855eb";
+  progress.append(bar);
+
+  wrapper.append(top,progress);
+  root.append(wrapper);
+ });
+}
+
+function renderActivity(){
+ const root=$("activityList");
+ root.replaceChildren();
+
+ activities.slice(0,7).forEach(a=>{
+  const row=document.createElement("div");
+  row.className="activity-row";
+
+  const dot=document.createElement("div");
+  dot.className="activity-dot";
+  dot.style.background=a.color;
+
+  const content=document.createElement("div");
+  const title=document.createElement("strong");
+  title.textContent=a.title;
+  const detail=document.createElement("p");
+  detail.textContent=a.detail;
+
+  content.append(title,detail);
+  row.append(dot,content);
+  root.append(row);
+ });
+}
+
+function logActivity(title,detail,color="#6855eb"){
+ activities.unshift({title,detail,color});
+ activities=activities.slice(0,12);
+ renderActivity();
+}
+
+function renderAll(){
+ renderKpis();
+ renderActivityChart();
+ renderStatusChart();
+ renderLatencyChart();
+ renderTable();
+ renderInspector();
+ renderTopTools();
+ renderActivity();
+}
+
+function simulateCall(event){
+ event.preventDefault();
+
+ const agent=$("simulateAgent").value;
+ const tool=$("simulateTool").value;
+ const execution=$("simulateExecutionId").value.trim();
+
+ let request;
+ try{
+  request=JSON.parse($("simulateArguments").value);
+  if(!request||Array.isArray(request)||typeof request!=="object"){
+   throw new Error("Arguments must be a JSON object");
+  }
+ }catch(error){
+  notify("Please enter a valid JSON object");
+  return;
+ }
+
+ if(!execution||!agents.some(a=>a.id===agent)||!tools.some(t=>t.id===tool)){
+  notify("Select a valid agent, tool and execution ID");
+  return;
+ }
+
+ // Synthetic deterministic result; not actual tool execution.
+ const latency=160+(nextCallId%7)*65;
+ const call={
+  id:"CALL-"+nextCallId++,
+  tool,
+  agent,
+  execution,
+  status:"Success",
+  latency,
+  request,
+  response:{
+   mode:"demo",
+   status:"simulated_success",
+   tool,
+   execution_id:execution,
+   message:"Synthetic result. No tool was executed."
+  }
+ };
+
+ calls.unshift(call);
+ selectedCallId=call.id;
+ currentPage=1;
+
+ $("simulateForm").reset();
+ $("simulateExecutionId").value="EXE-2000";
+ $("simulateArguments").value=JSON.stringify({
+  asset_id:"PUMP-12",
+  mode:"demo"
+ },null,2);
+
+ bootstrap.Modal.getOrCreateInstance($("simulateModal")).hide();
+
+ logActivity("Tool call simulated",call.id+" · "+toolName(tool),"#16b88a");
+ renderAll();
+ notify("Synthetic tool call created");
+}
+
+function safeCsvCell(value){
+ let text=String(value??"");
+ if(/^[\s]*[=+\-@\t\r]/.test(text))text="'"+text;
+ return '"'+text.replace(/"/g,'""')+'"';
+}
+
+function exportCsv(){
+ const rows=[
+  ["Call ID","Tool","Agent","Execution ID","Status","Latency ms","Request","Response"],
+  ...calls.map(c=>[
+   c.id,toolName(c.tool),agentName(c.agent),c.execution,
+   c.status,c.latency,JSON.stringify(c.request),JSON.stringify(c.response)
+  ])
+ ];
+
+ const csv="\uFEFF"+rows.map(row=>row.map(safeCsvCell).join(",")).join("\r\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+ link.href=url;
+ link.download="industra-agent-tool-calls.csv";
+ document.body.append(link);
+ link.click();
+ link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+
+ notify("Demo tool-call records exported");
+}
+
+async function copyText(value){
+ try{
+  await navigator.clipboard.writeText(value);
+  notify("Copied to clipboard");
+ }catch{
+  notify("Clipboard unavailable; select the JSON to copy");
+ }
+}
+
+function resetDemo(){
+ calls=seedCalls.map(c=>({
+  ...c,
+  request:{...c.request},
+  response:{...c.response}
+ }));
+ selectedCallId="CALL-1012";
+ nextCallId=2000;
+ currentPage=1;
+
+ activities=[{
+  title:"Tool-call demo reset",
+  detail:"Original synthetic records restored",
+  color:"#6855eb"
+ }];
+
+ $("searchInput").value="";
+ $("agentFilter").value="all";
+ $("statusFilter").value="all";
+
+ renderAll();
+ notify("Tool-call demo reset");
+}
+
+function initNavigation(){
+ const sidebar=$("sidebar");
+ const shade=$("shade");
+
+ function close(){
+  sidebar.classList.remove("open");
+  shade.classList.remove("show");
+ }
+
+ $("menuButton").addEventListener("click",()=>{
+  sidebar.classList.add("open");
+  shade.classList.add("show");
+ });
+
+ shade.addEventListener("click",close);
+
+ document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")close();
+ });
+}
+
+function populateOptions(){
+ agents.forEach(a=>{
+  ["agentFilter","simulateAgent"].forEach(id=>{
+   const option=document.createElement("option");
+   option.value=a.id;
+   option.textContent=a.name;
+   $(id).append(option);
+  });
+ });
+
+ tools.forEach(t=>{
+  const option=document.createElement("option");
+  option.value=t.id;
+  option.textContent=t.name;
+  $("simulateTool").append(option);
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ initNavigation();
+ populateOptions();
+ renderAll();
+
+ $("simulateForm").addEventListener("submit",simulateCall);
+ $("exportButton").addEventListener("click",exportCsv);
+
+ ["searchInput","agentFilter","statusFilter"].forEach(id=>{
+  $(id).addEventListener(id==="searchInput"?"input":"change",()=>{
+   currentPage=1;
+   renderTable();
+  });
+ });
+
+ $("prevPage").addEventListener("click",()=>{
+  if(currentPage>1){
+   currentPage--;
+   renderTable();
+  }
+ });
+
+ $("nextPage").addEventListener("click",()=>{
+  const pages=Math.ceil(filteredCalls().length/pageSize);
+  if(currentPage<pages){
+   currentPage++;
+   renderTable();
+  }
+ });
+
+ $("copyRequestButton").addEventListener("click",()=>{
+  copyText($("requestJson").textContent);
+ });
+
+ $("copyResponseButton").addEventListener("click",()=>{
+  copyText($("responseJson").textContent);
+ });
+
+ $("resetButton").addEventListener("click",()=>{
+  if(confirm("Reset all demo tool-call data?"))resetDemo();
+ });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2006 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Incident Agent | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / agents</p><h1 id="page-title">Incident Agent</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Incident Agent workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Incident Agent | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple2:#8b7af9;
+ --green:#16b88a;
+ --orange:#f2a53a;
+ --red:#eb6174;
+ --blue:#438df5;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8b93aa;
+ --border:#e9ebf3;
+ --sidebar:258px
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif
+}
+h1,h2,h3,h4,h5,h6{
+ font-family:Manrope,sans-serif;letter-spacing:-.6px
+}
+a{text-decoration:none}
+button:focus-visible,a:focus-visible,
+input:focus-visible,select:focus-visible,
+textarea:focus-visible{
+ outline:3px solid #a99cff!important;
+ outline-offset:2px
+}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;
+ width:var(--sidebar);background:var(--navy);
+ color:#aab1ce;z-index:1050;
+ display:flex;flex-direction:column;
+ transition:transform .25s
+}
+.brand{
+ height:83px;padding:21px 23px;
+ display:flex;align-items:center;gap:12px;
+ border-bottom:1px solid #ffffff12
+}
+.brand-mark{
+ width:43px;height:43px;border-radius:14px;
+ background:linear-gradient(135deg,#9c83ff,#5a48e4);
+ color:white;display:grid;place-items:center;
+ font-size:22px
+}
+.brand strong{color:white;font-size:17px}
+.brand small{
+ display:block;font-size:9px;letter-spacing:2px;
+ color:#7883b0
+}
+.sidebar-body{
+ overflow-y:auto;flex:1;padding:16px 12px
+}
+.sidebar-label{
+ color:#687397;text-transform:uppercase;
+ font-size:9px;font-weight:800;letter-spacing:2px;
+ padding:20px 15px 9px
+}
+.side-link{
+ display:flex;align-items:center;gap:13px;
+ padding:11px 14px;margin:3px 0;
+ color:#9da8ca;border-radius:11px;
+ font-size:12px;font-weight:600;transition:.2s
+}
+.side-link i{
+ font-size:17px;width:21px;text-align:center
+}
+.side-link:hover{
+ background:#ffffff10;color:white
+}
+.side-link.active{
+ background:linear-gradient(90deg,#6b59e8,#5346ba);
+ color:white
+}
+.sidebar-foot{
+ padding:18px;border-top:1px solid #ffffff12
+}
+.sidebar-status{
+ border-radius:13px;padding:13px;
+ background:#ffffff09;border:1px solid #ffffff12
+}
+.status-dot{
+ display:inline-block;width:8px;height:8px;
+ border-radius:50%;background:#2cdaa2;
+ margin-right:7px
+}
+.app{
+ margin-left:var(--sidebar);min-height:100vh
+}
+.topbar{
+ background:white;min-height:76px;
+ display:flex;align-items:center;
+ justify-content:space-between;gap:15px;
+ padding:15px 30px;
+ border-bottom:1px solid var(--border);
+ position:sticky;top:0;z-index:100
+}
+.topbar-title{
+ font-size:15px;font-weight:800
+}
+.topbar-sub{
+ color:var(--muted);font-size:11px;margin-top:3px
+}
+.top-actions{
+ display:flex;align-items:center;gap:12px
+}
+.top-icon{
+ height:39px;width:39px;
+ display:grid;place-items:center;
+ border-radius:12px;border:1px solid var(--border);
+ background:#fafaff;color:#555e7b;font-size:16px
+}
+.top-icon:hover{
+ background:#eeecff;color:var(--purple)
+}
+.avatar{
+ height:39px;width:39px;border-radius:13px;
+ display:grid;place-items:center;color:white;
+ font-weight:800;
+ background:linear-gradient(135deg,#7e6bf4,#a18dff)
+}
+.content{
+ padding:29px;max-width:1850px;margin:auto
+}
+.eyebrow{
+ text-transform:uppercase;letter-spacing:2px;
+ font-size:10px;font-weight:800;
+ color:var(--purple)
+}
+.page-title{
+ font-size:29px;font-weight:800;
+ margin:9px 0 6px
+}
+.page-description{
+ color:var(--muted);line-height:1.7
+}
+.btn-premium,.btn-soft,.btn-danger-soft{
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;
+ border-radius:11px;padding:11px 16px;
+ font-size:12px;font-weight:700;transition:.2s
+}
+.btn-premium{
+ background:var(--purple);color:white;
+ border:1px solid var(--purple)
+}
+.btn-premium:hover{
+ background:#5542d5;color:white
+}
+.btn-soft{
+ background:white;color:#5e6680;
+ border:1px solid var(--border)
+}
+.btn-soft:hover{
+ background:#f1efff;color:var(--purple)
+}
+.btn-danger-soft{
+ background:#ffebee;color:#d9435b;
+ border:1px solid #ffd9e0
+}
+.btn-danger-soft:hover{background:#ffdfe5}
+button:disabled{
+ opacity:.48;cursor:not-allowed
+}
+.surface{
+ background:white;border:1px solid var(--border);
+ border-radius:18px;
+ box-shadow:0 8px 30px #24305b08
+}
+.hero{
+ position:relative;overflow:hidden;
+ background:linear-gradient(115deg,#6651e9,#8e74f4 65%,#a894ff);
+ color:white;border-radius:22px;
+ padding:31px 33px;
+ box-shadow:0 15px 35px #7564ea28
+}
+.hero:after{
+ content:"";position:absolute;
+ width:330px;height:330px;
+ right:-60px;top:-145px;
+ border:1px solid #ffffff45;border-radius:50%;
+ box-shadow:0 0 0 45px #ffffff0b,
+            0 0 0 95px #ffffff09;
+ pointer-events:none
+}
+.hero h2{
+ font-size:25px;font-weight:800
+}
+.hero p{
+ max-width:720px;color:#eeeaff;line-height:1.8
+}
+.hero-chip{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff23;border:1px solid #ffffff30;
+ padding:8px 12px;border-radius:9px;
+ font-size:10px;font-weight:700
+}
+.metric{
+ padding:21px;height:100%
+}
+.metric-top{
+ display:flex;justify-content:space-between;
+ align-items:center
+}
+.metric-label{
+ color:#8a92a8;font-size:11px;font-weight:700
+}
+.metric-icon{
+ width:44px;height:44px;border-radius:14px;
+ display:grid;place-items:center;font-size:20px
+}
+.metric-value{
+ font:800 27px Manrope,sans-serif;
+ margin:14px 0 6px
+}
+.metric-foot{
+ font-size:10px;color:#9aa1b3
+}
+.section-title{
+ font-size:17px;font-weight:800
+}
+.section-sub{
+ font-size:11px;color:var(--muted)
+}
+.badge-soft{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:6px 10px;border-radius:8px;
+ font-size:10px;font-weight:800
+}
+.b-success{
+ background:#e5f8f0;color:#13a776
+}
+.b-warning{
+ background:#fff4e2;color:#d58c20
+}
+.b-danger{
+ background:#ffebee;color:#df4d64
+}
+.b-info{
+ background:#eaf2ff;color:#438df5
+}
+.b-neutral{
+ background:#f0f1f6;color:#788098
+}
+.b-purple{
+ background:#eeebff;color:#6855eb
+}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;padding:11px 12px;
+ font-size:12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#a69aff;
+ box-shadow:0 0 0 3px #6855eb12
+}
+.form-label{
+ font-size:11px;font-weight:800;color:#5b6480
+}
+.incident-card{
+ border:1px solid var(--border);
+ border-radius:14px;padding:16px;
+ margin-bottom:11px;transition:.2s
+}
+.incident-card:hover{
+ border-color:#d1c9ff
+}
+.incident-card.active{
+ border-color:#a99aff;background:#faf9ff;
+ box-shadow:0 0 0 2px #6855eb0a
+}
+.incident-icon{
+ width:43px;height:43px;flex-shrink:0;
+ border-radius:13px;display:grid;
+ place-items:center;font-size:20px
+}
+.incident-title{
+ font-size:12px;font-weight:800
+}
+.incident-meta{
+ font-size:10px;color:var(--muted);
+ line-height:1.7;margin-top:5px
+}
+.detail-row{
+ display:flex;justify-content:space-between;
+ gap:15px;padding:13px 0;
+ border-bottom:1px solid var(--border)
+}
+.detail-row:last-child{border-bottom:0}
+.detail-label{
+ font-size:11px;color:var(--muted)
+}
+.detail-value{
+ font-size:11px;font-weight:800;
+ text-align:right;overflow-wrap:anywhere
+}
+.evidence-item{
+ display:flex;gap:12px;padding:14px;
+ border:1px solid var(--border);
+ border-radius:12px;margin-bottom:10px
+}
+.evidence-icon{
+ width:37px;height:37px;flex-shrink:0;
+ border-radius:11px;background:#eeebff;
+ color:var(--purple);display:grid;
+ place-items:center;font-size:17px
+}
+.evidence-item strong{font-size:11px}
+.evidence-item p{
+ font-size:10px;color:var(--muted);
+ margin:5px 0 0;line-height:1.7
+}
+.trace-item{
+ display:flex;gap:13px;
+ padding:15px 0;border-bottom:1px solid var(--border)
+}
+.trace-item:last-child{border-bottom:0}
+.trace-icon{
+ width:36px;height:36px;flex-shrink:0;
+ display:grid;place-items:center;
+ border-radius:11px;background:#eeebff;
+ color:var(--purple);font-size:17px
+}
+.trace-item strong{font-size:11px}
+.trace-item p{
+ font-size:10px;color:var(--muted);
+ line-height:1.7;margin:5px 0 0
+}
+.recommendation{
+ display:flex;gap:13px;padding:15px;
+ border:1px solid var(--border);
+ border-radius:13px;margin-bottom:11px
+}
+.recommendation-icon{
+ width:40px;height:40px;flex-shrink:0;
+ border-radius:12px;display:grid;
+ place-items:center;font-size:19px
+}
+.recommendation strong{font-size:11px}
+.recommendation p{
+ font-size:10px;color:var(--muted);
+ line-height:1.7;margin:6px 0
+}
+.chart-wrap{
+ height:290px;position:relative
+}
+.table thead th{
+ background:#fafbfe;color:#9099ae;
+ font-size:10px;text-transform:uppercase;
+ letter-spacing:.7px;padding:15px 18px;
+ white-space:nowrap;
+ border-bottom:1px solid var(--border)
+}
+.table tbody td{
+ padding:15px 18px;font-size:11px;
+ color:#66708a;vertical-align:middle;
+ border-color:#f0f1f7
+}
+.table-title{
+ font-weight:800;color:#252c48
+}
+.table-sub{
+ font-size:9px;color:#9ca4b8;margin-top:5px
+}
+.small-action{
+ border:1px solid var(--border);
+ background:white;border-radius:8px;
+ padding:7px 10px;color:#66718d;
+ font-size:10px;font-weight:700
+}
+.small-action:hover{
+ background:#eeebff;color:var(--purple)
+}
+.report-code{
+ background:#141a31;color:#dce6ff;
+ border-radius:13px;padding:18px;
+ font:11px/1.8 monospace;
+ white-space:pre-wrap;overflow-wrap:anywhere;
+ max-height:340px;overflow:auto
+}
+.safety-note{
+ background:#f3f0ff;border:1px solid #ded8ff;
+ color:#6052a7;border-radius:13px;
+ padding:16px;font-size:11px;line-height:1.8
+}
+.footer{
+ padding:23px 30px;
+ border-top:1px solid var(--border);
+ color:#9aa2b5;font-size:10px;
+ display:flex;justify-content:space-between;gap:12px
+}
+.mobile-shade{display:none}
+@media(max-width:1199px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .app{margin-left:0}
+ .mobile-shade.show{
+  display:block;position:fixed;inset:0;
+  background:#0008;z-index:1040
+ }
+}
+@media(max-width:575px){
+ .content{padding:17px}
+ .topbar{padding:13px 17px}
+ .page-title{font-size:23px}
+ .hero{padding:23px}
+ .hero h2{font-size:20px}
+ .metric-value{font-size:23px}
+ .footer{flex-direction:column;padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-shade" id="shade"></div>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div class="brand-mark">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a997ff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <nav class="sidebar-body" aria-label="Main navigation">
+  <div class="sidebar-label">Main Menu</div>
+
+  <a class="side-link" href="../index.html">
+   <i class="bi bi-house-door"></i>Home
+  </a>
+  <a class="side-link" href="../dashboard.html">
+   <i class="bi bi-grid-1x2"></i>Dashboard
+  </a>
+  <a class="side-link" href="../command-center.html">
+   <i class="bi bi-broadcast"></i>Command Center
+  </a>
+  <a class="side-link" href="../analytics.html">
+   <i class="bi bi-bar-chart-line"></i>Analytics Studio
+  </a>
+  <a class="side-link" href="../reports.html">
+   <i class="bi bi-file-earmark-bar-graph"></i>Reports
+  </a>
+  <a class="side-link" href="../notifications.html">
+   <i class="bi bi-bell"></i>Notifications
+  </a>
+
+  <div class="sidebar-label">Operations</div>
+
+  <a class="side-link" href="../assets/assets.html">
+   <i class="bi bi-cpu"></i>Asset Intelligence
+  </a>
+  <a class="side-link" href="../telemetry/live-telemetry.html">
+   <i class="bi bi-activity"></i>Live Telemetry
+  </a>
+  <a class="side-link" href="../predictive-maintenance/maintenance-dashboard.html">
+   <i class="bi bi-tools"></i>Predictive Maintenance
+  </a>
+  <a class="side-link" href="../maintenance/work-orders.html">
+   <i class="bi bi-clipboard-check"></i>Work Orders
+  </a>
+
+  <div class="sidebar-label">Risk & Intelligence</div>
+
+  <a class="side-link" href="../safety/safety-dashboard.html">
+   <i class="bi bi-shield-check"></i>Safety Intelligence
+  </a>
+  <a class="side-link" href="../emergency/emergency-dashboard.html">
+   <i class="bi bi-exclamation-triangle"></i>Emergency Response
+  </a>
+  <a class="side-link" href="../cost-intelligence/cost-dashboard.html">
+   <i class="bi bi-currency-rupee"></i>Cost Intelligence
+  </a>
+  <a class="side-link" href="../copilot/ai-copilot.html">
+   <i class="bi bi-stars"></i>AI Copilot
+  </a>
+
+  <div class="sidebar-label">Agentic AI</div>
+
+  <a class="side-link" href="agent-dashboard.html">
+   <i class="bi bi-diagram-3"></i>Agent Dashboard
+  </a>
+  <a class="side-link" href="agent-workflows.html">
+   <i class="bi bi-bezier2"></i>Agent Workflows
+  </a>
+  <a class="side-link" href="agent-executions.html">
+   <i class="bi bi-play-circle"></i>Agent Executions
+  </a>
+  <a class="side-link" href="agent-tool-calls.html">
+   <i class="bi bi-wrench-adjustable"></i>Agent Tool Calls
+  </a>
+  <a class="side-link" href="agent-evaluation.html">
+   <i class="bi bi-clipboard-data"></i>Agent Evaluation
+  </a>
+  <a class="side-link" href="asset-health-agent.html">
+   <i class="bi bi-heart-pulse"></i>Asset Health Agent
+  </a>
+  <a class="side-link" href="cost-agent.html">
+   <i class="bi bi-currency-rupee"></i>Cost Agent
+  </a>
+  <a class="side-link" href="emergency-response-agent.html">
+   <i class="bi bi-exclamation-octagon"></i>Emergency Response Agent
+  </a>
+  <a class="side-link" href="failure-analysis-agent.html">
+   <i class="bi bi-search-heart"></i>Failure Analysis Agent
+  </a>
+  <a class="side-link" href="human-approvals.html">
+   <i class="bi bi-person-check"></i>Human Approvals
+  </a>
+  <a class="side-link active" href="incident-agent.html" aria-current="page">
+   <i class="bi bi-clipboard-pulse"></i>Incident Agent
+  </a>
+
+  <div class="sidebar-label">Administration</div>
+
+  <a class="side-link" href="../observability/observability-dashboard.html">
+   <i class="bi bi-speedometer2"></i>Observability
+  </a>
+  <a class="side-link" href="../security/security-dashboard.html">
+   <i class="bi bi-lock"></i>Security
+  </a>
+  <a class="side-link" href="../settings/settings.html">
+   <i class="bi bi-gear"></i>Settings
+  </a>
+ </nav>
+
+ <div class="sidebar-foot">
+  <div class="sidebar-status">
+   <div class="fw-bold text-white small">
+    <span class="status-dot"></span>Incident Intelligence Agent
+   </div>
+   <div class="mt-2" style="font-size:10px">
+    Investigation simulation · Demo mode
+   </div>
+  </div>
+ </div>
+</aside>
+
+<div class="app">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon d-xl-none" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="topbar-title">Incident Intelligence Agent</div>
+   <div class="topbar-sub">
+    Workspace / AI Agents / Incident Agent
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="d-none d-md-inline text-secondary small">
+   Synthetic incident records
+  </span>
+  <button class="top-icon" id="resetButton" aria-label="Reset simulation">
+   <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <a href="../notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <a href="../settings/settings.html" class="avatar" aria-label="Settings">
+   AI
+  </a>
+ </div>
+</header>
+
+<main class="content">
+
+ <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div>
+   <div class="eyebrow">Industrial Incident Investigation</div>
+   <h1 class="page-title">
+    Incident Intelligence Agent
+    <span style="color:var(--purple)">✦</span>
+   </h1>
+   <div class="page-description">
+    Investigate incidents, review evidence, explore
+    contributing factors and document recommended follow-up actions.
+   </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-soft" id="csvButton">
+    <i class="bi bi-filetype-csv"></i> Export CSV
+   </button>
+   <button class="btn-soft" id="jsonButton">
+    <i class="bi bi-download"></i> Export JSON
+   </button>
+   <button class="btn-premium" id="newIncidentButton">
+    <i class="bi bi-plus-lg"></i> New Demo Incident
+   </button>
+  </div>
+ </div>
+
+ <section class="hero mb-4">
+  <div class="position-relative" style="z-index:1">
+   <div class="text-uppercase fw-bold mb-3"
+    style="font-size:10px;letter-spacing:2px">
+    <i class="bi bi-cpu me-1"></i>
+    AI-Assisted Incident Investigation
+   </div>
+
+   <h2>
+    Investigate incidents.<br>
+    Understand contributing factors.
+   </h2>
+
+   <p class="mt-3 mb-4">
+    Explore synthetic industrial incidents, review
+    evidence, examine potential causes, prioritize
+    follow-up investigations and document
+    human-reviewed recommendations.
+   </p>
+
+   <div class="d-flex flex-wrap gap-2">
+    <span class="hero-chip">
+     <i class="bi bi-clipboard-pulse"></i> Incident Analysis
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-diagram-3"></i> Cause Investigation
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-file-earmark-text"></i> Evidence Review
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-clock-history"></i> Timeline Reconstruction
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-person-check"></i> Human Validation
+    </span>
+   </div>
+  </div>
+ </section>
+
+ <section class="safety-note mb-4">
+  <i class="bi bi-info-circle me-2"></i>
+  <strong>Demo-only investigation workspace.</strong>
+  All incident records are fictional. The analysis uses
+  deterministic rules rather than a connected AI model.
+  For real incidents, follow site emergency procedures and
+  authorized safety personnel; this dashboard is not an
+  emergency notification or response system.
+ </section>
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Total Incidents</span>
+     <span class="metric-icon"
+      style="background:#eeebff;color:var(--purple)">
+      <i class="bi bi-clipboard-data"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="totalKpi">—</div>
+    <div class="metric-foot">Synthetic incident register</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Open Investigations</span>
+     <span class="metric-icon"
+      style="background:#fff4e2;color:var(--orange)">
+      <i class="bi bi-hourglass-split"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="openKpi">—</div>
+    <div class="metric-foot">Awaiting review or closure</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">High-Severity Incidents</span>
+     <span class="metric-icon"
+      style="background:#ffebee;color:var(--red)">
+      <i class="bi bi-exclamation-triangle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="criticalKpi">—</div>
+    <div class="metric-foot">Critical and high severity</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Analyses Completed</span>
+     <span class="metric-icon"
+      style="background:#e5f8f0;color:var(--green)">
+      <i class="bi bi-check-circle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="analysisKpi">—</div>
+    <div class="metric-foot">Simulated investigation runs</div>
+   </div>
+  </div>
+
+ </section>
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h2 class="section-title mb-1">Incident Investigation Queue</h2>
+      <p class="section-sub mb-0">
+       Select an incident to inspect its details
+      </p>
+     </div>
+     <span class="badge-soft b-purple">INCIDENT AGENT</span>
+    </div>
+
+    <div class="row g-2 mb-3">
+     <div class="col-12">
+      <input type="search" id="incidentSearch"
+       class="form-control"
+       placeholder="Search incident, asset or plant..."
+       aria-label="Search incidents">
+     </div>
+     <div class="col-6">
+      <select id="severityFilter" class="form-select"
+       aria-label="Filter severity">
+       <option value="all">All Severities</option>
+       <option>Critical</option>
+       <option>High</option>
+       <option>Medium</option>
+       <option>Low</option>
+      </select>
+     </div>
+     <div class="col-6">
+      <select id="statusFilter" class="form-select"
+       aria-label="Filter status">
+       <option value="all">All Statuses</option>
+       <option>Open</option>
+       <option>Investigating</option>
+       <option>Resolved</option>
+       <option>Closed</option>
+      </select>
+     </div>
+    </div>
+
+    <div id="incidentQueue"></div>
+
+   </div>
+  </div>
+
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+     <div>
+      <div class="eyebrow mb-2">Investigation Workspace</div>
+      <h2 class="section-title mb-1" id="detailTitle">—</h2>
+      <p class="section-sub mb-0" id="detailSubtitle">—</p>
+     </div>
+     <span id="detailStatus" class="badge-soft b-neutral">—</span>
+    </div>
+
+    <div class="row g-3 mb-4">
+     <div class="col-sm-6">
+      <div class="surface p-3 shadow-none">
+       <div class="section-sub">Incident Severity</div>
+       <div class="mt-2" id="detailSeverity">—</div>
+      </div>
+     </div>
+     <div class="col-sm-6">
+      <div class="surface p-3 shadow-none">
+       <div class="section-sub">Incident Category</div>
+       <div class="fw-bold mt-2" id="detailCategory">—</div>
+      </div>
+     </div>
+    </div>
+
+    <h3 class="section-title mb-2">Incident Information</h3>
+    <div id="incidentDetails"></div>
+
+    <h3 class="section-title mt-4 mb-2">Incident Description</h3>
+    <div class="p-3 rounded-3"
+     style="background:#f8f7ff;border:1px solid #eae5ff">
+     <p id="detailDescription" class="mb-0"
+      style="font-size:11px;line-height:1.8;color:#5e6680"></p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mt-4">
+     <button class="btn-premium" id="analyzeButton">
+      <i class="bi bi-stars"></i> Run Incident Analysis
+     </button>
+     <button class="btn-soft" id="investigateButton">
+      <i class="bi bi-search"></i> Mark Investigating
+     </button>
+     <button class="btn-soft" id="resolveButton">
+      <i class="bi bi-check-circle"></i> Mark Resolved
+     </button>
+    </div>
+
+    <div class="mt-4">
+     <label class="form-label" for="investigationNotes">
+      Investigator Notes
+     </label>
+     <textarea id="investigationNotes" class="form-control"
+      rows="3" maxlength="1200"
+      placeholder="Add investigation observations..."></textarea>
+     <button class="btn-soft mt-2" id="saveNotesButton">
+      <i class="bi bi-save"></i> Save Notes
+     </button>
+    </div>
+
+   </div>
+  </div>
+
+ </section>
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Incident Classification</h2>
+    <p class="section-sub mb-3">
+     Synthetic severity distribution
+    </p>
+    <div class="chart-wrap">
+     <canvas id="severityChart"
+      aria-label="Incident severity distribution"></canvas>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Incident Category Breakdown</h2>
+    <p class="section-sub mb-3">
+     Fictional incidents grouped by category
+    </p>
+    <div class="chart-wrap">
+     <canvas id="categoryChart"
+      aria-label="Incident category breakdown"></canvas>
+    </div>
+   </div>
+  </div>
+
+ </section>
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Potential Contributing Factors</h2>
+    <p class="section-sub mb-3">
+     Candidate causes requiring engineering verification
+    </p>
+    <div id="rootCauses"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Investigation Recommendations</h2>
+    <p class="section-sub mb-3">
+     Non-executable follow-up recommendations
+    </p>
+    <div id="recommendations"></div>
+   </div>
+  </div>
+
+ </section>
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Incident Evidence Register</h2>
+    <p class="section-sub mb-3">
+     Fictional observations associated with the incident
+    </p>
+    <div id="evidenceList"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Incident Timeline</h2>
+    <p class="section-sub mb-3">
+     Recorded demonstration investigation events
+    </p>
+    <div id="incidentTimeline"></div>
+   </div>
+  </div>
+
+ </section>
+
+ <section class="surface mb-4">
+  <div class="p-4 pb-3">
+   <h2 class="section-title mb-1">Incident Register</h2>
+   <p class="section-sub mb-0">
+    All fictional incidents and investigation statuses
+   </p>
+  </div>
+
+  <div class="table-responsive">
+   <table class="table mb-0">
+    <thead>
+     <tr>
+      <th>Incident</th>
+      <th>Asset</th>
+      <th>Plant</th>
+      <th>Category</th>
+      <th>Severity</th>
+      <th>Status</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="incidentTable"></tbody>
+   </table>
+  </div>
+ </section>
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">Structured Incident Analysis</h2>
+    <p class="section-sub mb-0">
+     Exportable demonstration investigation record
+    </p>
+   </div>
+   <button class="btn-soft" id="copyButton">
+    <i class="bi bi-copy"></i> Copy JSON
+   </button>
+  </div>
+  <pre class="report-code mb-0" id="outputJson"></pre>
+ </section>
+
+</main>
+
+<footer class="footer">
+ <span>© 2026 INDUSTRA AI · Incident Intelligence Agent</span>
+ <span>Illustrative investigations · Human verification required</span>
+</footer>
+
+</div>
+
+<!-- New incident modal -->
+<div class="modal fade" id="newIncidentModal" tabindex="-1"
+ aria-labelledby="newIncidentTitle" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-content border-0 rounded-4">
+   <div class="modal-header border-0 px-4 pt-4">
+    <div>
+     <h2 class="modal-title section-title" id="newIncidentTitle">
+      Create Demo Incident
+     </h2>
+     <p class="section-sub mb-0 mt-1">
+      Adds a fictional incident to this browser session
+     </p>
+    </div>
+    <button type="button" class="btn-close"
+     data-bs-dismiss="modal" aria-label="Close"></button>
+   </div>
+
+   <form id="newIncidentForm">
+    <div class="modal-body px-4">
+     <div class="row g-3">
+      <div class="col-md-6">
+       <label class="form-label" for="newTitle">Incident Title</label>
+       <input id="newTitle" class="form-control"
+        required maxlength="100"
+        placeholder="Example: Compressor vibration anomaly">
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="newAsset">Asset ID</label>
+       <input id="newAsset" class="form-control"
+        required maxlength="40" placeholder="COMP-06">
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="newPlant">Plant</label>
+       <select id="newPlant" class="form-select">
+        <option>Plant A</option>
+        <option>Plant B</option>
+        <option>Plant C</option>
+       </select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="newSeverity">Severity</label>
+       <select id="newSeverity" class="form-select">
+        <option>Low</option>
+        <option selected>Medium</option>
+        <option>High</option>
+        <option>Critical</option>
+       </select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="newCategory">Category</label>
+       <select id="newCategory" class="form-select">
+        <option>Mechanical</option>
+        <option>Thermal</option>
+        <option>Electrical</option>
+        <option>Safety</option>
+        <option>Fire / Smoke</option>
+        <option>Production</option>
+       </select>
+      </div>
+      <div class="col-12">
+       <label class="form-label" for="newDescription">
+        Incident Description
+       </label>
+       <textarea id="newDescription" class="form-control"
+        rows="3" required maxlength="700"
+        placeholder="Describe the fictional incident..."></textarea>
+      </div>
+     </div>
+    </div>
+    <div class="modal-footer border-0 px-4 pb-4">
+     <button type="button" class="btn-soft"
+      data-bs-dismiss="modal">Cancel</button>
+     <button type="submit" class="btn-premium">
+      <i class="bi bi-plus-circle"></i> Create Incident
+     </button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3"
+ style="z-index:1200">
+ <div class="toast border-0 shadow" id="appToast"
+  role="status" aria-live="polite">
+  <div class="toast-body d-flex align-items-center gap-2">
+   <i class="bi bi-info-circle text-primary"></i>
+   <span id="toastMessage"></span>
+  </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ INCIDENT INTELLIGENCE AGENT — DEMO
+
+ All incidents and evidence are synthetic.
+
+ Analysis:
+ - Category-based contributing factors
+ - Rule-based recommendations
+ - Local timeline events
+ - In-memory investigation status
+
+ No live sensors, AI inference, emergency dispatch,
+ notification systems or equipment control are used.
+
+ Suggested future FastAPI endpoints:
+ GET  /api/v1/incidents
+ POST /api/v1/incidents
+ GET  /api/v1/incidents/{id}
+ PATCH /api/v1/incidents/{id}
+ POST /api/v1/agents/incident-analysis/execute
+ GET  /api/v1/incidents/{id}/timeline
+*/
+
+const $=id=>document.getElementById(id);
+
+const seedIncidents=[
+ {
+  id:"INC-2401",
+  title:"Hydraulic Pump Vibration Anomaly",
+  asset:"PUMP-12",
+  plant:"Plant A",
+  category:"Mechanical",
+  severity:"High",
+  status:"Investigating",
+  description:"Synthetic elevated vibration readings indicate a potential pump bearing or alignment issue.",
+  evidence:[
+   "Synthetic vibration reading: 7.4 mm/s",
+   "Illustrative temperature: 86°C",
+   "No physical inspection completed"
+  ],
+  created:"2026-10-09 09:10",
+  notes:"",
+  analyzed:false,
+  timeline:[
+   {time:"09:10",event:"Fictional incident recorded"},
+   {time:"09:15",event:"Investigation status set"}
+  ]
+ },
+ {
+  id:"INC-2402",
+  title:"Motor Overheating Indicator",
+  asset:"MOTOR-12",
+  plant:"Plant A",
+  category:"Thermal",
+  severity:"Critical",
+  status:"Open",
+  description:"A simulated temperature excursion has been recorded for a motor.",
+  evidence:[
+   "Synthetic motor temperature: 108°C",
+   "Synthetic load indicator: elevated",
+   "No real thermal alarm was triggered"
+  ],
+  created:"2026-10-09 09:35",
+  notes:"",
+  analyzed:false,
+  timeline:[
+   {time:"09:35",event:"Fictional incident recorded"}
+  ]
+ },
+ {
+  id:"INC-2403",
+  title:"Conveyor Guarding Observation",
+  asset:"CONV-04",
+  plant:"Plant B",
+  category:"Safety",
+  severity:"High",
+  status:"Open",
+  description:"A fictional inspection suggests a possible machine-guarding concern.",
+  evidence:[
+   "Synthetic visual inspection finding",
+   "No verified site observation"
+  ],
+  created:"2026-10-09 10:05",
+  notes:"",
+  analyzed:false,
+  timeline:[
+   {time:"10:05",event:"Fictional incident recorded"}
+  ]
+ },
+ {
+  id:"INC-2404",
+  title:"Compressor Pressure Fluctuation",
+  asset:"COMP-06",
+  plant:"Plant C",
+  category:"Mechanical",
+  severity:"Medium",
+  status:"Resolved",
+  description:"Illustrative compressor pressure fluctuations were recorded.",
+  evidence:[
+   "Synthetic pressure deviation",
+   "Illustrative maintenance review"
+  ],
+  created:"2026-10-09 08:15",
+  notes:"Demo review completed.",
+  analyzed:true,
+  timeline:[
+   {time:"08:15",event:"Fictional incident recorded"},
+   {time:"08:40",event:"Demo analysis completed"},
+   {time:"09:00",event:"Marked resolved in simulation"}
+  ]
+ },
+ {
+  id:"INC-2405",
+  title:"Electrical Current Deviation",
+  asset:"MOTOR-18",
+  plant:"Plant C",
+  category:"Electrical",
+  severity:"Medium",
+  status:"Open",
+  description:"Synthetic motor current readings indicate a possible load imbalance.",
+  evidence:[
+   "Synthetic current: 67 A",
+   "No electrical measurements verified"
+  ],
+  created:"2026-10-09 10:20",
+  notes:"",
+  analyzed:false,
+  timeline:[
+   {time:"10:20",event:"Fictional incident recorded"}
+  ]
+ },
+ {
+  id:"INC-2406",
+  title:"Furnace Smoke Indicator",
+  asset:"FURNACE-02",
+  plant:"Plant B",
+  category:"Fire / Smoke",
+  severity:"Critical",
+  status:"Investigating",
+  description:"A simulated smoke-detection indicator is associated with a furnace.",
+  evidence:[
+   "Synthetic smoke indicator: 84/100",
+   "No live fire detection connected"
+  ],
+  created:"2026-10-09 10:35",
+  notes:"",
+  analyzed:false,
+  timeline:[
+   {time:"10:35",event:"Fictional incident recorded"}
+  ]
+ }
+];
+
+let incidents=structuredClone(seedIncidents);
+let selectedId="INC-2401";
+let nextId=2407;
+let severityChart=null;
+let categoryChart=null;
+
+const severityOrder={
+ Critical:4,High:3,Medium:2,Low:1
+};
+
+const categoryGuidance={
+ Mechanical:{
+  causes:[
+   "Potential bearing or mechanical wear",
+   "Possible shaft misalignment or imbalance",
+   "Operating conditions or lubrication history"
+  ],
+  actions:[
+   "Review equipment-specific vibration limits and trends.",
+   "Request qualified inspection of relevant mechanical components.",
+   "Compare maintenance history and operating conditions."
+  ]
+ },
+ Thermal:{
+  causes:[
+   "Possible cooling-system performance issue",
+   "Elevated load or friction",
+   "Potential sensor calibration deviation"
+  ],
+  actions:[
+   "Review approved thermal operating limits.",
+   "Ask qualified personnel to assess cooling and load conditions.",
+   "Validate the readings with independent measurements."
+  ]
+ },
+ Electrical:{
+  causes:[
+   "Possible electrical load imbalance",
+   "Potential motor winding or connection issue",
+   "Instrumentation or power-quality variation"
+  ],
+  actions:[
+   "Request a qualified electrical engineering review.",
+   "Compare current trends with equipment specifications.",
+   "Validate protection and monitoring records."
+  ]
+ },
+ Safety:{
+  causes:[
+   "Potential unsafe equipment condition",
+   "Possible procedural or inspection gap",
+   "Insufficient verified evidence"
+  ],
+  actions:[
+   "Refer the concern to authorized site safety personnel.",
+   "Review relevant inspection and risk-assessment records.",
+   "Do not rely on this simulation for safety clearance."
+  ]
+ },
+ "Fire / Smoke":{
+  causes:[
+   "Possible thermal process abnormality",
+   "Potential combustion or ventilation issue",
+   "Sensor or environmental interference"
+  ],
+  actions:[
+   "For a real event, immediately follow the site emergency plan.",
+   "Have authorized personnel verify detection and incident records.",
+   "Do not use simulated analysis to delay emergency action."
+  ]
+ },
+ Production:{
+  causes:[
+   "Potential process parameter deviation",
+   "Possible equipment performance issue",
+   "Operating or scheduling variation"
+  ],
+  actions:[
+   "Review verified production records.",
+   "Compare process parameters against approved limits.",
+   "Request operations and engineering review."
+  ]
+ }
+};
+
+function element(tag,text,className){
+ const node=document.createElement(tag);
+ if(className)node.className=className;
+ if(text!==undefined)node.textContent=text;
+ return node;
+}
+
+function add(parent,tag,text,className){
+ const node=element(tag,text,className);
+ parent.append(node);
+ return node;
+}
+
+function badge(text,kind){
+ return element("span",text,"badge-soft "+kind);
+}
+
+function severityClass(value){
+ return value==="Critical"?"b-danger":
+  value==="High"?"b-warning":
+  value==="Medium"?"b-info":"b-success";
+}
+
+function statusClass(value){
+ return value==="Closed"?"b-neutral":
+  value==="Resolved"?"b-success":
+  value==="Investigating"?"b-purple":"b-warning";
+}
+
+function selected(){
+ return incidents.find(i=>i.id===selectedId);
+}
+
+function now(){
+ return new Date().toLocaleString("en-IN",{
+  year:"numeric",month:"short",day:"2-digit",
+  hour:"2-digit",minute:"2-digit",
+  second:"2-digit"
+ });
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance(
+  $("appToast"),{delay:3000}
+ ).show();
+}
+
+function addTimeline(incident,event){
+ incident.timeline.push({
+  time:now(),
+  event
+ });
+}
+
+function renderKpis(){
+ $("totalKpi").textContent=incidents.length;
+
+ $("openKpi").textContent=
+  incidents.filter(i=>
+   ["Open","Investigating"].includes(i.status)
+  ).length;
+
+ $("criticalKpi").textContent=
+  incidents.filter(i=>
+   ["Critical","High"].includes(i.severity)
+  ).length;
+
+ $("analysisKpi").textContent=
+  incidents.filter(i=>i.analyzed).length;
+}
+
+function filteredIncidents(){
+ const query=$("incidentSearch").value
+  .trim().toLowerCase();
+
+ const severity=$("severityFilter").value;
+ const status=$("statusFilter").value;
+
+ return incidents.filter(i=>{
+  const text=
+   `${i.id} ${i.title} ${i.asset} ${i.plant} ${i.category}`
+   .toLowerCase();
+
+  return text.includes(query)&&
+   (severity==="all"||i.severity===severity)&&
+   (status==="all"||i.status===status);
+ }).sort((a,b)=>{
+  return severityOrder[b.severity]-
+   severityOrder[a.severity];
+ });
+}
+
+function renderQueue(){
+ const root=$("incidentQueue");
+ root.replaceChildren();
+
+ const data=filteredIncidents();
+
+ if(!data.length){
+  add(root,"p","No matching incidents found.",
+   "text-secondary py-4");
+  return;
+ }
+
+ data.forEach(i=>{
+  const card=element(
+   "div",undefined,
+   "incident-card"+(i.id===selectedId?" active":"")
+  );
+
+  const row=element("div",undefined,"d-flex gap-3");
+
+  const icon=element("div",undefined,"incident-icon");
+  icon.style.background=
+   i.severity==="Critical"?"#ffebee":"#eeebff";
+  icon.style.color=
+   i.severity==="Critical"?"#eb6174":"#6855eb";
+  icon.append(element("i",undefined,"bi bi-clipboard-pulse"));
+
+  const body=element("div",undefined,"flex-grow-1");
+  add(body,"div",i.title,"incident-title");
+  add(body,"div",`${i.id} · ${i.asset} · ${i.plant}`,"incident-meta");
+
+  const badges=element("div",undefined,"d-flex flex-wrap gap-2 mt-2");
+  badges.append(
+   badge(i.severity,severityClass(i.severity)),
+   badge(i.status,statusClass(i.status))
+  );
+
+  body.append(badges);
+  row.append(icon,body);
+  card.append(row);
+
+  add(card,"p",i.description,
+   "incident-meta mt-3 mb-3");
+
+  const button=element("button","Investigate","small-action");
+  button.type="button";
+  button.addEventListener("click",()=>{
+   selectedId=i.id;
+   renderAll();
+  });
+
+  card.append(button);
+  root.append(card);
+ });
+}
+
+function detailRow(label,value){
+ const row=element("div",undefined,"detail-row");
+ add(row,"span",label,"detail-label");
+ add(row,"span",value,"detail-value");
+ return row;
+}
+
+function renderDetails(){
+ const i=selected();
+ if(!i)return;
+
+ $("detailTitle").textContent=i.title;
+ $("detailSubtitle").textContent=
+  `${i.id} · ${i.asset} · ${i.plant}`;
+
+ $("detailStatus").className=
+  "badge-soft "+statusClass(i.status);
+ $("detailStatus").textContent=i.status;
+
+ $("detailSeverity").replaceChildren(
+  badge(i.severity,severityClass(i.severity))
+ );
+
+ $("detailCategory").textContent=i.category;
+
+ $("incidentDetails").replaceChildren(
+  detailRow("Incident ID",i.id),
+  detailRow("Asset",i.asset),
+  detailRow("Plant",i.plant),
+  detailRow("Category",i.category),
+  detailRow("Created",i.created),
+  detailRow("Analysis",i.analyzed?"Demo Complete":"Not Run")
+ );
+
+ $("detailDescription").textContent=i.description;
+ $("investigationNotes").value=i.notes;
+
+ $("investigateButton").disabled=
+  i.status==="Investigating"||i.status==="Closed";
+
+ $("resolveButton").disabled=
+  i.status==="Resolved"||i.status==="Closed";
+}
+
+function renderCauses(){
+ const root=$("rootCauses");
+ root.replaceChildren();
+
+ const i=selected();
+
+ if(!i.analyzed){
+  add(root,"p",
+   "Run Incident Analysis to explore possible contributing factors.",
+   "text-secondary");
+  return;
+ }
+
+ const guidance=categoryGuidance[i.category]||
+  categoryGuidance.Production;
+
+ guidance.causes.forEach((cause,index)=>{
+  const row=element("div",undefined,"recommendation");
+
+  const icon=element("div",undefined,"recommendation-icon");
+  icon.style.background="#eeebff";
+  icon.style.color="#6855eb";
+  icon.append(element("i",undefined,"bi bi-search"));
+
+  const body=element("div");
+  add(body,"strong",`${index+1}. ${cause}`);
+  add(body,"p",
+   "Candidate factor only. Requires evidence-based investigation.");
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderRecommendations(){
+ const root=$("recommendations");
+ root.replaceChildren();
+
+ const i=selected();
+
+ if(!i.analyzed){
+  add(root,"p",
+   "Recommendations appear after a simulated analysis.",
+   "text-secondary");
+  return;
+ }
+
+ const guidance=categoryGuidance[i.category]||
+  categoryGuidance.Production;
+
+ guidance.actions.forEach(action=>{
+  const row=element("div",undefined,"recommendation");
+
+  const icon=element("div",undefined,"recommendation-icon");
+  icon.style.background="#eaf2ff";
+  icon.style.color="#438df5";
+  icon.append(element("i",undefined,"bi bi-check2-circle"));
+
+  const body=element("div");
+  add(body,"strong",action);
+  add(body,"p","For authorized human review only.");
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderEvidence(){
+ const root=$("evidenceList");
+ root.replaceChildren();
+
+ selected().evidence.forEach((item,index)=>{
+  const row=element("div",undefined,"evidence-item");
+
+  const icon=element("div",undefined,"evidence-icon");
+  icon.append(element("i",undefined,"bi bi-file-earmark-text"));
+
+  const body=element("div");
+  add(body,"strong","Evidence Item "+(index+1));
+  add(body,"p",item);
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderTimeline(){
+ const root=$("incidentTimeline");
+ root.replaceChildren();
+
+ selected().timeline.forEach((item,index)=>{
+  const row=element("div",undefined,"trace-item");
+
+  const icon=element("div",undefined,"trace-icon");
+  icon.append(element("i",undefined,"bi bi-clock-history"));
+
+  const body=element("div");
+  add(body,"strong","Event "+(index+1));
+  add(body,"p",item.event);
+  add(body,"div",item.time,"section-sub mt-1");
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderCharts(){
+ if(typeof Chart==="undefined")return;
+
+ const severities=["Critical","High","Medium","Low"];
+ const severityValues=severities.map(value=>
+  incidents.filter(i=>i.severity===value).length
+ );
+
+ if(severityChart){
+  severityChart.data.datasets[0].data=severityValues;
+  severityChart.update();
+ }else{
+  severityChart=new Chart($("severityChart"),{
+   type:"doughnut",
+   data:{
+    labels:severities,
+    datasets:[{
+     data:severityValues,
+     backgroundColor:[
+      "#eb6174","#f2a53a","#438df5","#16b88a"
+     ],
+     borderWidth:0
+    }]
+   },
+   options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    cutout:"68%",
+    plugins:{
+     legend:{
+      position:"bottom",
+      labels:{boxWidth:10,font:{size:10}}
+     }
+    }
+   }
+  });
+ }
+
+ const categories=[
+  "Mechanical","Thermal","Electrical",
+  "Safety","Fire / Smoke","Production"
+ ];
+
+ const values=categories.map(value=>
+  incidents.filter(i=>i.category===value).length
+ );
+
+ if(categoryChart){
+  categoryChart.data.datasets[0].data=values;
+  categoryChart.update();
+ }else{
+  categoryChart=new Chart($("categoryChart"),{
+   type:"bar",
+   data:{
+    labels:categories,
+    datasets:[{
+     label:"Incidents",
+     data:values,
+     backgroundColor:"#6855eb",
+     borderRadius:7,
+     barThickness:26
+    }]
+   },
+   options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+     y:{
+      beginAtZero:true,
+      ticks:{stepSize:1,color:"#8992aa"},
+      grid:{color:"#eef0f7"}
+     },
+     x:{
+      grid:{display:false},
+      ticks:{color:"#8992aa",font:{size:10}}
+     }
+    }
+   }
+  });
+ }
+}
+
+function renderTable(){
+ const root=$("incidentTable");
+ root.replaceChildren();
+
+ incidents.forEach(i=>{
+  const row=element("tr");
+
+  const title=element("td");
+  add(title,"div",i.title,"table-title");
+  add(title,"div",i.id,"table-sub");
+
+  const asset=element("td",i.asset);
+  const plant=element("td",i.plant);
+  const category=element("td",i.category);
+
+  const severity=element("td");
+  severity.append(badge(i.severity,severityClass(i.severity)));
+
+  const status=element("td");
+  status.append(badge(i.status,statusClass(i.status)));
+
+  const action=element("td");
+  const button=element("button","View","small-action");
+  button.type="button";
+  button.addEventListener("click",()=>{
+   selectedId=i.id;
+   renderAll();
+   window.scrollTo({top:0,behavior:"smooth"});
+  });
+  action.append(button);
+
+  row.append(
+   title,asset,plant,category,severity,status,action
+  );
+
+  root.append(row);
+ });
+}
+
+function outputData(){
+ const i=selected();
+ const guidance=categoryGuidance[i.category]||
+  categoryGuidance.Production;
+
+ return {
+  mode:"simulation",
+  agent:"incident_agent",
+  incident:{
+   id:i.id,
+   title:i.title,
+   asset:i.asset,
+   plant:i.plant,
+   category:i.category,
+   severity:i.severity,
+   status:i.status,
+   description:i.description,
+   created:i.created
+  },
+  analysis:{
+   simulated_complete:i.analyzed,
+   candidate_contributing_factors:
+    i.analyzed?guidance.causes:[],
+   recommendations:
+    i.analyzed?guidance.actions:[]
+  },
+  evidence:i.evidence,
+  notes:i.notes,
+  timeline:i.timeline,
+  real_ai_model_executed:false,
+  emergency_response_triggered:false,
+  equipment_controlled:false,
+  human_validation_required:true
+ };
+}
+
+function renderJson(){
+ $("outputJson").textContent=
+  JSON.stringify(outputData(),null,2);
+}
+
+function renderAll(){
+ renderKpis();
+ renderQueue();
+ renderDetails();
+ renderCauses();
+ renderRecommendations();
+ renderEvidence();
+ renderTimeline();
+ renderCharts();
+ renderTable();
+ renderJson();
+}
+
+function analyze(){
+ const i=selected();
+
+ i.analyzed=true;
+ addTimeline(
+  i,
+  "Rule-based incident analysis completed in simulation"
+ );
+
+ renderAll();
+ notify("Simulated incident analysis completed");
+}
+
+function updateStatus(status){
+ const i=selected();
+
+ if(i.status==="Closed"){
+  notify("Closed demo incidents cannot be modified");
+  return;
+ }
+
+ i.status=status;
+ addTimeline(i,"Status changed to "+status+" in simulation");
+
+ renderAll();
+ notify("Demo incident status updated");
+}
+
+function saveNotes(){
+ const i=selected();
+ i.notes=$("investigationNotes").value.trim();
+
+ addTimeline(i,"Investigation notes saved in browser memory");
+
+ renderAll();
+ notify("Investigation notes saved for this session");
+}
+
+function createIncident(event){
+ event.preventDefault();
+
+ const title=$("newTitle").value.trim();
+ const asset=$("newAsset").value.trim();
+ const description=$("newDescription").value.trim();
+
+ if(!title||!asset||!description){
+  notify("Complete all required incident fields");
+  return;
+ }
+
+ const i={
+  id:"INC-"+nextId++,
+  title,
+  asset,
+  plant:$("newPlant").value,
+  category:$("newCategory").value,
+  severity:$("newSeverity").value,
+  status:"Open",
+  description,
+  evidence:[
+   "User-created fictional incident record",
+   "No verified operational evidence attached"
+  ],
+  created:now(),
+  notes:"",
+  analyzed:false,
+  timeline:[
+   {time:now(),event:"Demo incident created"}
+  ]
+ };
+
+ incidents.unshift(i);
+ selectedId=i.id;
+
+ $("newIncidentForm").reset();
+
+ bootstrap.Modal.getOrCreateInstance(
+  $("newIncidentModal")
+ ).hide();
+
+ renderAll();
+ notify("Fictional incident added to investigation queue");
+}
+
+function csvCell(value){
+ const text=String(value??"");
+ const safe=/^\s*[=+\-@]/.test(text)?"'"+text:text;
+ return '"'+safe.replaceAll('"','""')+'"';
+}
+
+function download(content,filename,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const link=document.createElement("a");
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[
+  [
+   "Incident ID","Title","Asset","Plant",
+   "Category","Severity","Status","Analyzed"
+  ],
+  ...incidents.map(i=>[
+   i.id,i.title,i.asset,i.plant,
+   i.category,i.severity,i.status,
+   i.analyzed?"Yes":"No"
+  ])
+ ];
+
+ download(
+  rows.map(row=>row.map(csvCell).join(",")).join("\r\n"),
+  "incident-agent-demo.csv",
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Incident register CSV exported");
+}
+
+function exportJson(){
+ download(
+  JSON.stringify({
+   mode:"simulation",
+   incidents,
+   real_emergency_actions_executed:false
+  },null,2),
+  "incident-agent-demo.json",
+  "application/json"
+ );
+
+ notify("Incident register JSON exported");
+}
+
+async function copyJson(){
+ try{
+  await navigator.clipboard.writeText(
+   $("outputJson").textContent
+  );
+  notify("Incident analysis JSON copied");
+ }catch{
+  notify("Clipboard unavailable; select JSON manually");
+ }
+}
+
+function reset(){
+ incidents=structuredClone(seedIncidents);
+ selectedId="INC-2401";
+ nextId=2407;
+
+ $("incidentSearch").value="";
+ $("severityFilter").value="all";
+ $("statusFilter").value="all";
+
+ renderAll();
+ notify("Incident simulation reset");
+}
+
+function initNavigation(){
+ const sidebar=$("sidebar");
+ const shade=$("shade");
+
+ function close(){
+  sidebar.classList.remove("open");
+  shade.classList.remove("show");
+ }
+
+ $("menuButton").addEventListener("click",()=>{
+  sidebar.classList.add("open");
+  shade.classList.add("show");
+ });
+
+ shade.addEventListener("click",close);
+
+ document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")close();
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ initNavigation();
+ renderAll();
+
+ $("incidentSearch").addEventListener("input",renderQueue);
+ $("severityFilter").addEventListener("change",renderQueue);
+ $("statusFilter").addEventListener("change",renderQueue);
+
+ $("analyzeButton").addEventListener("click",analyze);
+
+ $("investigateButton").addEventListener("click",()=>{
+  updateStatus("Investigating");
+ });
+
+ $("resolveButton").addEventListener("click",()=>{
+  updateStatus("Resolved");
+ });
+
+ $("saveNotesButton").addEventListener("click",saveNotes);
+
+ $("newIncidentButton").addEventListener("click",()=>{
+  bootstrap.Modal.getOrCreateInstance(
+   $("newIncidentModal")
+  ).show();
+ });
+
+ $("newIncidentForm").addEventListener(
+  "submit",createIncident
+ );
+
+ $("csvButton").addEventListener("click",exportCsv);
+ $("jsonButton").addEventListener("click",exportJson);
+ $("copyButton").addEventListener("click",copyJson);
+ $("resetButton").addEventListener("click",reset);
+});
+</script>
+
+</body>
+</html>

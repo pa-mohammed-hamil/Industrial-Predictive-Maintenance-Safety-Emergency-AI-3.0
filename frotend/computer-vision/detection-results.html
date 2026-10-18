@@ -1,0 +1,1130 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Detection Results | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / computer-vision</p><h1 id="page-title">Detection Results</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Detection Results workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Detection Results | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--purple2:#9483f9;
+ --bg:#f5f6fb;--text:#202640;--muted:#8992aa;
+ --border:#e8eaf3;--green:#18b58c;--orange:#f4a443;
+ --red:#ed6175;--blue:#438df5;--sidebar:258px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5{font-family:Manrope,sans-serif;letter-spacing:-.5px}
+a{text-decoration:none}
+button,input,select{font:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);z-index:1000;display:flex;flex-direction:column;
+ color:white;overflow-y:auto;scrollbar-width:thin;
+}
+.brand{
+ display:flex;align-items:center;gap:11px;padding:26px 22px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);font-size:22px;
+}
+.brand strong{font:800 18px Manrope;color:white}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px;
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;letter-spacing:1.7px;
+ text-transform:uppercase;
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;margin:3px 12px;
+ padding:12px 13px;border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700;transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);color:white;
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12;
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;align-items:center;
+ justify-content:space-between;gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;display:grid;
+ place-items:center;color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{padding:28px 32px 45px;max-width:1650px;margin:auto}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;
+ padding:30px;color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:25px;
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ border-radius:50%;border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;text-transform:uppercase;
+ letter-spacing:2px;color:#ddd6ff;
+}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;line-height:1.9;
+ max-width:720px;margin:0;
+}
+.hero-tag{
+ display:inline-flex;gap:7px;align-items:center;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:20px;
+}
+.stat-card,.panel{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105;
+}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:16px;
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 26px Manrope;margin-top:6px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel{padding:23px;height:100%}
+.panel-heading{
+ display:flex;justify-content:space-between;
+ align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:21px;
+}
+.panel-heading h3{font-size:15px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:11px;margin-top:5px}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;padding:11px 17px;
+ font-size:11px;font-weight:800;display:inline-flex;
+ align-items:center;justify-content:center;gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 14px;background:white;color:#69738e;
+ font-size:11px;font-weight:800;display:inline-flex;
+ align-items:center;justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:42px;font-size:11px;color:var(--text);
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12;
+}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffecef;color:#d64b62}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.chart-container{height:240px;position:relative}
+.table{font-size:11px;margin-bottom:0;white-space:nowrap}
+.table thead th{
+ color:#8c95ac;font-size:9px;text-transform:uppercase;
+ letter-spacing:.7px;border-bottom:1px solid var(--border);
+ padding:15px 12px;
+}
+.table tbody td{
+ padding:15px 12px;vertical-align:middle;
+ border-color:#f0f1f6;
+}
+.table tbody tr:hover{background:#fafaff}
+.type-icon{
+ width:36px;height:36px;border-radius:10px;
+ display:grid;place-items:center;font-size:17px;
+}
+.filter-bar{
+ display:flex;gap:11px;flex-wrap:wrap;
+ align-items:center;margin-bottom:20px;
+}
+.filter-bar .search-box{flex:1;min-width:210px}
+.filter-bar .form-select{width:auto;min-width:145px}
+.search-box{position:relative}
+.search-box i{
+ position:absolute;left:13px;top:50%;
+ transform:translateY(-50%);color:#9ca4b8;
+}
+.search-box input{padding-left:37px}
+.result-id{font-weight:800;color:#5143c9}
+.result-sub{font-size:10px;color:var(--muted);margin-top:5px}
+.empty-state{
+ text-align:center;padding:50px 20px;color:#a0a8bd;
+}
+.empty-state i{font-size:35px;color:#c6c1ef}
+.empty-state h4{
+ font-size:14px;font-weight:800;color:#6d7790;margin-top:14px;
+}
+.empty-state p{font-size:11px}
+.detail-label{
+ font-size:10px;font-weight:800;color:#929ab0;
+ text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;
+}
+.detail-value{font-size:12px;font-weight:700;overflow-wrap:anywhere}
+.detail-box{
+ padding:15px;border:1px solid var(--border);
+ border-radius:12px;background:#fbfcff;
+}
+.detail-summary{
+ font-size:12px;color:#66718e;line-height:1.9;
+ background:#f8f9fd;border-radius:12px;padding:16px;
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;padding:15px 17px;
+ font-size:11px;line-height:1.8;
+ display:flex;align-items:flex-start;gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.pagination-controls{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:12px;flex-wrap:wrap;margin-top:20px;
+}
+.page-info{font-size:11px;color:var(--muted)}
+.hidden{display:none!important}
+.sidebar-backdrop{display:none}
+@media(max-width:1150px){
+ :root{--sidebar:225px}
+ .content{padding:25px 22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%);transition:transform .25s;width:260px}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:18px 14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:17px}
+ .mobile-hide{display:none}
+ .filter-bar .form-select{flex:1;min-width:130px}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+ <a class="side-link" href="notifications.html"><i class="bi bi-bell"></i> Notifications</a>
+
+ <div class="nav-section">Vision Intelligence</div>
+ <a class="side-link" href="corrosion-detection.html"><i class="bi bi-search-heart"></i> Corrosion Detection</a>
+ <a class="side-link" href="crack-detection.html"><i class="bi bi-intersect"></i> Crack Detection</a>
+ <a class="side-link" href="defect-detection.html"><i class="bi bi-bounding-box-circles"></i> Defect Detection</a>
+ <a class="side-link" href="ppe-detection.html"><i class="bi bi-person-check"></i> PPE Detection</a>
+ <a class="side-link" href="fire-smoke-detection.html"><i class="bi bi-fire"></i> Fire & Smoke Detection</a>
+ <a class="side-link active" href="detection-results.html"><i class="bi bi-clipboard-data"></i> Detection Results</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/agent-dashboard.html"><i class="bi bi-robot"></i> Agent Dashboard</a>
+ <a class="side-link" href="agents/inspection-agent.html"><i class="bi bi-clipboard-check"></i> Inspection Agent</a>
+ <a class="side-link" href="agents/asset-health-agent.html"><i class="bi bi-heart-pulse"></i> Asset Health Agent</a>
+ <a class="side-link" href="agents/maintenance-agent.html"><i class="bi bi-tools"></i> Maintenance Agent</a>
+ <a class="side-link" href="agents/safety-agent.html"><i class="bi bi-shield-check"></i> Safety Agent</a>
+ <a class="side-link" href="agents/supervisor-agent.html"><i class="bi bi-diagram-3"></i> Supervisor Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Browser Demo Mode
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+
+ <header class="topbar">
+  <div class="d-flex align-items-center gap-3">
+   <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+    <i class="bi bi-list"></i>
+   </button>
+   <div>
+    <div class="breadcrumb-text">
+     Vision Intelligence / <strong>Detection Results</strong>
+    </div>
+    <div class="fw-bold mt-1" style="font-size:13px">
+     Inspection Results Center
+    </div>
+   </div>
+  </div>
+  <div class="top-actions">
+   <span class="status-badge success mobile-hide">
+    <i class="bi bi-circle-fill" style="font-size:7px"></i>
+    Sample Data
+   </span>
+   <a href="notifications.html" class="top-icon" aria-label="Notifications">
+    <i class="bi bi-bell"></i>
+   </a>
+   <div class="avatar">AI</div>
+  </div>
+ </header>
+
+ <main class="content">
+
+  <section class="hero">
+   <div class="hero-label">Vision Intelligence / Unified Results</div>
+   <h1><i class="bi bi-clipboard-data me-2"></i>Detection Results Center</h1>
+   <p>
+    Explore inspection records across industrial vision workflows,
+    review reported findings, prioritize follow-up and export
+    structured inspection results.
+   </p>
+   <div class="hero-tag">
+    <i class="bi bi-database"></i>
+    Sample records · No live detection backend
+   </div>
+  </section>
+
+  <!-- KPI CARDS -->
+  <div class="row g-3 mb-4">
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+      <i class="bi bi-collection"></i>
+     </div>
+     <div class="stat-label">Total Results</div>
+     <div class="stat-value" id="totalResults">0</div>
+     <div class="stat-note">Sample inspection records</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#ffecef;color:#ed6175">
+      <i class="bi bi-exclamation-triangle"></i>
+     </div>
+     <div class="stat-label">High Severity</div>
+     <div class="stat-value" id="highResults">0</div>
+     <div class="stat-note">Requires review prioritization</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#fff4e6;color:#f4a443">
+      <i class="bi bi-hourglass-split"></i>
+     </div>
+     <div class="stat-label">Pending Review</div>
+     <div class="stat-value" id="pendingResults">0</div>
+     <div class="stat-note">Demo workflow state</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#e8f9f1;color:#18b58c">
+      <i class="bi bi-patch-check"></i>
+     </div>
+     <div class="stat-label">Reviewed Results</div>
+     <div class="stat-value" id="reviewedResults">0</div>
+     <div class="stat-note">Human review completed</div>
+    </div>
+   </div>
+
+  </div>
+
+  <!-- CHARTS -->
+  <div class="row g-4 mb-4">
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Severity Distribution</h3>
+       <div class="panel-subtitle">All sample inspection results</div>
+      </div>
+      <span class="status-badge">Severity</span>
+     </div>
+     <div class="chart-container">
+      <canvas id="severityChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Detection Category Distribution</h3>
+       <div class="panel-subtitle">Records by inspection workflow</div>
+      </div>
+      <span class="status-badge">Categories</span>
+     </div>
+     <div class="chart-container">
+      <canvas id="categoryChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+  </div>
+
+  <!-- RESULTS TABLE -->
+  <section class="panel mb-4">
+
+   <div class="panel-heading">
+    <div>
+     <h3>Inspection Results</h3>
+     <div class="panel-subtitle">
+      Search, filter, review and export demonstration records
+     </div>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+     <button id="exportCsv" class="btn-outline-custom">
+      <i class="bi bi-filetype-csv"></i> Export CSV
+     </button>
+     <button id="exportJson" class="btn-purple">
+      <i class="bi bi-download"></i> Export JSON
+     </button>
+    </div>
+   </div>
+
+   <div class="filter-bar">
+    <div class="search-box">
+     <i class="bi bi-search"></i>
+     <input id="searchInput" type="search" class="form-control"
+      placeholder="Search result ID, asset, finding...">
+    </div>
+
+    <select id="categoryFilter" class="form-select" aria-label="Filter category">
+     <option value="">All Categories</option>
+     <option value="Corrosion">Corrosion</option>
+     <option value="Crack">Crack</option>
+     <option value="Defect">Defect</option>
+     <option value="PPE">PPE</option>
+     <option value="Fire & Smoke">Fire & Smoke</option>
+    </select>
+
+    <select id="severityFilter" class="form-select" aria-label="Filter severity">
+     <option value="">All Severities</option>
+     <option value="High">High</option>
+     <option value="Medium">Medium</option>
+     <option value="Low">Low</option>
+    </select>
+
+    <select id="statusFilter" class="form-select" aria-label="Filter review status">
+     <option value="">All Statuses</option>
+     <option value="Pending">Pending</option>
+     <option value="Reviewed">Reviewed</option>
+     <option value="Escalated">Escalated</option>
+    </select>
+
+    <button id="resetFilters" class="btn-outline-custom">
+     <i class="bi bi-arrow-counterclockwise"></i> Reset
+    </button>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table align-middle">
+     <thead>
+      <tr>
+       <th>Result ID</th>
+       <th>Category</th>
+       <th>Asset</th>
+       <th>Finding</th>
+       <th>Severity</th>
+       <th>Review Status</th>
+       <th>Recorded</th>
+       <th>Action</th>
+      </tr>
+     </thead>
+     <tbody id="resultsBody"></tbody>
+    </table>
+   </div>
+
+   <div class="pagination-controls">
+    <div class="page-info" id="pageInfo">Showing results</div>
+    <div class="d-flex gap-2">
+     <button id="prevPage" class="btn-outline-custom">
+      <i class="bi bi-chevron-left"></i> Previous
+     </button>
+     <button id="nextPage" class="btn-outline-custom">
+      Next <i class="bi bi-chevron-right"></i>
+     </button>
+    </div>
+   </div>
+
+  </section>
+
+  <div class="notice">
+   <i class="bi bi-shield-exclamation"></i>
+   <div>
+    <strong>Demo limitation:</strong>
+    All inspection findings, severities and timestamps on this page
+    are synthetic examples. Review actions change only the local
+    page state. This dashboard must not be used for live safety
+    monitoring, incident response or equipment acceptance.
+   </div>
+  </div>
+
+ </main>
+</div>
+
+<!-- RESULT DETAILS MODAL -->
+<div class="modal fade" id="detailsModal" tabindex="-1"
+ aria-labelledby="detailsModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-content" style="border:0;border-radius:18px;overflow:hidden">
+
+   <div class="modal-header" style="padding:23px 25px;border-color:#edf0f6">
+    <div>
+     <h5 class="modal-title fw-bold" id="detailsModalLabel">
+      Inspection Result Details
+     </h5>
+     <div style="font-size:11px;color:#8992aa;margin-top:5px">
+      Synthetic inspection record
+     </div>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"
+     aria-label="Close"></button>
+   </div>
+
+   <div class="modal-body" style="padding:25px">
+
+    <div class="row g-3" id="detailGrid"></div>
+
+    <div class="mt-4">
+     <div class="detail-label">Finding Summary</div>
+     <div class="detail-summary" id="detailSummary"></div>
+    </div>
+
+    <div class="mt-4">
+     <div class="detail-label">Suggested Review Action</div>
+     <div class="detail-summary" id="detailAction"></div>
+    </div>
+
+    <div class="notice mt-4">
+     <i class="bi bi-info-circle"></i>
+     <div>
+      Reviewing a record acknowledges the example report.
+      It does not validate an inspection, resolve a real hazard,
+      approve operation or close a real maintenance issue.
+     </div>
+    </div>
+
+   </div>
+
+   <div class="modal-footer" style="border-color:#edf0f6;padding:18px 25px">
+    <button class="btn-outline-custom" data-bs-dismiss="modal">
+     Close
+    </button>
+    <button id="escalateButton" class="btn-outline-custom">
+     <i class="bi bi-exclamation-circle"></i> Escalate
+    </button>
+    <button id="reviewButton" class="btn-purple">
+     <i class="bi bi-check2-circle"></i> Mark Reviewed
+    </button>
+   </div>
+
+  </div>
+ </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button type="button" class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ DETECTION RESULTS — BROWSER DEMONSTRATION
+
+ All records below are synthetic.
+ No AI inference, database or camera integration.
+*/
+
+const $=id=>document.getElementById(id);
+
+const records=[
+ {
+  id:"DET-1001",category:"Corrosion",asset:"AST-001",
+  finding:"Surface corrosion on pipeline joint",
+  severity:"High",status:"Pending",location:"Plant A / Zone 2",
+  recorded:"2026-10-09 09:15",
+  summary:"Example report describing corrosion near a pipeline flange.",
+  action:"Request qualified corrosion inspection and review of asset integrity."
+ },
+ {
+  id:"DET-1002",category:"Crack",asset:"AST-003",
+  finding:"Suspected surface crack",
+  severity:"High",status:"Escalated",location:"Plant B / Turbine Hall",
+  recorded:"2026-10-09 09:42",
+  summary:"Example visual observation of a possible crack on a structural component.",
+  action:"Arrange appropriate nondestructive testing and engineering review."
+ },
+ {
+  id:"DET-1003",category:"Defect",asset:"AST-006",
+  finding:"Surface scratch on manufactured part",
+  severity:"Low",status:"Reviewed",location:"Production Line 1",
+  recorded:"2026-10-09 10:05",
+  summary:"Example quality inspection record describing a localized scratch.",
+  action:"Compare against approved quality acceptance criteria."
+ },
+ {
+  id:"DET-1004",category:"PPE",asset:"CAM-012",
+  finding:"Illustrative missing helmet observation",
+  severity:"Medium",status:"Pending",location:"Assembly Area",
+  recorded:"2026-10-09 10:21",
+  summary:"Synthetic workplace PPE compliance observation.",
+  action:"Verify the observation through the authorized site safety workflow."
+ },
+ {
+  id:"DET-1005",category:"Fire & Smoke",asset:"CAM-018",
+  finding:"Illustrative smoke observation",
+  severity:"High",status:"Escalated",location:"Warehouse B",
+  recorded:"2026-10-09 10:48",
+  summary:"Synthetic fire and smoke example. No actual smoke was detected.",
+  action:"For a real incident, follow established site emergency procedures."
+ },
+ {
+  id:"DET-1006",category:"Defect",asset:"AST-011",
+  finding:"Weld surface imperfection",
+  severity:"Medium",status:"Pending",location:"Fabrication Bay",
+  recorded:"2026-10-09 11:10",
+  summary:"Example weld inspection finding for workflow demonstration.",
+  action:"Perform qualified weld inspection against the applicable procedure."
+ },
+ {
+  id:"DET-1007",category:"Corrosion",asset:"AST-009",
+  finding:"Localized coating deterioration",
+  severity:"Medium",status:"Reviewed",location:"Outdoor Storage",
+  recorded:"2026-10-09 11:34",
+  summary:"Synthetic record of coating damage and possible corrosion exposure.",
+  action:"Review coating repair requirements and inspection intervals."
+ },
+ {
+  id:"DET-1008",category:"Crack",asset:"AST-014",
+  finding:"Hairline surface indication",
+  severity:"Low",status:"Pending",location:"Pump Station",
+  recorded:"2026-10-09 12:02",
+  summary:"Example observation requiring confirmation by an appropriate method.",
+  action:"Document the indication and determine whether further testing is required."
+ },
+ {
+  id:"DET-1009",category:"PPE",asset:"CAM-021",
+  finding:"Illustrative missing eye protection",
+  severity:"Medium",status:"Reviewed",location:"Grinding Station",
+  recorded:"2026-10-09 12:25",
+  summary:"Synthetic example of a PPE compliance issue.",
+  action:"Confirm compliance with site PPE requirements."
+ },
+ {
+  id:"DET-1010",category:"Defect",asset:"AST-017",
+  finding:"Component deformation",
+  severity:"High",status:"Pending",location:"Production Line 3",
+  recorded:"2026-10-09 12:51",
+  summary:"Example quality report documenting apparent deformation.",
+  action:"Hold for qualified disposition if required by the quality process."
+ },
+ {
+  id:"DET-1011",category:"Corrosion",asset:"AST-020",
+  finding:"Minor oxidation on exposed fitting",
+  severity:"Low",status:"Reviewed",location:"Utility Room",
+  recorded:"2026-10-09 13:13",
+  summary:"Synthetic inspection record of minor surface oxidation.",
+  action:"Record findings and follow approved inspection scheduling."
+ },
+ {
+  id:"DET-1012",category:"Fire & Smoke",asset:"CAM-025",
+  finding:"Illustrative thermal hazard observation",
+  severity:"High",status:"Pending",location:"Electrical Room",
+  recorded:"2026-10-09 13:39",
+  summary:"Synthetic thermal safety scenario with no live sensor data.",
+  action:"For an actual hazard, follow approved electrical safety and emergency procedures."
+ }
+];
+
+let currentPage=1;
+const pageSize=6;
+let selectedId=null;
+let severityChart=null;
+let categoryChart=null;
+
+const categoryIcons={
+ "Corrosion":"bi-droplet-half",
+ "Crack":"bi-intersect",
+ "Defect":"bi-bounding-box-circles",
+ "PPE":"bi-person-check",
+ "Fire & Smoke":"bi-fire"
+};
+
+const categoryColors={
+ "Corrosion":["#fff0e1","#e89a37"],
+ "Crack":["#ffecef","#ed6175"],
+ "Defect":["#eeeaff","#6855eb"],
+ "PPE":["#eaf2ff","#438df5"],
+ "Fire & Smoke":["#fff0e1","#e97843"]
+};
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function closeSidebar(){
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+}
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",closeSidebar);
+
+function badgeClass(value){
+ if(value==="High"||value==="Escalated")return "danger";
+ if(value==="Medium"||value==="Pending")return "warning";
+ if(value==="Low"||value==="Reviewed")return "success";
+ return "info";
+}
+
+function makeBadge(value){
+ const badge=document.createElement("span");
+ badge.className="status-badge "+badgeClass(value);
+ badge.textContent=value;
+ return badge;
+}
+
+function filteredRecords(){
+ const search=$("searchInput").value.trim().toLowerCase();
+ const category=$("categoryFilter").value;
+ const severity=$("severityFilter").value;
+ const status=$("statusFilter").value;
+
+ return records.filter(record=>{
+  const searchable=[
+   record.id,record.category,record.asset,
+   record.finding,record.location
+  ].join(" ").toLowerCase();
+
+  return (!search||searchable.includes(search))&&
+   (!category||record.category===category)&&
+   (!severity||record.severity===severity)&&
+   (!status||record.status===status);
+ });
+}
+
+function updateStats(){
+ $("totalResults").textContent=records.length;
+ $("highResults").textContent=
+  records.filter(x=>x.severity==="High").length;
+ $("pendingResults").textContent=
+  records.filter(x=>x.status==="Pending").length;
+ $("reviewedResults").textContent=
+  records.filter(x=>x.status==="Reviewed").length;
+}
+
+function renderTable(){
+ const filtered=filteredRecords();
+ const pages=Math.max(1,Math.ceil(filtered.length/pageSize));
+
+ currentPage=Math.min(currentPage,pages);
+
+ const start=(currentPage-1)*pageSize;
+ const visible=filtered.slice(start,start+pageSize);
+ const tbody=$("resultsBody");
+
+ tbody.replaceChildren();
+
+ if(!visible.length){
+  const row=document.createElement("tr");
+  const cell=document.createElement("td");
+  cell.colSpan=8;
+  cell.className="empty-state";
+  cell.innerHTML=
+   '<i class="bi bi-search"></i>'+
+   '<h4>No Matching Results</h4>'+
+   '<p>Try adjusting your search or filters.</p>';
+  row.append(cell);
+  tbody.append(row);
+ }
+
+ visible.forEach(record=>{
+  const row=document.createElement("tr");
+
+  const idCell=document.createElement("td");
+  const id=document.createElement("div");
+  id.className="result-id";
+  id.textContent=record.id;
+  const sub=document.createElement("div");
+  sub.className="result-sub";
+  sub.textContent="Sample record";
+  idCell.append(id,sub);
+
+  const categoryCell=document.createElement("td");
+  const categoryRow=document.createElement("div");
+  categoryRow.className="d-flex align-items-center gap-2";
+
+  const iconBox=document.createElement("div");
+  iconBox.className="type-icon";
+
+  const colors=categoryColors[record.category];
+  iconBox.style.background=colors[0];
+  iconBox.style.color=colors[1];
+
+  const icon=document.createElement("i");
+  icon.className="bi "+categoryIcons[record.category];
+  iconBox.append(icon);
+
+  const categoryName=document.createElement("strong");
+  categoryName.textContent=record.category;
+  categoryRow.append(iconBox,categoryName);
+  categoryCell.append(categoryRow);
+
+  const assetCell=document.createElement("td");
+  assetCell.textContent=record.asset;
+
+  const findingCell=document.createElement("td");
+  findingCell.textContent=record.finding;
+
+  const severityCell=document.createElement("td");
+  severityCell.append(makeBadge(record.severity));
+
+  const statusCell=document.createElement("td");
+  statusCell.append(makeBadge(record.status));
+
+  const dateCell=document.createElement("td");
+  dateCell.textContent=record.recorded;
+
+  const actionCell=document.createElement("td");
+  const button=document.createElement("button");
+  button.className="btn-outline-custom";
+  button.innerHTML='<i class="bi bi-eye"></i> View';
+  button.addEventListener("click",()=>openDetails(record.id));
+  actionCell.append(button);
+
+  row.append(
+   idCell,categoryCell,assetCell,findingCell,
+   severityCell,statusCell,dateCell,actionCell
+  );
+
+  tbody.append(row);
+ });
+
+ $("pageInfo").textContent=filtered.length?
+  "Showing "+(start+1)+"–"+
+  Math.min(start+pageSize,filtered.length)+
+  " of "+filtered.length+" results":
+  "Showing 0 results";
+
+ $("prevPage").disabled=currentPage===1;
+ $("nextPage").disabled=currentPage>=pages;
+}
+
+function addDetail(label,value){
+ const col=document.createElement("div");
+ col.className="col-sm-6";
+
+ const box=document.createElement("div");
+ box.className="detail-box";
+
+ const title=document.createElement("div");
+ title.className="detail-label";
+ title.textContent=label;
+
+ const content=document.createElement("div");
+ content.className="detail-value";
+ content.textContent=value;
+
+ box.append(title,content);
+ col.append(box);
+ $("detailGrid").append(col);
+}
+
+function openDetails(id){
+ const record=records.find(x=>x.id===id);
+ if(!record)return;
+
+ selectedId=id;
+ $("detailGrid").replaceChildren();
+
+ [
+  ["Result ID",record.id],
+  ["Inspection Category",record.category],
+  ["Asset",record.asset],
+  ["Severity",record.severity],
+  ["Review Status",record.status],
+  ["Location",record.location],
+  ["Recorded",record.recorded],
+  ["Finding",record.finding]
+ ].forEach(([label,value])=>addDetail(label,value));
+
+ $("detailSummary").textContent=record.summary;
+ $("detailAction").textContent=record.action;
+
+ $("reviewButton").disabled=record.status==="Reviewed";
+ $("escalateButton").disabled=record.status==="Escalated";
+
+ bootstrap.Modal.getOrCreateInstance($("detailsModal")).show();
+}
+
+function updateStatus(status){
+ const record=records.find(x=>x.id===selectedId);
+ if(!record)return;
+
+ record.status=status;
+
+ bootstrap.Modal.getOrCreateInstance($("detailsModal")).hide();
+
+ updateStats();
+ renderTable();
+
+ notify(record.id+" marked "+status.toLowerCase()+" in demo mode.");
+}
+
+$("reviewButton").addEventListener("click",()=>{
+ updateStatus("Reviewed");
+});
+
+$("escalateButton").addEventListener("click",()=>{
+ updateStatus("Escalated");
+});
+
+function renderCharts(){
+ if(typeof Chart==="undefined")return;
+
+ const severityLabels=["Low","Medium","High"];
+ const severityValues=severityLabels.map(value=>
+  records.filter(x=>x.severity===value).length
+ );
+
+ if(severityChart)severityChart.destroy();
+
+ severityChart=new Chart($("severityChart"),{
+  type:"doughnut",
+  data:{
+   labels:severityLabels,
+   datasets:[{
+    data:severityValues,
+    backgroundColor:["#18b58c","#f5a443","#ed6175"],
+    borderWidth:0
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   cutout:"72%",
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{usePointStyle:true,padding:18}
+    }
+   }
+  }
+ });
+
+ const categoryLabels=[
+  "Corrosion","Crack","Defect","PPE","Fire & Smoke"
+ ];
+
+ const categoryValues=categoryLabels.map(value=>
+  records.filter(x=>x.category===value).length
+ );
+
+ if(categoryChart)categoryChart.destroy();
+
+ categoryChart=new Chart($("categoryChart"),{
+  type:"bar",
+  data:{
+   labels:categoryLabels,
+   datasets:[{
+    data:categoryValues,
+    backgroundColor:"#8a76f5",
+    borderRadius:7,
+    maxBarThickness:42
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   scales:{
+    y:{beginAtZero:true,ticks:{precision:0},grid:{color:"#f0f1f7"}},
+    x:{grid:{display:false}}
+   },
+   plugins:{legend:{display:false}}
+  }
+ });
+}
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function csvEscape(value){
+ return '"'+String(value??"").replace(/"/g,'""')+'"';
+}
+
+$("exportJson").addEventListener("click",()=>{
+ const data=filteredRecords();
+
+ downloadFile(
+  "industra-detection-results.json",
+  JSON.stringify({
+   mode:"synthetic-demo",
+   exportedAt:new Date().toISOString(),
+   results:data
+  },null,2),
+  "application/json"
+ );
+
+ notify("Filtered sample results exported as JSON.");
+});
+
+$("exportCsv").addEventListener("click",()=>{
+ const data=filteredRecords();
+ const fields=[
+  "id","category","asset","finding","severity",
+  "status","location","recorded","summary","action"
+ ];
+
+ const csv=[
+  fields.join(","),
+  ...data.map(record=>
+   fields.map(field=>csvEscape(record[field])).join(",")
+  )
+ ].join("\r\n");
+
+ downloadFile(
+  "industra-detection-results.csv",
+  csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Filtered sample results exported as CSV.");
+});
+
+["searchInput","categoryFilter","severityFilter","statusFilter"]
+.forEach(id=>{
+ $(id).addEventListener(
+  id==="searchInput"?"input":"change",
+  ()=>{
+   currentPage=1;
+   renderTable();
+  }
+ );
+});
+
+$("resetFilters").addEventListener("click",()=>{
+ $("searchInput").value="";
+ $("categoryFilter").value="";
+ $("severityFilter").value="";
+ $("statusFilter").value="";
+ currentPage=1;
+ renderTable();
+});
+
+$("prevPage").addEventListener("click",()=>{
+ if(currentPage>1){
+  currentPage--;
+  renderTable();
+ }
+});
+
+$("nextPage").addEventListener("click",()=>{
+ const pages=Math.ceil(filteredRecords().length/pageSize);
+
+ if(currentPage<pages){
+  currentPage++;
+  renderTable();
+ }
+});
+
+updateStats();
+renderTable();
+renderCharts();
+</script>
+
+</body>
+</html>

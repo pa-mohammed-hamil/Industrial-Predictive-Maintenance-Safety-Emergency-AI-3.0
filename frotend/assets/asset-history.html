@@ -1,0 +1,1036 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Asset History | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / assets</p><h1 id="page-title">Asset History</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Asset History workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asset History | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px Arial,Helvetica,sans-serif
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{
+ padding:25px 20px;color:white;
+ font-size:19px;font-weight:800
+}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{
+ background:var(--purple);color:white
+}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;
+ box-shadow:0 5px 20px #10152d05
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:16px
+}
+.grid-2{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));gap:16px
+}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.45fr) minmax(300px,.8fr);
+ gap:17px
+}
+.flex{
+ display:flex;align-items:center;
+ justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{
+ color:var(--muted);font-size:11px;line-height:1.8
+}
+.stat-label{
+ color:var(--muted);font-size:11px;font-weight:700
+}
+.stat-value{
+ font-size:25px;font-weight:800;margin-top:12px
+}
+.stat-note{
+ font-size:10px;color:var(--muted);margin-top:8px
+}
+.btn{
+ border:1px solid var(--border);background:white;
+ color:#69738e;border-radius:9px;
+ padding:10px 13px;font-size:11px;font-weight:700
+}
+.btn.primary{
+ background:var(--purple);
+ border-color:var(--purple);color:white
+}
+.btn.danger{
+ background:#ffedf0;border-color:#ffedf0;color:#d84b63
+}
+.input{
+ width:100%;padding:11px;
+ border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{
+ display:block;color:#69738e;
+ font-size:11px;font-weight:700;margin-bottom:7px
+}
+.badge{
+ display:inline-block;padding:7px 10px;
+ border-radius:8px;font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;
+ grid-template-columns:repeat(5,minmax(0,1fr));gap:12px
+}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);
+ text-align:left;padding:13px;white-space:nowrap
+}
+td{
+ padding:13px;border-bottom:1px solid #eef0f6;
+ white-space:nowrap
+}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);
+ font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);
+ border-radius:11px;padding:14px;margin-bottom:12px
+}
+.record p{
+ font-size:11px;color:#69738e;line-height:1.8
+}
+.chart{width:100%;height:280px;display:block}
+.metric-grid{
+ display:grid;grid-template-columns:1fr 1fr;gap:12px
+}
+.metric{
+ padding:14px;background:#f8f9fd;
+ border:1px solid var(--border);border-radius:11px
+}
+.metric strong{
+ display:block;font-size:20px;margin-top:9px
+}
+.timeline{
+ border-left:2px solid #e4e1fc;
+ margin-left:9px;padding-left:21px
+}
+.timeline-item{
+ position:relative;padding:0 0 20px
+}
+.timeline-item:before{
+ content:"";position:absolute;left:-29px;top:4px;
+ width:12px;height:12px;border-radius:50%;
+ background:var(--purple);border:3px solid white;
+ box-shadow:0 0 0 2px #e4e1fc
+}
+.timeline-item h4{margin:0 0 5px}
+.timeline-item p{
+ color:#69738e;font-size:11px;line-height:1.7
+}
+.timeline-item small{color:var(--muted)}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:11px;
+ padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;
+ background:var(--navy);color:white;
+ padding:13px 17px;border-radius:10px;
+ display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1200px){
+ .filters{grid-template-columns:repeat(3,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}
+ .topbar{padding:14px}
+ .grid,.grid-2,.filters,.metric-grid{
+  grid-template-columns:1fr
+ }
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ #toast,.notice{display:none!important}
+ .main{margin:0}
+ .content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">ASSET MANAGEMENT</div>
+ <a class="nav-link" href="asset-management.html">◆ Asset Management</a>
+ <a class="nav-link" href="asset-details.html">▦ Asset Details</a>
+ <a class="nav-link" href="asset-health.html">◇ Asset Health</a>
+ <a class="nav-link active" href="asset-history.html">◉ Asset History</a>
+ <a class="nav-link" href="asset-comparison.html">◆ Asset Comparison</a>
+
+ <div class="nav-title">PREDICTIVE MAINTENANCE</div>
+ <a class="nav-link" href="predictive-maintenance.html">▦ Predictive Maintenance</a>
+ <a class="nav-link" href="r-u-l-prediction.html">◇ RUL Prediction</a>
+ <a class="nav-link" href="anomaly-detection.html">◉ Anomaly Detection</a>
+ <a class="nav-link" href="maintenance-schedule.html">◆ Maintenance Schedule</a>
+ <a class="nav-link" href="work-orders.html">▦ Work Orders</a>
+
+ <div class="nav-title">MONITORING</div>
+ <a class="nav-link" href="live-telemetry.html">◇ Live Telemetry</a>
+ <a class="nav-link" href="telemetry-history.html">◉ Telemetry History</a>
+ <a class="nav-link" href="sensor-anomalies.html">◆ Sensor Anomalies</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">▦ Cost Intelligence</a>
+ <a class="nav-link" href="repair-cost.html">◇ Repair Cost</a>
+ <a class="nav-link" href="replacement-cost.html">◉ Replacement Cost</a>
+ <a class="nav-link" href="total-cost-ownership.html">◆ Total Cost of Ownership</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Asset Management / Lifecycle Event History</div>
+   <strong>Industrial Asset History Intelligence</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC EVENT RECORDS</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / EQUIPMENT LIFECYCLE HISTORY
+ </div>
+ <h1>Asset History & Lifecycle Event Intelligence</h1>
+ <p>
+  Track equipment maintenance, inspections, failures,
+  sensor anomalies, repair actions, work orders and
+  lifecycle expenditure. Analyze asset reliability
+  history and identify recurring operational problems.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Industrial Asset Event History</h3>
+  <div class="muted" id="summaryText">
+   Loading historical equipment records...
+  </div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="refreshBtn">Refresh History</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Historical Events</div>
+  <div class="stat-value" id="eventsKpi">0</div>
+  <div class="stat-note">Events matching selected filters</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Failure Incidents</div>
+  <div class="stat-value" id="failuresKpi">0</div>
+  <div class="stat-note">Recorded failure events</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Maintenance & Repair Cost</div>
+  <div class="stat-value" id="costKpi">₹0</div>
+  <div class="stat-note">Direct costs in selected records</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Historical Downtime</div>
+  <div class="stat-value" id="downtimeKpi">0 h</div>
+  <div class="stat-note">Summed recorded event downtime</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Asset History Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="assetFilter">Equipment</label>
+   <select class="input" id="assetFilter">
+    <option value="all">All Equipment</option>
+   </select>
+  </div>
+  <div>
+   <label for="typeFilter">Event Type</label>
+   <select class="input" id="typeFilter">
+    <option value="all">All Events</option>
+    <option value="Maintenance">Maintenance</option>
+    <option value="Failure">Failure</option>
+    <option value="Inspection">Inspection</option>
+    <option value="Anomaly">Anomaly</option>
+    <option value="Repair">Repair</option>
+    <option value="Replacement">Replacement</option>
+    <option value="Work Order">Work Order</option>
+   </select>
+  </div>
+  <div>
+   <label for="severityFilter">Severity</label>
+   <select class="input" id="severityFilter">
+    <option value="all">All Severities</option>
+    <option value="Low">Low</option>
+    <option value="Medium">Medium</option>
+    <option value="High">High</option>
+    <option value="Critical">Critical</option>
+   </select>
+  </div>
+  <div>
+   <label for="sortFilter">Sort History</label>
+   <select class="input" id="sortFilter">
+    <option value="newest">Newest First</option>
+    <option value="oldest">Oldest First</option>
+    <option value="cost">Highest Cost</option>
+    <option value="downtime">Longest Downtime</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Equipment Lifecycle Event Records</h3>
+    <p class="muted">
+     Maintenance, failures, anomalies and inspections
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 records</span>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Event ID</th>
+      <th>Date</th>
+      <th>Equipment</th>
+      <th>Plant</th>
+      <th>Event Type</th>
+      <th>Severity</th>
+      <th>Description</th>
+      <th>Downtime</th>
+      <th>Direct Cost</th>
+      <th>Status</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="historyTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Lifecycle Event Inspector</h3>
+   <span class="badge purple">EVENT PROFILE</span>
+  </div>
+
+  <div id="eventDetails"></div>
+
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Event Cost</span>
+    <strong id="eventCost">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Downtime</span>
+    <strong id="eventDowntime">0 h</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Event Severity</span>
+    <strong id="eventSeverity">--</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Event Status</span>
+    <strong id="eventStatus">--</strong>
+   </div>
+  </div>
+
+  <div class="actions" style="margin-top:18px">
+   <a class="btn primary" id="assetDetailsLink"
+    href="asset-details.html">
+    Open Asset Details
+   </a>
+   <a class="btn" href="work-orders.html">
+    Work Orders
+   </a>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Historical Event Timeline</h3>
+   <span class="badge purple">CHRONOLOGICAL</span>
+  </div>
+  <p class="muted">Latest equipment lifecycle activities</p>
+  <div class="timeline" id="eventTimeline"></div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Event Category Distribution</h3>
+   <span class="badge blue">EVENT ANALYTICS</span>
+  </div>
+  <p class="muted">Event frequency by category</p>
+  <svg class="chart" id="categoryChart" viewBox="0 0 640 280"
+   role="img" aria-label="Event category distribution"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Historical Financial & Reliability Summary</h3>
+  <div id="financialSummary"></div>
+ </div>
+
+ <div class="panel">
+  <h3>Asset Reliability Insights</h3>
+  <div id="insightList"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Historical data notice:</strong>
+ All equipment events, dates, costs, downtime hours,
+ maintenance actions and incident classifications in this
+ demonstration are synthetic. Historical costs represent
+ direct recorded event expenditure only and exclude
+ production loss unless explicitly entered as a direct cost.
+ Event history is not a substitute for validated CMMS
+ records, engineering investigations, safety incident
+ reports or regulatory audit evidence.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+
+const ASSETS=[
+ {id:"MTR-001",name:"Main Drive Motor",plant:"Plant A"},
+ {id:"CMP-001",name:"Air Compressor",plant:"Plant A"},
+ {id:"FAN-001",name:"Cooling Fan",plant:"Plant A"},
+ {id:"GEN-001",name:"Power Generator",plant:"Plant B"},
+ {id:"PMP-001",name:"Cooling Pump",plant:"Plant B"},
+ {id:"GBX-001",name:"Industrial Gearbox",plant:"Plant B"},
+ {id:"HYD-001",name:"Hydraulic Power Unit",plant:"Plant C"},
+ {id:"PMP-002",name:"Process Pump",plant:"Plant C"},
+ {id:"CNV-001",name:"Conveyor Drive",plant:"Plant C"}
+];
+
+const EVENT_TYPES=[
+ "Maintenance","Failure","Inspection","Anomaly",
+ "Repair","Replacement","Work Order"
+];
+
+const EVENTS=[
+ ["EVT-001","2026-10-08","GEN-001","Failure","Critical",
+  "Generator overheating and unplanned shutdown",12,165000,"Resolved"],
+ ["EVT-002","2026-10-07","GBX-001","Anomaly","High",
+  "Elevated gearbox vibration detected",0,3500,"Investigating"],
+ ["EVT-003","2026-10-06","MTR-001","Maintenance","Medium",
+  "Motor lubrication and bearing inspection",2,18500,"Completed"],
+ ["EVT-004","2026-10-04","PMP-002","Repair","High",
+  "Mechanical seal replacement",6,42000,"Completed"],
+ ["EVT-005","2026-10-02","CMP-001","Inspection","Low",
+  "Air compressor condition inspection",1,9500,"Completed"],
+ ["EVT-006","2026-09-29","GEN-001","Maintenance","High",
+  "Generator cooling system maintenance",4,32000,"Completed"],
+ ["EVT-007","2026-09-27","HYD-001","Anomaly","Medium",
+  "Hydraulic pressure instability detected",0,2500,"Monitoring"],
+ ["EVT-008","2026-09-24","FAN-001","Inspection","Low",
+  "Cooling fan mechanical inspection",1,4500,"Completed"],
+ ["EVT-009","2026-09-22","GBX-001","Repair","High",
+  "Gearbox bearing replacement",8,78000,"Completed"],
+ ["EVT-010","2026-09-20","PMP-001","Maintenance","Low",
+  "Cooling pump preventive maintenance",2,12500,"Completed"],
+ ["EVT-011","2026-09-17","CNV-001","Work Order","Medium",
+  "Conveyor drive inspection work order",0,0,"Open"],
+ ["EVT-012","2026-09-14","MTR-001","Anomaly","Medium",
+  "Motor vibration threshold warning",0,1800,"Resolved"],
+ ["EVT-013","2026-09-11","PMP-002","Failure","High",
+  "Process pump seal failure",7,64000,"Resolved"],
+ ["EVT-014","2026-09-08","GEN-001","Replacement","High",
+  "Generator fuel injector replacement",5,85000,"Completed"],
+ ["EVT-015","2026-09-05","CMP-001","Maintenance","Low",
+  "Air filter and lubrication service",2,11000,"Completed"],
+ ["EVT-016","2026-09-02","HYD-001","Inspection","Medium",
+  "Hydraulic system condition assessment",1,7500,"Completed"],
+ ["EVT-017","2026-08-29","GBX-001","Failure","Critical",
+  "Gearbox tooth damage and drive stoppage",15,132000,"Resolved"],
+ ["EVT-018","2026-08-25","MTR-001","Repair","Medium",
+  "Motor coupling alignment correction",4,26500,"Completed"],
+ ["EVT-019","2026-08-21","PMP-001","Inspection","Low",
+  "Cooling circuit flow inspection",1,5500,"Completed"],
+ ["EVT-020","2026-08-18","CNV-001","Maintenance","Low",
+  "Conveyor drive belt and roller service",3,14000,"Completed"]
+];
+
+const records=EVENTS.map(row=>{
+ const asset=ASSETS.find(a=>a.id===row[2]);
+ return{
+  id:row[0],date:row[1],assetId:row[2],
+  assetName:asset.name,plant:asset.plant,
+  type:row[3],severity:row[4],description:row[5],
+  downtime:row[6],cost:row[7],status:row[8]
+ };
+});
+
+let selectedEventId="EVT-001";
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(n){return currency.format(n)}
+function compact(n){
+ if(n>=10000000)return "₹"+(n/10000000).toFixed(2)+"Cr";
+ if(n>=100000)return "₹"+(n/100000).toFixed(2)+"L";
+ if(n>=1000)return "₹"+(n/1000).toFixed(1)+"K";
+ return money(n);
+}
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+ Object.entries(attrs).forEach(([key,value])=>{
+  node.setAttribute(key,value);
+ });
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(el("span","",label),el("strong","",value));
+ return row;
+}
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+function sum(list,key){
+ return list.reduce((total,x)=>total+x[key],0);
+}
+
+function populateAssetFilter(){
+ const select=$("assetFilter");
+ const previous=select.value;
+ select.replaceChildren();
+
+ const all=el("option","","All Equipment");
+ all.value="all";
+ select.append(all);
+
+ const plant=$("plantFilter").value;
+
+ ASSETS.filter(a=>plant==="all"||a.plant===plant)
+ .forEach(a=>{
+  const option=el("option","",a.name+" · "+a.id);
+  option.value=a.id;
+  select.append(option);
+ });
+
+ select.value=[...select.options].some(
+  o=>o.value===previous
+ )?previous:"all";
+}
+
+function filtered(){
+ const plant=$("plantFilter").value;
+ const asset=$("assetFilter").value;
+ const type=$("typeFilter").value;
+ const severity=$("severityFilter").value;
+
+ const list=records.filter(x=>
+  (plant==="all"||x.plant===plant)&&
+  (asset==="all"||x.assetId===asset)&&
+  (type==="all"||x.type===type)&&
+  (severity==="all"||x.severity===severity)
+ );
+
+ const sort=$("sortFilter").value;
+
+ if(sort==="oldest"){
+  return list.sort((a,b)=>a.date.localeCompare(b.date));
+ }
+ if(sort==="cost"){
+  return list.sort((a,b)=>b.cost-a.cost);
+ }
+ if(sort==="downtime"){
+  return list.sort((a,b)=>b.downtime-a.downtime);
+ }
+ return list.sort((a,b)=>b.date.localeCompare(a.date));
+}
+
+function selectedEvent(){
+ const list=filtered();
+ return list.find(x=>x.id===selectedEventId)||list[0]||null;
+}
+
+function renderKpis(){
+ const list=filtered();
+ const failures=list.filter(x=>x.type==="Failure").length;
+
+ $("eventsKpi").textContent=list.length;
+ $("failuresKpi").textContent=failures;
+ $("costKpi").textContent=compact(sum(list,"cost"));
+ $("downtimeKpi").textContent=sum(list,"downtime")+" h";
+
+ $("summaryText").textContent=
+  list.length+" historical events · "+
+  failures+" failure incidents · "+
+  $("plantFilter").value;
+
+ $("visibleCount").textContent=list.length+" records";
+}
+
+function renderTable(){
+ const body=$("historyTable");
+ body.replaceChildren();
+
+ filtered().forEach(event=>{
+  const row=el("tr");
+
+  [
+   event.id,event.date,
+   event.assetName+" · "+event.assetId,
+   event.plant,event.type
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const severityCell=el("td");
+  const severityClass={
+   Low:"green",Medium:"blue",High:"orange",Critical:"red"
+  }[event.severity];
+
+  severityCell.append(el(
+   "span","badge "+severityClass,event.severity
+  ));
+  row.append(severityCell);
+
+  [
+   event.description,
+   event.downtime+" h",
+   money(event.cost),
+   event.status
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+  button.onclick=()=>{
+   selectedEventId=event.id;
+   renderInspector();
+  };
+  action.append(button);
+  row.append(action);
+
+  body.append(row);
+ });
+
+ if(!filtered().length){
+  const row=el("tr");
+  const cell=el("td","","No matching history records.");
+  cell.colSpan=11;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const event=selectedEvent();
+ const box=$("eventDetails");
+ box.replaceChildren();
+
+ if(!event){
+  box.append(el("p","muted","No event selected."));
+  ["eventCost","eventDowntime","eventSeverity","eventStatus"]
+   .forEach(id=>$(id).textContent="--");
+  $("assetDetailsLink").href="asset-details.html";
+  return;
+ }
+
+ [
+  ["Event ID",event.id],
+  ["Event Date",event.date],
+  ["Equipment",event.assetName],
+  ["Equipment ID",event.assetId],
+  ["Plant",event.plant],
+  ["Event Type",event.type],
+  ["Severity",event.severity],
+  ["Description",event.description],
+  ["Recorded Downtime",event.downtime+" hours"],
+  ["Direct Event Cost",money(event.cost)],
+  ["Event Status",event.status]
+ ].forEach(([label,value])=>box.append(detail(label,value)));
+
+ $("eventCost").textContent=compact(event.cost);
+ $("eventDowntime").textContent=event.downtime+" h";
+ $("eventSeverity").textContent=event.severity;
+ $("eventStatus").textContent=event.status;
+
+ $("assetDetailsLink").href=
+  "asset-details.html?id="+encodeURIComponent(event.assetId);
+}
+
+function renderTimeline(){
+ const box=$("eventTimeline");
+ box.replaceChildren();
+
+ const list=[...filtered()]
+ .sort((a,b)=>b.date.localeCompare(a.date))
+ .slice(0,8);
+
+ list.forEach(event=>{
+  const item=el("div","timeline-item");
+  item.append(
+   el("h4","",event.type+" — "+event.assetName),
+   el("small","",event.date+" · "+event.severity),
+   el("p","",event.description),
+   el("small","",
+    "Downtime: "+event.downtime+" h · Cost: "+money(event.cost))
+  );
+  box.append(item);
+ });
+
+ if(!list.length){
+  box.append(el("p","muted","No timeline events."));
+ }
+}
+
+function renderChart(){
+ const svg=$("categoryChart");
+ svg.replaceChildren();
+
+ const list=filtered();
+ const counts=EVENT_TYPES.map(type=>({
+  type,count:list.filter(x=>x.type===type).length
+ }));
+
+ const max=Math.max(...counts.map(x=>x.count),1);
+ const left=135,right=610,top=15;
+ const rowHeight=36;
+
+ counts.forEach((item,i)=>{
+  const y=top+i*rowHeight;
+  const width=(right-left-50)*item.count/max;
+
+  svg.append(svgEl("text",{
+   x:10,y:y+18,fill:"#69738e","font-size":"11"
+  },item.type));
+
+  svg.append(svgEl("rect",{
+   x:left,y:y+4,width:Math.max(0,width),
+   height:20,rx:5,fill:"#6855eb"
+  }));
+
+  svg.append(svgEl("text",{
+   x:left+width+8,y:y+18,
+   fill:"#202640","font-size":"11"
+  },item.count));
+ });
+}
+
+function renderFinancialSummary(){
+ const box=$("financialSummary");
+ box.replaceChildren();
+
+ const list=filtered();
+ const failures=list.filter(x=>x.type==="Failure");
+ const repairs=list.filter(x=>x.type==="Repair");
+ const maintenance=list.filter(x=>x.type==="Maintenance");
+
+ [
+  ["Total Historical Events",list.length],
+  ["Failure Incidents",failures.length],
+  ["Repair Events",repairs.length],
+  ["Maintenance Events",maintenance.length],
+  ["Total Direct Event Cost",money(sum(list,"cost"))],
+  ["Failure Event Direct Cost",money(sum(failures,"cost"))],
+  ["Repair Event Direct Cost",money(sum(repairs,"cost"))],
+  ["Maintenance Direct Cost",money(sum(maintenance,"cost"))],
+  ["Recorded Downtime",sum(list,"downtime")+" h"]
+ ].forEach(([label,value])=>box.append(detail(label,value)));
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const list=filtered();
+ const byAsset=ASSETS.map(a=>({
+  ...a,
+  events:list.filter(x=>x.assetId===a.id),
+  failures:list.filter(
+   x=>x.assetId===a.id&&x.type==="Failure"
+  )
+ })).filter(x=>x.events.length);
+
+ const highest=[...byAsset].sort(
+  (a,b)=>b.events.length-a.events.length
+ )[0];
+
+ const failureAsset=[...byAsset].sort(
+  (a,b)=>b.failures.length-a.failures.length
+ )[0];
+
+ const costly=[...list].sort((a,b)=>b.cost-a.cost)[0];
+
+ const insights=[
+  [
+   "Most Frequently Recorded Asset",
+   highest?
+    highest.name+" has "+highest.events.length+
+    " events in the filtered history.":"No matching assets."
+  ],
+  [
+   "Failure Event Concentration",
+   failureAsset?
+    failureAsset.name+" has "+failureAsset.failures.length+
+    " recorded failure events.":"No matching failure records."
+  ],
+  [
+   "Highest Direct Cost Event",
+   costly?
+    costly.id+" incurred "+money(costly.cost)+
+    " in recorded direct expenditure.":"No matching events."
+  ],
+  [
+   "Reliability Improvement",
+   "Investigate repeated failures, compare repair effectiveness and validate root causes using maintenance records."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+  card.append(el("h4","",title),el("p","",description));
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ renderTimeline();
+ renderChart();
+ renderFinancialSummary();
+ renderInsights();
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "event_id","date","equipment_id","equipment_name",
+  "plant","event_type","severity","description",
+  "downtime_hours","direct_cost_inr","status"
+ ]];
+
+ filtered().forEach(x=>{
+  rows.push([
+   x.id,x.date,x.assetId,x.assetName,
+   x.plant,x.type,x.severity,x.description,
+   x.downtime,x.cost,x.status
+  ]);
+ });
+
+ const csv=rows.map(row=>row.map(value=>
+  '"'+String(value).replaceAll('"','""')+'"'
+ ).join(",")).join("\r\n");
+
+ download(
+  "industra-asset-history.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+ notify("Asset history CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-asset-history.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   filters:{
+    plant:$("plantFilter").value,
+    asset:$("assetFilter").value,
+    eventType:$("typeFilter").value,
+    severity:$("severityFilter").value
+   },
+   events:filtered()
+  },null,2),
+  "application/json"
+ );
+ notify("Asset history JSON exported.");
+}
+
+$("refreshBtn").onclick=()=>{
+ render();
+ notify("Historical demonstration records refreshed.");
+};
+
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ $("plantFilter").value="all";
+ $("assetFilter").value="all";
+ $("typeFilter").value="all";
+ $("severityFilter").value="all";
+ $("sortFilter").value="newest";
+ selectedEventId="EVT-001";
+
+ populateAssetFilter();
+ render();
+ notify("Asset history filters reset.");
+};
+
+$("plantFilter").addEventListener("change",()=>{
+ populateAssetFilter();
+ render();
+});
+
+[
+ "assetFilter","typeFilter","severityFilter","sortFilter"
+].forEach(id=>{
+ $(id).addEventListener("change",render);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+const requestedId=new URLSearchParams(
+ window.location.search
+).get("id");
+
+if(requestedId&&ASSETS.some(a=>a.id===requestedId)){
+ $("plantFilter").value="all";
+ populateAssetFilter();
+ $("assetFilter").value=requestedId;
+}else{
+ populateAssetFilter();
+}
+
+render();
+</script>
+</body>
+</html>

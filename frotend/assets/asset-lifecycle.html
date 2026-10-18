@@ -1,0 +1,1261 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Asset Lifecycle | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / assets</p><h1 id="page-title">Asset Lifecycle</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Asset Lifecycle workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asset Lifecycle | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px Arial,Helvetica,sans-serif;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;
+ inset:0 auto 0 0;
+ width:258px;
+ background:var(--navy);
+ overflow:auto;
+ z-index:100;
+}
+.brand{
+ padding:25px 20px;
+ color:white;
+ font-size:19px;
+ font-weight:800;
+}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;
+ color:#687399;
+ font-size:10px;
+ font-weight:800;
+ letter-spacing:1px;
+}
+.nav-link{
+ display:block;
+ padding:12px;
+ margin:3px;
+ border-radius:10px;
+ color:#a4aecf;
+ font-size:12px;
+}
+.nav-link:hover,.nav-link.active{
+ background:var(--purple);
+ color:white;
+}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;
+ background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+}
+.content{
+ padding:26px;
+ max-width:1750px;
+ margin:auto;
+}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;
+ color:white;
+ border-radius:17px;
+ margin-bottom:23px;
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{
+ font-size:12px;
+ color:#eeeaff;
+ line-height:1.8;
+}
+.panel,.stat{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:15px;
+ padding:20px;
+ box-shadow:0 5px 20px #10152d05;
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:16px;
+}
+.grid-2{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:16px;
+}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.4fr) minmax(300px,.8fr);
+ gap:17px;
+}
+.flex{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ flex-wrap:wrap;
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{
+ color:var(--muted);
+ font-size:11px;
+ line-height:1.8;
+}
+.stat-label{
+ color:var(--muted);
+ font-size:11px;
+ font-weight:700;
+}
+.stat-value{
+ font-size:25px;
+ font-weight:800;
+ margin-top:12px;
+}
+.stat-note{
+ font-size:10px;
+ color:var(--muted);
+ margin-top:8px;
+}
+.btn{
+ border:1px solid var(--border);
+ background:white;
+ color:#69738e;
+ border-radius:9px;
+ padding:10px 13px;
+ font-size:11px;
+ font-weight:700;
+}
+.btn.primary{
+ background:var(--purple);
+ border-color:var(--purple);
+ color:white;
+}
+.btn.danger{
+ background:#ffedf0;
+ border-color:#ffedf0;
+ color:#d84b63;
+}
+.input{
+ width:100%;
+ padding:11px;
+ border:1px solid var(--border);
+ border-radius:9px;
+ background:white;
+ color:var(--text);
+}
+label{
+ display:block;
+ color:#69738e;
+ font-size:11px;
+ font-weight:700;
+ margin-bottom:7px;
+}
+.badge{
+ display:inline-block;
+ padding:7px 10px;
+ border-radius:8px;
+ font-size:10px;
+ font-weight:800;
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:12px;
+}
+.table-wrap{overflow:auto}
+table{
+ width:100%;
+ border-collapse:collapse;
+ font-size:11px;
+}
+th{
+ background:#f8f9fd;
+ color:var(--muted);
+ text-align:left;
+ padding:13px;
+ white-space:nowrap;
+}
+td{
+ padding:13px;
+ border-bottom:1px solid #eef0f6;
+ white-space:nowrap;
+}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;
+ justify-content:space-between;
+ gap:12px;
+ padding:12px 0;
+ border-bottom:1px solid var(--border);
+ font-size:11px;
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);
+ border-radius:11px;
+ padding:14px;
+ margin-bottom:12px;
+}
+.record p{
+ font-size:11px;
+ color:#69738e;
+ line-height:1.8;
+}
+.chart{
+ width:100%;
+ height:300px;
+ display:block;
+}
+.metric-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+}
+.metric{
+ padding:14px;
+ background:#f8f9fd;
+ border:1px solid var(--border);
+ border-radius:11px;
+}
+.metric strong{
+ display:block;
+ font-size:20px;
+ margin-top:9px;
+}
+.progress{
+ height:9px;
+ border-radius:10px;
+ background:#edf0f7;
+ overflow:hidden;
+ margin-top:9px;
+}
+.progress span{
+ display:block;
+ height:100%;
+ background:var(--purple);
+ border-radius:10px;
+}
+.timeline{
+ border-left:2px solid #e2defe;
+ margin-left:10px;
+ padding-left:22px;
+}
+.timeline-item{
+ position:relative;
+ padding:0 0 22px;
+}
+.timeline-item:before{
+ content:"";
+ position:absolute;
+ width:12px;
+ height:12px;
+ border-radius:50%;
+ background:var(--purple);
+ left:-29px;
+ top:2px;
+ border:3px solid white;
+ box-shadow:0 0 0 2px #ddd6ff;
+}
+.timeline-item h4{margin-bottom:5px}
+.timeline-item p{
+ margin:0;
+ font-size:11px;
+ color:#69738e;
+ line-height:1.8;
+}
+.notice{
+ background:#fff8eb;
+ border:1px solid #ffe8c3;
+ color:#986b2d;
+ border-radius:11px;
+ padding:15px;
+ font-size:11px;
+ line-height:1.8;
+}
+#toast{
+ position:fixed;
+ bottom:20px;
+ right:20px;
+ background:var(--navy);
+ color:white;
+ padding:13px 17px;
+ border-radius:10px;
+ display:none;
+ z-index:300;
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}
+ .topbar{padding:14px}
+ .grid,.grid-2,.filters,.metric-grid{
+  grid-template-columns:1fr;
+ }
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ #toast,.notice{display:none!important}
+ .main{margin:0}
+ .content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">ASSET MANAGEMENT</div>
+ <a class="nav-link" href="asset-management.html">◆ Asset Management</a>
+ <a class="nav-link" href="asset-details.html">▦ Asset Details</a>
+ <a class="nav-link" href="asset-health.html">◇ Asset Health</a>
+ <a class="nav-link" href="asset-history.html">◉ Asset History</a>
+ <a class="nav-link" href="asset-inspection.html">◆ Asset Inspection</a>
+ <a class="nav-link active" href="asset-lifecycle.html">▦ Asset Lifecycle</a>
+ <a class="nav-link" href="asset-comparison.html">◇ Asset Comparison</a>
+
+ <div class="nav-title">PREDICTIVE MAINTENANCE</div>
+ <a class="nav-link" href="predictive-maintenance.html">◉ Predictive Maintenance</a>
+ <a class="nav-link" href="r-u-l-prediction.html">◆ RUL Prediction</a>
+ <a class="nav-link" href="maintenance-schedule.html">▦ Maintenance Schedule</a>
+ <a class="nav-link" href="work-orders.html">◇ Work Orders</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◉ Cost Intelligence</a>
+ <a class="nav-link" href="repair-replacement.html">◆ Repair vs Replacement</a>
+ <a class="nav-link" href="replacement-cost.html">▦ Replacement Cost</a>
+ <a class="nav-link" href="total-cost-ownership.html">◇ Total Cost of Ownership</a>
+ <a class="nav-link" href="r-o-i-analysis.html">◉ ROI Analysis</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Asset Management / Lifecycle Intelligence</div>
+   <strong>Industrial Asset Lifecycle Management</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC LIFECYCLE DATA</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / EQUIPMENT LIFECYCLE INTELLIGENCE
+ </div>
+ <h1>Asset Lifecycle Management & Intelligence</h1>
+ <p>
+  Track industrial equipment from acquisition and installation
+  through commissioning, operation, maintenance, life extension,
+  replacement planning and retirement. Analyze asset age,
+  reliability, remaining useful life and lifecycle ownership cost.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Industrial Asset Lifecycle Overview</h3>
+  <div class="muted" id="summaryText">Loading asset lifecycle data...</div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="refreshBtn">Refresh Lifecycle</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Tracked Industrial Assets</div>
+  <div class="stat-value" id="assetsKpi">0</div>
+  <div class="stat-note">Equipment in the selected portfolio</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Average Asset Age</div>
+  <div class="stat-value" id="ageKpi">0 yr</div>
+  <div class="stat-note">Years since installation</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Replacement Review Required</div>
+  <div class="stat-value" id="replacementKpi">0</div>
+  <div class="stat-note">Assets meeting demo planning criteria</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Portfolio Lifecycle TCO</div>
+  <div class="stat-value" id="tcoKpi">₹0</div>
+  <div class="stat-note">Modeled cost over selected horizon</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Lifecycle Portfolio Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="stageFilter">Lifecycle Stage</label>
+   <select class="input" id="stageFilter">
+    <option value="all">All Stages</option>
+    <option value="Operation">Operation</option>
+    <option value="Maintenance">Maintenance</option>
+    <option value="Life Extension">Life Extension</option>
+    <option value="Replacement Planning">Replacement Planning</option>
+   </select>
+  </div>
+  <div>
+   <label for="horizonFilter">Ownership Cost Horizon</label>
+   <select class="input" id="horizonFilter">
+    <option value="12">12 Months</option>
+    <option value="36">36 Months</option>
+    <option value="60" selected>60 Months</option>
+    <option value="84">84 Months</option>
+    <option value="120">120 Months</option>
+   </select>
+  </div>
+  <div>
+   <label for="sortFilter">Sort Equipment</label>
+   <select class="input" id="sortFilter">
+    <option value="age">Oldest First</option>
+    <option value="rul">Shortest RUL</option>
+    <option value="health">Lowest Health</option>
+    <option value="tco">Highest TCO</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Equipment Lifecycle Register</h3>
+    <p class="muted">
+     Installation age, lifecycle stage, health, RUL and cost
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 assets</span>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Equipment</th>
+      <th>Plant</th>
+      <th>Installed</th>
+      <th>Age</th>
+      <th>Lifecycle Stage</th>
+      <th>Health</th>
+      <th>RUL</th>
+      <th>Design Life</th>
+      <th>TCO</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="lifecycleTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Equipment Lifecycle Inspector</h3>
+   <span class="badge purple">ASSET PROFILE</span>
+  </div>
+
+  <div id="assetDetails"></div>
+
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Asset Age</span>
+    <strong id="assetAge">0 yr</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Remaining Useful Life</span>
+    <strong id="assetRul">0 mo</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Lifecycle Cost</span>
+    <strong id="assetTco">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Maintenance Priority</span>
+    <strong id="assetPriority">--</strong>
+   </div>
+  </div>
+
+  <div class="actions" style="margin-top:18px">
+   <a class="btn primary" id="detailsLink" href="asset-details.html">
+    Open Asset Details
+   </a>
+   <a class="btn" href="repair-replacement.html">
+    Repair vs Replacement
+   </a>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Equipment Age Comparison</h3>
+   <span class="badge purple">ASSET AGE</span>
+  </div>
+  <p class="muted">Elapsed years since equipment installation</p>
+  <svg class="chart" id="ageChart" viewBox="0 0 640 300"
+   role="img" aria-label="Equipment age comparison"></svg>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Lifecycle Ownership Cost Comparison</h3>
+   <span class="badge blue">COST INTELLIGENCE</span>
+  </div>
+  <p class="muted">Illustrative nominal TCO over the selected horizon</p>
+  <svg class="chart" id="costChart" viewBox="0 0 640 300"
+   role="img" aria-label="Equipment lifecycle cost comparison"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Selected Asset Lifecycle Timeline</h3>
+  <p class="muted">Historical and illustrative future lifecycle milestones</p>
+  <div class="timeline" id="lifecycleTimeline"></div>
+ </div>
+
+ <div class="panel">
+  <h3>Lifecycle Stage Distribution</h3>
+  <p class="muted">Current modeled lifecycle stage across equipment</p>
+  <div id="stageSummary"></div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Asset Lifecycle Financial Breakdown</h3>
+  <div id="financialSummary"></div>
+ </div>
+ <div class="panel">
+  <h3>Replacement Planning & Lifecycle Insights</h3>
+  <div id="insightList"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Lifecycle methodology:</strong>
+ All equipment records and costs are synthetic. Age is
+ calculated from installation dates using the current browser
+ date. Lifecycle stages are rule-based planning labels, not
+ actual work-order states. Remaining useful life, health and
+ failure probabilities are illustrative estimates. TCO includes
+ acquisition reference cost, maintenance, energy, routine
+ downtime and expected failure consequences, without discounting.
+ For existing assets, historical acquisition cost is not a
+ future cash outflow and should not be included in incremental
+ repair-versus-replacement decisions. Future milestones are
+ planning estimates, not approved maintenance schedules.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+
+const ASSETS=[
+ {
+  id:"MTR-001",name:"Main Drive Motor",plant:"Plant A",
+  installed:"2021-03-15",designLife:12,
+  health:74,rul:48,risk:.32,
+  acquisition:520000,maintenance:18500,
+  energy:78000,downtime:22000,failureCost:175000
+ },
+ {
+  id:"CMP-001",name:"Air Compressor",plant:"Plant A",
+  installed:"2020-08-10",designLife:12,
+  health:81,rul:58,risk:.25,
+  acquisition:440000,maintenance:15500,
+  energy:93000,downtime:18000,failureCost:145000
+ },
+ {
+  id:"FAN-001",name:"Cooling Fan",plant:"Plant A",
+  installed:"2023-02-18",designLife:15,
+  health:91,rul:86,risk:.12,
+  acquisition:160000,maintenance:6500,
+  energy:28000,downtime:7000,failureCost:55000
+ },
+ {
+  id:"GEN-001",name:"Power Generator",plant:"Plant B",
+  installed:"2018-05-20",designLife:15,
+  health:52,rul:24,risk:.43,
+  acquisition:1100000,maintenance:28500,
+  energy:115000,downtime:47000,failureCost:350000
+ },
+ {
+  id:"PMP-001",name:"Cooling Pump",plant:"Plant B",
+  installed:"2022-07-12",designLife:12,
+  health:84,rul:69,risk:.20,
+  acquisition:280000,maintenance:10500,
+  energy:54000,downtime:11500,failureCost:95000
+ },
+ {
+  id:"GBX-001",name:"Industrial Gearbox",plant:"Plant B",
+  installed:"2019-09-04",designLife:14,
+  health:59,rul:31,risk:.37,
+  acquisition:850000,maintenance:23500,
+  energy:69000,downtime:34000,failureCost:275000
+ },
+ {
+  id:"HYD-001",name:"Hydraulic Power Unit",plant:"Plant C",
+  installed:"2021-11-14",designLife:12,
+  health:76,rul:55,risk:.27,
+  acquisition:390000,maintenance:13500,
+  energy:61000,downtime:16500,failureCost:130000
+ },
+ {
+  id:"PMP-002",name:"Process Pump",plant:"Plant C",
+  installed:"2020-01-22",designLife:12,
+  health:63,rul:37,risk:.35,
+  acquisition:650000,maintenance:19500,
+  energy:89000,downtime:27500,failureCost:210000
+ },
+ {
+  id:"CNV-001",name:"Conveyor Drive",plant:"Plant C",
+  installed:"2023-06-09",designLife:15,
+  health:88,rul:78,risk:.15,
+  acquisition:210000,maintenance:8500,
+  energy:35000,downtime:9500,failureCost:75000
+ }
+];
+
+let selectedId="GEN-001";
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(n){return currency.format(n)}
+function compact(n){
+ if(n>=10000000)return "₹"+(n/10000000).toFixed(2)+"Cr";
+ if(n>=100000)return "₹"+(n/100000).toFixed(2)+"L";
+ if(n>=1000)return "₹"+(n/1000).toFixed(1)+"K";
+ return money(n);
+}
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+ Object.entries(attrs).forEach(([key,value])=>{
+  node.setAttribute(key,value);
+ });
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(el("span","",label),el("strong","",value));
+ return row;
+}
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function assetAge(a){
+ const start=new Date(a.installed+"T00:00:00");
+ const now=new Date();
+ const years=(now-start)/(365.2425*24*60*60*1000);
+ return Math.max(0,years);
+}
+
+function stage(a){
+ const age=assetAge(a);
+
+ if(a.health<60||a.rul<=24){
+  return "Replacement Planning";
+ }
+ if(a.health<70||a.rul<=36){
+  return "Life Extension";
+ }
+ if(a.health<80||age>=a.designLife*.65){
+  return "Maintenance";
+ }
+ return "Operation";
+}
+
+function priority(a){
+ if(stage(a)==="Replacement Planning")return "High";
+ if(stage(a)==="Life Extension")return "Medium";
+ return "Routine";
+}
+
+function lifecycleCost(a){
+ const months=Number($("horizonFilter").value);
+ const years=months/12;
+
+ const maintenance=a.maintenance*months;
+ const energy=a.energy*months;
+ const downtime=a.downtime*months;
+ const failure=a.risk*a.failureCost*years;
+
+ return{
+  acquisition:a.acquisition,
+  maintenance,energy,downtime,failure,
+  total:a.acquisition+maintenance+energy+downtime+failure
+ };
+}
+
+function visibleAssets(){
+ const plant=$("plantFilter").value;
+ const lifecycleStage=$("stageFilter").value;
+
+ return ASSETS.filter(a=>
+  (plant==="all"||a.plant===plant)&&
+  (lifecycleStage==="all"||stage(a)===lifecycleStage)
+ );
+}
+
+function sortedAssets(){
+ const list=[...visibleAssets()];
+ const sort=$("sortFilter").value;
+
+ if(sort==="rul")return list.sort((a,b)=>a.rul-b.rul);
+ if(sort==="health")return list.sort((a,b)=>a.health-b.health);
+ if(sort==="tco"){
+  return list.sort((a,b)=>
+   lifecycleCost(b).total-lifecycleCost(a).total
+  );
+ }
+ return list.sort((a,b)=>assetAge(b)-assetAge(a));
+}
+
+function selectedAsset(){
+ const list=visibleAssets();
+ return list.find(a=>a.id===selectedId)||list[0]||null;
+}
+
+function renderKpis(){
+ const list=visibleAssets();
+ const age=list.length?
+  list.reduce((sum,a)=>sum+assetAge(a),0)/list.length:0;
+
+ const total=list.reduce(
+  (sum,a)=>sum+lifecycleCost(a).total,0
+ );
+
+ $("assetsKpi").textContent=list.length;
+ $("ageKpi").textContent=age.toFixed(1)+" yr";
+ $("replacementKpi").textContent=list.filter(
+  a=>stage(a)==="Replacement Planning"
+ ).length;
+ $("tcoKpi").textContent=compact(total);
+
+ $("summaryText").textContent=
+  list.length+" assets · "+
+  $("plantFilter").value+" · "+
+  $("horizonFilter").value+"-month ownership horizon";
+}
+
+function renderTable(){
+ const body=$("lifecycleTable");
+ body.replaceChildren();
+
+ const list=sortedAssets();
+ $("visibleCount").textContent=list.length+" assets";
+
+ list.forEach(a=>{
+  const row=el("tr");
+  const currentStage=stage(a);
+  const cls=currentStage==="Replacement Planning"?"red":
+   currentStage==="Life Extension"?"orange":
+   currentStage==="Maintenance"?"blue":"green";
+
+  [
+   a.name+" · "+a.id,
+   a.plant,
+   a.installed,
+   assetAge(a).toFixed(1)+" yr"
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const stageCell=el("td");
+  stageCell.append(el("span","badge "+cls,currentStage));
+  row.append(stageCell);
+
+  [
+   a.health+"%",
+   a.rul+" mo",
+   a.designLife+" yr",
+   money(lifecycleCost(a).total)
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+
+  button.onclick=()=>{
+   selectedId=a.id;
+   renderInspector();
+   renderTimeline();
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","No matching equipment.");
+  cell.colSpan=10;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const a=selectedAsset();
+ const box=$("assetDetails");
+ box.replaceChildren();
+
+ if(!a){
+  box.append(el("p","muted","No asset selected."));
+  [
+   "assetAge","assetRul","assetTco","assetPriority"
+  ].forEach(id=>$(id).textContent="--");
+  $("detailsLink").href="asset-details.html";
+  return;
+ }
+
+ const cost=lifecycleCost(a);
+
+ [
+  ["Equipment",a.name],
+  ["Equipment ID",a.id],
+  ["Plant",a.plant],
+  ["Installation Date",a.installed],
+  ["Current Age",assetAge(a).toFixed(2)+" years"],
+  ["Design Life",a.designLife+" years"],
+  ["Lifecycle Stage",stage(a)],
+  ["Health Score",a.health+"%"],
+  ["Remaining Useful Life",a.rul+" months"],
+  ["Annual Failure Probability",(a.risk*100).toFixed(1)+"%"],
+  ["Maintenance Priority",priority(a)],
+  ["Modeled Lifecycle TCO",money(cost.total)]
+ ].forEach(([label,value])=>box.append(detail(label,value)));
+
+ $("assetAge").textContent=assetAge(a).toFixed(1)+" yr";
+ $("assetRul").textContent=a.rul+" mo";
+ $("assetTco").textContent=compact(cost.total);
+ $("assetPriority").textContent=priority(a);
+
+ $("detailsLink").href=
+  "asset-details.html?id="+encodeURIComponent(a.id);
+}
+
+function drawBars(id,metric){
+ const svg=$(id);
+ svg.replaceChildren();
+
+ const list=sortedAssets();
+
+ if(!list.length){
+  svg.append(svgEl("text",{
+   x:220,y:150,fill:"#8992aa","font-size":"13"
+  },"No matching equipment"));
+  return;
+ }
+
+ const values=list.map(a=>
+  metric==="age"?assetAge(a):lifecycleCost(a).total
+ );
+
+ const max=Math.max(...values,1)*1.15;
+ const left=65,right=615,top=25,bottom=245;
+ const slot=(right-left)/list.length;
+ const width=Math.min(46,slot*.65);
+
+ for(let i=0;i<=4;i++){
+  const y=bottom-(bottom-top)*i/4;
+  svg.append(svgEl("line",{
+   x1:left,y1:y,x2:right,y2:y,stroke:"#e9ebf4"
+  }));
+  svg.append(svgEl("text",{
+   x:5,y:y+4,fill:"#8992aa","font-size":"10"
+  },metric==="age"?
+   (max*i/4).toFixed(1):compact(max*i/4)));
+ }
+
+ list.forEach((a,i)=>{
+  const value=values[i];
+  const height=value/max*(bottom-top);
+  const x=left+i*slot+(slot-width)/2;
+
+  svg.append(svgEl("rect",{
+   x,y:bottom-height,width,height,rx:5,
+   fill:metric==="age"?"#438df5":"#6855eb"
+  }));
+
+  svg.append(svgEl("text",{
+   x:x+width/2,y:266,fill:"#8992aa",
+   "font-size":"9","text-anchor":"middle"
+  },a.id));
+
+  svg.append(svgEl("title",{},
+   a.name+" — "+(metric==="age"?
+    value.toFixed(1)+" years":money(value))));
+ });
+}
+
+function addMonths(dateString,months){
+ const date=new Date(dateString+"T00:00:00");
+ const day=date.getDate();
+ date.setDate(1);
+ date.setMonth(date.getMonth()+months);
+ const last=new Date(
+  date.getFullYear(),date.getMonth()+1,0
+ ).getDate();
+ date.setDate(Math.min(day,last));
+ return date.toISOString().slice(0,10);
+}
+
+function renderTimeline(){
+ const box=$("lifecycleTimeline");
+ box.replaceChildren();
+
+ const a=selectedAsset();
+ if(!a)return;
+
+ const current=new Date();
+ const currentDate=current.toISOString().slice(0,10);
+ const projectedDate=addMonths(currentDate,a.rul);
+
+ const milestones=[
+  [
+   a.installed,
+   "Equipment Installation",
+   a.name+" was installed in "+a.plant+"."
+  ],
+  [
+   addMonths(a.installed,1),
+   "Commissioning Reference",
+   "Illustrative commissioning milestone."
+  ],
+  [
+   currentDate,
+   "Current Lifecycle Assessment",
+   "Health "+a.health+"%, RUL "+a.rul+
+   " months, stage: "+stage(a)+"."
+  ],
+  [
+   addMonths(currentDate,6),
+   "Condition Review",
+   "Proposed maintenance and condition review."
+  ],
+  [
+   projectedDate,
+   "Projected RUL Horizon",
+   "Planning estimate for remaining useful life; not a guaranteed failure date."
+  ]
+ ];
+
+ milestones.sort((x,y)=>x[0].localeCompare(y[0]));
+
+ milestones.forEach(([date,title,description])=>{
+  const item=el("div","timeline-item");
+  item.append(
+   el("h4","",date+" · "+title),
+   el("p","",description)
+  );
+  box.append(item);
+ });
+}
+
+function renderStages(){
+ const box=$("stageSummary");
+ box.replaceChildren();
+
+ const list=visibleAssets();
+
+ [
+  "Operation","Maintenance",
+  "Life Extension","Replacement Planning"
+ ].forEach(name=>{
+  const count=list.filter(a=>stage(a)===name).length;
+  const card=el("div","record");
+  card.append(detail(name,String(count)));
+
+  const progress=el("div","progress");
+  const bar=el("span");
+  bar.style.width=(list.length?count/list.length*100:0)+"%";
+  progress.append(bar);
+  card.append(progress);
+  box.append(card);
+ });
+}
+
+function renderFinancials(){
+ const box=$("financialSummary");
+ box.replaceChildren();
+
+ const list=visibleAssets();
+ const keys=[
+  "acquisition","maintenance","energy","downtime","failure","total"
+ ];
+
+ const totals=Object.fromEntries(
+  keys.map(key=>[
+   key,list.reduce(
+    (sum,a)=>sum+lifecycleCost(a)[key],0
+   )
+  ])
+ );
+
+ [
+  ["Acquisition Reference Cost",totals.acquisition],
+  ["Maintenance Cost",totals.maintenance],
+  ["Energy Cost",totals.energy],
+  ["Downtime Loss",totals.downtime],
+  ["Expected Failure Cost",totals.failure],
+  ["Total Lifecycle Ownership Cost",totals.total]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,money(value)));
+ });
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const list=visibleAssets();
+ const replacement=list.filter(
+  a=>stage(a)==="Replacement Planning"
+ );
+ const oldest=[...list].sort(
+  (a,b)=>assetAge(b)-assetAge(a)
+ )[0];
+ const shortest=[...list].sort(
+  (a,b)=>a.rul-b.rul
+ )[0];
+
+ [
+  [
+   "Replacement Review",
+   replacement.length+
+   " assets meet the rule-based replacement planning criteria."
+  ],
+  [
+   "Oldest Equipment",
+   oldest?
+    oldest.name+" is "+assetAge(oldest).toFixed(1)+
+    " years old.":"No matching equipment."
+  ],
+  [
+   "Shortest Remaining Useful Life",
+   shortest?
+    shortest.name+" has an estimated RUL of "+
+    shortest.rul+" months.":"No matching equipment."
+  ],
+  [
+   "Lifecycle Cost Optimization",
+   "Compare forward-looking maintenance, repair, downtime and replacement costs before approving investments."
+  ]
+ ].forEach(([title,description])=>{
+  const card=el("div","record");
+  card.append(el("h4","",title),el("p","",description));
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawBars("ageChart","age");
+ drawBars("costChart","tco");
+ renderTimeline();
+ renderStages();
+ renderFinancials();
+ renderInsights();
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "equipment_id","equipment_name","plant","installed",
+  "asset_age_years","design_life_years","lifecycle_stage",
+  "health_score","rul_months","annual_failure_probability",
+  "acquisition_reference_inr","maintenance_cost_inr",
+  "energy_cost_inr","downtime_cost_inr",
+  "expected_failure_cost_inr","lifecycle_tco_inr"
+ ]];
+
+ visibleAssets().forEach(a=>{
+  const c=lifecycleCost(a);
+  rows.push([
+   a.id,a.name,a.plant,a.installed,
+   assetAge(a).toFixed(2),a.designLife,stage(a),
+   a.health,a.rul,a.risk,
+   c.acquisition,c.maintenance,c.energy,
+   c.downtime,c.failure,c.total
+  ]);
+ });
+
+ const csv=rows.map(row=>row.map(value=>
+  '"'+String(value).replaceAll('"','""')+'"'
+ ).join(",")).join("\r\n");
+
+ download(
+  "industra-asset-lifecycle.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+ notify("Asset lifecycle CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-asset-lifecycle.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   horizonMonths:Number($("horizonFilter").value),
+   assets:visibleAssets().map(a=>({
+    ...a,
+    ageYears:assetAge(a),
+    lifecycleStage:stage(a),
+    priority:priority(a),
+    ownershipCost:lifecycleCost(a)
+   }))
+  },null,2),
+  "application/json"
+ );
+ notify("Asset lifecycle JSON exported.");
+}
+
+$("refreshBtn").onclick=()=>{
+ render();
+ notify("Lifecycle analysis recalculated.");
+};
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ selectedId="GEN-001";
+ $("plantFilter").value="all";
+ $("stageFilter").value="all";
+ $("horizonFilter").value="60";
+ $("sortFilter").value="age";
+ render();
+ notify("Lifecycle dashboard reset.");
+};
+
+[
+ "plantFilter","stageFilter","horizonFilter","sortFilter"
+].forEach(id=>{
+ $(id).addEventListener("change",render);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+const requestedId=new URLSearchParams(
+ window.location.search
+).get("id");
+
+if(requestedId&&ASSETS.some(a=>a.id===requestedId)){
+ selectedId=requestedId;
+}
+
+render();
+</script>
+</body>
+</html>

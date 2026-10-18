@@ -1,0 +1,1248 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Equipment Condition | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / computer-vision</p><h1 id="page-title">Equipment Condition</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Equipment Condition workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Equipment Condition | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--purple2:#9483f9;
+ --bg:#f5f6fb;--text:#202640;--muted:#8992aa;
+ --border:#e8eaf3;--green:#18b58c;--orange:#f4a443;
+ --red:#ed6175;--blue:#438df5;--sidebar:258px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5{font-family:Manrope,sans-serif;letter-spacing:-.5px}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
+ outline:3px solid #b4a7ff!important;outline-offset:2px;
+}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:white;z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto;
+ scrollbar-width:thin;scrollbar-color:#42496b transparent;
+}
+.brand{
+ display:flex;align-items:center;gap:11px;
+ padding:26px 22px;border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);font-size:22px;
+}
+.brand strong{font:800 18px Manrope,sans-serif;color:white}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px;
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;letter-spacing:1.7px;
+ text-transform:uppercase;
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;margin:3px 12px;
+ padding:12px 13px;border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700;transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);color:white;
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12;
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;justify-content:space-between;
+ align-items:center;gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;display:grid;
+ place-items:center;color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{padding:28px 32px 45px;max-width:1650px;margin:auto}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;
+ padding:30px;color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:25px;
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ border-radius:50%;border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;text-transform:uppercase;
+ letter-spacing:2px;color:#ddd6ff;
+}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;line-height:1.9;
+ max-width:720px;margin:0;
+}
+.hero-tag{
+ display:inline-flex;gap:7px;align-items:center;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:20px;
+}
+.stat-card,.panel{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105;
+}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:16px;
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 26px Manrope,sans-serif;margin-top:6px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel{padding:23px;height:100%}
+.panel-heading{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-bottom:21px;
+}
+.panel-heading h3{font-size:15px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:11px;margin-top:5px}
+.section-label{font-size:10px;color:#59637f;font-weight:800;margin-bottom:9px}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:43px;font-size:12px;padding:10px 12px;color:var(--text);
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12;
+}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;padding:11px 17px;
+ font-size:11px;font-weight:800;display:inline-flex;
+ align-items:center;justify-content:center;gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 14px;background:white;color:#69738e;
+ font-size:11px;font-weight:800;display:inline-flex;
+ align-items:center;justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.btn-outline-custom:disabled{opacity:.45;cursor:not-allowed}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffecef;color:#d64b62}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.chart-container{height:255px;position:relative}
+.equipment-card{
+ border:1px solid var(--border);border-radius:13px;
+ padding:17px;background:#fbfcff;
+ display:flex;align-items:center;gap:13px;
+}
+.equipment-icon{
+ width:49px;height:49px;display:grid;place-items:center;
+ border-radius:13px;background:#eeeaff;color:#6855eb;
+ font-size:22px;flex-shrink:0;
+}
+.equipment-card h4{font-size:13px;font-weight:800;margin:0 0 5px}
+.equipment-card p{font-size:10px;color:var(--muted);margin:0}
+.metric-row{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:10px;padding:15px 0;border-bottom:1px solid #f0f1f7;
+}
+.metric-row:last-child{border-bottom:0}
+.metric-label{font-size:11px;color:#77819a;font-weight:700}
+.metric-value{font:800 15px Manrope,sans-serif}
+.metric-progress{
+ height:7px;background:#edf0f7;border-radius:20px;
+ overflow:hidden;margin-top:8px;
+}
+.metric-progress div{height:100%;border-radius:20px;transition:width .3s}
+.health-ring{
+ width:155px;height:155px;border-radius:50%;
+ display:grid;place-items:center;
+ background:conic-gradient(#18b58c 0deg,#18b58c 300deg,#edf0f7 300deg);
+ margin:5px auto 20px;
+}
+.health-ring-inner{
+ width:126px;height:126px;background:white;
+ border-radius:50%;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;
+}
+.health-ring-inner strong{font:800 33px Manrope,sans-serif}
+.health-ring-inner span{font-size:10px;color:var(--muted)}
+.recommendation{
+ display:flex;gap:10px;align-items:flex-start;
+ padding:13px;border-radius:11px;
+ background:#f8f9fd;margin-bottom:9px;
+ font-size:11px;line-height:1.7;
+}
+.recommendation i{color:var(--purple);font-size:15px}
+.table{font-size:11px;margin-bottom:0;white-space:nowrap}
+.table thead th{
+ color:#8c95ac;font-size:9px;text-transform:uppercase;
+ letter-spacing:.7px;border-bottom:1px solid var(--border);
+ padding:14px 12px;
+}
+.table tbody td{
+ padding:15px 12px;vertical-align:middle;
+ border-color:#f0f1f6;
+}
+.table tbody tr:hover{background:#fafaff}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;
+ padding:15px 17px;font-size:11px;line-height:1.8;
+ display:flex;align-items:flex-start;gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1150px){
+ :root{--sidebar:225px}
+ .content{padding:25px 22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%);transition:transform .25s;width:260px}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:18px 14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:17px}
+ .mobile-hide{display:none}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+ <a class="side-link" href="notifications.html"><i class="bi bi-bell"></i> Notifications</a>
+
+ <div class="nav-section">Asset Intelligence</div>
+ <a class="side-link active" href="equipment-condition.html"><i class="bi bi-speedometer2"></i> Equipment Condition</a>
+ <a class="side-link" href="asset-health.html"><i class="bi bi-heart-pulse"></i> Asset Health</a>
+ <a class="side-link" href="predictive-maintenance.html"><i class="bi bi-tools"></i> Predictive Maintenance</a>
+ <a class="side-link" href="anomaly-detection.html"><i class="bi bi-activity"></i> Anomaly Detection</a>
+ <a class="side-link" href="failure-prediction.html"><i class="bi bi-graph-down-arrow"></i> Failure Prediction</a>
+
+ <div class="nav-section">Vision Intelligence</div>
+ <a class="side-link" href="corrosion-detection.html"><i class="bi bi-search-heart"></i> Corrosion Detection</a>
+ <a class="side-link" href="crack-detection.html"><i class="bi bi-intersect"></i> Crack Detection</a>
+ <a class="side-link" href="defect-detection.html"><i class="bi bi-bounding-box-circles"></i> Defect Detection</a>
+ <a class="side-link" href="detection-results.html"><i class="bi bi-clipboard-data"></i> Detection Results</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/agent-dashboard.html"><i class="bi bi-robot"></i> Agent Dashboard</a>
+ <a class="side-link" href="agents/asset-health-agent.html"><i class="bi bi-heart-pulse"></i> Asset Health Agent</a>
+ <a class="side-link" href="agents/maintenance-agent.html"><i class="bi bi-tools"></i> Maintenance Agent</a>
+ <a class="side-link" href="agents/safety-agent.html"><i class="bi bi-shield-check"></i> Safety Agent</a>
+ <a class="side-link" href="agents/supervisor-agent.html"><i class="bi bi-diagram-3"></i> Supervisor Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Simulated Telemetry
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+
+ <header class="topbar">
+  <div class="d-flex align-items-center gap-3">
+   <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+    <i class="bi bi-list"></i>
+   </button>
+   <div>
+    <div class="breadcrumb-text">
+     Asset Intelligence / <strong>Equipment Condition</strong>
+    </div>
+    <div class="fw-bold mt-1" style="font-size:13px">
+     Equipment Monitoring Center
+    </div>
+   </div>
+  </div>
+  <div class="top-actions">
+   <span class="status-badge info mobile-hide">
+    <i class="bi bi-broadcast"></i> Simulated Data
+   </span>
+   <a href="notifications.html" class="top-icon" aria-label="Notifications">
+    <i class="bi bi-bell"></i>
+   </a>
+   <div class="avatar">AI</div>
+  </div>
+ </header>
+
+ <main class="content">
+
+  <section class="hero">
+   <div class="hero-label">Industrial IoT / Condition Intelligence</div>
+   <h1><i class="bi bi-speedometer2 me-2"></i>Equipment Condition Monitoring</h1>
+   <p>
+    Explore equipment condition indicators, simulated telemetry,
+    illustrative asset health scores, sensor trends and maintenance
+    review recommendations across industrial machinery.
+   </p>
+   <div class="hero-tag">
+    <i class="bi bi-info-circle"></i>
+    Browser simulation — no physical sensors connected
+   </div>
+  </section>
+
+  <!-- KPIs -->
+  <div class="row g-3 mb-4">
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+      <i class="bi bi-hdd-stack"></i>
+     </div>
+     <div class="stat-label">Demo Equipment</div>
+     <div class="stat-value" id="statEquipment">0</div>
+     <div class="stat-note">Configured sample assets</div>
+    </div>
+   </div>
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#e8f9f1;color:#18b58c">
+      <i class="bi bi-check-circle"></i>
+     </div>
+     <div class="stat-label">Normal Condition</div>
+     <div class="stat-value" id="statNormal">0</div>
+     <div class="stat-note">Illustrative classification</div>
+    </div>
+   </div>
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#fff4e6;color:#f4a443">
+      <i class="bi bi-exclamation-circle"></i>
+     </div>
+     <div class="stat-label">Warning Condition</div>
+     <div class="stat-value" id="statWarning">0</div>
+     <div class="stat-note">Illustrative classification</div>
+    </div>
+   </div>
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#ffecef;color:#ed6175">
+      <i class="bi bi-exclamation-triangle"></i>
+     </div>
+     <div class="stat-label">Critical Condition</div>
+     <div class="stat-value" id="statCritical">0</div>
+     <div class="stat-note">Illustrative classification</div>
+    </div>
+   </div>
+  </div>
+
+  <!-- EQUIPMENT SELECTION -->
+  <div class="row g-4 mb-4">
+   <div class="col-xl-8">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Equipment Overview</h3>
+       <div class="panel-subtitle">
+        Select an asset to inspect its simulated operating condition
+       </div>
+      </div>
+      <span id="equipmentStatus" class="status-badge">—</span>
+     </div>
+
+     <div class="row g-3 mb-4">
+      <div class="col-md-8">
+       <label for="equipmentSelect" class="section-label">Select Equipment</label>
+       <select id="equipmentSelect" class="form-select"></select>
+      </div>
+      <div class="col-md-4">
+       <label for="scenarioSelect" class="section-label">Simulation Scenario</label>
+       <select id="scenarioSelect" class="form-select">
+        <option value="baseline">Baseline</option>
+        <option value="warning">Elevated Load</option>
+        <option value="critical">Stress Scenario</option>
+       </select>
+      </div>
+     </div>
+
+     <div class="equipment-card mb-4">
+      <div class="equipment-icon" id="equipmentIcon">
+       <i class="bi bi-gear-wide-connected"></i>
+      </div>
+      <div class="flex-grow-1">
+       <h4 id="equipmentName">Equipment</h4>
+       <p id="equipmentMeta">Equipment details</p>
+      </div>
+      <span class="status-badge info">Demo Asset</span>
+     </div>
+
+     <div class="row g-3">
+      <div class="col-md-6">
+       <div class="detail-label section-label">Asset ID</div>
+       <div class="fw-bold" id="assetId">—</div>
+      </div>
+      <div class="col-md-6">
+       <div class="detail-label section-label">Location</div>
+       <div class="fw-bold" id="assetLocation">—</div>
+      </div>
+      <div class="col-md-6">
+       <div class="detail-label section-label">Equipment Type</div>
+       <div class="fw-bold" id="assetType">—</div>
+      </div>
+      <div class="col-md-6">
+       <div class="detail-label section-label">Operating Hours (Sample)</div>
+       <div class="fw-bold" id="operatingHours">—</div>
+      </div>
+     </div>
+
+     <div class="d-flex gap-2 flex-wrap mt-4">
+      <button id="simulateButton" class="btn-purple">
+       <i class="bi bi-arrow-repeat"></i> Generate New Sample
+      </button>
+      <button id="resetButton" class="btn-outline-custom">
+       <i class="bi bi-arrow-counterclockwise"></i> Reset Scenario
+      </button>
+      <button id="exportButton" class="btn-outline-custom">
+       <i class="bi bi-download"></i> Export JSON
+      </button>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-xl-4">
+    <section class="panel text-center">
+     <div class="panel-heading text-start">
+      <div>
+       <h3>Equipment Health Index</h3>
+       <div class="panel-subtitle">
+        Illustrative normalized score
+       </div>
+      </div>
+     </div>
+
+     <div class="health-ring" id="healthRing">
+      <div class="health-ring-inner">
+       <strong id="healthScore">—</strong>
+       <span>Demo Score / 100</span>
+      </div>
+     </div>
+
+     <span id="healthStatus" class="status-badge">—</span>
+
+     <p style="font-size:11px;color:#8992aa;line-height:1.8;margin-top:20px">
+      This heuristic health indicator is derived from synthetic
+      measurements and arbitrary demonstration thresholds.
+      It is not a validated asset health prediction.
+     </p>
+    </section>
+   </div>
+  </div>
+
+  <!-- SENSOR METRICS -->
+  <div class="row g-4 mb-4">
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Current Simulated Sensor Values</h3>
+       <div class="panel-subtitle">Illustrative readings</div>
+      </div>
+      <span class="status-badge info">Sample Telemetry</span>
+     </div>
+     <div id="sensorMetrics"></div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Condition Assessment</h3>
+       <div class="panel-subtitle">Heuristic observations</div>
+      </div>
+     </div>
+
+     <div id="conditionSummary"
+      style="font-size:12px;color:#747e98;line-height:1.9;margin-bottom:20px"></div>
+
+     <div class="section-label mb-3">Suggested Review Actions</div>
+     <div id="recommendations"></div>
+    </section>
+   </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="row g-4 mb-4">
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Temperature & Vibration Trend</h3>
+       <div class="panel-subtitle">Synthetic recent samples</div>
+      </div>
+     </div>
+     <div class="chart-container">
+      <canvas id="temperatureChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Pressure & Current Trend</h3>
+       <div class="panel-subtitle">Synthetic recent samples</div>
+      </div>
+     </div>
+     <div class="chart-container">
+      <canvas id="pressureChart"></canvas>
+     </div>
+    </section>
+   </div>
+  </div>
+
+  <!-- EQUIPMENT TABLE -->
+  <section class="panel mb-4">
+   <div class="panel-heading">
+    <div>
+     <h3>Equipment Fleet Overview</h3>
+     <div class="panel-subtitle">
+      Example assets and current simulated condition indicators
+     </div>
+    </div>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table align-middle">
+     <thead>
+      <tr>
+       <th>Asset</th>
+       <th>Equipment</th>
+       <th>Location</th>
+       <th>Temperature</th>
+       <th>Vibration</th>
+       <th>Health Index</th>
+       <th>Condition</th>
+       <th>Action</th>
+      </tr>
+     </thead>
+     <tbody id="fleetBody"></tbody>
+    </table>
+   </div>
+  </section>
+
+  <!-- NOTES -->
+  <section class="panel mb-4">
+   <div class="panel-heading">
+    <div>
+     <h3>Condition Inspection Notes</h3>
+     <div class="panel-subtitle">
+      Document observations for the selected sample asset
+     </div>
+    </div>
+   </div>
+
+   <label for="inspectionNotes" class="section-label">Engineer / Inspector Notes</label>
+   <textarea id="inspectionNotes" class="form-control" rows="4"
+    maxlength="1000"
+    placeholder="Record observed noise, vibration, leakage, overheating, operating context or inspection recommendations..."></textarea>
+
+   <div class="d-flex gap-2 flex-wrap mt-3">
+    <button id="saveNotes" class="btn-purple">
+     <i class="bi bi-check2-circle"></i> Save Session Note
+    </button>
+    <button id="clearNotes" class="btn-outline-custom">
+     <i class="bi bi-trash"></i> Clear Note
+    </button>
+   </div>
+   <p style="font-size:10px;color:#8992aa;margin-top:12px;margin-bottom:0">
+    Notes are retained only in this page's memory until it is reloaded.
+   </p>
+  </section>
+
+  <div class="notice">
+   <i class="bi bi-shield-exclamation"></i>
+   <div>
+    <strong>Industrial safety disclaimer:</strong>
+    The telemetry, thresholds, trends, health scores and alerts
+    shown here are simulated for frontend demonstration.
+    This application does not monitor real equipment,
+    determine remaining useful life or authorize operational decisions.
+    Real deployments require calibrated sensors, equipment-specific
+    limits, validation, access control and qualified engineering review.
+   </div>
+  </div>
+
+ </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button type="button" class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ EQUIPMENT CONDITION — FRONTEND SIMULATION
+
+ No real sensor integrations.
+ No predictive maintenance model.
+ No real industrial alerting.
+*/
+
+const $=id=>document.getElementById(id);
+
+const equipment=[
+ {
+  id:"AST-001",name:"Industrial Centrifugal Pump",
+  type:"Pump",location:"Plant A / Pump Station",
+  hours:12450,icon:"bi-gear-wide-connected",
+  base:{temperature:64,vibration:2.1,pressure:6.4,current:18.2}
+ },
+ {
+  id:"AST-002",name:"Rotary Air Compressor",
+  type:"Compressor",location:"Plant A / Utility Room",
+  hours:18200,icon:"bi-fan",
+  base:{temperature:78,vibration:3.8,pressure:7.6,current:24.5}
+ },
+ {
+  id:"AST-003",name:"Industrial Gearbox",
+  type:"Gearbox",location:"Plant B / Production",
+  hours:9600,icon:"bi-gear",
+  base:{temperature:69,vibration:4.2,pressure:4.5,current:15.6}
+ },
+ {
+  id:"AST-004",name:"Conveyor Drive Motor",
+  type:"Electric Motor",location:"Plant B / Conveyor Line",
+  hours:15400,icon:"bi-lightning-charge",
+  base:{temperature:58,vibration:1.9,pressure:3.1,current:13.4}
+ },
+ {
+  id:"AST-005",name:"Industrial Cooling Fan",
+  type:"Cooling Fan",location:"Plant C / Cooling Unit",
+  hours:8100,icon:"bi-fan",
+  base:{temperature:61,vibration:2.7,pressure:2.8,current:10.9}
+ },
+ {
+  id:"AST-006",name:"Hydraulic Power Unit",
+  type:"Hydraulic System",location:"Plant C / Hydraulic Bay",
+  hours:11650,icon:"bi-speedometer",
+  base:{temperature:83,vibration:4.7,pressure:8.2,current:26.1}
+ }
+];
+
+const metrics={
+ temperature:{label:"Temperature",unit:"°C",max:120,warning:80,critical:100,icon:"bi-thermometer-half"},
+ vibration:{label:"Vibration",unit:"mm/s",max:12,warning:4.5,critical:7,icon:"bi-activity"},
+ pressure:{label:"Pressure",unit:"bar",max:12,warning:8,critical:10,icon:"bi-speedometer2"},
+ current:{label:"Motor Current",unit:"A",max:40,warning:25,critical:33,icon:"bi-lightning-charge"}
+};
+
+/*
+ These limits are arbitrary demo thresholds.
+ They are NOT suitable for actual industrial equipment.
+*/
+
+let currentId=equipment[0].id;
+let scenario="baseline";
+let readings={};
+let history={};
+let notes={};
+let temperatureChart=null;
+let pressureChart=null;
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function closeSidebar(){
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+}
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",closeSidebar);
+
+function randomOffset(range){
+ return (Math.random()-.5)*range*2;
+}
+
+function generateReading(asset,mode){
+ const multiplier=mode==="critical"?1.48:
+  mode==="warning"?1.18:1;
+
+ const result={};
+
+ Object.keys(metrics).forEach(key=>{
+  const base=asset.base[key];
+  const variation=key==="temperature"?3:
+   key==="vibration"?.5:key==="pressure"?.4:1;
+
+  result[key]=Math.max(
+   0,
+   Number((base*multiplier+randomOffset(variation)).toFixed(2))
+  );
+ });
+
+ return result;
+}
+
+function getCondition(reading){
+ const keys=Object.keys(metrics);
+
+ const critical=keys.some(key=>
+  reading[key]>=metrics[key].critical
+ );
+
+ const warning=keys.some(key=>
+  reading[key]>=metrics[key].warning
+ );
+
+ return critical?"Critical":warning?"Warning":"Normal";
+}
+
+function getHealthScore(reading){
+ let penalty=0;
+
+ Object.keys(metrics).forEach(key=>{
+  const value=reading[key];
+  const limit=metrics[key];
+
+  const ratio=value/limit.warning;
+
+  if(ratio>1.4)penalty+=25;
+  else if(ratio>1)penalty+=14;
+  else if(ratio>.8)penalty+=5;
+ });
+
+ return Math.max(5,100-penalty);
+}
+
+function statusClass(condition){
+ return condition==="Critical"?"danger":
+  condition==="Warning"?"warning":"success";
+}
+
+function getColor(condition){
+ return condition==="Critical"?"#ed6175":
+  condition==="Warning"?"#f4a443":"#18b58c";
+}
+
+function initialize(){
+ equipment.forEach(asset=>{
+  readings[asset.id]=generateReading(asset,"baseline");
+  history[asset.id]=[];
+
+  for(let i=0;i<12;i++){
+   history[asset.id].push({
+    label:String(i+1),
+    ...generateReading(asset,"baseline")
+   });
+  }
+
+  const option=document.createElement("option");
+  option.value=asset.id;
+  option.textContent=asset.id+" — "+asset.name;
+  $("equipmentSelect").append(option);
+ });
+
+ renderAll();
+}
+
+function selectedAsset(){
+ return equipment.find(x=>x.id===currentId);
+}
+
+function renderOverview(){
+ const asset=selectedAsset();
+ const reading=readings[currentId];
+ const condition=getCondition(reading);
+ const score=getHealthScore(reading);
+
+ $("equipmentName").textContent=asset.name;
+ $("equipmentMeta").textContent=asset.type+" · "+asset.location;
+ $("equipmentIcon").innerHTML='<i class="bi '+asset.icon+'"></i>';
+
+ $("assetId").textContent=asset.id;
+ $("assetLocation").textContent=asset.location;
+ $("assetType").textContent=asset.type;
+ $("operatingHours").textContent=asset.hours.toLocaleString()+" h";
+
+ $("equipmentStatus").textContent=condition;
+ $("equipmentStatus").className="status-badge "+statusClass(condition);
+
+ $("healthScore").textContent=score;
+ $("healthStatus").textContent=condition+" — Illustrative";
+ $("healthStatus").className="status-badge "+statusClass(condition);
+
+ const color=getColor(condition);
+ const degrees=score/100*360;
+
+ $("healthRing").style.background=
+  "conic-gradient("+color+" 0deg,"+
+  color+" "+degrees+"deg,#edf0f7 "+degrees+"deg)";
+}
+
+function renderMetrics(){
+ const reading=readings[currentId];
+ const container=$("sensorMetrics");
+ container.replaceChildren();
+
+ Object.entries(metrics).forEach(([key,config])=>{
+  const value=reading[key];
+
+  const status=value>=config.critical?"Critical":
+   value>=config.warning?"Warning":"Normal";
+
+  const color=getColor(status);
+  const percent=Math.min(100,value/config.max*100);
+
+  const row=document.createElement("div");
+  row.className="metric-row";
+
+  const left=document.createElement("div");
+  left.className="flex-grow-1";
+
+  const header=document.createElement("div");
+  header.className="d-flex justify-content-between gap-2";
+
+  const label=document.createElement("span");
+  label.className="metric-label";
+  label.textContent=config.label;
+
+  const number=document.createElement("span");
+  number.className="metric-value";
+  number.textContent=value.toFixed(2)+" "+config.unit;
+
+  header.append(label,number);
+
+  const progress=document.createElement("div");
+  progress.className="metric-progress";
+
+  const fill=document.createElement("div");
+  fill.style.width=percent+"%";
+  fill.style.background=color;
+  progress.append(fill);
+
+  left.append(header,progress);
+  row.append(left);
+  container.append(row);
+ });
+}
+
+function renderAssessment(){
+ const reading=readings[currentId];
+ const condition=getCondition(reading);
+
+ const elevated=Object.entries(metrics)
+  .filter(([key,config])=>reading[key]>=config.warning)
+  .map(([key])=>metrics[key].label);
+
+ const summary=condition==="Normal"?
+  "The simulated sensor values are below the demonstration warning thresholds. This does not establish that the real asset is healthy.":
+  "The simulated "+elevated.join(", ")+" reading(s) exceed one or more illustrative thresholds. The classification is intended only to demonstrate monitoring workflows.";
+
+ $("conditionSummary").textContent=summary;
+
+ const actions=[
+  "Review the latest equipment operating conditions and inspection notes.",
+  "Compare measurements with manufacturer-approved operating limits.",
+  "Verify sensor calibration and measurement quality."
+ ];
+
+ if(condition==="Critical"){
+  actions.push(
+   "For a real critical condition, follow the site's established escalation and safety procedures."
+  );
+  actions.push(
+   "Request prompt assessment by authorized maintenance or reliability personnel."
+  );
+ }else if(condition==="Warning"){
+  actions.push(
+   "Plan a follow-up inspection and review the trend for persistent changes."
+  );
+ }else{
+  actions.push(
+   "Continue scheduled inspections and approved condition monitoring."
+  );
+ }
+
+ const container=$("recommendations");
+ container.replaceChildren();
+
+ actions.forEach(message=>{
+  const row=document.createElement("div");
+  row.className="recommendation";
+
+  const icon=document.createElement("i");
+  icon.className="bi bi-check2-circle";
+
+  const text=document.createElement("span");
+  text.textContent=message;
+
+  row.append(icon,text);
+  container.append(row);
+ });
+}
+
+function updateStats(){
+ const conditions=equipment.map(asset=>
+  getCondition(readings[asset.id])
+ );
+
+ $("statEquipment").textContent=equipment.length;
+ $("statNormal").textContent=
+  conditions.filter(x=>x==="Normal").length;
+ $("statWarning").textContent=
+  conditions.filter(x=>x==="Warning").length;
+ $("statCritical").textContent=
+  conditions.filter(x=>x==="Critical").length;
+}
+
+function renderFleet(){
+ const tbody=$("fleetBody");
+ tbody.replaceChildren();
+
+ equipment.forEach(asset=>{
+  const reading=readings[asset.id];
+  const condition=getCondition(reading);
+  const score=getHealthScore(reading);
+
+  const row=document.createElement("tr");
+
+  const values=[
+   asset.id,asset.name,asset.location,
+   reading.temperature.toFixed(1)+" °C",
+   reading.vibration.toFixed(2)+" mm/s",
+   score+"/100"
+  ];
+
+  values.forEach(value=>{
+   const cell=document.createElement("td");
+   cell.textContent=value;
+   row.append(cell);
+  });
+
+  const statusCell=document.createElement("td");
+  const badge=document.createElement("span");
+  badge.className="status-badge "+statusClass(condition);
+  badge.textContent=condition;
+  statusCell.append(badge);
+  row.append(statusCell);
+
+  const actionCell=document.createElement("td");
+  const button=document.createElement("button");
+  button.className="btn-outline-custom";
+  button.textContent="Inspect";
+
+  button.addEventListener("click",()=>{
+   currentId=asset.id;
+   $("equipmentSelect").value=currentId;
+   $("scenarioSelect").value="baseline";
+   scenario="baseline";
+   renderAll();
+   window.scrollTo({top:350,behavior:"smooth"});
+  });
+
+  actionCell.append(button);
+  row.append(actionCell);
+  tbody.append(row);
+ });
+}
+
+function renderCharts(){
+ if(typeof Chart==="undefined")return;
+
+ const data=history[currentId];
+ const labels=data.map((_,index)=>"T"+(index+1));
+
+ if(temperatureChart)temperatureChart.destroy();
+
+ temperatureChart=new Chart($("temperatureChart"),{
+  type:"line",
+  data:{
+   labels,
+   datasets:[
+    {
+     label:"Temperature (°C)",
+     data:data.map(x=>x.temperature),
+     borderColor:"#6855eb",
+     backgroundColor:"#6855eb20",
+     tension:.35,
+     fill:true,
+     pointRadius:2,
+     yAxisID:"y"
+    },
+    {
+     label:"Vibration (mm/s)",
+     data:data.map(x=>x.vibration),
+     borderColor:"#18b58c",
+     tension:.35,
+     pointRadius:2,
+     yAxisID:"y1"
+    }
+   ]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   interaction:{mode:"index",intersect:false},
+   scales:{
+    y:{
+     position:"left",
+     grid:{color:"#f0f1f7"}
+    },
+    y1:{
+     position:"right",
+     grid:{drawOnChartArea:false}
+    },
+    x:{grid:{display:false}}
+   },
+   plugins:{
+    legend:{position:"bottom",labels:{usePointStyle:true}}
+   }
+  }
+ });
+
+ if(pressureChart)pressureChart.destroy();
+
+ pressureChart=new Chart($("pressureChart"),{
+  type:"line",
+  data:{
+   labels,
+   datasets:[
+    {
+     label:"Pressure (bar)",
+     data:data.map(x=>x.pressure),
+     borderColor:"#438df5",
+     tension:.35,
+     pointRadius:2,
+     yAxisID:"y"
+    },
+    {
+     label:"Current (A)",
+     data:data.map(x=>x.current),
+     borderColor:"#f4a443",
+     tension:.35,
+     pointRadius:2,
+     yAxisID:"y1"
+    }
+   ]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   interaction:{mode:"index",intersect:false},
+   scales:{
+    y:{position:"left",grid:{color:"#f0f1f7"}},
+    y1:{position:"right",grid:{drawOnChartArea:false}},
+    x:{grid:{display:false}}
+   },
+   plugins:{
+    legend:{position:"bottom",labels:{usePointStyle:true}}
+   }
+  }
+ });
+}
+
+function renderAll(){
+ renderOverview();
+ renderMetrics();
+ renderAssessment();
+ updateStats();
+ renderFleet();
+ renderCharts();
+ $("inspectionNotes").value=notes[currentId]||"";
+}
+
+function generateSample(){
+ const asset=selectedAsset();
+ const reading=generateReading(asset,scenario);
+
+ readings[currentId]=reading;
+ history[currentId].push({
+  label:String(history[currentId].length+1),
+  ...reading
+ });
+
+ if(history[currentId].length>20){
+  history[currentId].shift();
+ }
+
+ renderAll();
+ notify("New simulated equipment reading generated.");
+}
+
+$("equipmentSelect").addEventListener("change",event=>{
+ currentId=event.target.value;
+ scenario="baseline";
+ $("scenarioSelect").value="baseline";
+ renderAll();
+});
+
+$("scenarioSelect").addEventListener("change",event=>{
+ scenario=event.target.value;
+ generateSample();
+});
+
+$("simulateButton").addEventListener("click",generateSample);
+
+$("resetButton").addEventListener("click",()=>{
+ scenario="baseline";
+ $("scenarioSelect").value="baseline";
+
+ readings[currentId]={
+  ...selectedAsset().base
+ };
+
+ history[currentId].push({
+  label:String(history[currentId].length+1),
+  ...readings[currentId]
+ });
+
+ if(history[currentId].length>20)history[currentId].shift();
+
+ renderAll();
+ notify("Selected asset restored to baseline sample values.");
+});
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportButton").addEventListener("click",()=>{
+ const asset=selectedAsset();
+ const reading=readings[currentId];
+
+ const report={
+  mode:"simulated-equipment-condition",
+  generatedAt:new Date().toISOString(),
+  asset:{
+   id:asset.id,
+   name:asset.name,
+   type:asset.type,
+   location:asset.location,
+   operatingHours:asset.hours
+  },
+  scenario,
+  measurements:reading,
+  illustrativeCondition:getCondition(reading),
+  illustrativeHealthScore:getHealthScore(reading),
+  recentSamples:history[currentId],
+  inspectionNotes:notes[currentId]||"",
+  realSensorData:false,
+  validatedModel:false
+ };
+
+ downloadFile(
+  "equipment-condition-"+asset.id+".json",
+  JSON.stringify(report,null,2),
+  "application/json"
+ );
+
+ notify("Simulated equipment report exported.");
+});
+
+$("saveNotes").addEventListener("click",()=>{
+ notes[currentId]=$("inspectionNotes").value.trim();
+ notify("Inspection note saved for this browser session.");
+});
+
+$("clearNotes").addEventListener("click",()=>{
+ notes[currentId]="";
+ $("inspectionNotes").value="";
+ notify("Inspection note cleared.");
+});
+
+initialize();
+</script>
+
+</body>
+</html>

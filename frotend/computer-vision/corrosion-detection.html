@@ -1,0 +1,1585 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Corrosion Detection | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / computer-vision</p><h1 id="page-title">Corrosion Detection</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Corrosion Detection workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Corrosion Detection | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --navy2:#1c2344;
+ --purple:#6855eb;
+ --purple2:#9181fa;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e9ebf4;
+ --green:#18b58c;
+ --red:#ed6175;
+ --orange:#f5a443;
+ --blue:#438df5;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5,h6{
+ font-family:Manrope,sans-serif;
+ letter-spacing:-.5px;
+}
+a{text-decoration:none}
+button,input,select{font:inherit}
+button:focus-visible,a:focus-visible,
+input:focus-visible,select:focus-visible{
+ outline:3px solid #b3a8ff!important;
+ outline-offset:2px;
+}
+.sidebar{
+ width:var(--sidebar);
+ position:fixed;
+ inset:0 auto 0 0;
+ z-index:1000;
+ background:var(--navy);
+ color:#fff;
+ display:flex;
+ flex-direction:column;
+ overflow-y:auto;
+ scrollbar-width:thin;
+ scrollbar-color:#42496b transparent;
+}
+.brand{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ padding:27px 22px 24px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;height:43px;
+ display:grid;
+ place-items:center;
+ border-radius:13px;
+ background:linear-gradient(135deg,#9b88ff,#6752e8);
+ font-size:22px;
+}
+.brand strong{
+ font:800 18px Manrope,sans-serif;
+ color:white;
+}
+.brand small{
+ display:block;
+ color:#8994bd;
+ font-size:8px;
+ letter-spacing:1.7px;
+ margin-top:4px;
+}
+.nav-section{
+ padding:24px 20px 8px;
+ color:#687399;
+ text-transform:uppercase;
+ letter-spacing:1.7px;
+ font-size:9px;
+ font-weight:800;
+}
+.side-link{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ margin:3px 12px;
+ padding:12px 13px;
+ border-radius:10px;
+ color:#a4aecf;
+ font-size:11px;
+ font-weight:700;
+ transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{
+ background:#ffffff0b;
+ color:white;
+}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+ color:white;
+ box-shadow:0 7px 17px #00000015;
+}
+.sidebar-footer{
+ margin-top:auto;
+ padding:20px;
+ color:#7884ac;
+ font-size:10px;
+ border-top:1px solid #ffffff12;
+}
+.main{
+ margin-left:var(--sidebar);
+ min-height:100vh;
+}
+.topbar{
+ height:76px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:15px;
+ padding:0 32px;
+ background:white;
+ border-bottom:1px solid var(--border);
+}
+.breadcrumb-text{
+ color:#9099ad;
+ font-size:11px;
+}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{
+ display:flex;
+ align-items:center;
+ gap:12px;
+}
+.top-icon{
+ width:37px;height:37px;
+ display:grid;
+ place-items:center;
+ border:1px solid var(--border);
+ border-radius:11px;
+ background:white;
+ color:#68718e;
+ font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;
+ display:grid;
+ place-items:center;
+ border-radius:11px;
+ color:white;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ font-weight:800;
+}
+.mobile-menu{display:none}
+.content{
+ padding:28px 32px 45px;
+ max-width:1650px;
+ margin:auto;
+}
+.hero{
+ position:relative;
+ overflow:hidden;
+ border-radius:19px;
+ padding:30px;
+ color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:25px;
+}
+.hero:after{
+ content:"";
+ position:absolute;
+ width:320px;height:320px;
+ border:1px solid #ffffff25;
+ border-radius:50%;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;
+ font-weight:800;
+ text-transform:uppercase;
+ letter-spacing:2px;
+ color:#ddd6ff;
+}
+.hero h1{
+ font-size:26px;
+ font-weight:800;
+ margin:12px 0;
+}
+.hero p{
+ color:#e6e0ff;
+ font-size:12px;
+ line-height:1.9;
+ max-width:650px;
+ margin:0;
+}
+.hero-tag{
+ display:inline-flex;
+ gap:7px;
+ align-items:center;
+ background:#ffffff20;
+ border:1px solid #ffffff25;
+ border-radius:9px;
+ padding:8px 11px;
+ font-size:10px;
+ font-weight:700;
+ margin-top:20px;
+}
+.stat-card,.panel{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:16px;
+ box-shadow:0 5px 23px #18204105;
+}
+.stat-card{
+ padding:20px;
+ height:100%;
+}
+.stat-icon{
+ width:42px;height:42px;
+ display:grid;
+ place-items:center;
+ border-radius:12px;
+ font-size:19px;
+ margin-bottom:16px;
+}
+.stat-label{
+ color:var(--muted);
+ font-size:11px;
+ font-weight:700;
+}
+.stat-value{
+ font:800 26px Manrope,sans-serif;
+ margin-top:6px;
+}
+.stat-note{
+ color:#a0a8ba;
+ font-size:10px;
+ margin-top:6px;
+}
+.panel{padding:23px;height:100%}
+.panel-heading{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:10px;
+ margin-bottom:21px;
+}
+.panel-heading h3{
+ font-size:15px;
+ font-weight:800;
+ margin:0;
+}
+.panel-subtitle{
+ color:var(--muted);
+ font-size:11px;
+ margin-top:5px;
+}
+.section-label{
+ font-size:10px;
+ color:#59637f;
+ font-weight:800;
+ margin-bottom:9px;
+}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;
+ min-height:43px;
+ font-size:12px;
+ padding:10px 12px;
+ color:var(--text);
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+.dropzone{
+ border:2px dashed #d7d2fa;
+ background:linear-gradient(145deg,#fbfaff,#f7f6ff);
+ border-radius:15px;
+ min-height:250px;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ padding:25px;
+ cursor:pointer;
+ transition:.2s;
+ position:relative;
+ overflow:hidden;
+}
+.dropzone:hover,.dropzone.dragover{
+ border-color:var(--purple);
+ background:#f0edff;
+}
+.upload-icon{
+ width:60px;height:60px;
+ display:grid;
+ place-items:center;
+ border-radius:18px;
+ background:#ebe7ff;
+ color:var(--purple);
+ font-size:27px;
+ margin-bottom:16px;
+}
+.dropzone h4{
+ font-size:14px;
+ font-weight:800;
+ margin-bottom:8px;
+}
+.dropzone p{
+ font-size:11px;
+ color:var(--muted);
+ margin:0;
+ line-height:1.8;
+}
+.dropzone img{
+ max-width:100%;
+ max-height:300px;
+ object-fit:contain;
+ border-radius:10px;
+}
+.image-preview{
+ position:relative;
+ width:100%;
+ text-align:center;
+}
+.image-overlay{
+ position:absolute;
+ inset:0;
+ display:none;
+ pointer-events:none;
+ border-radius:10px;
+ background:repeating-linear-gradient(
+  135deg,
+  #ed617515 0px,
+  #ed617515 12px,
+  transparent 12px,
+  transparent 24px
+ );
+}
+.preview-caption{
+ color:var(--muted);
+ font-size:10px;
+ margin-top:12px;
+ overflow-wrap:anywhere;
+}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;
+ border:0;
+ border-radius:10px;
+ padding:11px 17px;
+ font-size:11px;
+ font-weight:800;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+ transition:.2s;
+}
+.btn-purple:hover{color:white;filter:brightness(.96)}
+.btn-purple:disabled{opacity:.5;cursor:not-allowed}
+.btn-outline-custom{
+ border:1px solid var(--border);
+ border-radius:10px;
+ padding:10px 14px;
+ background:white;
+ color:#69738e;
+ font-size:11px;
+ font-weight:800;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+}
+.btn-outline-custom:hover{
+ background:#f5f3ff;
+ color:var(--purple);
+}
+.status-badge{
+ display:inline-flex;
+ align-items:center;
+ gap:6px;
+ border-radius:8px;
+ padding:7px 10px;
+ font-size:10px;
+ font-weight:800;
+ background:#f1f2f8;
+ color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffecef;color:#d64b62}
+.result-placeholder{
+ min-height:240px;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ align-items:center;
+ text-align:center;
+ color:#a0a8bd;
+}
+.result-placeholder i{
+ font-size:40px;
+ color:#c6c1ef;
+ margin-bottom:14px;
+}
+.result-placeholder h4{
+ font-size:14px;
+ font-weight:800;
+ color:#6d7790;
+}
+.result-placeholder p{
+ max-width:300px;
+ font-size:11px;
+ line-height:1.8;
+}
+.result-metric{
+ border:1px solid var(--border);
+ border-radius:12px;
+ padding:16px;
+ background:#fbfcff;
+}
+.result-metric small{
+ display:block;
+ font-size:10px;
+ color:var(--muted);
+ margin-bottom:8px;
+}
+.result-metric strong{
+ font:800 22px Manrope,sans-serif;
+}
+.severity-meter{
+ height:9px;
+ background:#edf0f7;
+ border-radius:20px;
+ overflow:hidden;
+}
+.severity-fill{
+ height:100%;
+ width:0;
+ border-radius:20px;
+ background:linear-gradient(90deg,#18b58c,#f5a443,#ed6175);
+ transition:width .4s;
+}
+.recommendation{
+ display:flex;
+ align-items:flex-start;
+ gap:10px;
+ padding:12px;
+ border-radius:10px;
+ background:#f8f9fd;
+ margin-bottom:9px;
+ font-size:11px;
+ line-height:1.7;
+}
+.recommendation i{color:var(--purple);font-size:15px}
+.chart-container{height:235px;position:relative}
+.table-responsive{overflow-x:auto}
+.table{
+ font-size:11px;
+ margin-bottom:0;
+ white-space:nowrap;
+}
+.table thead th{
+ color:#8c95ac;
+ font-size:9px;
+ text-transform:uppercase;
+ letter-spacing:.7px;
+ border-bottom:1px solid var(--border);
+ padding:14px 12px;
+}
+.table tbody td{
+ padding:15px 12px;
+ vertical-align:middle;
+ border-color:#f0f1f6;
+}
+.empty-table{
+ text-align:center;
+ padding:30px!important;
+ color:var(--muted);
+}
+.notice{
+ background:#fff8eb;
+ border:1px solid #ffe8c3;
+ color:#986b2d;
+ border-radius:12px;
+ padding:15px 17px;
+ font-size:11px;
+ line-height:1.8;
+ display:flex;
+ align-items:flex-start;
+ gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.toast-container{z-index:1200}
+.toast{
+ border-radius:12px;
+ border:1px solid var(--border);
+ box-shadow:0 10px 35px #18204115;
+}
+.sidebar-backdrop{display:none}
+@media(max-width:1150px){
+ :root{--sidebar:225px}
+ .content{padding:25px 22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{
+  transform:translateX(-100%);
+  transition:transform .25s;
+  width:260px;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;
+  position:fixed;
+  inset:0;
+  background:#10152d88;
+  z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:18px 14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:17px}
+ .otp-hide{display:none}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+ <a class="side-link" href="notifications.html"><i class="bi bi-bell"></i> Notifications</a>
+
+ <div class="nav-section">Vision Intelligence</div>
+ <a class="side-link active" href="corrosion-detection.html"><i class="bi bi-search-heart"></i> Corrosion Detection</a>
+ <a class="side-link" href="defect-detection.html"><i class="bi bi-bounding-box-circles"></i> Defect Detection</a>
+ <a class="side-link" href="crack-detection.html"><i class="bi bi-intersect"></i> Crack Detection</a>
+ <a class="side-link" href="ppe-detection.html"><i class="bi bi-person-check"></i> PPE Detection</a>
+ <a class="side-link" href="fire-smoke-detection.html"><i class="bi bi-fire"></i> Fire & Smoke Detection</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/agent-dashboard.html"><i class="bi bi-robot"></i> Agent Dashboard</a>
+ <a class="side-link" href="agents/inspection-agent.html"><i class="bi bi-clipboard-check"></i> Inspection Agent</a>
+ <a class="side-link" href="agents/asset-health-agent.html"><i class="bi bi-heart-pulse"></i> Asset Health Agent</a>
+ <a class="side-link" href="agents/maintenance-agent.html"><i class="bi bi-tools"></i> Maintenance Agent</a>
+ <a class="side-link" href="agents/safety-agent.html"><i class="bi bi-shield-check"></i> Safety Agent</a>
+ <a class="side-link" href="agents/supervisor-agent.html"><i class="bi bi-diagram-3"></i> Supervisor Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Frontend demonstration
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+
+ <header class="topbar">
+  <div class="d-flex align-items-center gap-3">
+   <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+    <i class="bi bi-list"></i>
+   </button>
+   <div>
+    <div class="breadcrumb-text">
+     Vision Intelligence / <strong>Corrosion Detection</strong>
+    </div>
+    <div class="fw-bold mt-1" style="font-size:13px">
+     Asset Surface Inspection
+    </div>
+   </div>
+  </div>
+
+  <div class="top-actions">
+   <span class="status-badge success otp-hide">
+    <i class="bi bi-circle-fill" style="font-size:7px"></i>
+    Demo Workspace
+   </span>
+   <a href="notifications.html" class="top-icon" aria-label="Notifications">
+    <i class="bi bi-bell"></i>
+   </a>
+   <div class="avatar" title="Demo User">AI</div>
+  </div>
+ </header>
+
+ <main class="content">
+
+  <section class="hero">
+   <div class="hero-label">Computer Vision / Industrial Inspection</div>
+   <h1><i class="bi bi-search-heart me-2"></i>Corrosion Detection Intelligence</h1>
+   <p>
+    Inspect asset surface images, organize corrosion findings,
+    review severity indicators and generate structured
+    maintenance recommendations through a visual inspection workflow.
+   </p>
+   <div class="hero-tag">
+    <i class="bi bi-info-circle"></i>
+    Illustrative analysis — no ML inference connected
+   </div>
+  </section>
+
+  <!-- KPIs -->
+  <div class="row g-3 mb-4">
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+      <i class="bi bi-images"></i>
+     </div>
+     <div class="stat-label">Session Inspections</div>
+     <div class="stat-value" id="statInspections">0</div>
+     <div class="stat-note">Current browser session</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#fff0e1;color:#ef9b34">
+      <i class="bi bi-exclamation-triangle"></i>
+     </div>
+     <div class="stat-label">High Severity</div>
+     <div class="stat-value" id="statHigh">0</div>
+     <div class="stat-note">Illustrative findings</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#e8f9f1;color:#16b58a">
+      <i class="bi bi-check2-circle"></i>
+     </div>
+     <div class="stat-label">Low Severity</div>
+     <div class="stat-value" id="statLow">0</div>
+     <div class="stat-note">Illustrative findings</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#eaf2ff;color:#438df5">
+      <i class="bi bi-percent"></i>
+     </div>
+     <div class="stat-label">Average Affected Area</div>
+     <div class="stat-value" id="statArea">—</div>
+     <div class="stat-note">Demo estimates only</div>
+    </div>
+   </div>
+
+  </div>
+
+  <div class="row g-4 mb-4">
+
+   <!-- IMAGE UPLOAD -->
+   <div class="col-xl-7">
+    <section class="panel">
+
+     <div class="panel-heading">
+      <div>
+       <h3>Surface Image Inspection</h3>
+       <div class="panel-subtitle">
+        Upload a photograph and configure inspection details
+       </div>
+      </div>
+      <span class="status-badge">
+       <i class="bi bi-camera"></i>
+       Image Input
+      </span>
+     </div>
+
+     <input type="file" id="imageInput"
+      accept="image/png,image/jpeg,image/webp"
+      class="d-none">
+
+     <div class="dropzone" id="dropzone"
+      role="button" tabindex="0"
+      aria-label="Upload an industrial surface image">
+
+      <div id="uploadPlaceholder">
+       <div class="upload-icon mx-auto">
+        <i class="bi bi-cloud-arrow-up"></i>
+       </div>
+       <h4>Upload Asset Surface Image</h4>
+       <p>
+        Click or drag and drop an image here
+        <br>
+        JPG, PNG or WebP · Maximum 10 MB
+       </p>
+       <div class="btn-purple mt-3">
+        <i class="bi bi-folder2-open"></i>
+        Browse Image
+       </div>
+      </div>
+
+      <div id="imagePreview" class="image-preview d-none">
+       <img id="previewImage" alt="Uploaded industrial surface">
+       <div id="imageOverlay" class="image-overlay"></div>
+       <div class="preview-caption" id="imageFilename"></div>
+      </div>
+
+     </div>
+
+     <div class="d-flex justify-content-between flex-wrap gap-2 mt-3">
+      <button class="btn-outline-custom" id="replaceImage">
+       <i class="bi bi-arrow-repeat"></i>
+       Replace Image
+      </button>
+      <button class="btn-outline-custom" id="removeImage">
+       <i class="bi bi-trash"></i>
+       Remove
+      </button>
+     </div>
+
+     <div class="row g-3 mt-2">
+
+      <div class="col-md-6">
+       <label class="section-label" for="assetSelect">Industrial Asset</label>
+       <select id="assetSelect" class="form-select">
+        <option value="AST-001">AST-001 — Industrial Pipeline</option>
+        <option value="AST-002">AST-002 — Storage Tank</option>
+        <option value="AST-003">AST-003 — Steel Support</option>
+        <option value="AST-004">AST-004 — Heat Exchanger</option>
+        <option value="AST-005">AST-005 — Cooling Tower</option>
+        <option value="AST-006">AST-006 — Pressure Vessel</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label class="section-label" for="materialSelect">Surface Material</label>
+       <select id="materialSelect" class="form-select">
+        <option>Carbon Steel</option>
+        <option>Stainless Steel</option>
+        <option>Galvanized Steel</option>
+        <option>Aluminum</option>
+        <option>Copper Alloy</option>
+        <option>Other / Unknown</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label class="section-label" for="environmentSelect">Operating Environment</label>
+       <select id="environmentSelect" class="form-select">
+        <option value="indoor">Indoor Industrial</option>
+        <option value="outdoor">Outdoor Exposure</option>
+        <option value="coastal">Coastal / Marine</option>
+        <option value="chemical">Chemical Processing</option>
+        <option value="humid">High Humidity</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label class="section-label" for="surfaceCondition">Visual Surface Condition</label>
+       <select id="surfaceCondition" class="form-select">
+        <option value="unknown">Not Assessed</option>
+        <option value="clear">No Visible Corrosion</option>
+        <option value="light">Light Surface Rust</option>
+        <option value="moderate">Localized Corrosion</option>
+        <option value="severe">Extensive Corrosion</option>
+       </select>
+      </div>
+
+      <div class="col-12">
+       <label class="section-label" for="inspectionNotes">Inspection Notes</label>
+       <textarea id="inspectionNotes" class="form-control"
+        rows="3" maxlength="500"
+        placeholder="Optional notes: coating damage, moisture, pitting, asset condition..."></textarea>
+      </div>
+
+     </div>
+
+     <button id="analyzeButton" class="btn-purple w-100 mt-4" disabled>
+      <i class="bi bi-stars"></i>
+      Generate Illustrative Assessment
+     </button>
+
+    </section>
+   </div>
+
+   <!-- RESULTS -->
+   <div class="col-xl-5">
+    <section class="panel">
+
+     <div class="panel-heading">
+      <div>
+       <h3>Inspection Assessment</h3>
+       <div class="panel-subtitle">Severity, affected area and review guidance</div>
+      </div>
+      <span id="resultStatus" class="status-badge">Awaiting Image</span>
+     </div>
+
+     <div id="emptyResult" class="result-placeholder">
+      <i class="bi bi-clipboard-data"></i>
+      <h4>No Assessment Yet</h4>
+      <p>
+       Upload a surface image and select the observed
+       condition to generate an illustrative inspection report.
+      </p>
+     </div>
+
+     <div id="resultContent" class="d-none">
+
+      <div class="row g-3 mb-4">
+       <div class="col-6">
+        <div class="result-metric">
+         <small>Severity Level</small>
+         <strong id="severityValue">—</strong>
+        </div>
+       </div>
+       <div class="col-6">
+        <div class="result-metric">
+         <small>Estimated Affected Area</small>
+         <strong id="affectedArea">—</strong>
+        </div>
+       </div>
+      </div>
+
+      <div class="d-flex justify-content-between mb-2">
+       <span class="section-label mb-0">Illustrative Severity Index</span>
+       <strong id="severityScore" style="font-size:11px">—</strong>
+      </div>
+
+      <div class="severity-meter mb-4">
+       <div class="severity-fill" id="severityFill"></div>
+      </div>
+
+      <div class="mb-4">
+       <div class="section-label mb-2">Assessment Summary</div>
+       <p id="assessmentSummary"
+        style="font-size:11px;line-height:1.9;color:#747e98"></p>
+      </div>
+
+      <div class="section-label mb-3">Recommended Follow-up</div>
+      <div id="recommendations"></div>
+
+      <div class="notice mt-3">
+       <i class="bi bi-exclamation-triangle"></i>
+       <div>
+        These are synthetic estimates based on the selected
+        surface condition and environment, not measurements
+        extracted from the uploaded image. A qualified
+        inspector must verify any safety or maintenance decision.
+       </div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 mt-4">
+       <button id="exportJson" class="btn-outline-custom">
+        <i class="bi bi-filetype-json"></i>
+        Export JSON
+       </button>
+       <button id="exportCsv" class="btn-outline-custom">
+        <i class="bi bi-filetype-csv"></i>
+        Export CSV
+       </button>
+       <button id="copyReport" class="btn-outline-custom">
+        <i class="bi bi-clipboard"></i>
+        Copy
+       </button>
+      </div>
+
+     </div>
+
+    </section>
+   </div>
+
+  </div>
+
+  <!-- CHARTS -->
+  <div class="row g-4 mb-4">
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Severity Distribution</h3>
+       <div class="panel-subtitle">Current session assessments</div>
+      </div>
+     </div>
+     <div class="chart-container">
+      <canvas id="severityChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Estimated Affected Area</h3>
+       <div class="panel-subtitle">Recent illustrative assessments</div>
+      </div>
+     </div>
+     <div class="chart-container">
+      <canvas id="areaChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+  </div>
+
+  <!-- HISTORY -->
+  <section class="panel mb-4">
+
+   <div class="panel-heading">
+    <div>
+     <h3>Inspection History</h3>
+     <div class="panel-subtitle">
+      Reports generated during this browser session
+     </div>
+    </div>
+    <button id="clearHistory" class="btn-outline-custom">
+     <i class="bi bi-trash3"></i>
+     Clear History
+    </button>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table align-middle">
+     <thead>
+      <tr>
+       <th>Inspection</th>
+       <th>Asset</th>
+       <th>Material</th>
+       <th>Severity</th>
+       <th>Area Estimate</th>
+       <th>Time</th>
+       <th>Report</th>
+      </tr>
+     </thead>
+     <tbody id="historyBody">
+      <tr>
+       <td colspan="7" class="empty-table">
+        No inspections recorded yet.
+       </td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+
+  </section>
+
+  <div class="notice">
+   <i class="bi bi-shield-exclamation"></i>
+   <div>
+    <strong>Safety and engineering disclaimer:</strong>
+    This page is a portfolio demonstration. It does not detect
+    corrosion pixels, measure wall thickness, determine structural
+    integrity, or certify equipment fitness for service.
+    Actual corrosion assessment requires validated computer vision,
+    appropriate inspection methods and qualified engineering review.
+   </div>
+  </div>
+
+ </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button type="button" class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ INDUSTRA AI — CORROSION INSPECTION DEMO
+
+ This implementation does not analyze image pixels.
+ The assessment is illustrative and derived from
+ user-selected condition and environment only.
+
+ No backend, CV model, segmentation model, or
+ sensor feed is connected.
+*/
+
+const $=id=>document.getElementById(id);
+
+let selectedFile=null;
+let previewUrl=null;
+let latestReport=null;
+let history=[];
+let severityChart=null;
+let areaChart=null;
+
+const conditionConfig={
+ unknown:{
+  label:"Unassessed",
+  score:0,
+  area:null,
+  summary:"The visual surface condition has not been assessed.",
+  recommendations:[
+   "Request a qualified visual inspection.",
+   "Document the surface condition before assigning severity."
+  ]
+ },
+ clear:{
+  label:"Low",
+  score:12,
+  area:2,
+  summary:"The selected observation indicates no visible corrosion.",
+  recommendations:[
+   "Continue routine inspection scheduling.",
+   "Record coating condition and monitor for future changes."
+  ]
+ },
+ light:{
+  label:"Low",
+  score:28,
+  area:9,
+  summary:"The selected observation indicates light surface corrosion.",
+  recommendations:[
+   "Inspect coating integrity and environmental exposure.",
+   "Plan cleaning and coating evaluation."
+  ]
+ },
+ moderate:{
+  label:"Medium",
+  score:57,
+  area:27,
+  summary:"The selected observation indicates localized corrosion.",
+  recommendations:[
+   "Arrange detailed inspection by qualified personnel.",
+   "Evaluate coating repair and additional measurements.",
+   "Review inspection frequency based on asset criticality."
+  ]
+ },
+ severe:{
+  label:"High",
+  score:86,
+  area:58,
+  summary:"The selected observation indicates extensive visible corrosion.",
+  recommendations:[
+   "Escalate for qualified engineering assessment.",
+   "Consider appropriate nondestructive testing.",
+   "Follow site procedures for evaluating continued service.",
+   "Prioritize corrective maintenance after engineering review."
+  ]
+ }
+};
+
+const environmentAdjustment={
+ indoor:0,
+ outdoor:4,
+ coastal:8,
+ chemical:10,
+ humid:6
+};
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function openSidebar(){
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+}
+
+function closeSidebar(){
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+}
+
+$("menuButton").addEventListener("click",openSidebar);
+$("sidebarBackdrop").addEventListener("click",closeSidebar);
+
+document.querySelectorAll(".side-link").forEach(link=>{
+ link.addEventListener("click",closeSidebar);
+});
+
+function resetResults(){
+ latestReport=null;
+ $("emptyResult").classList.remove("d-none");
+ $("resultContent").classList.add("d-none");
+ $("resultStatus").className="status-badge";
+ $("resultStatus").textContent="Awaiting Assessment";
+ $("imageOverlay").style.display="none";
+}
+
+function removeImage(){
+ if(previewUrl){
+  URL.revokeObjectURL(previewUrl);
+  previewUrl=null;
+ }
+
+ selectedFile=null;
+ $("imageInput").value="";
+ $("uploadPlaceholder").classList.remove("d-none");
+ $("imagePreview").classList.add("d-none");
+ $("previewImage").removeAttribute("src");
+ $("analyzeButton").disabled=true;
+
+ resetResults();
+}
+
+function acceptFile(file){
+ if(!file)return;
+
+ const allowed=[
+  "image/jpeg",
+  "image/png",
+  "image/webp"
+ ];
+
+ if(!allowed.includes(file.type)){
+  notify("Please select a JPG, PNG or WebP image.");
+  return;
+ }
+
+ if(file.size>10*1024*1024){
+  notify("Maximum supported image size is 10 MB.");
+  return;
+ }
+
+ if(previewUrl){
+  URL.revokeObjectURL(previewUrl);
+ }
+
+ selectedFile=file;
+ previewUrl=URL.createObjectURL(file);
+
+ $("previewImage").src=previewUrl;
+ $("imageFilename").textContent=
+  file.name+" · "+(file.size/1024/1024).toFixed(2)+" MB";
+
+ $("uploadPlaceholder").classList.add("d-none");
+ $("imagePreview").classList.remove("d-none");
+ $("analyzeButton").disabled=false;
+
+ resetResults();
+ notify("Image loaded for inspection demo.");
+}
+
+$("dropzone").addEventListener("click",()=>{
+ $("imageInput").click();
+});
+
+$("dropzone").addEventListener("keydown",event=>{
+ if(event.key==="Enter"||event.key===" "){
+  event.preventDefault();
+  $("imageInput").click();
+ }
+});
+
+$("replaceImage").addEventListener("click",()=>{
+ $("imageInput").click();
+});
+
+$("removeImage").addEventListener("click",removeImage);
+
+$("imageInput").addEventListener("change",event=>{
+ acceptFile(event.target.files[0]);
+});
+
+$("dropzone").addEventListener("dragover",event=>{
+ event.preventDefault();
+ $("dropzone").classList.add("dragover");
+});
+
+$("dropzone").addEventListener("dragleave",()=>{
+ $("dropzone").classList.remove("dragover");
+});
+
+$("dropzone").addEventListener("drop",event=>{
+ event.preventDefault();
+ $("dropzone").classList.remove("dragover");
+
+ const file=event.dataTransfer.files[0];
+ acceptFile(file);
+});
+
+[
+ "assetSelect",
+ "materialSelect",
+ "environmentSelect",
+ "surfaceCondition",
+ "inspectionNotes"
+].forEach(id=>{
+ $(id).addEventListener("change",resetResults);
+});
+
+function buildAssessment(){
+ const condition=$("surfaceCondition").value;
+ const config=conditionConfig[condition];
+
+ if(condition==="unknown"){
+  notify("Select an observed surface condition first.");
+  return null;
+ }
+
+ const environment=$("environmentSelect").value;
+
+ const score=Math.min(
+  100,
+  config.score+environmentAdjustment[environment]
+ );
+
+ const area=Math.min(
+  100,
+  config.area+environmentAdjustment[environment]/2
+ );
+
+ const severity=score>=70?
+  "High":
+  score>=40?"Medium":"Low";
+
+ const recommendations=[...config.recommendations];
+
+ if(environment==="coastal"||environment==="chemical"){
+  recommendations.push(
+   "Review environmental exposure and material compatibility."
+  );
+ }
+
+ return {
+  id:"COR-"+String(history.length+1).padStart(4,"0"),
+  timestamp:new Date().toISOString(),
+  asset:$("assetSelect").value,
+  material:$("materialSelect").value,
+  environment,
+  observedCondition:condition,
+  imageName:selectedFile.name,
+  severity,
+  severityIndex:score,
+  affectedAreaEstimate:Number(area.toFixed(1)),
+  summary:config.summary,
+  recommendations,
+  notes:$("inspectionNotes").value.trim(),
+  analysisMode:"illustrative-user-input-demo",
+  imageAnalyzed:false,
+  engineeringValidated:false
+ };
+}
+
+function renderReport(report){
+ $("emptyResult").classList.add("d-none");
+ $("resultContent").classList.remove("d-none");
+
+ $("severityValue").textContent=report.severity;
+ $("affectedArea").textContent=
+  report.affectedAreaEstimate.toFixed(1)+"%";
+
+ $("severityScore").textContent=
+  report.severityIndex+"/100";
+
+ $("severityFill").style.width=
+  report.severityIndex+"%";
+
+ $("assessmentSummary").textContent=report.summary;
+
+ const status=$("resultStatus");
+ status.textContent=report.severity+" Severity";
+ status.className="status-badge "+(
+  report.severity==="High"?"danger":
+  report.severity==="Medium"?"warning":"success"
+ );
+
+ const root=$("recommendations");
+ root.replaceChildren();
+
+ report.recommendations.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="recommendation";
+
+  const icon=document.createElement("i");
+  icon.className="bi bi-check2-circle";
+
+  const text=document.createElement("span");
+  text.textContent=item;
+
+  row.append(icon,text);
+  root.append(row);
+ });
+
+ // Decorative overlay, not a corrosion segmentation mask.
+ $("imageOverlay").style.display="block";
+}
+
+function updateStats(){
+ $("statInspections").textContent=history.length;
+
+ $("statHigh").textContent=
+  history.filter(x=>x.severity==="High").length;
+
+ $("statLow").textContent=
+  history.filter(x=>x.severity==="Low").length;
+
+ $("statArea").textContent=history.length?
+  (
+   history.reduce(
+    (sum,x)=>sum+x.affectedAreaEstimate,0
+   )/history.length
+  ).toFixed(1)+"%":"—";
+}
+
+function renderHistory(){
+ const tbody=$("historyBody");
+ tbody.replaceChildren();
+
+ if(!history.length){
+  const row=document.createElement("tr");
+  const cell=document.createElement("td");
+  cell.colSpan=7;
+  cell.className="empty-table";
+  cell.textContent="No inspections recorded yet.";
+  row.append(cell);
+  tbody.append(row);
+  return;
+ }
+
+ history.forEach(report=>{
+  const row=document.createElement("tr");
+
+  const values=[
+   report.id,
+   report.asset,
+   report.material,
+   report.severity,
+   report.affectedAreaEstimate.toFixed(1)+"%",
+   new Date(report.timestamp).toLocaleString()
+  ];
+
+  values.forEach((value,index)=>{
+   const cell=document.createElement("td");
+   cell.textContent=value;
+
+   if(index===3){
+    const badge=document.createElement("span");
+    badge.className="status-badge "+(
+     value==="High"?"danger":
+     value==="Medium"?"warning":"success"
+    );
+    badge.textContent=value;
+    cell.replaceChildren(badge);
+   }
+
+   row.append(cell);
+  });
+
+  const actionCell=document.createElement("td");
+  const button=document.createElement("button");
+  button.className="btn-outline-custom";
+  button.textContent="View";
+
+  button.addEventListener("click",()=>{
+   latestReport=report;
+   renderReport(report);
+   window.scrollTo({top:350,behavior:"smooth"});
+  });
+
+  actionCell.append(button);
+  row.append(actionCell);
+  tbody.append(row);
+ });
+}
+
+function renderCharts(){
+ if(typeof Chart==="undefined")return;
+
+ const counts=[
+  history.filter(x=>x.severity==="Low").length,
+  history.filter(x=>x.severity==="Medium").length,
+  history.filter(x=>x.severity==="High").length
+ ];
+
+ if(severityChart)severityChart.destroy();
+
+ severityChart=new Chart($("severityChart"),{
+  type:"doughnut",
+  data:{
+   labels:["Low","Medium","High"],
+   datasets:[{
+    data:counts,
+    backgroundColor:["#18b58c","#f5a443","#ed6175"],
+    borderWidth:0,
+    hoverOffset:5
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   cutout:"72%",
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{
+      usePointStyle:true,
+      padding:18,
+      font:{family:"DM Sans",size:11}
+     }
+    }
+   }
+  }
+ });
+
+ if(areaChart)areaChart.destroy();
+
+ const recent=[...history].reverse().slice(-8);
+
+ areaChart=new Chart($("areaChart"),{
+  type:"bar",
+  data:{
+   labels:recent.map(x=>x.id),
+   datasets:[{
+    label:"Affected Area Estimate (%)",
+    data:recent.map(x=>x.affectedAreaEstimate),
+    backgroundColor:"#8a76f5",
+    borderRadius:7,
+    maxBarThickness:38
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   scales:{
+    y:{
+     beginAtZero:true,
+     max:100,
+     grid:{color:"#f0f1f7"}
+    },
+    x:{grid:{display:false}}
+   },
+   plugins:{legend:{display:false}}
+  }
+ });
+}
+
+function refresh(){
+ updateStats();
+ renderHistory();
+ renderCharts();
+}
+
+$("analyzeButton").addEventListener("click",()=>{
+ if(!selectedFile){
+  notify("Upload an image first.");
+  return;
+ }
+
+ const report=buildAssessment();
+ if(!report)return;
+
+ latestReport=report;
+ history.unshift(report);
+
+ renderReport(report);
+ refresh();
+
+ notify("Illustrative inspection assessment generated.");
+});
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportJson").addEventListener("click",()=>{
+ if(!latestReport)return;
+
+ downloadFile(
+  latestReport.id+".json",
+  JSON.stringify(latestReport,null,2),
+  "application/json"
+ );
+});
+
+function csvEscape(value){
+ return '"'+String(value??"").replace(/"/g,'""')+'"';
+}
+
+$("exportCsv").addEventListener("click",()=>{
+ if(!latestReport)return;
+
+ const entries=Object.entries(latestReport).map(
+  ([key,value])=>[
+   key,
+   Array.isArray(value)?value.join("; "):value
+  ]
+ );
+
+ const csv=[
+  "Field,Value",
+  ...entries.map(row=>row.map(csvEscape).join(","))
+ ].join("\r\n");
+
+ downloadFile(
+  latestReport.id+".csv",
+  csv,
+  "text/csv;charset=utf-8"
+ );
+});
+
+$("copyReport").addEventListener("click",async()=>{
+ if(!latestReport)return;
+
+ try{
+  await navigator.clipboard.writeText(
+   JSON.stringify(latestReport,null,2)
+  );
+  notify("Assessment copied to clipboard.");
+ }catch{
+  notify("Clipboard unavailable. Use JSON export instead.");
+ }
+});
+
+$("clearHistory").addEventListener("click",()=>{
+ if(!history.length)return;
+
+ if(!confirm("Clear all session inspection history?"))return;
+
+ history=[];
+ resetResults();
+ refresh();
+
+ notify("Session history cleared.");
+});
+
+window.addEventListener("beforeunload",()=>{
+ if(previewUrl)URL.revokeObjectURL(previewUrl);
+});
+
+refresh();
+</script>
+
+</body>
+</html>

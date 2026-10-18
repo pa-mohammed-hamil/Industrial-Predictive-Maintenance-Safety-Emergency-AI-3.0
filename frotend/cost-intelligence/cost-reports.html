@@ -1,0 +1,1131 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cost Reports | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / cost-intelligence</p><h1 id="page-title">Cost Reports</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Cost Reports workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cost Reports | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px Arial,Helvetica,sans-serif
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{background:var(--purple);color:white}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;
+ box-shadow:0 5px 20px #10152d05
+}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);
+ gap:17px
+}
+.flex{
+ display:flex;align-items:center;
+ justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;
+ color:#69738e;border-radius:9px;padding:10px 13px;
+ font-size:11px;font-weight:700
+}
+.btn.primary{background:var(--purple);border-color:var(--purple);color:white}
+.btn.danger{background:#ffedf0;border-color:#ffedf0;color:#d84b63}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{
+ display:block;color:#69738e;font-size:11px;
+ font-weight:700;margin-bottom:7px
+}
+.badge{
+ display:inline-block;padding:7px 10px;
+ border-radius:8px;font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:12px
+}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);
+ text-align:left;padding:13px;white-space:nowrap
+}
+td{padding:13px;border-bottom:1px solid #eef0f6;white-space:nowrap}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);
+ border-radius:11px;padding:14px;margin-bottom:12px
+}
+.record p{font-size:11px;color:#69738e;line-height:1.8}
+.chart{width:100%;height:290px;display:block}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric{
+ padding:14px;background:#f8f9fd;
+ border:1px solid var(--border);border-radius:11px
+}
+.metric strong{display:block;font-size:20px;margin-top:9px}
+.progress{
+ height:10px;background:#eef0f8;
+ border-radius:10px;overflow:hidden;margin-top:9px
+}
+.progress-fill{height:100%;background:var(--purple);border-radius:10px}
+.report-head{
+ display:flex;justify-content:space-between;
+ gap:15px;flex-wrap:wrap;padding-bottom:18px;
+ border-bottom:1px solid var(--border)
+}
+.report-title{font-size:21px;font-weight:800;margin:8px 0}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:11px;
+ padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;
+ background:var(--navy);color:white;
+ padding:13px 17px;border-radius:10px;display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.metric-grid{grid-template-columns:1fr}
+ .hero h1{font-size:21px}
+}
+@media print{
+ body{background:white}
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ .history-panel,.notice,#toast,.no-print{display:none!important}
+ .main{margin:0}
+ .content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◆ Cost Intelligence</a>
+ <a class="nav-link" href="cost-analytics.html">▦ Cost Analytics</a>
+ <a class="nav-link" href="cost-forecasting.html">◇ Cost Forecasting</a>
+ <a class="nav-link" href="avoided-cost.html">◉ Avoided Cost</a>
+ <a class="nav-link active" href="cost-reports.html">◆ Cost Reports</a>
+ <a class="nav-link" href="repair-cost.html">▦ Repair Cost</a>
+ <a class="nav-link" href="replacement-cost.html">◇ Replacement Cost</a>
+ <a class="nav-link" href="downtime-cost.html">◉ Downtime Cost</a>
+ <a class="nav-link" href="roi-analysis.html">◆ ROI Analysis</a>
+
+ <div class="nav-title">OPERATIONS</div>
+ <a class="nav-link" href="asset-management.html">▦ Asset Management</a>
+ <a class="nav-link" href="predictive-maintenance.html">◇ Predictive Maintenance</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Cost Intelligence / Reporting</div>
+   <strong>Industrial Cost Reports</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC REPORTING DATA</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / FINANCIAL REPORTING CENTER
+ </div>
+ <h1>Industrial Cost Reports</h1>
+ <p>
+  Generate equipment and plant financial reports,
+  analyze maintenance expenses, model failure-related losses,
+  compare maintenance strategies, review cost avoidance,
+  and export scenario reports for further analysis.
+ </p>
+</section>
+
+<div class="panel mb filters-panel">
+ <div class="flex mb">
+  <h3>Report Configuration</h3>
+  <span class="badge blue">REPORT BUILDER</span>
+ </div>
+
+ <div class="filters">
+  <div>
+   <label for="reportType">Report Type</label>
+   <select class="input" id="reportType">
+    <option value="executive">Executive Cost Summary</option>
+    <option value="maintenance">Maintenance Cost Report</option>
+    <option value="downtime">Downtime Cost Report</option>
+    <option value="repair">Repair Cost Report</option>
+    <option value="avoided">Avoided Cost Report</option>
+    <option value="roi">Maintenance ROI Report</option>
+   </select>
+  </div>
+
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+
+  <div>
+   <label for="periodFilter">Reporting Period</label>
+   <select class="input" id="periodFilter">
+    <option value="3">3 Months</option>
+    <option value="6">6 Months</option>
+    <option value="12" selected>12 Months</option>
+    <option value="24">24 Months</option>
+   </select>
+  </div>
+
+  <div>
+   <label for="riskFilter">Equipment Risk</label>
+   <select class="input" id="riskFilter">
+    <option value="all">All Risk Levels</option>
+    <option>Low</option>
+    <option>Medium</option>
+    <option>High</option>
+   </select>
+  </div>
+ </div>
+
+ <div class="actions" style="margin-top:18px">
+  <button class="btn primary" id="generateBtn">Generate Report</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / Save PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="panel mb" id="reportDocument">
+ <div class="report-head">
+  <div>
+   <div class="muted">INDUSTRA AI · FINANCIAL REPORT</div>
+   <div class="report-title" id="reportTitle">
+    Executive Cost Summary
+   </div>
+   <div class="muted" id="reportSubtitle"></div>
+  </div>
+  <div>
+   <span class="badge purple">ILLUSTRATIVE REPORT</span>
+   <p class="muted" id="reportDate"></p>
+  </div>
+ </div>
+
+ <div class="grid" style="margin:22px 0">
+  <div class="stat">
+   <div class="stat-label">Expected Reactive Loss</div>
+   <div class="stat-value" id="reactiveKpi">₹0</div>
+   <div class="stat-note">Unmitigated expected failure losses</div>
+  </div>
+  <div class="stat">
+   <div class="stat-label">Intervention Cost</div>
+   <div class="stat-value" id="maintenanceKpi">₹0</div>
+   <div class="stat-note">Planned maintenance investment</div>
+  </div>
+  <div class="stat">
+   <div class="stat-label">Expected Avoided Loss</div>
+   <div class="stat-value" id="avoidedKpi">₹0</div>
+   <div class="stat-note">Assumed maintenance risk reduction</div>
+  </div>
+  <div class="stat">
+   <div class="stat-label">Net Expected Benefit</div>
+   <div class="stat-value" id="netKpi">₹0</div>
+   <div class="stat-note">Avoided loss less intervention expense</div>
+  </div>
+ </div>
+
+ <div class="grid-2 mb">
+  <div class="panel">
+   <h3>Financial Cost Category Breakdown</h3>
+   <p class="muted">
+    Expected avoided losses by category
+   </p>
+   <svg class="chart" id="categoryChart"
+    viewBox="0 0 640 290"
+    role="img" aria-label="Financial category breakdown"></svg>
+  </div>
+
+  <div class="panel">
+   <h3>Plant Financial Comparison</h3>
+   <p class="muted">
+    Expected reactive loss exposure by plant
+   </p>
+   <svg class="chart" id="plantChart"
+    viewBox="0 0 640 290"
+    role="img" aria-label="Plant cost comparison"></svg>
+  </div>
+ </div>
+
+ <div class="layout mb">
+  <div class="panel">
+   <div class="flex">
+    <h3>Equipment Financial Report</h3>
+    <span class="badge blue" id="assetCount">0 assets</span>
+   </div>
+   <div class="table-wrap">
+    <table>
+     <thead>
+      <tr>
+       <th>Equipment</th>
+       <th>Plant</th>
+       <th>Risk</th>
+       <th>Reactive Loss</th>
+       <th>Intervention</th>
+       <th>Avoided Loss</th>
+       <th>Net Benefit</th>
+       <th>ROI</th>
+      </tr>
+     </thead>
+     <tbody id="reportTable"></tbody>
+    </table>
+   </div>
+  </div>
+
+  <div class="panel">
+   <h3>Financial Report Summary</h3>
+   <div id="financialSummary"></div>
+  </div>
+ </div>
+
+ <div class="grid-2 mb">
+  <div class="panel">
+   <h3>Executive Financial Insights</h3>
+   <div id="insightList"></div>
+  </div>
+
+  <div class="panel">
+   <h3>Reporting Methodology</h3>
+   <div id="methodology"></div>
+  </div>
+ </div>
+
+ <p class="muted">
+  DEMO REPORT — Synthetic costs and probabilities.
+  Not an audited financial statement or verified maintenance savings.
+ </p>
+</section>
+
+<section class="panel mb history-panel">
+ <div class="flex mb">
+  <h3>Generated Report History</h3>
+  <span class="badge purple">BROWSER SESSION</span>
+ </div>
+ <div class="table-wrap">
+  <table>
+   <thead>
+    <tr>
+     <th>Report ID</th>
+     <th>Report Type</th>
+     <th>Plant</th>
+     <th>Period</th>
+     <th>Generated</th>
+     <th>Action</th>
+    </tr>
+   </thead>
+   <tbody id="historyTable"></tbody>
+  </table>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Financial reporting notice:</strong>
+ These reports contain synthetic equipment costs and illustrative
+ failure probabilities. Avoided losses, maintenance ROI and expected
+ financial benefits are hypothetical, not realized savings.
+ Report history is retained only in the current browser session.
+ Production reports require authenticated data sources,
+ validated cost allocations, model documentation, access control,
+ audit trails and financial review.
+</div>
+
+</main>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const SVG_NS="http://www.w3.org/2000/svg";
+
+const ASSETS=[
+ {
+  id:"MTR-001",name:"Main Drive Motor",plant:"Plant A",
+  risk:"High",annualProbability:.42,
+  downtimeHours:36,downtimeRate:18000,
+  repairCost:280000,productionLoss:190000,
+  interventionCost:95000
+ },
+ {
+  id:"CMP-001",name:"Air Compressor",plant:"Plant A",
+  risk:"Medium",annualProbability:.28,
+  downtimeHours:28,downtimeRate:15000,
+  repairCost:210000,productionLoss:125000,
+  interventionCost:75000
+ },
+ {
+  id:"FAN-001",name:"Cooling Fan",plant:"Plant A",
+  risk:"Low",annualProbability:.12,
+  downtimeHours:12,downtimeRate:9000,
+  repairCost:65000,productionLoss:45000,
+  interventionCost:22000
+ },
+ {
+  id:"GEN-001",name:"Power Generator",plant:"Plant B",
+  risk:"High",annualProbability:.37,
+  downtimeHours:48,downtimeRate:24000,
+  repairCost:480000,productionLoss:320000,
+  interventionCost:145000
+ },
+ {
+  id:"PMP-001",name:"Cooling Pump",plant:"Plant B",
+  risk:"Medium",annualProbability:.24,
+  downtimeHours:22,downtimeRate:12000,
+  repairCost:135000,productionLoss:85000,
+  interventionCost:45000
+ },
+ {
+  id:"GBX-001",name:"Industrial Gearbox",plant:"Plant B",
+  risk:"High",annualProbability:.45,
+  downtimeHours:40,downtimeRate:21000,
+  repairCost:360000,productionLoss:230000,
+  interventionCost:125000
+ },
+ {
+  id:"HYD-001",name:"Hydraulic Unit",plant:"Plant C",
+  risk:"Medium",annualProbability:.26,
+  downtimeHours:26,downtimeRate:14000,
+  repairCost:185000,productionLoss:110000,
+  interventionCost:60000
+ },
+ {
+  id:"PMP-002",name:"Process Pump",plant:"Plant C",
+  risk:"High",annualProbability:.39,
+  downtimeHours:32,downtimeRate:17500,
+  repairCost:260000,productionLoss:165000,
+  interventionCost:85000
+ },
+ {
+  id:"CNV-001",name:"Conveyor Drive",plant:"Plant C",
+  risk:"Low",annualProbability:.15,
+  downtimeHours:16,downtimeRate:11000,
+  repairCost:95000,productionLoss:65000,
+  interventionCost:30000
+ }
+];
+
+const REPORT_TYPES={
+ executive:"Executive Cost Summary",
+ maintenance:"Maintenance Cost Report",
+ downtime:"Downtime Cost Report",
+ repair:"Repair Cost Report",
+ avoided:"Avoided Cost Report",
+ roi:"Maintenance ROI Report"
+};
+
+const EFFECTIVENESS=.7;
+
+let activeReport=null;
+let history=[];
+let nextReportNumber=1;
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",
+ currency:"INR",
+ maximumFractionDigits:0
+});
+
+function money(value){
+ return currency.format(value);
+}
+
+function compactMoney(value){
+ const sign=value<0?"-":"";
+ const amount=Math.abs(value);
+
+ if(amount>=10000000)
+  return sign+"₹"+(amount/10000000).toFixed(2)+"Cr";
+
+ if(amount>=100000)
+  return sign+"₹"+(amount/100000).toFixed(2)+"L";
+
+ if(amount>=1000)
+  return sign+"₹"+(amount/1000).toFixed(1)+"K";
+
+ return money(value);
+}
+
+function percent(value){
+ return value.toFixed(1)+"%";
+}
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(SVG_NS,tag);
+
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+
+ clearTimeout(toastTimer);
+
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function sum(items,key){
+ return items.reduce((total,item)=>total+item[key],0);
+}
+
+function calculateAsset(asset,months){
+ const probability=
+  1-Math.pow(
+   1-asset.annualProbability,
+   months/12
+  );
+
+ const downtimeExposure=
+  asset.downtimeHours*asset.downtimeRate;
+
+ const repairExposure=asset.repairCost;
+ const productionExposure=asset.productionLoss;
+
+ const grossLoss=
+  downtimeExposure+repairExposure+productionExposure;
+
+ const reactiveLoss=probability*grossLoss;
+
+ const avoidedDowntime=
+  probability*EFFECTIVENESS*downtimeExposure;
+
+ const avoidedRepair=
+  probability*EFFECTIVENESS*repairExposure;
+
+ const avoidedProduction=
+  probability*EFFECTIVENESS*productionExposure;
+
+ const avoidedLoss=
+  avoidedDowntime+avoidedRepair+avoidedProduction;
+
+ const intervention=asset.interventionCost;
+
+ const netBenefit=avoidedLoss-intervention;
+
+ const roi=intervention>0?
+  netBenefit/intervention*100:null;
+
+ return{
+  ...asset,
+  months,
+  probability,
+  downtimeExposure,
+  repairExposure,
+  productionExposure,
+  grossLoss,
+  reactiveLoss,
+  avoidedDowntime,
+  avoidedRepair,
+  avoidedProduction,
+  avoidedLoss,
+  intervention,
+  netBenefit,
+  roi
+ };
+}
+
+function currentFilters(){
+ return{
+  type:$("reportType").value,
+  plant:$("plantFilter").value,
+  risk:$("riskFilter").value,
+  months:Number($("periodFilter").value)
+ };
+}
+
+function buildReport(filters){
+ const assets=ASSETS
+  .filter(asset=>
+   (filters.plant==="all"||asset.plant===filters.plant)&&
+   (filters.risk==="all"||asset.risk===filters.risk)
+  )
+  .map(asset=>calculateAsset(asset,filters.months));
+
+ const id="CR-"+String(nextReportNumber++).padStart(4,"0");
+
+ return{
+  id,
+  generatedAt:new Date().toISOString(),
+  filters:{...filters},
+  title:REPORT_TYPES[filters.type],
+  assets
+ };
+}
+
+function generateReport(){
+ const report=buildReport(currentFilters());
+
+ activeReport=report;
+ history.unshift(report);
+
+ renderReport();
+ renderHistory();
+
+ notify("Financial report generated: "+report.id);
+}
+
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(
+  el("span","",label),
+  el("strong","",value)
+ );
+ return row;
+}
+
+function riskBadge(risk){
+ const cls=risk==="High"?"red":
+  risk==="Medium"?"orange":"green";
+
+ return el("span","badge "+cls,risk);
+}
+
+function renderReport(){
+ if(!activeReport)return;
+
+ const report=activeReport;
+ const list=report.assets;
+
+ $("reportTitle").textContent=report.title;
+
+ $("reportSubtitle").textContent=
+  "Report ID: "+report.id+
+  " · "+report.filters.months+" months"+
+  " · "+(report.filters.plant==="all"?
+   "All Plants":report.filters.plant);
+
+ $("reportDate").textContent=
+  "Generated: "+
+  new Date(report.generatedAt).toLocaleString();
+
+ $("reactiveKpi").textContent=
+  compactMoney(sum(list,"reactiveLoss"));
+
+ $("maintenanceKpi").textContent=
+  compactMoney(sum(list,"intervention"));
+
+ $("avoidedKpi").textContent=
+  compactMoney(sum(list,"avoidedLoss"));
+
+ $("netKpi").textContent=
+  compactMoney(sum(list,"netBenefit"));
+
+ $("assetCount").textContent=list.length+" assets";
+
+ renderTable(list);
+ renderCategoryChart(list);
+ renderPlantChart(list);
+ renderFinancialSummary(list);
+ renderInsights(list);
+ renderMethodology(report);
+}
+
+function renderTable(list){
+ const body=$("reportTable");
+ body.replaceChildren();
+
+ list.forEach(item=>{
+  const row=el("tr");
+
+  [
+   item.name+" · "+item.id,
+   item.plant
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const riskCell=el("td");
+  riskCell.append(riskBadge(item.risk));
+  row.append(riskCell);
+
+  [
+   money(item.reactiveLoss),
+   money(item.intervention),
+   money(item.avoidedLoss),
+   money(item.netBenefit),
+   item.roi===null?"N/A":percent(item.roi)
+  ].forEach(value=>row.append(el("td","",value)));
+
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el(
+   "td","","No equipment matches the selected filters."
+  );
+  cell.colSpan=8;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderCategoryChart(list){
+ const svg=$("categoryChart");
+ svg.replaceChildren();
+
+ const categories=[
+  {
+   name:"Downtime",
+   value:sum(list,"avoidedDowntime"),
+   color:"#6855eb"
+  },
+  {
+   name:"Repair",
+   value:sum(list,"avoidedRepair"),
+   color:"#438df5"
+  },
+  {
+   name:"Production",
+   value:sum(list,"avoidedProduction"),
+   color:"#18b58c"
+  }
+ ];
+
+ const max=Math.max(
+  ...categories.map(item=>item.value),1
+ );
+
+ categories.forEach((item,index)=>{
+  const y=45+index*65;
+  const width=item.value/max*350;
+
+  svg.append(svgEl("text",{
+   x:12,y:y+17,fill:"#69738e","font-size":"13"
+  },item.name));
+
+  svg.append(svgEl("rect",{
+   x:120,y,width,height:28,rx:6,
+   fill:item.color
+  }));
+
+  svg.append(svgEl("text",{
+   x:130+width,y:y+19,
+   fill:"#202640","font-size":"12"
+  },compactMoney(item.value)));
+ });
+}
+
+function renderPlantChart(list){
+ const svg=$("plantChart");
+ svg.replaceChildren();
+
+ const plants=["Plant A","Plant B","Plant C"].map(plant=>({
+  name:plant,
+  value:sum(
+   list.filter(item=>item.plant===plant),
+   "reactiveLoss"
+  )
+ }));
+
+ const max=Math.max(
+  ...plants.map(item=>item.value),1
+ );
+
+ plants.forEach((item,index)=>{
+  const y=45+index*65;
+  const width=item.value/max*350;
+
+  svg.append(svgEl("text",{
+   x:12,y:y+17,fill:"#69738e","font-size":"13"
+  },item.name));
+
+  svg.append(svgEl("rect",{
+   x:120,y,width,height:28,rx:6,
+   fill:"#6855eb"
+  }));
+
+  svg.append(svgEl("text",{
+   x:130+width,y:y+19,
+   fill:"#202640","font-size":"12"
+  },compactMoney(item.value)));
+ });
+}
+
+function renderFinancialSummary(list){
+ const box=$("financialSummary");
+ box.replaceChildren();
+
+ const reactive=sum(list,"reactiveLoss");
+ const avoided=sum(list,"avoidedLoss");
+ const intervention=sum(list,"intervention");
+ const net=sum(list,"netBenefit");
+
+ const roi=intervention>0?
+  net/intervention*100:null;
+
+ [
+  ["Assets Evaluated",String(list.length)],
+  ["Expected Reactive Loss",money(reactive)],
+  ["Expected Avoided Downtime",money(sum(list,"avoidedDowntime"))],
+  ["Expected Avoided Repair",money(sum(list,"avoidedRepair"))],
+  ["Expected Avoided Production Loss",money(sum(list,"avoidedProduction"))],
+  ["Total Expected Avoided Loss",money(avoided)],
+  ["Intervention Cost",money(intervention)],
+  ["Residual Expected Failure Loss",money(reactive-avoided)],
+  ["Net Expected Benefit",money(net)],
+  ["Scenario ROI",roi===null?"N/A":percent(roi)]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+}
+
+function renderInsights(list){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const highest=[...list].sort(
+  (a,b)=>b.reactiveLoss-a.reactiveLoss
+ )[0];
+
+ const positive=list.filter(
+  item=>item.netBenefit>0
+ ).length;
+
+ const insights=[
+  [
+   "Highest Expected Loss",
+   highest?
+    highest.name+" has the highest modeled reactive loss at "+
+    money(highest.reactiveLoss)+".":
+    "No assets match the selected filters."
+  ],
+  [
+   "Maintenance Economics",
+   positive+" assets show positive net expected benefits."
+  ],
+  [
+   "Avoided Cost Estimate",
+   "Modeled avoided losses total "+
+   money(sum(list,"avoidedLoss"))+
+   " under the assumed 70% failure risk reduction."
+  ],
+  [
+   "Financial Validation",
+   "These figures are synthetic expected values. Verify asset failure data, cost assumptions and maintenance effectiveness before business use."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+
+  card.append(
+   el("h4","",title),
+   el("p","",description)
+  );
+
+  box.append(card);
+ });
+}
+
+function renderMethodology(report){
+ const box=$("methodology");
+ box.replaceChildren();
+
+ [
+  [
+   "Model",
+   "Deterministic expected-value financial scenario."
+  ],
+  [
+   "Failure Probability",
+   "Annual probabilities converted to the selected period using a constant-hazard assumption."
+  ],
+  [
+   "Cost Exposure",
+   "Downtime cost + repair cost + production loss, assumed non-overlapping."
+  ],
+  [
+   "Maintenance Effectiveness",
+   "Fixed illustrative 70% reduction in failure probability."
+  ],
+  [
+   "Avoided Loss",
+   "Period failure probability × maintenance effectiveness × loss per failure."
+  ],
+  [
+   "Net Benefit",
+   "Expected avoided loss minus intervention cost."
+  ],
+  [
+   "Report Type",
+   REPORT_TYPES[report.filters.type]+
+   ". The selected report type changes the report title; all types currently use the same executive financial breakdown."
+  ],
+  [
+   "Limitations",
+   "No actual financial records, statistical confidence intervals, discounted cash flows or verified realized savings."
+  ]
+ ].forEach(([title,description])=>{
+  const card=el("div","record");
+
+  card.append(
+   el("h4","",title),
+   el("p","",description)
+  );
+
+  box.append(card);
+ });
+}
+
+function renderHistory(){
+ const body=$("historyTable");
+ body.replaceChildren();
+
+ history.forEach(report=>{
+  const row=el("tr");
+
+  [
+   report.id,
+   report.title,
+   report.filters.plant==="all"?
+    "All Plants":report.filters.plant,
+   report.filters.months+" months",
+   new Date(report.generatedAt).toLocaleString()
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const action=el("td");
+  const button=el("button","btn primary","Open");
+
+  button.onclick=()=>{
+   activeReport=report;
+   renderReport();
+   notify("Opened report "+report.id);
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(
+  new Blob([content],{type})
+ );
+
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ if(!activeReport)return;
+
+ const rows=[[
+  "report_id","report_type","generated_at",
+  "equipment_id","equipment_name","plant","risk",
+  "period_months","failure_probability",
+  "reactive_loss_inr","intervention_cost_inr",
+  "avoided_downtime_inr","avoided_repair_inr",
+  "avoided_production_inr","avoided_loss_inr",
+  "net_benefit_inr","roi_percent"
+ ]];
+
+ activeReport.assets.forEach(item=>{
+  rows.push([
+   activeReport.id,
+   activeReport.title,
+   activeReport.generatedAt,
+   item.id,item.name,item.plant,item.risk,
+   item.months,item.probability.toFixed(6),
+   item.reactiveLoss.toFixed(2),
+   item.intervention.toFixed(2),
+   item.avoidedDowntime.toFixed(2),
+   item.avoidedRepair.toFixed(2),
+   item.avoidedProduction.toFixed(2),
+   item.avoidedLoss.toFixed(2),
+   item.netBenefit.toFixed(2),
+   item.roi===null?"":item.roi.toFixed(2)
+  ]);
+ });
+
+ const csv=rows.map(row=>
+  row.map(value=>
+   '"'+String(value).replaceAll('"','""')+'"'
+  ).join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-"+activeReport.id+".csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Financial report CSV exported.");
+}
+
+function exportJson(){
+ if(!activeReport)return;
+
+ download(
+  "industra-"+activeReport.id+".json",
+  JSON.stringify({
+   demo:true,
+   methodology:{
+    annualProbabilityConversion:"constant hazard",
+    maintenanceEffectiveness:EFFECTIVENESS,
+    model:"deterministic expected value"
+   },
+   report:activeReport
+  },null,2),
+  "application/json"
+ );
+
+ notify("Financial report JSON exported.");
+}
+
+$("generateBtn").onclick=generateReport;
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+
+$("printBtn").onclick=()=>{
+ if(!activeReport)return;
+ window.print();
+};
+
+$("resetBtn").onclick=()=>{
+ if(!confirm("Reset report filters and session history?"))
+  return;
+
+ $("reportType").value="executive";
+ $("plantFilter").value="all";
+ $("periodFilter").value="12";
+ $("riskFilter").value="all";
+
+ history=[];
+ nextReportNumber=1;
+
+ generateReport();
+ notify("Report center reset.");
+};
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+generateReport();
+</script>
+</body>
+</html>

@@ -1,0 +1,1224 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Assets | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / assets</p><h1 id="page-title">Assets</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Assets workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assets | INDUSTRA AI</title>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px Arial,Helvetica,sans-serif;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;
+ top:0;left:0;bottom:0;
+ width:258px;
+ background:var(--navy);
+ overflow-y:auto;
+ z-index:100;
+}
+.brand{
+ padding:26px 20px;
+ color:white;
+ font-size:19px;
+ font-weight:800;
+}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:18px 20px 8px;
+ color:#687399;
+ font-size:10px;
+ font-weight:800;
+ letter-spacing:1px;
+}
+.nav-link{
+ display:block;
+ padding:12px;
+ margin:3px;
+ border-radius:10px;
+ color:#a4aecf;
+ font-size:12px;
+}
+.nav-link:hover,.nav-link.active{
+ background:var(--purple);
+ color:white;
+}
+.main{
+ margin-left:258px;
+ min-height:100vh;
+}
+.topbar{
+ padding:19px 28px;
+ background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+}
+.content{
+ padding:26px;
+ max-width:1750px;
+ margin:auto;
+}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;
+ color:white;
+ border-radius:17px;
+ margin-bottom:23px;
+}
+.hero h1{
+ font-size:27px;
+ margin:9px 0;
+}
+.hero p{
+ font-size:12px;
+ color:#eeeaff;
+ line-height:1.8;
+}
+.panel,.stat{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:15px;
+ padding:20px;
+ box-shadow:0 5px 20px #10152d05;
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:16px;
+}
+.grid-2{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:16px;
+}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.5fr) minmax(290px,.7fr);
+ gap:17px;
+}
+.flex{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ flex-wrap:wrap;
+}
+.actions{
+ display:flex;
+ gap:9px;
+ flex-wrap:wrap;
+}
+.mb{margin-bottom:23px}
+h3{
+ font-size:14px;
+ margin:0 0 10px;
+}
+h4{
+ font-size:12px;
+ margin:0 0 8px;
+}
+.muted{
+ color:var(--muted);
+ font-size:11px;
+ line-height:1.8;
+}
+.stat-label{
+ color:var(--muted);
+ font-size:11px;
+ font-weight:700;
+}
+.stat-value{
+ font-size:25px;
+ font-weight:800;
+ margin-top:12px;
+}
+.stat-note{
+ font-size:10px;
+ color:var(--muted);
+ margin-top:8px;
+}
+.btn{
+ border:1px solid var(--border);
+ background:white;
+ color:#69738e;
+ border-radius:9px;
+ padding:10px 13px;
+ font-size:11px;
+ font-weight:700;
+}
+.btn:hover{filter:brightness(.97)}
+.btn.primary{
+ background:var(--purple);
+ border-color:var(--purple);
+ color:white;
+}
+.btn.danger{
+ background:#ffedf0;
+ border-color:#ffedf0;
+ color:#d84b63;
+}
+.input{
+ width:100%;
+ padding:11px;
+ border:1px solid var(--border);
+ border-radius:9px;
+ background:white;
+ color:var(--text);
+}
+label{
+ display:block;
+ color:#69738e;
+ font-size:11px;
+ font-weight:700;
+ margin-bottom:7px;
+}
+.badge{
+ display:inline-block;
+ padding:7px 10px;
+ border-radius:8px;
+ font-size:10px;
+ font-weight:800;
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:12px;
+}
+.table-wrap{overflow:auto}
+table{
+ width:100%;
+ border-collapse:collapse;
+ font-size:11px;
+}
+th{
+ background:#f8f9fd;
+ color:var(--muted);
+ text-align:left;
+ padding:13px;
+ white-space:nowrap;
+}
+td{
+ padding:13px;
+ border-bottom:1px solid #eef0f6;
+ white-space:nowrap;
+}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;
+ justify-content:space-between;
+ gap:12px;
+ padding:12px 0;
+ border-bottom:1px solid var(--border);
+ font-size:11px;
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.progress{
+ height:8px;
+ border-radius:10px;
+ background:#edf0f7;
+ overflow:hidden;
+ margin-top:8px;
+}
+.progress span{
+ display:block;
+ height:100%;
+ border-radius:10px;
+}
+.chart{
+ width:100%;
+ height:280px;
+ display:block;
+}
+.record{
+ border:1px solid var(--border);
+ border-radius:11px;
+ padding:14px;
+ margin-bottom:12px;
+}
+.record p{
+ font-size:11px;
+ color:#69738e;
+ line-height:1.8;
+}
+.modal{
+ position:fixed;
+ inset:0;
+ background:#10152d99;
+ display:none;
+ align-items:center;
+ justify-content:center;
+ padding:18px;
+ z-index:200;
+}
+.modal.open{display:flex}
+.modal-content{
+ background:white;
+ border-radius:16px;
+ padding:24px;
+ width:min(700px,100%);
+ max-height:90vh;
+ overflow-y:auto;
+}
+.form-grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:15px;
+}
+.notice{
+ background:#fff8eb;
+ border:1px solid #ffe8c3;
+ color:#986b2d;
+ border-radius:11px;
+ padding:15px;
+ font-size:11px;
+ line-height:1.8;
+}
+#toast{
+ position:fixed;
+ bottom:20px;
+ right:20px;
+ background:var(--navy);
+ color:white;
+ padding:13px 17px;
+ border-radius:10px;
+ display:none;
+ z-index:300;
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}
+ .topbar{padding:14px}
+ .grid,.grid-2,.filters,.form-grid{
+  grid-template-columns:1fr;
+ }
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ .modal,#toast,.notice{display:none!important}
+ .main{margin:0}
+ .content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">ASSET MANAGEMENT</div>
+ <a class="nav-link active" href="assets.html">◆ Assets</a>
+ <a class="nav-link" href="asset-details.html">▦ Asset Details</a>
+ <a class="nav-link" href="asset-health.html">◇ Asset Health</a>
+ <a class="nav-link" href="asset-history.html">◉ Asset History</a>
+ <a class="nav-link" href="asset-inspection.html">◆ Asset Inspection</a>
+ <a class="nav-link" href="asset-lifecycle.html">▦ Asset Lifecycle</a>
+ <a class="nav-link" href="asset-valuation.html">◇ Asset Valuation</a>
+ <a class="nav-link" href="asset-comparison.html">◉ Asset Comparison</a>
+ <a class="nav-link" href="asset-upload.html">◆ Asset Upload</a>
+
+ <div class="nav-title">MAINTENANCE</div>
+ <a class="nav-link" href="predictive-maintenance.html">▦ Predictive Maintenance</a>
+ <a class="nav-link" href="r-u-l-prediction.html">◇ RUL Prediction</a>
+ <a class="nav-link" href="work-orders.html">◉ Work Orders</a>
+
+ <div class="nav-title">MONITORING</div>
+ <a class="nav-link" href="live-telemetry.html">◆ Live Telemetry</a>
+ <a class="nav-link" href="sensor-monitoring.html">▦ Sensor Monitoring</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◇ Cost Intelligence</a>
+ <a class="nav-link" href="total-cost-ownership.html">◉ Total Cost of Ownership</a>
+ <a class="nav-link" href="repair-replacement.html">◆ Repair vs Replacement</a>
+</aside>
+
+<div class="main">
+
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Asset Management / Equipment Registry</div>
+   <strong>Industrial Asset Management</strong>
+  </div>
+ </div>
+ <span class="badge purple">LOCAL DEMO REGISTRY</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / INDUSTRIAL EQUIPMENT MANAGEMENT
+ </div>
+ <h1>Industrial Asset Management & Intelligence</h1>
+ <p>
+  Manage industrial equipment, monitor health and reliability,
+  inspect remaining useful life, track acquisition value,
+  identify high-priority maintenance assets and connect
+  equipment records to predictive maintenance, inspection
+  and lifecycle cost intelligence.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Industrial Equipment Registry</h3>
+  <div class="muted" id="summaryText">Loading equipment registry...</div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="addBtn">+ Add Asset</button>
+  <a class="btn" href="asset-upload.html">Import Assets</a>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset Demo</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Total Registered Assets</div>
+  <div class="stat-value" id="totalKpi">0</div>
+  <div class="stat-note">All equipment in the local registry</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Operational Assets</div>
+  <div class="stat-value" id="operationalKpi">0</div>
+  <div class="stat-note">Assets with operational status</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Critical Health Assets</div>
+  <div class="stat-value" id="criticalKpi">0</div>
+  <div class="stat-note">Health score below 65</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Total Acquisition Value</div>
+  <div class="stat-value" id="valueKpi">₹0</div>
+  <div class="stat-note">Original acquisition costs, not current valuation</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Equipment Registry Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="searchInput">Search Equipment</label>
+   <input class="input" id="searchInput"
+    placeholder="Name, ID, manufacturer...">
+  </div>
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="statusFilter">Operational Status</label>
+   <select class="input" id="statusFilter">
+    <option value="all">All Statuses</option>
+    <option>Operational</option>
+    <option>Maintenance</option>
+    <option>Offline</option>
+   </select>
+  </div>
+  <div>
+   <label for="sortFilter">Sort Assets</label>
+   <select class="input" id="sortFilter">
+    <option value="health">Lowest Health First</option>
+    <option value="name">Equipment Name</option>
+    <option value="value">Highest Acquisition Cost</option>
+    <option value="rul">Shortest RUL</option>
+    <option value="risk">Highest Failure Probability</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Registered Industrial Assets</h3>
+    <p class="muted">
+     Equipment identity, operational status, condition and financial information
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 assets</span>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Equipment</th>
+      <th>Plant</th>
+      <th>Manufacturer</th>
+      <th>Status</th>
+      <th>Health</th>
+      <th>RUL</th>
+      <th>Annual Failure Risk</th>
+      <th>Acquisition Cost</th>
+      <th>Maintenance Priority</th>
+      <th>Actions</th>
+     </tr>
+    </thead>
+    <tbody id="assetTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Selected Equipment Inspector</h3>
+   <span class="badge purple">ASSET PROFILE</span>
+  </div>
+  <div id="assetDetails"></div>
+
+  <div class="actions" style="margin-top:18px">
+   <a class="btn primary" id="detailsLink" href="asset-details.html">
+    Full Asset Details
+   </a>
+   <a class="btn" id="healthLink" href="asset-health.html">
+    Asset Health
+   </a>
+   <a class="btn" id="inspectionLink" href="asset-inspection.html">
+    Inspection
+   </a>
+   <a class="btn" id="valuationLink" href="asset-valuation.html">
+    Valuation
+   </a>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Asset Health Distribution</h3>
+  <p class="muted">Healthy, warning and critical equipment counts</p>
+  <svg class="chart" id="healthChart" viewBox="0 0 640 280"
+   role="img" aria-label="Asset health distribution"></svg>
+ </div>
+ <div class="panel">
+  <h3>Plant Equipment Distribution</h3>
+  <p class="muted">Number of registered assets per industrial plant</p>
+  <svg class="chart" id="plantChart" viewBox="0 0 640 280"
+   role="img" aria-label="Plant equipment distribution"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Maintenance & Reliability Insights</h3>
+  <div id="insightList"></div>
+ </div>
+ <div class="panel">
+  <h3>Asset Management Modules</h3>
+  <div class="actions">
+   <a class="btn" href="asset-health.html">Health Monitoring</a>
+   <a class="btn" href="asset-history.html">Asset History</a>
+   <a class="btn" href="asset-inspection.html">Inspections</a>
+   <a class="btn" href="asset-lifecycle.html">Lifecycle Planning</a>
+   <a class="btn" href="asset-valuation.html">Asset Valuation</a>
+   <a class="btn" href="asset-comparison.html">Asset Comparison</a>
+   <a class="btn" href="asset-upload.html">Bulk Upload</a>
+  </div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Demonstration data:</strong>
+ This standalone equipment registry uses synthetic industrial
+ asset records and browser localStorage. Create, edit and delete
+ actions change local demo data only. Health scores, RUL and failure
+ probabilities are illustrative, not outputs from validated
+ predictive models. Operational status must not be interpreted
+ as verified equipment safety. Production integration requires
+ authenticated FastAPI endpoints, PostgreSQL, authorization,
+ audit logs, asset lifecycle records and validated monitoring data.
+</div>
+
+</main>
+</div>
+
+<div class="modal" id="assetModal" role="dialog"
+ aria-modal="true" aria-labelledby="modalTitle">
+ <div class="modal-content">
+  <div class="flex mb">
+   <h3 id="modalTitle">Add Industrial Asset</h3>
+   <button class="btn" id="closeModalBtn">✕ Close</button>
+  </div>
+
+  <form id="assetForm">
+   <div class="form-grid">
+    <div>
+     <label for="fId">Equipment ID *</label>
+     <input class="input" id="fId" required maxlength="40">
+    </div>
+    <div>
+     <label for="fName">Equipment Name *</label>
+     <input class="input" id="fName" required maxlength="120">
+    </div>
+    <div>
+     <label for="fPlant">Industrial Plant</label>
+     <select class="input" id="fPlant">
+      <option>Plant A</option>
+      <option>Plant B</option>
+      <option>Plant C</option>
+     </select>
+    </div>
+    <div>
+     <label for="fManufacturer">Manufacturer</label>
+     <input class="input" id="fManufacturer" maxlength="100">
+    </div>
+    <div>
+     <label for="fModel">Model</label>
+     <input class="input" id="fModel" maxlength="100">
+    </div>
+    <div>
+     <label for="fLocation">Location</label>
+     <input class="input" id="fLocation" maxlength="120">
+    </div>
+    <div>
+     <label for="fStatus">Operational Status</label>
+     <select class="input" id="fStatus">
+      <option>Operational</option>
+      <option>Maintenance</option>
+      <option>Offline</option>
+     </select>
+    </div>
+    <div>
+     <label for="fHealth">Health Score (0–100)</label>
+     <input class="input" id="fHealth"
+      type="number" min="0" max="100" required>
+    </div>
+    <div>
+     <label for="fRul">Remaining Useful Life (Months)</label>
+     <input class="input" id="fRul"
+      type="number" min="0" max="600" required>
+    </div>
+    <div>
+     <label for="fRisk">Annual Failure Probability (%)</label>
+     <input class="input" id="fRisk"
+      type="number" min="0" max="100" step=".1" required>
+    </div>
+    <div>
+     <label for="fCost">Acquisition Cost (₹)</label>
+     <input class="input" id="fCost"
+      type="number" min="0" step=".01" required>
+    </div>
+    <div>
+     <label for="fInstalled">Installation Date</label>
+     <input class="input" id="fInstalled" type="date">
+    </div>
+   </div>
+
+   <div class="actions" style="margin-top:22px">
+    <button class="btn primary" type="submit">Save Asset</button>
+    <button class="btn" type="button" id="cancelBtn">Cancel</button>
+   </div>
+  </form>
+ </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const KEY="industra-assets-registry-v1";
+
+const DEMO_ASSETS=[
+ {id:"MTR-001",name:"Main Drive Motor",plant:"Plant A",
+  manufacturer:"Siemens",model:"SIMOTICS Industrial Drive",
+  location:"Production Line A1",status:"Operational",
+  health:74,rul:48,risk:32,cost:520000,installed:"2021-03-15"},
+ {id:"CMP-001",name:"Air Compressor",plant:"Plant A",
+  manufacturer:"Atlas Copco",model:"Industrial Rotary Screw",
+  location:"Utility Bay A",status:"Operational",
+  health:81,rul:58,risk:25,cost:440000,installed:"2020-08-10"},
+ {id:"FAN-001",name:"Cooling Fan",plant:"Plant A",
+  manufacturer:"ABB",model:"Industrial Cooling Series",
+  location:"Cooling System A",status:"Operational",
+  health:91,rul:86,risk:12,cost:160000,installed:"2023-02-18"},
+ {id:"GEN-001",name:"Power Generator",plant:"Plant B",
+  manufacturer:"Cummins",model:"Industrial Power System",
+  location:"Power House B",status:"Maintenance",
+  health:52,rul:24,risk:43,cost:1100000,installed:"2018-05-20"},
+ {id:"PMP-001",name:"Cooling Pump",plant:"Plant B",
+  manufacturer:"KSB",model:"Industrial Cooling Pump",
+  location:"Cooling Circuit B",status:"Operational",
+  health:84,rul:69,risk:20,cost:280000,installed:"2022-07-12"},
+ {id:"GBX-001",name:"Industrial Gearbox",plant:"Plant B",
+  manufacturer:"SEW-EURODRIVE",model:"Heavy Duty Gear Unit",
+  location:"Drive Assembly B",status:"Maintenance",
+  health:59,rul:31,risk:37,cost:850000,installed:"2019-09-04"},
+ {id:"HYD-001",name:"Hydraulic Power Unit",plant:"Plant C",
+  manufacturer:"Bosch Rexroth",model:"Hydraulic Power Pack",
+  location:"Hydraulic Station C",status:"Operational",
+  health:76,rul:55,risk:27,cost:390000,installed:"2021-11-14"},
+ {id:"PMP-002",name:"Process Pump",plant:"Plant C",
+  manufacturer:"Flowserve",model:"Process Pump Series",
+  location:"Process Line C2",status:"Maintenance",
+  health:63,rul:37,risk:35,cost:650000,installed:"2020-01-22"},
+ {id:"CNV-001",name:"Conveyor Drive",plant:"Plant C",
+  manufacturer:"Nord Drivesystems",model:"Industrial Conveyor Drive",
+  location:"Conveyor Line C",status:"Operational",
+  health:88,rul:78,risk:15,cost:210000,installed:"2023-06-09"}
+];
+
+let assets=DEMO_ASSETS.map(a=>({...a}));
+let selectedId="GEN-001";
+let editingId=null;
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(n){return currency.format(n)}
+function compact(n){
+ if(n>=10000000)return "₹"+(n/10000000).toFixed(2)+"Cr";
+ if(n>=100000)return "₹"+(n/100000).toFixed(2)+"L";
+ if(n>=1000)return "₹"+(n/1000).toFixed(1)+"K";
+ return money(n);
+}
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+ Object.entries(attrs).forEach(([key,value])=>{
+  node.setAttribute(key,value);
+ });
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(el("span","",label),el("strong","",value));
+ return row;
+}
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+function classification(health){
+ if(health<65)return "Critical";
+ if(health<80)return "Warning";
+ return "Healthy";
+}
+function priority(a){
+ if(a.health<65||a.risk>35)return "High";
+ if(a.health<80||a.risk>25)return "Medium";
+ return "Low";
+}
+function save(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(assets));
+ }catch{
+  notify("Browser storage unavailable.");
+ }
+}
+function load(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+  if(Array.isArray(saved)){
+   const valid=saved.every(a=>
+    a&&typeof a.id==="string"&&
+    typeof a.name==="string"&&
+    Number.isFinite(a.health)&&
+    Number.isFinite(a.cost)
+   );
+   if(valid)assets=saved;
+  }
+ }catch{}
+}
+function filtered(){
+ const query=$("searchInput").value.trim().toLowerCase();
+ const plant=$("plantFilter").value;
+ const status=$("statusFilter").value;
+
+ const list=assets.filter(a=>{
+  const matchesSearch=[
+   a.id,a.name,a.manufacturer,a.model,a.location
+  ].some(v=>String(v||"").toLowerCase().includes(query));
+
+  return matchesSearch&&
+   (plant==="all"||a.plant===plant)&&
+   (status==="all"||a.status===status);
+ });
+
+ const sort=$("sortFilter").value;
+
+ if(sort==="name")list.sort((a,b)=>a.name.localeCompare(b.name));
+ else if(sort==="value")list.sort((a,b)=>b.cost-a.cost);
+ else if(sort==="rul")list.sort((a,b)=>a.rul-b.rul);
+ else if(sort==="risk")list.sort((a,b)=>b.risk-a.risk);
+ else list.sort((a,b)=>a.health-b.health);
+
+ return list;
+}
+function selected(){
+ return assets.find(a=>a.id===selectedId)||assets[0]||null;
+}
+function renderKpis(){
+ $("totalKpi").textContent=assets.length;
+ $("operationalKpi").textContent=assets.filter(
+  a=>a.status==="Operational"
+ ).length;
+ $("criticalKpi").textContent=assets.filter(
+  a=>a.health<65
+ ).length;
+ $("valueKpi").textContent=compact(
+  assets.reduce((sum,a)=>sum+a.cost,0)
+ );
+ $("summaryText").textContent=
+  assets.length+" registered assets across three plants · "+
+  filtered().length+" matching current filters";
+}
+function renderTable(){
+ const body=$("assetTable");
+ body.replaceChildren();
+
+ const list=filtered();
+ $("visibleCount").textContent=list.length+" assets";
+
+ list.forEach(a=>{
+  const row=el("tr");
+
+  [
+   a.name+" · "+a.id,
+   a.plant,
+   a.manufacturer
+  ].forEach(v=>row.append(el("td","",v)));
+
+  const status=el("td");
+  status.append(el(
+   "span",
+   "badge "+(a.status==="Operational"?"green":
+    a.status==="Maintenance"?"orange":"red"),
+   a.status
+  ));
+  row.append(status);
+
+  const healthCell=el("td");
+  healthCell.append(el("strong","",a.health+"%"));
+
+  const progress=el("div","progress");
+  const bar=el("span");
+  bar.style.width=a.health+"%";
+  bar.style.background=a.health<65?"#ed6175":
+   a.health<80?"#f4a443":"#18b58c";
+  progress.append(bar);
+  healthCell.append(progress);
+  row.append(healthCell);
+
+  [
+   a.rul+" months",
+   a.risk.toFixed(1)+"%",
+   money(a.cost)
+  ].forEach(v=>row.append(el("td","",v)));
+
+  const priorityCell=el("td");
+  const p=priority(a);
+  priorityCell.append(el(
+   "span","badge "+(p==="High"?"red":p==="Medium"?"orange":"green"),p
+  ));
+  row.append(priorityCell);
+
+  const actions=el("td");
+  const inspect=el("button","btn primary","Inspect");
+  const edit=el("button","btn","Edit");
+  const remove=el("button","btn danger","Delete");
+
+  inspect.onclick=()=>{
+   selectedId=a.id;
+   renderInspector();
+  };
+  edit.onclick=()=>openModal(a);
+  remove.onclick=()=>deleteAsset(a.id);
+
+  actions.append(inspect," ",edit," ",remove);
+  row.append(actions);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","No matching equipment records.");
+  cell.colSpan=10;
+  row.append(cell);
+  body.append(row);
+ }
+}
+function renderInspector(){
+ const a=selected();
+ const box=$("assetDetails");
+ box.replaceChildren();
+
+ const links=[
+  "detailsLink","healthLink","inspectionLink","valuationLink"
+ ];
+ if(!a){
+  box.append(el("p","muted","No asset selected."));
+  links.forEach(id=>$(id).style.pointerEvents="none");
+  return;
+ }
+
+ links.forEach(id=>$(id).style.pointerEvents="auto");
+
+ [
+  ["Equipment Name",a.name],
+  ["Equipment ID",a.id],
+  ["Plant",a.plant],
+  ["Manufacturer",a.manufacturer],
+  ["Model",a.model],
+  ["Location",a.location],
+  ["Operational Status",a.status],
+  ["Health Score",a.health+"%"],
+  ["Health Classification",classification(a.health)],
+  ["Remaining Useful Life",a.rul+" months"],
+  ["Annual Failure Probability",a.risk.toFixed(1)+"%"],
+  ["Acquisition Cost",money(a.cost)],
+  ["Installation Date",a.installed||"Not specified"],
+  ["Maintenance Priority",priority(a)]
+ ].forEach(([label,value])=>box.append(detail(label,value)));
+
+ const id=encodeURIComponent(a.id);
+ $("detailsLink").href="asset-details.html?id="+id;
+ $("healthLink").href="asset-health.html?id="+id;
+ $("inspectionLink").href="asset-inspection.html?id="+id;
+ $("valuationLink").href="asset-valuation.html?id="+id;
+}
+function drawBars(id,items){
+ const svg=$(id);
+ svg.replaceChildren();
+
+ const left=75,right=615,top=25,bottom=230;
+ const max=Math.max(1,...items.map(x=>x.value));
+ const width=(right-left)/Math.max(1,items.length);
+
+ for(let i=0;i<=4;i++){
+  const y=bottom-(bottom-top)*i/4;
+  svg.append(svgEl("line",{
+   x1:left,y1:y,x2:right,y2:y,stroke:"#e9ebf4"
+  }));
+  svg.append(svgEl("text",{
+   x:15,y:y+4,fill:"#8992aa","font-size":"10"
+  },String(Math.round(max*i/4))));
+ }
+
+ items.forEach((item,i)=>{
+  const height=item.value/max*(bottom-top);
+  const barWidth=Math.min(85,width*.55);
+  const x=left+i*width+(width-barWidth)/2;
+
+  svg.append(svgEl("rect",{
+   x,y:bottom-height,width:barWidth,height,
+   rx:5,fill:item.color||"#6855eb"
+  }));
+
+  svg.append(svgEl("text",{
+   x:x+barWidth/2,y:255,
+   "text-anchor":"middle",fill:"#8992aa","font-size":"11"
+  },item.label));
+
+  svg.append(svgEl("title",{},item.label+": "+item.value));
+ });
+}
+function renderCharts(){
+ drawBars("healthChart",[
+  {
+   label:"Healthy",
+   value:assets.filter(a=>a.health>=80).length,
+   color:"#18b58c"
+  },
+  {
+   label:"Warning",
+   value:assets.filter(a=>a.health>=65&&a.health<80).length,
+   color:"#f4a443"
+  },
+  {
+   label:"Critical",
+   value:assets.filter(a=>a.health<65).length,
+   color:"#ed6175"
+  }
+ ]);
+
+ drawBars("plantChart",
+  ["Plant A","Plant B","Plant C"].map(plant=>({
+   label:plant,
+   value:assets.filter(a=>a.plant===plant).length,
+   color:"#6855eb"
+  }))
+ );
+}
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const critical=assets.filter(a=>a.health<65);
+ const highRisk=assets.filter(a=>a.risk>35);
+ const oldest=[...assets].sort((a,b)=>a.rul-b.rul)[0];
+
+ const insights=[
+  [
+   "Critical Equipment",
+   critical.length+" assets have health scores below 65."
+  ],
+  [
+   "Elevated Failure Probability",
+   highRisk.length+" assets have annual failure probabilities above 35%."
+  ],
+  [
+   "Shortest Remaining Useful Life",
+   oldest?
+    oldest.name+" has an estimated RUL of "+
+    oldest.rul+" months.":"No registered equipment."
+  ],
+  [
+   "Asset Lifecycle Planning",
+   "Review maintenance and replacement options for high-risk equipment."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+  card.append(el("h4","",title),el("p","",description));
+  box.append(card);
+ });
+}
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ renderCharts();
+ renderInsights();
+}
+function openModal(a=null){
+ editingId=a?a.id:null;
+ $("modalTitle").textContent=a?"Edit Industrial Asset":"Add Industrial Asset";
+
+ $("fId").value=a?.id||"";
+ $("fId").disabled=!!a;
+ $("fName").value=a?.name||"";
+ $("fPlant").value=a?.plant||"Plant A";
+ $("fManufacturer").value=a?.manufacturer||"";
+ $("fModel").value=a?.model||"";
+ $("fLocation").value=a?.location||"";
+ $("fStatus").value=a?.status||"Operational";
+ $("fHealth").value=a?.health??85;
+ $("fRul").value=a?.rul??60;
+ $("fRisk").value=a?.risk??15;
+ $("fCost").value=a?.cost??0;
+ $("fInstalled").value=a?.installed||"";
+
+ $("assetModal").classList.add("open");
+ $("fName").focus();
+}
+function closeModal(){
+ $("assetModal").classList.remove("open");
+ editingId=null;
+}
+function deleteAsset(id){
+ const a=assets.find(x=>x.id===id);
+ if(!a)return;
+
+ if(!confirm("Delete "+a.name+" from the local registry?"))return;
+
+ assets=assets.filter(x=>x.id!==id);
+ if(selectedId===id)selectedId=assets[0]?.id||null;
+ save();
+ render();
+ notify("Asset deleted from local registry.");
+}
+$("assetForm").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ const id=$("fId").value.trim().toUpperCase();
+ const name=$("fName").value.trim();
+ const health=Number($("fHealth").value);
+ const rul=Number($("fRul").value);
+ const risk=Number($("fRisk").value);
+ const cost=Number($("fCost").value);
+
+ if(!id||!name){
+  notify("Equipment ID and name are required.");
+  return;
+ }
+ if(
+  !Number.isFinite(health)||health<0||health>100||
+  !Number.isFinite(rul)||rul<0||rul>600||
+  !Number.isFinite(risk)||risk<0||risk>100||
+  !Number.isFinite(cost)||cost<0
+ ){
+  notify("Please enter valid health, RUL, risk and cost values.");
+  return;
+ }
+ if(!editingId&&assets.some(a=>a.id===id)){
+  notify("Equipment ID already exists.");
+  return;
+ }
+
+ const record={
+  id,name,
+  plant:$("fPlant").value,
+  manufacturer:$("fManufacturer").value.trim(),
+  model:$("fModel").value.trim(),
+  location:$("fLocation").value.trim(),
+  status:$("fStatus").value,
+  health,rul,risk,cost,
+  installed:$("fInstalled").value
+ };
+
+ if(editingId){
+  assets=assets.map(a=>a.id===editingId?record:a);
+ }else{
+  assets.push(record);
+ }
+
+ selectedId=id;
+ save();
+ closeModal();
+ render();
+ notify("Asset saved successfully.");
+});
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function exportCsv(){
+ const rows=[[
+  "equipment_id","name","plant","manufacturer","model",
+  "location","status","health_score","rul_months",
+  "annual_failure_probability_percent","acquisition_cost_inr",
+  "installation_date"
+ ]];
+
+ filtered().forEach(a=>rows.push([
+  a.id,a.name,a.plant,a.manufacturer,a.model,
+  a.location,a.status,a.health,a.rul,a.risk,a.cost,a.installed
+ ]));
+
+ const csv=rows.map(row=>row.map(value=>
+  '"'+String(value??"").replaceAll('"','""')+'"'
+ ).join(",")).join("\r\n");
+
+ download("industra-assets.csv","\uFEFF"+csv,"text/csv;charset=utf-8");
+ notify("Asset CSV exported.");
+}
+function exportJson(){
+ download(
+  "industra-assets.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   assets:filtered()
+  },null,2),
+  "application/json"
+ );
+ notify("Asset JSON exported.");
+}
+$("addBtn").onclick=()=>openModal();
+$("closeModalBtn").onclick=closeModal;
+$("cancelBtn").onclick=closeModal;
+$("assetModal").addEventListener("click",event=>{
+ if(event.target===$("assetModal"))closeModal();
+});
+document.addEventListener("keydown",event=>{
+ if(event.key==="Escape")closeModal();
+});
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+$("resetBtn").onclick=()=>{
+ if(!confirm("Restore the original demo asset registry?"))return;
+ assets=DEMO_ASSETS.map(a=>({...a}));
+ selectedId="GEN-001";
+ save();
+ render();
+ notify("Demo registry restored.");
+};
+["searchInput","plantFilter","statusFilter","sortFilter"]
+ .forEach(id=>$(id).addEventListener("input",render));
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+load();
+
+const requestedId=new URLSearchParams(location.search).get("id");
+if(requestedId&&assets.some(a=>a.id===requestedId)){
+ selectedId=requestedId;
+}
+
+render();
+</script>
+</body>
+</html>

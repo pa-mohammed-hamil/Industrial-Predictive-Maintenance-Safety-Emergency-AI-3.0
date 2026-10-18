@@ -1,0 +1,1405 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Labor Cost | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / cost-intelligence</p><h1 id="page-title">Labor Cost</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Labor Cost workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Labor Cost Intelligence | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --white:#fff;--text:#202640;--muted:#8992aa;
+ --border:#e8eaf3;--green:#18b58c;--orange:#f4a443;
+ --red:#ed6175;--blue:#438df5
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px Arial,Helvetica,sans-serif
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{
+ padding:25px 20px;color:white;font-size:19px;font-weight:800
+}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{
+ background:var(--purple);color:white
+}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;
+ box-shadow:0 5px 20px #10152d05
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:16px
+}
+.grid-2{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));gap:16px
+}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);
+ gap:17px
+}
+.flex{
+ display:flex;align-items:center;
+ justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{
+ color:var(--muted);font-size:11px;line-height:1.8
+}
+.stat-label{
+ color:var(--muted);font-size:11px;font-weight:700
+}
+.stat-value{
+ font-size:25px;font-weight:800;margin-top:12px
+}
+.stat-note{
+ font-size:10px;color:var(--muted);margin-top:8px
+}
+.btn{
+ border:1px solid var(--border);background:white;
+ color:#69738e;border-radius:9px;
+ padding:10px 13px;font-size:11px;font-weight:700
+}
+.btn.primary{
+ background:var(--purple);
+ border-color:var(--purple);color:white
+}
+.btn.danger{
+ background:#ffedf0;border-color:#ffedf0;color:#d84b63
+}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{
+ display:block;color:#69738e;
+ font-size:11px;font-weight:700;margin-bottom:7px
+}
+.badge{
+ display:inline-block;padding:7px 10px;
+ border-radius:8px;font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:12px
+}
+.table-wrap{overflow:auto}
+table{
+ width:100%;border-collapse:collapse;font-size:11px
+}
+th{
+ background:#f8f9fd;color:var(--muted);
+ text-align:left;padding:13px;white-space:nowrap
+}
+td{
+ padding:13px;border-bottom:1px solid #eef0f6;
+ white-space:nowrap
+}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);
+ font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);border-radius:11px;
+ padding:14px;margin-bottom:12px
+}
+.record p{
+ font-size:11px;color:#69738e;line-height:1.8
+}
+.chart{width:100%;height:290px;display:block}
+.metric-grid{
+ display:grid;grid-template-columns:1fr 1fr;gap:12px
+}
+.metric{
+ padding:14px;background:#f8f9fd;
+ border:1px solid var(--border);border-radius:11px
+}
+.metric strong{
+ display:block;font-size:20px;margin-top:9px
+}
+.progress{
+ height:10px;background:#eef0f8;
+ border-radius:10px;overflow:hidden;margin-top:9px
+}
+.progress-fill{
+ height:100%;background:var(--purple);
+ border-radius:10px
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:11px;
+ padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;
+ background:var(--navy);color:white;
+ padding:13px 17px;border-radius:10px;
+ display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.metric-grid{
+  grid-template-columns:1fr
+ }
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ .scenario-panel,#toast,.notice{display:none!important}
+ .main{margin:0}.content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◆ Cost Intelligence</a>
+ <a class="nav-link" href="cost-analytics.html">▦ Cost Analytics</a>
+ <a class="nav-link" href="cost-forecasting.html">◇ Cost Forecasting</a>
+ <a class="nav-link" href="future-cost-forecast.html">◉ Future Cost Forecast</a>
+ <a class="nav-link" href="expected-failure-cost.html">◆ Expected Failure Cost</a>
+ <a class="nav-link" href="avoided-cost.html">▦ Avoided Cost</a>
+ <a class="nav-link" href="cost-reports.html">◇ Cost Reports</a>
+ <a class="nav-link" href="downtime-cost.html">◉ Downtime Cost</a>
+ <a class="nav-link" href="emergency-cost.html">◆ Emergency Cost</a>
+ <a class="nav-link" href="energy-cost.html">▦ Energy Cost</a>
+ <a class="nav-link active" href="labor-cost.html">◇ Labor Cost</a>
+ <a class="nav-link" href="repair-cost.html">◉ Repair Cost</a>
+ <a class="nav-link" href="replacement-cost.html">◆ Replacement Cost</a>
+ <a class="nav-link" href="roi-analysis.html">▦ ROI Analysis</a>
+
+ <div class="nav-title">OPERATIONS</div>
+ <a class="nav-link" href="maintenance-planning.html">◇ Maintenance Planning</a>
+ <a class="nav-link" href="maintenance-schedule.html">◉ Maintenance Schedule</a>
+ <a class="nav-link" href="asset-management.html">◆ Asset Management</a>
+ <a class="nav-link" href="production-efficiency.html">▦ Production Efficiency</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Cost Intelligence / Workforce Economics</div>
+   <strong>Industrial Labor Cost Intelligence</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC WORKFORCE DATA</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / MAINTENANCE WORKFORCE ECONOMICS
+ </div>
+ <h1>Industrial Labor Cost Intelligence</h1>
+ <p>
+  Analyze technician labor expenditure, scheduled preventive
+  maintenance, corrective repair work, overtime, emergency
+  response, contractor spending and workforce utilization.
+  Evaluate staffing scenarios and estimate potential labor
+  savings from improved maintenance planning.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Maintenance Labor Cost Overview</h3>
+  <div class="muted" id="summaryText">
+   Calculating workforce expenses...
+  </div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="calculateBtn">Recalculate</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Total Labor Cost</div>
+  <div class="stat-value" id="totalKpi">₹0</div>
+  <div class="stat-note">Selected-period workforce expenditure</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Total Labor Hours</div>
+  <div class="stat-value" id="hoursKpi">0</div>
+  <div class="stat-note">Preventive, corrective, emergency and overtime hours</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Overtime & Emergency Cost</div>
+  <div class="stat-value" id="premiumKpi">₹0</div>
+  <div class="stat-note">Premium labor cost exposure</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Potential Labor Savings</div>
+  <div class="stat-value" id="savingsKpi">₹0</div>
+  <div class="stat-note">Illustrative reduction scenario</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Workforce Cost Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="teamFilter">Maintenance Team</label>
+   <select class="input" id="teamFilter">
+    <option value="all">All Teams</option>
+    <option>Mechanical</option>
+    <option>Electrical</option>
+    <option>Instrumentation</option>
+   </select>
+  </div>
+  <div>
+   <label for="periodFilter">Analysis Period</label>
+   <select class="input" id="periodFilter">
+    <option value="1">1 Month</option>
+    <option value="3">3 Months</option>
+    <option value="6">6 Months</option>
+    <option value="12" selected>12 Months</option>
+   </select>
+  </div>
+  <div>
+   <label for="sortFilter">Sort By</label>
+   <select class="input" id="sortFilter">
+    <option value="cost">Highest Labor Cost</option>
+    <option value="hours">Highest Labor Hours</option>
+    <option value="savings">Highest Savings Opportunity</option>
+    <option value="name">Team Name</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Maintenance Workforce Cost Analysis</h3>
+    <p class="muted">
+     Team-level hours, expenses, overtime and labor savings
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 teams</span>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Team</th>
+      <th>Plant</th>
+      <th>Technicians</th>
+      <th>Labor Hours</th>
+      <th>Regular Cost</th>
+      <th>Overtime Cost</th>
+      <th>Emergency Cost</th>
+      <th>Contractor Cost</th>
+      <th>Total Cost</th>
+      <th>Savings</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="laborTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Workforce Cost Inspector</h3>
+   <span class="badge purple">TEAM PROFILE</span>
+  </div>
+
+  <div id="teamDetails"></div>
+
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Labor Cost</span>
+    <strong id="teamCost">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Labor Hours</span>
+    <strong id="teamHours">0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Utilization</span>
+    <strong id="teamUtilization">0%</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Potential Savings</span>
+    <strong id="teamSavings">₹0</strong>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Monthly Labor Cost Trend</h3>
+   <span class="badge purple">WORKFORCE TREND</span>
+  </div>
+  <p class="muted">
+   Illustrative monthly maintenance labor expenditure
+  </p>
+  <svg class="chart" id="trendChart"
+   viewBox="0 0 640 290"
+   role="img" aria-label="Monthly labor cost trend"></svg>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Labor Cost Composition</h3>
+   <span class="badge blue">COST CATEGORIES</span>
+  </div>
+  <p class="muted">
+   Preventive, corrective, overtime, emergency and contractor costs
+  </p>
+  <svg class="chart" id="categoryChart"
+   viewBox="0 0 640 290"
+   role="img" aria-label="Labor cost composition"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel scenario-panel">
+  <h3>Workforce Labor Cost Simulator</h3>
+
+  <div style="margin-bottom:15px">
+   <label for="hourlyMultiplier">Hourly Wage Multiplier</label>
+   <input class="input" id="hourlyMultiplier"
+    type="number" min=".5" max="3" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="overtimeMultiplier">Overtime Rate Multiplier</label>
+   <input class="input" id="overtimeMultiplier"
+    type="number" min="1" max="3" step=".1" value="1.5">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="emergencyMultiplier">Emergency Labor Rate Multiplier</label>
+   <input class="input" id="emergencyMultiplier"
+    type="number" min="1" max="4" step=".1" value="2">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="contractorMultiplier">Contractor Cost Multiplier</label>
+   <input class="input" id="contractorMultiplier"
+    type="number" min=".5" max="3" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="overtimeReduction">Overtime Hours Reduction (%)</label>
+   <input class="input" id="overtimeReduction"
+    type="number" min="0" max="100" step="1" value="20">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="emergencyReduction">Emergency Labor Reduction (%)</label>
+   <input class="input" id="emergencyReduction"
+    type="number" min="0" max="100" step="1" value="30">
+  </div>
+
+  <button class="btn primary" id="applyScenarioBtn">
+   Apply Labor Cost Scenario
+  </button>
+
+  <p class="muted">
+   Savings are calculated from reduced overtime and emergency
+   labor hours. They do not include potential replacement staffing,
+   rescheduling or implementation expenses.
+  </p>
+ </div>
+
+ <div class="panel">
+  <h3>Workforce Financial Summary</h3>
+  <p class="muted">
+   Labor hours, cost drivers, premium labor and savings
+  </p>
+  <div id="financialSummary"></div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Plant Labor Cost Performance</h3>
+  <p class="muted">Maintenance workforce economics by plant</p>
+  <div id="plantSummary"></div>
+ </div>
+
+ <div class="panel">
+  <h3>Workforce Cost Intelligence Insights</h3>
+  <p class="muted">
+   Automated observations from the selected synthetic scenario
+  </p>
+  <div id="insightList"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Labor modeling notice:</strong>
+ All workforce data, wages, work hours, staffing levels and
+ costs are synthetic. This dashboard models task-based labor
+ expenses rather than full employee payroll. It excludes
+ statutory benefits, payroll taxes, leave, training, overhead
+ and other employment costs. Overtime and emergency hours
+ are modeled as separate non-overlapping work categories.
+ Utilization is illustrative and should not be used for
+ staffing or safety decisions without validated workforce data.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const KEY="industra-labor-cost-v1";
+
+const TEAMS=[
+ {
+  id:"LAB-001",name:"Mechanical Maintenance A",
+  plant:"Plant A",type:"Mechanical",
+  technicians:8,hourlyRate:480,
+  preventiveHours:520,correctiveHours:290,
+  overtimeHours:95,emergencyHours:48,
+  contractorCost:68000
+ },
+ {
+  id:"LAB-002",name:"Electrical Maintenance A",
+  plant:"Plant A",type:"Electrical",
+  technicians:6,hourlyRate:560,
+  preventiveHours:410,correctiveHours:260,
+  overtimeHours:82,emergencyHours:35,
+  contractorCost:54000
+ },
+ {
+  id:"LAB-003",name:"Instrumentation A",
+  plant:"Plant A",type:"Instrumentation",
+  technicians:4,hourlyRate:620,
+  preventiveHours:330,correctiveHours:170,
+  overtimeHours:42,emergencyHours:19,
+  contractorCost:39000
+ },
+ {
+  id:"LAB-004",name:"Mechanical Maintenance B",
+  plant:"Plant B",type:"Mechanical",
+  technicians:10,hourlyRate:500,
+  preventiveHours:640,correctiveHours:410,
+  overtimeHours:145,emergencyHours:75,
+  contractorCost:105000
+ },
+ {
+  id:"LAB-005",name:"Electrical Maintenance B",
+  plant:"Plant B",type:"Electrical",
+  technicians:7,hourlyRate:590,
+  preventiveHours:470,correctiveHours:320,
+  overtimeHours:110,emergencyHours:62,
+  contractorCost:87000
+ },
+ {
+  id:"LAB-006",name:"Instrumentation B",
+  plant:"Plant B",type:"Instrumentation",
+  technicians:5,hourlyRate:650,
+  preventiveHours:360,correctiveHours:230,
+  overtimeHours:74,emergencyHours:33,
+  contractorCost:59000
+ },
+ {
+  id:"LAB-007",name:"Mechanical Maintenance C",
+  plant:"Plant C",type:"Mechanical",
+  technicians:9,hourlyRate:490,
+  preventiveHours:580,correctiveHours:350,
+  overtimeHours:120,emergencyHours:58,
+  contractorCost:82000
+ },
+ {
+  id:"LAB-008",name:"Electrical Maintenance C",
+  plant:"Plant C",type:"Electrical",
+  technicians:6,hourlyRate:570,
+  preventiveHours:430,correctiveHours:275,
+  overtimeHours:90,emergencyHours:43,
+  contractorCost:64000
+ },
+ {
+  id:"LAB-009",name:"Instrumentation C",
+  plant:"Plant C",type:"Instrumentation",
+  technicians:4,hourlyRate:630,
+  preventiveHours:310,correctiveHours:185,
+  overtimeHours:53,emergencyHours:25,
+  contractorCost:45000
+ }
+];
+
+const DEFAULTS={
+ hourlyMultiplier:1,
+ overtimeMultiplier:1.5,
+ emergencyMultiplier:2,
+ contractorMultiplier:1,
+ overtimeReduction:20,
+ emergencyReduction:30
+};
+
+let scenario={...DEFAULTS};
+let results=[];
+let selectedId=TEAMS[0].id;
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(value){
+ return currency.format(value);
+}
+
+function compact(value){
+ const sign=value<0?"-":"";
+ const n=Math.abs(value);
+
+ if(n>=10000000)
+  return sign+"₹"+(n/10000000).toFixed(2)+"Cr";
+
+ if(n>=100000)
+  return sign+"₹"+(n/100000).toFixed(2)+"L";
+
+ if(n>=1000)
+  return sign+"₹"+(n/1000).toFixed(1)+"K";
+
+ return money(value);
+}
+
+function num(value){
+ return new Intl.NumberFormat("en-IN",{
+  maximumFractionDigits:1
+ }).format(value);
+}
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function sum(items,key){
+ return items.reduce(
+  (total,item)=>total+(item[key]||0),0
+ );
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+
+ clearTimeout(toastTimer);
+
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function calculateTeam(team){
+ const months=Number($("periodFilter").value);
+
+ const rate=team.hourlyRate*scenario.hourlyMultiplier;
+
+ const preventiveHours=team.preventiveHours*months;
+ const correctiveHours=team.correctiveHours*months;
+ const overtimeHours=team.overtimeHours*months;
+ const emergencyHours=team.emergencyHours*months;
+
+ const preventiveCost=preventiveHours*rate;
+ const correctiveCost=correctiveHours*rate;
+
+ const overtimeCost=
+  overtimeHours*rate*scenario.overtimeMultiplier;
+
+ const emergencyCost=
+  emergencyHours*rate*scenario.emergencyMultiplier;
+
+ const contractorCost=
+  team.contractorCost*
+  months*
+  scenario.contractorMultiplier;
+
+ const regularCost=preventiveCost+correctiveCost;
+
+ const totalCost=
+  regularCost+overtimeCost+
+  emergencyCost+contractorCost;
+
+ const totalHours=
+  preventiveHours+correctiveHours+
+  overtimeHours+emergencyHours;
+
+ const availableHours=team.technicians*160*months;
+
+ const utilization=availableHours>0?
+  totalHours/availableHours*100:0;
+
+ const overtimeSavings=
+  overtimeCost*scenario.overtimeReduction/100;
+
+ const emergencySavings=
+  emergencyCost*scenario.emergencyReduction/100;
+
+ const savings=overtimeSavings+emergencySavings;
+
+ return{
+  ...team,
+  months,
+  rate,
+  preventiveHours,
+  correctiveHours,
+  overtimeHours,
+  emergencyHours,
+  preventiveCost,
+  correctiveCost,
+  regularCost,
+  overtimeCost,
+  emergencyCost,
+  contractorCost,
+  totalCost,
+  totalHours,
+  availableHours,
+  utilization,
+  overtimeSavings,
+  emergencySavings,
+  savings,
+  residualCost:totalCost-savings,
+  effectiveRate:totalHours>0?
+   totalCost/totalHours:0
+ };
+}
+
+function calculateAll(){
+ results=TEAMS.map(calculateTeam);
+ render();
+}
+
+function filtered(){
+ const plant=$("plantFilter").value;
+ const team=$("teamFilter").value;
+
+ return results.filter(item=>
+  (plant==="all"||item.plant===plant)&&
+  (team==="all"||item.type===team)
+ );
+}
+
+function selected(){
+ return filtered().find(item=>item.id===selectedId)||
+  filtered()[0]||null;
+}
+
+function detail(label,value){
+ const row=el("div","detail");
+
+ row.append(
+  el("span","",label),
+  el("strong","",value)
+ );
+
+ return row;
+}
+
+function renderKpis(){
+ const list=filtered();
+
+ $("totalKpi").textContent=
+  compact(sum(list,"totalCost"));
+
+ $("hoursKpi").textContent=
+  num(sum(list,"totalHours"))+" h";
+
+ $("premiumKpi").textContent=
+  compact(
+   sum(list,"overtimeCost")+
+   sum(list,"emergencyCost")
+  );
+
+ $("savingsKpi").textContent=
+  compact(sum(list,"savings"));
+
+ $("summaryText").textContent=
+  $("periodFilter").value+
+  "-month workforce cost analysis · "+
+  list.length+" teams · "+
+  num(sum(list,"totalHours"))+" labor hours";
+}
+
+function sortedList(){
+ const list=[...filtered()];
+ const sort=$("sortFilter").value;
+
+ if(sort==="hours"){
+  list.sort((a,b)=>b.totalHours-a.totalHours);
+ }else if(sort==="savings"){
+  list.sort((a,b)=>b.savings-a.savings);
+ }else if(sort==="name"){
+  list.sort((a,b)=>a.name.localeCompare(b.name));
+ }else{
+  list.sort((a,b)=>b.totalCost-a.totalCost);
+ }
+
+ return list;
+}
+
+function renderTable(){
+ const body=$("laborTable");
+ body.replaceChildren();
+
+ const list=sortedList();
+ $("visibleCount").textContent=list.length+" teams";
+
+ list.forEach(item=>{
+  const row=el("tr");
+
+  [
+   item.name+" · "+item.id,
+   item.plant,
+   item.technicians,
+   num(item.totalHours),
+   money(item.regularCost),
+   money(item.overtimeCost),
+   money(item.emergencyCost),
+   money(item.contractorCost),
+   money(item.totalCost),
+   money(item.savings)
+  ].forEach(value=>{
+   row.append(el("td","",value));
+  });
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+
+  button.onclick=()=>{
+   selectedId=item.id;
+   renderInspector();
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","No teams match the selected filters.");
+  cell.colSpan=11;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const item=selected();
+ const box=$("teamDetails");
+ box.replaceChildren();
+
+ if(!item){
+  box.append(el("p","muted","No team selected."));
+
+  [
+   "teamCost","teamHours",
+   "teamUtilization","teamSavings"
+  ].forEach(id=>$(id).textContent="--");
+
+  return;
+ }
+
+ [
+  ["Team",item.name],
+  ["Team ID",item.id],
+  ["Plant",item.plant],
+  ["Maintenance Specialty",item.type],
+  ["Technicians",String(item.technicians)],
+  ["Hourly Rate",money(item.rate)],
+  ["Preventive Hours",num(item.preventiveHours)+" h"],
+  ["Corrective Hours",num(item.correctiveHours)+" h"],
+  ["Overtime Hours",num(item.overtimeHours)+" h"],
+  ["Emergency Hours",num(item.emergencyHours)+" h"],
+  ["Preventive Labor Cost",money(item.preventiveCost)],
+  ["Corrective Labor Cost",money(item.correctiveCost)],
+  ["Overtime Cost",money(item.overtimeCost)],
+  ["Emergency Labor Cost",money(item.emergencyCost)],
+  ["Contractor Cost",money(item.contractorCost)],
+  ["Effective Cost / Hour",money(item.effectiveRate)],
+  ["Modeled Available Hours",num(item.availableHours)+" h"],
+  ["Residual Scenario Cost",money(item.residualCost)]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+
+ $("teamCost").textContent=compact(item.totalCost);
+ $("teamHours").textContent=num(item.totalHours)+" h";
+ $("teamUtilization").textContent=
+  item.utilization.toFixed(1)+"%";
+ $("teamSavings").textContent=compact(item.savings);
+}
+
+function drawTrendChart(){
+ const svg=$("trendChart");
+ svg.replaceChildren();
+
+ const list=filtered();
+ const months=Number($("periodFilter").value);
+
+ const base=sum(list,"totalCost")/months;
+
+ const raw=Array.from({length:months},(_,i)=>
+  base*(1+.06*Math.sin(i*Math.PI/3))
+ );
+
+ const rawSum=raw.reduce((a,b)=>a+b,0);
+ const target=sum(list,"totalCost");
+
+ const values=raw.map(value=>
+  rawSum>0?value*target/rawSum:0
+ );
+
+ const left=55,right=615,top=25,bottom=235;
+ const max=Math.max(...values,1)*1.15;
+
+ for(let i=0;i<=4;i++){
+  const y=bottom-(bottom-top)*i/4;
+
+  svg.append(svgEl("line",{
+   x1:left,y1:y,x2:right,y2:y,stroke:"#e9ebf4"
+  }));
+
+  svg.append(svgEl("text",{
+   x:5,y:y+4,fill:"#8992aa","font-size":"10"
+  },compact(max*i/4)));
+ }
+
+ const x=index=>left+(right-left)*
+  (months===1?.5:index/(months-1));
+
+ const y=value=>bottom-value/max*(bottom-top);
+
+ const points=values.map((value,index)=>
+  x(index)+","+y(value)
+ ).join(" ");
+
+ svg.append(svgEl("polyline",{
+  points,fill:"none",stroke:"#6855eb",
+  "stroke-width":"3","stroke-linejoin":"round"
+ }));
+
+ values.forEach((value,index)=>{
+  svg.append(svgEl("circle",{
+   cx:x(index),cy:y(value),r:4,fill:"#6855eb"
+  }));
+
+  svg.append(svgEl("text",{
+   x:x(index)-10,y:257,
+   fill:"#8992aa","font-size":"10"
+  },"M"+(index+1)));
+ });
+}
+
+function drawCategoryChart(){
+ const svg=$("categoryChart");
+ svg.replaceChildren();
+
+ const list=filtered();
+
+ const categories=[
+  {
+   name:"Preventive",
+   value:sum(list,"preventiveCost"),
+   color:"#6855eb"
+  },
+  {
+   name:"Corrective",
+   value:sum(list,"correctiveCost"),
+   color:"#438df5"
+  },
+  {
+   name:"Overtime",
+   value:sum(list,"overtimeCost"),
+   color:"#f4a443"
+  },
+  {
+   name:"Emergency",
+   value:sum(list,"emergencyCost"),
+   color:"#ed6175"
+  },
+  {
+   name:"Contractor",
+   value:sum(list,"contractorCost"),
+   color:"#18b58c"
+  }
+ ];
+
+ const max=Math.max(...categories.map(item=>item.value),1);
+
+ categories.forEach((item,index)=>{
+  const y=20+index*49;
+  const width=item.value/max*320;
+
+  svg.append(svgEl("text",{
+   x:8,y:y+16,fill:"#69738e","font-size":"11"
+  },item.name));
+
+  svg.append(svgEl("rect",{
+   x:110,y,width,height:23,rx:5,fill:item.color
+  }));
+
+  svg.append(svgEl("text",{
+   x:120+width,y:y+16,
+   fill:"#202640","font-size":"11"
+  },compact(item.value)));
+ });
+}
+
+function renderFinancialSummary(){
+ const box=$("financialSummary");
+ box.replaceChildren();
+
+ const list=filtered();
+
+ const total=sum(list,"totalCost");
+ const hours=sum(list,"totalHours");
+
+ [
+  ["Maintenance Teams",String(list.length)],
+  ["Total Technicians",num(sum(list,"technicians"))],
+  ["Preventive Hours",num(sum(list,"preventiveHours"))+" h"],
+  ["Corrective Hours",num(sum(list,"correctiveHours"))+" h"],
+  ["Overtime Hours",num(sum(list,"overtimeHours"))+" h"],
+  ["Emergency Hours",num(sum(list,"emergencyHours"))+" h"],
+  ["Total Labor Hours",num(hours)+" h"],
+  ["Preventive Labor Cost",money(sum(list,"preventiveCost"))],
+  ["Corrective Labor Cost",money(sum(list,"correctiveCost"))],
+  ["Overtime Labor Cost",money(sum(list,"overtimeCost"))],
+  ["Emergency Labor Cost",money(sum(list,"emergencyCost"))],
+  ["Contractor Cost",money(sum(list,"contractorCost"))],
+  ["Total Labor Cost",money(total)],
+  ["Average Cost / Labor Hour",
+   hours?money(total/hours):"₹0"],
+  ["Potential Labor Savings",money(sum(list,"savings"))],
+  ["Residual Scenario Cost",money(sum(list,"residualCost"))]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+}
+
+function renderPlants(){
+ const box=$("plantSummary");
+ box.replaceChildren();
+
+ ["Plant A","Plant B","Plant C"].forEach(plant=>{
+  const list=filtered().filter(item=>item.plant===plant);
+
+  const card=el("div","record");
+
+  card.append(
+   el("h4","",plant),
+   el("p","",
+    list.length+" teams · "+
+    num(sum(list,"technicians"))+" technicians · "+
+    num(sum(list,"totalHours"))+" labor hours · "+
+    compact(sum(list,"totalCost"))+" cost · "+
+    compact(sum(list,"savings"))+" potential savings")
+  );
+
+  box.append(card);
+ });
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const list=filtered();
+
+ const highest=[...list].sort(
+  (a,b)=>b.totalCost-a.totalCost
+ )[0];
+
+ const total=sum(list,"totalCost");
+ const premium=
+  sum(list,"overtimeCost")+
+  sum(list,"emergencyCost");
+
+ const insights=[
+  [
+   "Highest Labor Cost Team",
+   highest?
+    highest.name+" has the highest modeled workforce expense at "+
+    money(highest.totalCost)+".":
+    "No teams match the selected filters."
+  ],
+  [
+   "Premium Labor Exposure",
+   "Overtime and emergency work represent "+
+   (total?(premium/total*100).toFixed(1):"0.0")+
+   "% of total modeled labor spending."
+  ],
+  [
+   "Potential Labor Savings",
+   "The active overtime and emergency reduction assumptions yield "+
+   money(sum(list,"savings"))+
+   " in hypothetical gross labor savings."
+  ],
+  [
+   "Workforce Planning",
+   "Review technician capacity, maintenance scheduling, shift coverage and contractor utilization before changing staffing levels."
+  ],
+  [
+   "Cost Governance",
+   "Validate timesheets, labor rates, work-order classifications, payroll burdens and contractor invoices against actual records."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+
+  card.append(
+   el("h4","",title),
+   el("p","",description)
+  );
+
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawTrendChart();
+ drawCategoryChart();
+ renderFinancialSummary();
+ renderPlants();
+ renderInsights();
+}
+
+function validateScenario(){
+ const hourlyMultiplier=
+  Number($("hourlyMultiplier").value);
+
+ const overtimeMultiplier=
+  Number($("overtimeMultiplier").value);
+
+ const emergencyMultiplier=
+  Number($("emergencyMultiplier").value);
+
+ const contractorMultiplier=
+  Number($("contractorMultiplier").value);
+
+ const overtimeReduction=
+  Number($("overtimeReduction").value);
+
+ const emergencyReduction=
+  Number($("emergencyReduction").value);
+
+ const valid=(value,min,max)=>
+  Number.isFinite(value)&&value>=min&&value<=max;
+
+ if(
+  !valid(hourlyMultiplier,.5,3)||
+  !valid(overtimeMultiplier,1,3)||
+  !valid(emergencyMultiplier,1,4)||
+  !valid(contractorMultiplier,.5,3)||
+  !valid(overtimeReduction,0,100)||
+  !valid(emergencyReduction,0,100)
+ ){
+  notify("Enter valid workforce cost assumptions.");
+  return false;
+ }
+
+ scenario={
+  hourlyMultiplier,
+  overtimeMultiplier,
+  emergencyMultiplier,
+  contractorMultiplier,
+  overtimeReduction,
+  emergencyReduction
+ };
+
+ return true;
+}
+
+function syncInputs(){
+ $("hourlyMultiplier").value=scenario.hourlyMultiplier;
+ $("overtimeMultiplier").value=scenario.overtimeMultiplier;
+ $("emergencyMultiplier").value=scenario.emergencyMultiplier;
+ $("contractorMultiplier").value=scenario.contractorMultiplier;
+ $("overtimeReduction").value=scenario.overtimeReduction;
+ $("emergencyReduction").value=scenario.emergencyReduction;
+}
+
+function saveScenario(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(scenario));
+ }catch{
+  notify("Browser storage unavailable.");
+ }
+}
+
+function loadScenario(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+
+  const valid=(value,min,max)=>
+   typeof value==="number"&&
+   Number.isFinite(value)&&value>=min&&value<=max;
+
+  if(saved&&
+   valid(saved.hourlyMultiplier,.5,3)&&
+   valid(saved.overtimeMultiplier,1,3)&&
+   valid(saved.emergencyMultiplier,1,4)&&
+   valid(saved.contractorMultiplier,.5,3)&&
+   valid(saved.overtimeReduction,0,100)&&
+   valid(saved.emergencyReduction,0,100)
+  ){
+   scenario={...saved};
+  }
+ }catch{}
+
+ syncInputs();
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(
+  new Blob([content],{type})
+ );
+
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+
+ document.body.append(a);
+ a.click();
+ a.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "team_id","team_name","plant","specialty",
+  "technicians","period_months","hourly_rate_inr",
+  "preventive_hours","corrective_hours",
+  "overtime_hours","emergency_hours",
+  "total_labor_hours","preventive_cost_inr",
+  "corrective_cost_inr","overtime_cost_inr",
+  "emergency_cost_inr","contractor_cost_inr",
+  "total_labor_cost_inr","utilization_percent",
+  "potential_savings_inr","residual_cost_inr"
+ ]];
+
+ filtered().forEach(item=>{
+  rows.push([
+   item.id,item.name,item.plant,item.type,
+   item.technicians,item.months,item.rate.toFixed(2),
+   item.preventiveHours.toFixed(2),
+   item.correctiveHours.toFixed(2),
+   item.overtimeHours.toFixed(2),
+   item.emergencyHours.toFixed(2),
+   item.totalHours.toFixed(2),
+   item.preventiveCost.toFixed(2),
+   item.correctiveCost.toFixed(2),
+   item.overtimeCost.toFixed(2),
+   item.emergencyCost.toFixed(2),
+   item.contractorCost.toFixed(2),
+   item.totalCost.toFixed(2),
+   item.utilization.toFixed(2),
+   item.savings.toFixed(2),
+   item.residualCost.toFixed(2)
+  ]);
+ });
+
+ const csv=rows.map(row=>
+  row.map(value=>
+   '"'+String(value).replaceAll('"','""')+'"'
+  ).join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-labor-cost.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Labor cost CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-labor-cost.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   scenario,
+   analysisMonths:Number($("periodFilter").value),
+   filters:{
+    plant:$("plantFilter").value,
+    team:$("teamFilter").value,
+    sort:$("sortFilter").value
+   },
+   results:filtered()
+  },null,2),
+  "application/json"
+ );
+
+ notify("Labor cost JSON exported.");
+}
+
+$("calculateBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculateAll();
+ notify("Labor costs recalculated.");
+};
+
+$("applyScenarioBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculateAll();
+ notify("Workforce scenario applied.");
+};
+
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ if(!confirm("Reset labor cost scenario?"))return;
+
+ scenario={...DEFAULTS};
+ selectedId=TEAMS[0].id;
+
+ $("plantFilter").value="all";
+ $("teamFilter").value="all";
+ $("periodFilter").value="12";
+ $("sortFilter").value="cost";
+
+ syncInputs();
+ saveScenario();
+ calculateAll();
+
+ notify("Labor cost scenario reset.");
+};
+
+[
+ "plantFilter",
+ "teamFilter",
+ "periodFilter",
+ "sortFilter"
+].forEach(id=>{
+ $(id).addEventListener("change",calculateAll);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+loadScenario();
+calculateAll();
+</script>
+
+</body>
+</html>

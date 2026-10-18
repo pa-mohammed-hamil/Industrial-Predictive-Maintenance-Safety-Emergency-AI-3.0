@@ -1,0 +1,964 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Register | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / auth</p><h1 id="page-title">Register</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Register workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Sign In | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+ --navy:#10152d;
+ --navy-light:#1c2249;
+ --purple:#6855eb;
+ --purple-light:#8b7af9;
+ --text:#202640;
+ --muted:#8d95ac;
+ --border:#e7eaf3;
+ --green:#16b88a;
+ --red:#eb6174;
+ --bg:#f7f8fd;
+}
+
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ min-height:100vh;
+ background:var(--bg);
+ color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6{
+ font-family:Manrope,sans-serif;
+ letter-spacing:-.7px;
+}
+
+a{
+ text-decoration:none;
+ color:var(--purple);
+}
+
+a:hover{color:#5140c9}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible{
+ outline:3px solid #aa9aff!important;
+ outline-offset:3px;
+}
+
+.auth-layout{
+ display:grid;
+ grid-template-columns:minmax(390px,45%) minmax(0,1fr);
+ min-height:100vh;
+}
+
+/* BRAND SIDE */
+
+.brand-panel{
+ position:relative;
+ overflow:hidden;
+ background:
+  radial-gradient(circle at 15% 85%,#6855eb38,transparent 35%),
+  radial-gradient(circle at 95% 10%,#997dff2e,transparent 40%),
+  linear-gradient(145deg,#10152d,#1c214d 75%,#29255e);
+ color:white;
+ padding:42px 55px;
+ display:flex;
+ flex-direction:column;
+}
+
+.brand-panel:before{
+ content:"";
+ position:absolute;
+ width:530px;
+ height:530px;
+ border-radius:50%;
+ border:1px solid #ffffff16;
+ top:13%;
+ right:-255px;
+ box-shadow:
+  0 0 0 65px #ffffff05,
+  0 0 0 130px #ffffff04,
+  0 0 0 195px #ffffff03;
+ pointer-events:none;
+}
+
+.brand-logo{
+ display:flex;
+ align-items:center;
+ gap:13px;
+ position:relative;
+ z-index:1;
+}
+
+.logo-icon{
+ width:48px;
+ height:48px;
+ border-radius:15px;
+ display:grid;
+ place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6651e9);
+ font-size:25px;
+ box-shadow:0 10px 30px #6855eb44;
+}
+
+.brand-logo strong{
+ font:800 20px Manrope,sans-serif;
+}
+
+.brand-logo small{
+ display:block;
+ font-size:9px;
+ letter-spacing:2.3px;
+ color:#929bc4;
+ margin-top:3px;
+}
+
+.brand-content{
+ margin:auto 0;
+ position:relative;
+ z-index:1;
+ max-width:530px;
+}
+
+.brand-eyebrow{
+ color:#b09fff;
+ text-transform:uppercase;
+ letter-spacing:3px;
+ font-size:10px;
+ font-weight:800;
+}
+
+.brand-content h1{
+ font-size:clamp(35px,3.4vw,54px);
+ line-height:1.2;
+ font-weight:800;
+ margin:23px 0;
+}
+
+.brand-content h1 span{
+ background:linear-gradient(90deg,#a48cff,#d5caff);
+ background-clip:text;
+ -webkit-background-clip:text;
+ color:transparent;
+}
+
+.brand-content p{
+ color:#aeb8d8;
+ font-size:14px;
+ line-height:2;
+ max-width:460px;
+}
+
+.feature-list{
+ display:grid;
+ gap:17px;
+ margin-top:36px;
+}
+
+.feature-item{
+ display:flex;
+ align-items:center;
+ gap:13px;
+ color:#d8dcf0;
+ font-size:12px;
+ font-weight:600;
+}
+
+.feature-icon{
+ width:42px;
+ height:42px;
+ display:grid;
+ place-items:center;
+ flex-shrink:0;
+ border-radius:12px;
+ background:#ffffff10;
+ border:1px solid #ffffff16;
+ color:#bcaeff;
+ font-size:18px;
+}
+
+.brand-footer{
+ position:relative;
+ z-index:1;
+ display:flex;
+ justify-content:space-between;
+ gap:12px;
+ font-size:10px;
+ color:#909abd;
+}
+
+/* LOGIN PANEL */
+
+.auth-panel{
+ min-height:100vh;
+ padding:35px 55px;
+ display:flex;
+ flex-direction:column;
+}
+
+.top-navigation{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+}
+
+.back-link{
+ display:inline-flex;
+ align-items:center;
+ gap:9px;
+ font-size:12px;
+ color:#788199;
+ font-weight:700;
+}
+
+.help-link{
+ font-size:11px;
+ font-weight:700;
+}
+
+.auth-center{
+ width:100%;
+ max-width:465px;
+ margin:auto;
+ padding:45px 0;
+}
+
+.welcome-icon{
+ width:65px;
+ height:65px;
+ border-radius:20px;
+ background:linear-gradient(135deg,#eeeaff,#e2dcff);
+ color:var(--purple);
+ display:grid;
+ place-items:center;
+ font-size:29px;
+ margin-bottom:25px;
+ box-shadow:0 12px 30px #6855eb12;
+}
+
+.eyebrow{
+ color:var(--purple);
+ font-size:10px;
+ letter-spacing:2px;
+ font-weight:800;
+ text-transform:uppercase;
+}
+
+.auth-title{
+ font-size:34px;
+ font-weight:800;
+ margin:11px 0;
+}
+
+.auth-description{
+ font-size:13px;
+ color:var(--muted);
+ line-height:1.9;
+ margin-bottom:30px;
+}
+
+.form-label{
+ font-size:11px;
+ font-weight:800;
+ color:#505a75;
+ margin-bottom:9px;
+}
+
+.input-wrapper{
+ position:relative;
+}
+
+.input-icon{
+ position:absolute;
+ top:50%;
+ left:16px;
+ transform:translateY(-50%);
+ font-size:17px;
+ color:#9ca5bc;
+ pointer-events:none;
+}
+
+.form-control{
+ min-height:52px;
+ padding:15px 15px 15px 46px;
+ border:1px solid var(--border);
+ border-radius:12px;
+ background:white;
+ font-size:13px;
+ color:var(--text);
+}
+
+.form-control::placeholder{
+ color:#adb4c4;
+}
+
+.form-control:focus{
+ border-color:#a99aff;
+ box-shadow:0 0 0 4px #6855eb12;
+}
+
+.form-control.is-invalid{
+ border-color:var(--red);
+ background-image:none;
+}
+
+.password-toggle{
+ position:absolute;
+ top:50%;
+ right:13px;
+ transform:translateY(-50%);
+ border:0;
+ background:transparent;
+ color:#929ab0;
+ font-size:17px;
+ padding:7px;
+}
+
+.form-check-input{
+ width:16px;
+ height:16px;
+ border-color:#cfd4e3;
+ cursor:pointer;
+}
+
+.form-check-input:checked{
+ background-color:var(--purple);
+ border-color:var(--purple);
+}
+
+.form-check-label{
+ color:#788198;
+ font-size:11px;
+ cursor:pointer;
+}
+
+.forgot-link{
+ font-size:11px;
+ font-weight:800;
+}
+
+.btn-primary-auth{
+ width:100%;
+ min-height:52px;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ gap:10px;
+ background:linear-gradient(100deg,#6855eb,#8975f5);
+ color:white;
+ border:0;
+ border-radius:12px;
+ font-size:13px;
+ font-weight:800;
+ box-shadow:0 10px 25px #6855eb28;
+ transition:.2s;
+}
+
+.btn-primary-auth:hover{
+ transform:translateY(-1px);
+ box-shadow:0 13px 30px #6855eb3b;
+}
+
+.btn-primary-auth:disabled{
+ opacity:.65;
+ cursor:not-allowed;
+ transform:none;
+}
+
+.divider-text{
+ display:flex;
+ align-items:center;
+ gap:15px;
+ color:#a5acbf;
+ font-size:11px;
+ margin:27px 0;
+}
+
+.divider-text:before,
+.divider-text:after{
+ content:"";
+ height:1px;
+ flex:1;
+ background:var(--border);
+}
+
+.secondary-action{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:9px;
+ width:100%;
+ min-height:50px;
+ border:1px solid var(--border);
+ background:white;
+ color:#616b85;
+ border-radius:12px;
+ font-size:12px;
+ font-weight:800;
+ transition:.2s;
+}
+
+.secondary-action:hover{
+ background:#f4f2ff;
+ color:var(--purple);
+ border-color:#dcd6ff;
+}
+
+.security-notice{
+ display:flex;
+ gap:12px;
+ background:#f0edff;
+ border:1px solid #e2dcff;
+ border-radius:12px;
+ padding:15px;
+ margin-top:25px;
+ color:#6657a8;
+ font-size:11px;
+ line-height:1.8;
+}
+
+.security-notice i{
+ font-size:18px;
+ flex-shrink:0;
+}
+
+.auth-footer{
+ display:flex;
+ justify-content:space-between;
+ gap:12px;
+ color:#a0a7ba;
+ font-size:10px;
+}
+
+.auth-footer a{color:#8e96ad}
+
+.alert-message{
+ border-radius:11px;
+ padding:13px 15px;
+ margin-bottom:20px;
+ font-size:11px;
+ line-height:1.7;
+}
+
+.alert-error{
+ background:#ffebee;
+ border:1px solid #ffd8de;
+ color:#ce4158;
+}
+
+.alert-success{
+ background:#e8f9f0;
+ border:1px solid #d2f0e2;
+ color:#118a64;
+}
+
+.demo-badge{
+ display:inline-flex;
+ align-items:center;
+ gap:7px;
+ border-radius:9px;
+ padding:7px 11px;
+ background:#e7f8f0;
+ color:#11996f;
+ font-size:10px;
+ font-weight:800;
+}
+
+.spinner{
+ width:17px;
+ height:17px;
+ border:2px solid #ffffff55;
+ border-top-color:white;
+ border-radius:50%;
+ animation:spin .7s linear infinite;
+}
+
+@keyframes spin{
+ to{transform:rotate(360deg)}
+}
+
+@media(max-width:1100px){
+ .auth-layout{
+  grid-template-columns:40% 60%;
+ }
+ .brand-panel{padding:35px}
+ .auth-panel{padding:30px 40px}
+ .brand-content h1{font-size:35px}
+}
+
+@media(max-width:800px){
+ .auth-layout{display:block}
+ .brand-panel{
+  min-height:auto;
+  padding:22px 25px;
+ }
+ .brand-content,.brand-footer{display:none}
+ .auth-panel{
+  min-height:calc(100vh - 92px);
+  padding:25px;
+ }
+ .auth-center{padding:45px 0}
+}
+
+@media(max-width:480px){
+ .auth-panel{padding:20px}
+ .auth-title{font-size:28px}
+ .auth-footer{
+  flex-direction:column;
+  text-align:center;
+ }
+}
+</style>
+</head>
+
+<body>
+
+<div class="auth-layout">
+
+<!-- LEFT BRAND PANEL -->
+
+<aside class="brand-panel">
+
+ <a href="index.html" class="brand-logo">
+  <div class="logo-icon">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+
+  <div>
+   <strong class="text-white">
+    INDUSTRA <span style="color:#aa99ff">AI</span>
+   </strong>
+   <small>INDUSTRIAL INTELLIGENCE PLATFORM</small>
+  </div>
+ </a>
+
+ <div class="brand-content">
+
+  <div class="brand-eyebrow">
+   Next-Generation Industrial Intelligence
+  </div>
+
+  <h1>
+   Welcome back to<br>
+   <span>smarter industry.</span>
+  </h1>
+
+  <p>
+   Sign in to your industrial AI workspace for predictive
+   maintenance, intelligent asset monitoring, real-time
+   analytics, safety intelligence and multi-agent orchestration.
+  </p>
+
+  <div class="feature-list">
+
+   <div class="feature-item">
+    <div class="feature-icon">
+     <i class="bi bi-cpu"></i>
+    </div>
+    AI-powered predictive maintenance
+   </div>
+
+   <div class="feature-item">
+    <div class="feature-icon">
+     <i class="bi bi-activity"></i>
+    </div>
+    Real-time equipment intelligence
+   </div>
+
+   <div class="feature-item">
+    <div class="feature-icon">
+     <i class="bi bi-shield-check"></i>
+    </div>
+    Industrial safety and emergency monitoring
+   </div>
+
+   <div class="feature-item">
+    <div class="feature-icon">
+     <i class="bi bi-diagram-3"></i>
+    </div>
+    Advanced multi-agent AI orchestration
+   </div>
+
+  </div>
+
+ </div>
+
+ <div class="brand-footer">
+  <span>© 2026 INDUSTRA AI</span>
+  <span>Industrial Intelligence Platform</span>
+ </div>
+
+</aside>
+
+<!-- RIGHT LOGIN PANEL -->
+
+<div class="auth-panel">
+
+ <div class="top-navigation">
+
+  <a href="index.html" class="back-link">
+   <i class="bi bi-arrow-left"></i>
+   Back to Home
+  </a>
+
+  <a href="register.html" class="help-link">
+   New user? Create account
+  </a>
+
+ </div>
+
+ <main class="auth-center">
+
+  <div class="welcome-icon">
+   <i class="bi bi-shield-lock"></i>
+  </div>
+
+  <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+   <div class="eyebrow">Secure Workspace Access</div>
+   <span class="demo-badge">
+    <i class="bi bi-circle-fill" style="font-size:7px"></i>
+    DEMO MODE
+   </span>
+  </div>
+
+  <h1 class="auth-title">Welcome back</h1>
+
+  <p class="auth-description">
+   Enter your account details to explore the
+   INDUSTRA AI industrial intelligence dashboard.
+  </p>
+
+  <div id="alertContainer" role="status" aria-live="polite"></div>
+
+  <form id="loginForm" novalidate>
+
+   <!-- EMAIL -->
+
+   <div class="mb-4">
+
+    <label for="email" class="form-label">
+     Work Email Address
+    </label>
+
+    <div class="input-wrapper">
+     <i class="bi bi-envelope input-icon"></i>
+
+     <input
+      type="email"
+      id="email"
+      class="form-control"
+      placeholder="you@company.com"
+      autocomplete="email"
+      maxlength="254"
+      required
+     >
+    </div>
+
+    <div class="invalid-feedback" id="emailError">
+     Please enter a valid email address.
+    </div>
+
+   </div>
+
+   <!-- PASSWORD -->
+
+   <div class="mb-3">
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+     <label for="password" class="form-label mb-0">
+      Password
+     </label>
+
+     <a href="forgot-password.html" class="forgot-link">
+      Forgot Password?
+     </a>
+    </div>
+
+    <div class="input-wrapper">
+     <i class="bi bi-lock input-icon"></i>
+
+     <input
+      type="password"
+      id="password"
+      class="form-control"
+      placeholder="Enter your password"
+      autocomplete="current-password"
+      required
+     >
+
+     <button
+      type="button"
+      class="password-toggle"
+      id="togglePassword"
+      aria-label="Show password"
+      aria-pressed="false"
+     >
+      <i class="bi bi-eye"></i>
+     </button>
+
+    </div>
+
+    <div class="invalid-feedback" id="passwordError">
+     Please enter your password.
+    </div>
+
+   </div>
+
+   <!-- REMEMBER -->
+
+   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+
+    <div class="form-check">
+     <input
+      class="form-check-input"
+      type="checkbox"
+      id="rememberMe"
+     >
+
+     <label class="form-check-label" for="rememberMe">
+      Remember email on this device
+     </label>
+    </div>
+
+    <span style="font-size:10px;color:var(--muted)">
+     <i class="bi bi-lock me-1"></i>
+     Frontend demonstration
+    </span>
+
+   </div>
+
+   <!-- SIGN IN -->
+
+   <button type="submit" id="loginButton" class="btn-primary-auth">
+    <span id="loginButtonText">Explore Demo Dashboard</span>
+    <i class="bi bi-arrow-right" id="loginButtonIcon"></i>
+   </button>
+
+  </form>
+
+  <div class="divider-text">
+   New to INDUSTRA AI?
+  </div>
+
+  <a href="register.html" class="secondary-action">
+   <i class="bi bi-person-plus"></i>
+   Create an Account
+  </a>
+
+  <div class="security-notice">
+   <i class="bi bi-info-circle"></i>
+   <div>
+    <strong>Demonstration only.</strong>
+    This page validates input formatting but does not verify
+    credentials. Any nonempty password with a valid email
+    opens the demo dashboard. No authentication session
+    is established.
+   </div>
+  </div>
+
+ </main>
+
+ <footer class="auth-footer">
+  <span>© 2026 INDUSTRA AI. All rights reserved.</span>
+  <span>
+   <a href="index.html">Home</a>
+   &nbsp; · &nbsp;
+   <a href="forgot-password.html">Password Recovery</a>
+  </span>
+ </footer>
+
+</div>
+
+</div>
+
+<script>
+"use strict";
+
+/*
+ INDUSTRA AI LOGIN — FRONTEND DEMO
+
+ This script:
+ - Validates email format
+ - Requires nonempty password input
+ - Toggles password visibility
+ - Optionally remembers email only
+ - Navigates to dashboard.html
+
+ This script DOES NOT:
+ - Authenticate users
+ - Check account credentials
+ - Issue session tokens
+ - Authorize dashboard access
+ - Contact an authentication backend
+
+ Do not use this demo as production login security.
+*/
+
+const $=id=>document.getElementById(id);
+
+const loginForm=$("loginForm");
+const emailInput=$("email");
+const passwordInput=$("password");
+const rememberMe=$("rememberMe");
+const loginButton=$("loginButton");
+const loginButtonText=$("loginButtonText");
+const loginButtonIcon=$("loginButtonIcon");
+
+const REMEMBER_KEY="industra_demo_remembered_email";
+
+function validEmail(email){
+ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function showAlert(message,type="error"){
+ const container=$("alertContainer");
+ container.replaceChildren();
+
+ const alert=document.createElement("div");
+
+ alert.className=
+  "alert-message "+
+  (type==="success"?"alert-success":"alert-error");
+
+ alert.textContent=message;
+
+ container.append(alert);
+}
+
+function clearAlert(){
+ $("alertContainer").replaceChildren();
+}
+
+function markInvalid(input,invalid){
+ input.classList.toggle("is-invalid",invalid);
+ input.setAttribute("aria-invalid",String(invalid));
+}
+
+function validateForm(){
+ const email=emailInput.value.trim();
+ const password=passwordInput.value;
+
+ const emailInvalid=!validEmail(email);
+ const passwordInvalid=password.length===0;
+
+ markInvalid(emailInput,emailInvalid);
+ markInvalid(passwordInput,passwordInvalid);
+
+ return !emailInvalid&&!passwordInvalid;
+}
+
+function togglePassword(){
+ const isVisible=passwordInput.type==="text";
+
+ passwordInput.type=isVisible?"password":"text";
+
+ const button=$("togglePassword");
+
+ button.querySelector("i").className=
+  isVisible?"bi bi-eye":"bi bi-eye-slash";
+
+ button.setAttribute(
+  "aria-label",
+  isVisible?"Show password":"Hide password"
+ );
+
+ button.setAttribute(
+  "aria-pressed",
+  String(!isVisible)
+ );
+}
+
+function setLoading(loading){
+ loginButton.disabled=loading;
+
+ loginButtonText.textContent=loading?
+  "Opening Demo Dashboard...":
+  "Explore Demo Dashboard";
+
+ loginButtonIcon.className=loading?
+  "spinner":
+  "bi bi-arrow-right";
+}
+
+function rememberEmail(){
+ try{
+  if(rememberMe.checked){
+   localStorage.setItem(
+    REMEMBER_KEY,
+    emailInput.value.trim()
+   );
+  }else{
+   localStorage.removeItem(REMEMBER_KEY);
+  }
+ }catch{
+  // Local storage may be disabled by the browser.
+ }
+}
+
+function restoreRememberedEmail(){
+ try{
+  const saved=localStorage.getItem(REMEMBER_KEY);
+
+  if(saved){
+   emailInput.value=saved;
+   rememberMe.checked=true;
+  }
+ }catch{
+  // Continue without persistent email preference.
+ }
+}
+
+loginForm.addEventListener("submit",event=>{
+ event.preventDefault();
+ clearAlert();
+
+ if(!validateForm()){
+  showAlert(
+   "Please enter a valid email address and a password to explore the demo."
+  );
+  return;
+ }
+
+ rememberEmail();
+ setLoading(true);
+
+ // Clear the password field before navigating.
+ passwordInput.value="";
+
+ showAlert(
+  "Demo input accepted. Opening the dashboard without authentication.",
+  "success"
+ );
+
+ setTimeout(()=>{
+  window.location.assign("dashboard.html");
+ },650);
+});
+
+emailInput.addEventListener("input",()=>{
+ markInvalid(emailInput,false);
+ clearAlert();
+});
+
+passwordInput.addEventListener("input",()=>{
+ markInvalid(passwordInput,false);
+ clearAlert();
+});
+
+$("togglePassword").addEventListener("click",togglePassword);
+
+restoreRememberedEmail();
+</script>
+
+</body>
+</html>

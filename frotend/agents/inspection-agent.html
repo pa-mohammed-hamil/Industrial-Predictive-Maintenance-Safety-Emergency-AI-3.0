@@ -1,0 +1,1641 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inspection Agent | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / agents</p><h1 id="page-title">Inspection Agent</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Inspection Agent workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Inspection Agent | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple2:#8b7af9;
+ --green:#16b88a;
+ --orange:#f2a53a;
+ --red:#eb6174;
+ --blue:#438df5;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8b93aa;
+ --border:#e9ebf3;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif
+}
+h1,h2,h3,h4,h5,h6{
+ font-family:Manrope,sans-serif;
+ letter-spacing:-.6px
+}
+a{text-decoration:none}
+button:focus-visible,a:focus-visible,
+input:focus-visible,select:focus-visible,
+textarea:focus-visible{
+ outline:3px solid #a99cff!important;
+ outline-offset:2px
+}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;
+ width:var(--sidebar);background:var(--navy);
+ color:#aab1ce;z-index:1050;
+ display:flex;flex-direction:column;
+ transition:transform .25s
+}
+.brand{
+ height:83px;padding:21px 23px;
+ display:flex;align-items:center;gap:12px;
+ border-bottom:1px solid #ffffff12
+}
+.brand-mark{
+ width:43px;height:43px;border-radius:14px;
+ background:linear-gradient(135deg,#9c83ff,#5a48e4);
+ color:white;display:grid;place-items:center;
+ font-size:22px
+}
+.brand strong{color:white;font-size:17px}
+.brand small{
+ display:block;font-size:9px;letter-spacing:2px;
+ color:#7883b0
+}
+.sidebar-body{overflow-y:auto;flex:1;padding:16px 12px}
+.sidebar-label{
+ color:#687397;text-transform:uppercase;
+ font-size:9px;font-weight:800;letter-spacing:2px;
+ padding:20px 15px 9px
+}
+.side-link{
+ display:flex;align-items:center;gap:13px;
+ padding:11px 14px;margin:3px 0;color:#9da8ca;
+ border-radius:11px;font-size:12px;
+ font-weight:600;transition:.2s
+}
+.side-link i{font-size:17px;width:21px;text-align:center}
+.side-link:hover{background:#ffffff10;color:white}
+.side-link.active{
+ background:linear-gradient(90deg,#6b59e8,#5346ba);
+ color:white
+}
+.sidebar-foot{
+ padding:18px;border-top:1px solid #ffffff12
+}
+.sidebar-status{
+ border-radius:13px;padding:13px;
+ background:#ffffff09;border:1px solid #ffffff12
+}
+.status-dot{
+ display:inline-block;width:8px;height:8px;
+ border-radius:50%;background:#2cdaa2;margin-right:7px
+}
+.app{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ background:white;min-height:76px;
+ display:flex;align-items:center;
+ justify-content:space-between;gap:15px;
+ padding:15px 30px;border-bottom:1px solid var(--border);
+ position:sticky;top:0;z-index:100
+}
+.topbar-title{font-size:15px;font-weight:800}
+.topbar-sub{color:var(--muted);font-size:11px;margin-top:3px}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ height:39px;width:39px;display:grid;place-items:center;
+ border-radius:12px;border:1px solid var(--border);
+ background:#fafaff;color:#555e7b;font-size:16px
+}
+.top-icon:hover{background:#eeecff;color:var(--purple)}
+.avatar{
+ height:39px;width:39px;border-radius:13px;
+ display:grid;place-items:center;color:white;
+ font-weight:800;
+ background:linear-gradient(135deg,#7e6bf4,#a18dff)
+}
+.content{padding:29px;max-width:1850px;margin:auto}
+.eyebrow{
+ text-transform:uppercase;letter-spacing:2px;
+ font-size:10px;font-weight:800;color:var(--purple)
+}
+.page-title{font-size:29px;font-weight:800;margin:9px 0 6px}
+.page-description{color:var(--muted);line-height:1.7}
+.btn-premium,.btn-soft,.btn-danger-soft{
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;
+ border-radius:11px;padding:11px 16px;
+ font-size:12px;font-weight:700;transition:.2s;
+ cursor:pointer
+}
+.btn-premium{
+ background:var(--purple);color:white;
+ border:1px solid var(--purple)
+}
+.btn-premium:hover{background:#5542d5;color:white}
+.btn-soft{
+ background:white;color:#5e6680;
+ border:1px solid var(--border)
+}
+.btn-soft:hover{background:#f1efff;color:var(--purple)}
+.btn-danger-soft{
+ background:#ffebee;color:#d9435b;
+ border:1px solid #ffd9e0
+}
+.btn-danger-soft:hover{background:#ffdfe5}
+button:disabled{opacity:.5;cursor:not-allowed}
+.surface{
+ background:white;border:1px solid var(--border);
+ border-radius:18px;box-shadow:0 8px 30px #24305b08
+}
+.hero{
+ position:relative;overflow:hidden;
+ background:linear-gradient(115deg,#6651e9,#8e74f4 65%,#a894ff);
+ color:white;border-radius:22px;padding:31px 33px;
+ box-shadow:0 15px 35px #7564ea28
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ right:-60px;top:-145px;border:1px solid #ffffff45;
+ border-radius:50%;
+ box-shadow:0 0 0 45px #ffffff0b,0 0 0 95px #ffffff09;
+ pointer-events:none
+}
+.hero h2{font-size:25px;font-weight:800}
+.hero p{max-width:720px;color:#eeeaff;line-height:1.8}
+.hero-chip{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff23;border:1px solid #ffffff30;
+ padding:8px 12px;border-radius:9px;
+ font-size:10px;font-weight:700
+}
+.metric{padding:21px;height:100%}
+.metric-top{
+ display:flex;justify-content:space-between;align-items:center
+}
+.metric-label{color:#8a92a8;font-size:11px;font-weight:700}
+.metric-icon{
+ width:44px;height:44px;border-radius:14px;
+ display:grid;place-items:center;font-size:20px
+}
+.metric-value{
+ font:800 27px Manrope,sans-serif;
+ margin:14px 0 6px
+}
+.metric-foot{font-size:10px;color:#9aa1b3}
+.section-title{font-size:17px;font-weight:800}
+.section-sub{font-size:11px;color:var(--muted)}
+.badge-soft{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:6px 10px;border-radius:8px;
+ font-size:10px;font-weight:800
+}
+.b-success{background:#e5f8f0;color:#13a776}
+.b-warning{background:#fff4e2;color:#d58c20}
+.b-danger{background:#ffebee;color:#df4d64}
+.b-info{background:#eaf2ff;color:#438df5}
+.b-neutral{background:#f0f1f6;color:#788098}
+.b-purple{background:#eeebff;color:#6855eb}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;padding:11px 12px;font-size:12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#a69aff;box-shadow:0 0 0 3px #6855eb12
+}
+.form-label{
+ font-size:11px;font-weight:800;color:#5b6480
+}
+.form-check-input:checked{
+ background-color:var(--purple);border-color:var(--purple)
+}
+.upload-zone{
+ border:2px dashed #cbc4f7;
+ background:#faf9ff;border-radius:17px;
+ min-height:240px;padding:20px;
+ display:flex;align-items:center;
+ justify-content:center;text-align:center;
+ transition:.2s;cursor:pointer;
+ position:relative;overflow:hidden
+}
+.upload-zone.dragover{
+ border-color:var(--purple);background:#efecff
+}
+.upload-zone img{
+ max-width:100%;max-height:330px;
+ object-fit:contain;border-radius:10px
+}
+.upload-icon{
+ width:60px;height:60px;border-radius:18px;
+ display:grid;place-items:center;
+ background:#eeebff;color:var(--purple);
+ font-size:27px;margin:0 auto 15px
+}
+.condition-ring{
+ width:170px;height:170px;border-radius:50%;
+ display:grid;place-items:center;
+ margin:18px auto;
+ background:conic-gradient(var(--purple) 0 78%,#eceef6 78% 100%)
+}
+.condition-inner{
+ width:135px;height:135px;border-radius:50%;
+ background:white;display:flex;flex-direction:column;
+ align-items:center;justify-content:center
+}
+.condition-number{
+ font:800 38px Manrope,sans-serif
+}
+.condition-label{
+ font-size:10px;color:var(--muted)
+}
+.check-item{
+ display:flex;align-items:flex-start;gap:12px;
+ padding:13px 0;border-bottom:1px solid var(--border)
+}
+.check-item:last-child{border-bottom:0}
+.check-item strong{font-size:11px}
+.check-item p{
+ font-size:10px;color:var(--muted);
+ line-height:1.6;margin:5px 0 0
+}
+.finding{
+ border:1px solid var(--border);
+ border-radius:13px;padding:15px;
+ margin-bottom:11px
+}
+.finding-icon{
+ width:39px;height:39px;border-radius:12px;
+ display:grid;place-items:center;font-size:19px;
+ background:#eeebff;color:var(--purple)
+}
+.finding strong{font-size:11px}
+.finding p{
+ font-size:10px;color:var(--muted);
+ line-height:1.7;margin:6px 0 0
+}
+.progress-thin{
+ height:8px;border-radius:8px;background:#eff0f6
+}
+.progress-thin .progress-bar{border-radius:8px}
+.chart-wrap{height:280px;position:relative}
+.table thead th{
+ background:#fafbfe;color:#9099ae;
+ font-size:10px;text-transform:uppercase;
+ letter-spacing:.7px;padding:15px 18px;
+ white-space:nowrap;
+ border-bottom:1px solid var(--border)
+}
+.table tbody td{
+ padding:15px 18px;font-size:11px;
+ color:#66708a;vertical-align:middle;
+ border-color:#f0f1f7
+}
+.table-title{font-weight:800;color:#252c48}
+.table-sub{font-size:9px;color:#9ca4b8;margin-top:5px}
+.small-action{
+ border:1px solid var(--border);
+ background:white;border-radius:8px;
+ padding:7px 10px;color:#66718d;
+ font-size:10px;font-weight:700
+}
+.small-action:hover{background:#eeebff;color:var(--purple)}
+.report-code{
+ background:#141a31;color:#dce6ff;
+ border-radius:13px;padding:18px;
+ font:11px/1.8 monospace;
+ white-space:pre-wrap;overflow-wrap:anywhere;
+ max-height:350px;overflow:auto
+}
+.safety-note{
+ background:#f3f0ff;border:1px solid #ded8ff;
+ color:#6052a7;border-radius:13px;
+ padding:16px;font-size:11px;line-height:1.8
+}
+.footer{
+ padding:23px 30px;border-top:1px solid var(--border);
+ color:#9aa2b5;font-size:10px;
+ display:flex;justify-content:space-between;gap:12px
+}
+.mobile-shade{display:none}
+@media(max-width:1199px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .app{margin-left:0}
+ .mobile-shade.show{
+  display:block;position:fixed;inset:0;
+  background:#0008;z-index:1040
+ }
+}
+@media(max-width:575px){
+ .content{padding:17px}
+ .topbar{padding:13px 17px}
+ .page-title{font-size:23px}
+ .hero{padding:23px}
+ .hero h2{font-size:20px}
+ .metric-value{font-size:23px}
+ .footer{flex-direction:column;padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-shade" id="shade"></div>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div class="brand-mark">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a997ff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <nav class="sidebar-body" aria-label="Main navigation">
+  <div class="sidebar-label">Main Menu</div>
+  <a class="side-link" href="../index.html"><i class="bi bi-house-door"></i>Home</a>
+  <a class="side-link" href="../dashboard.html"><i class="bi bi-grid-1x2"></i>Dashboard</a>
+  <a class="side-link" href="../command-center.html"><i class="bi bi-broadcast"></i>Command Center</a>
+  <a class="side-link" href="../analytics.html"><i class="bi bi-bar-chart-line"></i>Analytics Studio</a>
+  <a class="side-link" href="../reports.html"><i class="bi bi-file-earmark-bar-graph"></i>Reports</a>
+  <a class="side-link" href="../notifications.html"><i class="bi bi-bell"></i>Notifications</a>
+
+  <div class="sidebar-label">Operations</div>
+  <a class="side-link" href="../assets/assets.html"><i class="bi bi-cpu"></i>Asset Intelligence</a>
+  <a class="side-link" href="../telemetry/live-telemetry.html"><i class="bi bi-activity"></i>Live Telemetry</a>
+  <a class="side-link" href="../predictive-maintenance/maintenance-dashboard.html"><i class="bi bi-tools"></i>Predictive Maintenance</a>
+  <a class="side-link" href="../maintenance/work-orders.html"><i class="bi bi-clipboard-check"></i>Work Orders</a>
+  <a class="side-link" href="../computer-vision/vision-dashboard.html"><i class="bi bi-camera"></i>Computer Vision</a>
+
+  <div class="sidebar-label">Risk & Intelligence</div>
+  <a class="side-link" href="../safety/safety-dashboard.html"><i class="bi bi-shield-check"></i>Safety Intelligence</a>
+  <a class="side-link" href="../emergency/emergency-dashboard.html"><i class="bi bi-exclamation-triangle"></i>Emergency Response</a>
+  <a class="side-link" href="../cost-intelligence/cost-dashboard.html"><i class="bi bi-currency-rupee"></i>Cost Intelligence</a>
+  <a class="side-link" href="../copilot/ai-copilot.html"><i class="bi bi-stars"></i>AI Copilot</a>
+
+  <div class="sidebar-label">Agentic AI</div>
+  <a class="side-link" href="agent-dashboard.html"><i class="bi bi-diagram-3"></i>Agent Dashboard</a>
+  <a class="side-link" href="agent-workflows.html"><i class="bi bi-bezier2"></i>Agent Workflows</a>
+  <a class="side-link" href="agent-executions.html"><i class="bi bi-play-circle"></i>Agent Executions</a>
+  <a class="side-link" href="agent-tool-calls.html"><i class="bi bi-wrench-adjustable"></i>Agent Tool Calls</a>
+  <a class="side-link" href="agent-evaluation.html"><i class="bi bi-clipboard-data"></i>Agent Evaluation</a>
+  <a class="side-link" href="asset-health-agent.html"><i class="bi bi-heart-pulse"></i>Asset Health Agent</a>
+  <a class="side-link" href="cost-agent.html"><i class="bi bi-currency-rupee"></i>Cost Agent</a>
+  <a class="side-link" href="emergency-response-agent.html"><i class="bi bi-exclamation-octagon"></i>Emergency Response Agent</a>
+  <a class="side-link" href="failure-analysis-agent.html"><i class="bi bi-search-heart"></i>Failure Analysis Agent</a>
+  <a class="side-link" href="human-approvals.html"><i class="bi bi-person-check"></i>Human Approvals</a>
+  <a class="side-link" href="incident-agent.html"><i class="bi bi-clipboard-pulse"></i>Incident Agent</a>
+  <a class="side-link active" href="inspection-agent.html" aria-current="page">
+   <i class="bi bi-camera"></i>Inspection Agent
+  </a>
+
+  <div class="sidebar-label">Administration</div>
+  <a class="side-link" href="../observability/observability-dashboard.html"><i class="bi bi-speedometer2"></i>Observability</a>
+  <a class="side-link" href="../security/security-dashboard.html"><i class="bi bi-lock"></i>Security</a>
+  <a class="side-link" href="../settings/settings.html"><i class="bi bi-gear"></i>Settings</a>
+ </nav>
+
+ <div class="sidebar-foot">
+  <div class="sidebar-status">
+   <div class="fw-bold text-white small">
+    <span class="status-dot"></span>Asset Inspection Console
+   </div>
+   <div class="mt-2" style="font-size:10px">
+    Computer vision workflow · Demo mode
+   </div>
+  </div>
+ </div>
+</aside>
+
+<div class="app">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon d-xl-none" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="topbar-title">Industrial Inspection Agent</div>
+   <div class="topbar-sub">Workspace / AI Agents / Inspection Agent</div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="d-none d-md-inline text-secondary small">Demo inspection environment</span>
+  <button class="top-icon" id="resetButton" aria-label="Reset inspection">
+   <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <a href="../notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <a href="../settings/settings.html" class="avatar" aria-label="Settings">AI</a>
+ </div>
+</header>
+
+<main class="content">
+
+ <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div>
+   <div class="eyebrow">Visual Asset Condition Intelligence</div>
+   <h1 class="page-title">Inspection Agent <span style="color:var(--purple)">✦</span></h1>
+   <div class="page-description">
+    Review industrial asset images, record visible defects,
+    assess inspection findings and prepare human-reviewed maintenance recommendations.
+   </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-soft" id="exportCsvButton">
+    <i class="bi bi-filetype-csv"></i> Export CSV
+   </button>
+   <button class="btn-soft" id="exportJsonButton">
+    <i class="bi bi-download"></i> Export JSON
+   </button>
+   <button class="btn-premium" id="runButton">
+    <i class="bi bi-stars"></i> Run Inspection Assessment
+   </button>
+  </div>
+ </div>
+
+ <section class="hero mb-4">
+  <div class="position-relative" style="z-index:1">
+   <div class="text-uppercase fw-bold mb-3"
+    style="font-size:10px;letter-spacing:2px">
+    <i class="bi bi-camera me-1"></i> Visual Inspection Intelligence
+   </div>
+   <h2>Inspect assets.<br>Understand their condition.</h2>
+   <p class="mt-3 mb-4">
+    Bring asset photos, defect observations, inspection checklists
+    and maintenance economics into one structured review workspace.
+    Compare findings and document the next engineering review steps.
+   </p>
+   <div class="d-flex flex-wrap gap-2">
+    <span class="hero-chip"><i class="bi bi-image"></i> Image Review</span>
+    <span class="hero-chip"><i class="bi bi-bounding-box"></i> Defect Records</span>
+    <span class="hero-chip"><i class="bi bi-clipboard-check"></i> Inspection Checklist</span>
+    <span class="hero-chip"><i class="bi bi-graph-up"></i> Condition Assessment</span>
+    <span class="hero-chip"><i class="bi bi-currency-rupee"></i> Cost Estimate</span>
+   </div>
+  </div>
+ </section>
+
+ <div class="safety-note mb-4">
+  <i class="bi bi-info-circle me-2"></i>
+  <strong>Simulated inspection analysis:</strong>
+  Images are previewed locally and are not uploaded to a server.
+  The page does not detect defects automatically.
+  Assessment scores and cost estimates are illustrative calculations
+  based on reviewer-entered observations, not certified inspections.
+ </div>
+
+ <section class="row g-3 mb-4">
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Condition Score</span>
+     <span class="metric-icon" style="background:#eeebff;color:var(--purple)">
+      <i class="bi bi-heart-pulse"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="scoreKpi">—</div>
+    <div class="metric-foot">Rule-based demonstration score</div>
+   </div>
+  </div>
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Recorded Defects</span>
+     <span class="metric-icon" style="background:#ffebee;color:var(--red)">
+      <i class="bi bi-exclamation-triangle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="defectsKpi">0</div>
+    <div class="metric-foot">Reviewer-entered findings</div>
+   </div>
+  </div>
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Checklist Completion</span>
+     <span class="metric-icon" style="background:#eaf2ff;color:var(--blue)">
+      <i class="bi bi-list-check"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="checklistKpi">0%</div>
+    <div class="metric-foot">Completed inspection checks</div>
+   </div>
+  </div>
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Estimated Review Cost</span>
+     <span class="metric-icon" style="background:#fff4e2;color:var(--orange)">
+      <i class="bi bi-currency-rupee"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="costKpi">₹0</div>
+    <div class="metric-foot">Illustrative planning allowance</div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h2 class="section-title mb-1">Visual Inspection Workspace</h2>
+      <p class="section-sub mb-0">Upload an asset image for local preview</p>
+     </div>
+     <span class="badge-soft b-purple">LOCAL IMAGE REVIEW</span>
+    </div>
+
+    <div class="row g-3 mb-3">
+     <div class="col-md-6">
+      <label class="form-label" for="assetSelect">Industrial Asset</label>
+      <select id="assetSelect" class="form-select">
+       <option value="MOTOR-12">MOTOR-12 · Electric Motor</option>
+       <option value="PUMP-12">PUMP-12 · Hydraulic Pump</option>
+       <option value="FURNACE-02">FURNACE-02 · Industrial Furnace</option>
+       <option value="HYD-08">HYD-08 · Hydraulic Unit</option>
+       <option value="COMP-06">COMP-06 · Air Compressor</option>
+       <option value="CONV-04">CONV-04 · Conveyor</option>
+      </select>
+     </div>
+     <div class="col-md-6">
+      <label class="form-label" for="inspectionType">Inspection Type</label>
+      <select id="inspectionType" class="form-select">
+       <option>Visual Condition Inspection</option>
+       <option>Surface Defect Inspection</option>
+       <option>Corrosion Inspection</option>
+       <option>Thermal Observation Review</option>
+       <option>Mechanical Component Inspection</option>
+      </select>
+     </div>
+    </div>
+
+    <div class="upload-zone" id="uploadZone" tabindex="0"
+     role="button" aria-label="Choose inspection image">
+     <div id="uploadPlaceholder">
+      <div class="upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+      <h3 class="section-title">Upload Asset Inspection Image</h3>
+      <p class="section-sub mb-3">
+       Click or drag an image here · PNG, JPG, WEBP · Maximum 8 MB
+      </p>
+      <span class="btn-premium">
+       <i class="bi bi-image"></i> Choose Image
+      </span>
+     </div>
+     <img id="imagePreview" alt="Uploaded inspection preview"
+      hidden>
+    </div>
+
+    <input id="imageInput" type="file"
+     accept="image/png,image/jpeg,image/webp" hidden>
+
+    <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
+     <div class="section-sub" id="imageInfo">
+      No image selected. Manual observations can still be recorded.
+     </div>
+     <button class="btn-soft" id="removeImageButton">
+      <i class="bi bi-trash"></i> Remove Image
+     </button>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Asset Condition Assessment</h2>
+    <p class="section-sub mb-3">Calculated from documented inspection findings</p>
+
+    <div class="condition-ring" id="conditionRing">
+     <div class="condition-inner">
+      <div class="condition-number" id="ringScore">—</div>
+      <div class="condition-label">Condition Score</div>
+     </div>
+    </div>
+
+    <div class="text-center mb-4">
+     <span id="conditionStatus" class="badge-soft b-neutral">
+      Not assessed
+     </span>
+    </div>
+
+    <div id="conditionDetails"></div>
+
+    <div class="safety-note mt-3">
+     The score is a screening aid, not a safety clearance,
+     remaining-useful-life prediction or validated ML output.
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Record Inspection Findings</h2>
+    <p class="section-sub mb-3">
+     Manually document defects observed by the reviewer
+    </p>
+
+    <form id="findingForm">
+     <div class="row g-3">
+      <div class="col-md-6">
+       <label class="form-label" for="defectType">Defect Type</label>
+       <select id="defectType" class="form-select">
+        <option>Crack</option>
+        <option>Corrosion</option>
+        <option>Surface Wear</option>
+        <option>Leak</option>
+        <option>Overheating Indicator</option>
+        <option>Loose Component</option>
+        <option>Contamination</option>
+        <option>Other</option>
+       </select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="defectSeverity">Observed Severity</label>
+       <select id="defectSeverity" class="form-select">
+        <option>Low</option>
+        <option selected>Medium</option>
+        <option>High</option>
+        <option>Critical</option>
+       </select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="componentName">Component</label>
+       <input id="componentName" class="form-control"
+        maxlength="70" required
+        placeholder="Example: Bearing housing">
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="estimatedCost">
+        Planning Allowance (₹)
+       </label>
+       <input id="estimatedCost" class="form-control"
+        type="number" min="0" max="100000000"
+        step="100" value="5000" required>
+      </div>
+      <div class="col-12">
+       <label class="form-label" for="findingNote">
+        Observation
+       </label>
+       <textarea id="findingNote" class="form-control"
+        rows="3" maxlength="500"
+        placeholder="Describe the observed condition..."></textarea>
+      </div>
+      <div class="col-12">
+       <button type="submit" class="btn-premium">
+        <i class="bi bi-plus-circle"></i> Add Inspection Finding
+       </button>
+      </div>
+     </div>
+    </form>
+   </div>
+  </div>
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h2 class="section-title mb-1">Inspection Checklist</h2>
+      <p class="section-sub mb-0">
+       Track completion of standard review steps
+      </p>
+     </div>
+     <span id="checklistBadge" class="badge-soft b-info">0 / 6</span>
+    </div>
+    <div id="checklistRoot"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Inspection Findings Register</h2>
+    <p class="section-sub mb-3">
+     Manually documented defects for the selected asset
+    </p>
+    <div id="findingsRoot"></div>
+   </div>
+  </div>
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Assessment Recommendations</h2>
+    <p class="section-sub mb-3">
+     Rule-based follow-up guidance for qualified personnel
+    </p>
+    <div id="recommendationsRoot"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Defect Severity Distribution</h2>
+    <p class="section-sub mb-3">
+     Based on recorded inspection findings
+    </p>
+    <div class="chart-wrap">
+     <canvas id="severityChart" aria-label="Defect severity chart"></canvas>
+    </div>
+   </div>
+  </div>
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Component Planning Costs</h2>
+    <p class="section-sub mb-3">
+     Reviewer-entered illustrative cost allowances
+    </p>
+    <div class="chart-wrap">
+     <canvas id="costChart" aria-label="Inspection cost chart"></canvas>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="surface mb-4">
+  <div class="p-4 pb-3">
+   <h2 class="section-title mb-1">Inspection History</h2>
+   <p class="section-sub mb-0">
+    Completed demonstration assessments in this session
+   </p>
+  </div>
+  <div class="table-responsive">
+   <table class="table mb-0">
+    <thead>
+     <tr>
+      <th>Inspection</th>
+      <th>Asset</th>
+      <th>Findings</th>
+      <th>Score</th>
+      <th>Estimated Cost</th>
+      <th>Time</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="historyTable"></tbody>
+   </table>
+  </div>
+ </section>
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">Structured Inspection Assessment</h2>
+    <p class="section-sub mb-0">
+     Inspect assessment inputs, calculations and review requirements
+    </p>
+   </div>
+   <button class="btn-soft" id="copyButton">
+    <i class="bi bi-copy"></i> Copy JSON
+   </button>
+  </div>
+  <pre class="report-code mb-0" id="outputJson"></pre>
+ </section>
+
+</main>
+
+<footer class="footer">
+ <span>© 2026 INDUSTRA AI · Industrial Inspection Agent</span>
+ <span>Manual observations · Simulated assessment · Human validation required</span>
+</footer>
+
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3"
+ style="z-index:1200">
+ <div class="toast border-0 shadow" id="appToast"
+  role="status" aria-live="polite">
+  <div class="toast-body d-flex align-items-center gap-2">
+   <i class="bi bi-info-circle text-primary"></i>
+   <span id="toastMessage"></span>
+  </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ INDUSTRA AI — INSPECTION AGENT DEMONSTRATION
+
+ Features:
+ - Local image preview
+ - Manual defect recording
+ - Checklist
+ - Deterministic condition scoring
+ - Illustrative cost aggregation
+ - Charts
+ - Inspection snapshots
+ - JSON and CSV export
+
+ No real CV model, image recognition, API, or database.
+*/
+
+const $=id=>document.getElementById(id);
+
+const checklistItems=[
+ {id:"surface",title:"Surface Condition",description:"Review visible wear, cracks and corrosion."},
+ {id:"housing",title:"Housing & Structure",description:"Inspect accessible casing and structural surfaces."},
+ {id:"connections",title:"Connections & Fittings",description:"Document visible fittings, joints and connections."},
+ {id:"leaks",title:"Leaks & Contamination",description:"Record signs of leaks, deposits or contamination."},
+ {id:"thermal",title:"Thermal Observations",description:"Review available temperature evidence where appropriate."},
+ {id:"documentation",title:"Documentation Review",description:"Verify asset ID and available inspection records."}
+];
+
+const severityPenalty={
+ Low:5,Medium:12,High:22,Critical:35
+};
+
+const severityColors={
+ Low:"#16b88a",
+ Medium:"#438df5",
+ High:"#f2a53a",
+ Critical:"#eb6174"
+};
+
+let findings=[];
+let checked=new Set();
+let history=[];
+let currentImageUrl=null;
+let currentImageMeta=null;
+let assessment=null;
+let nextFindingId=1;
+let nextInspectionId=1;
+let severityChart=null;
+let costChart=null;
+
+function element(tag,text,className){
+ const node=document.createElement(tag);
+ if(className)node.className=className;
+ if(text!==undefined)node.textContent=text;
+ return node;
+}
+
+function add(parent,tag,text,className){
+ const node=element(tag,text,className);
+ parent.append(node);
+ return node;
+}
+
+function badge(text,kind){
+ return element("span",text,"badge-soft "+kind);
+}
+
+function severityClass(severity){
+ return severity==="Critical"?"b-danger":
+  severity==="High"?"b-warning":
+  severity==="Medium"?"b-info":"b-success";
+}
+
+function currency(value){
+ return "₹"+Number(value).toLocaleString("en-IN",{
+  maximumFractionDigits:0
+ });
+}
+
+function now(){
+ return new Date().toLocaleString("en-IN",{
+  year:"numeric",month:"short",day:"2-digit",
+  hour:"2-digit",minute:"2-digit"
+ });
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance(
+  $("appToast"),{delay:3000}
+ ).show();
+}
+
+function selectedAsset(){
+ return $("assetSelect").value;
+}
+
+function invalidateAssessment(){
+ assessment=null;
+ renderAll();
+}
+
+function calculate(){
+ const penalty=findings.reduce(
+  (sum,f)=>sum+severityPenalty[f.severity],0
+ );
+
+ const score=Math.max(0,100-penalty);
+ const cost=findings.reduce(
+  (sum,f)=>sum+f.cost,0
+ );
+
+ const completion=Math.round(
+  checked.size/checklistItems.length*100
+ );
+
+ const critical=findings.some(
+  f=>f.severity==="Critical"
+ );
+
+ const high=findings.some(
+  f=>f.severity==="High"
+ );
+
+ let status="Good";
+
+ if(critical||score<40)status="Critical Review";
+ else if(high||score<65)status="Needs Attention";
+ else if(score<85)status="Monitor";
+
+ return {
+  score,cost,completion,status,
+  defectCount:findings.length,
+  criticalCount:findings.filter(
+   f=>f.severity==="Critical"
+  ).length
+ };
+}
+
+function renderKpis(){
+ const result=calculate();
+
+ $("scoreKpi").textContent=
+  assessment?result.score+"/100":"—";
+
+ $("defectsKpi").textContent=result.defectCount;
+ $("checklistKpi").textContent=result.completion+"%";
+ $("costKpi").textContent=currency(result.cost);
+
+ $("ringScore").textContent=
+  assessment?result.score:"—";
+
+ const scoreColor=
+  result.score<40?"#eb6174":
+  result.score<65?"#f2a53a":
+  result.score<85?"#438df5":"#16b88a";
+
+ $("conditionRing").style.background=assessment?
+  `conic-gradient(${scoreColor} 0 ${result.score}%,#eceef6 ${result.score}% 100%)`:
+  "conic-gradient(#eceef6 0 100%)";
+
+ const status=$("conditionStatus");
+ status.textContent=assessment?result.status:"Not assessed";
+ status.className="badge-soft "+(
+  !assessment?"b-neutral":
+  result.status==="Critical Review"?"b-danger":
+  result.status==="Needs Attention"?"b-warning":
+  result.status==="Monitor"?"b-info":"b-success"
+ );
+
+ const root=$("conditionDetails");
+ root.replaceChildren();
+
+ const rows=[
+  ["Asset",selectedAsset()],
+  ["Inspection Findings",String(result.defectCount)],
+  ["Checklist Completed",result.completion+"%"],
+  ["Critical Findings",String(result.criticalCount)],
+  ["Assessment State",assessment?"Simulated Complete":"Not Run"]
+ ];
+
+ rows.forEach(([label,value])=>{
+  const row=element("div",undefined,
+   "d-flex justify-content-between gap-2 py-2 border-bottom");
+  add(row,"span",label,"section-sub");
+  add(row,"strong",value);
+  root.append(row);
+ });
+}
+
+function renderChecklist(){
+ const root=$("checklistRoot");
+ root.replaceChildren();
+
+ checklistItems.forEach(item=>{
+  const row=element("div",undefined,"check-item");
+  const input=element("input",undefined,"form-check-input mt-1");
+  input.type="checkbox";
+  input.checked=checked.has(item.id);
+  input.id="check-"+item.id;
+
+  input.addEventListener("change",()=>{
+   if(input.checked)checked.add(item.id);
+   else checked.delete(item.id);
+   invalidateAssessment();
+  });
+
+  const body=element("div");
+  const label=element("label",item.title);
+  label.htmlFor=input.id;
+  label.style.fontWeight="800";
+  label.style.fontSize="11px";
+
+  body.append(label);
+  add(body,"p",item.description);
+  row.append(input,body);
+  root.append(row);
+ });
+
+ $("checklistBadge").textContent=
+  `${checked.size} / ${checklistItems.length}`;
+}
+
+function renderFindings(){
+ const root=$("findingsRoot");
+ root.replaceChildren();
+
+ if(!findings.length){
+  add(root,"p",
+   "No defects recorded. Add a finding using the inspection form.",
+   "text-secondary");
+  return;
+ }
+
+ findings.forEach(f=>{
+  const card=element("div",undefined,"finding");
+
+  const top=element("div",undefined,
+   "d-flex align-items-start gap-3");
+
+  const icon=element("div",undefined,"finding-icon");
+  icon.append(element("i",undefined,"bi bi-exclamation-diamond"));
+
+  const body=element("div",undefined,"flex-grow-1");
+  add(body,"strong",`${f.type} · ${f.component}`);
+
+  const meta=element("div",undefined,"d-flex flex-wrap gap-2 mt-2");
+  meta.append(
+   badge(f.severity,severityClass(f.severity)),
+   badge(currency(f.cost),"b-neutral")
+  );
+  body.append(meta);
+
+  if(f.note)add(body,"p",f.note);
+
+  const remove=element("button",undefined,"small-action");
+  remove.type="button";
+  remove.setAttribute("aria-label","Remove "+f.type);
+  remove.append(element("i",undefined,"bi bi-trash"));
+
+  remove.addEventListener("click",()=>{
+   findings=findings.filter(item=>item.id!==f.id);
+   invalidateAssessment();
+   notify("Inspection finding removed");
+  });
+
+  top.append(icon,body,remove);
+  card.append(top);
+  root.append(card);
+ });
+}
+
+function renderRecommendations(){
+ const root=$("recommendationsRoot");
+ root.replaceChildren();
+
+ if(!assessment){
+  add(root,"p",
+   "Run the assessment to generate rule-based recommendations.",
+   "text-secondary");
+  return;
+ }
+
+ const result=calculate();
+ const recommendations=[];
+
+ if(result.criticalCount){
+  recommendations.push(
+   "Refer critical observations to authorized safety and engineering personnel."
+  );
+ }
+
+ if(findings.some(f=>f.type==="Corrosion")){
+  recommendations.push(
+   "Request a qualified corrosion assessment and material-condition review."
+  );
+ }
+
+ if(findings.some(f=>f.type==="Crack")){
+  recommendations.push(
+   "Request engineering review of the observed crack and applicable inspection methods."
+  );
+ }
+
+ if(findings.some(f=>f.type==="Leak")){
+  recommendations.push(
+   "Review the leak observation against approved site procedures and equipment requirements."
+  );
+ }
+
+ if(result.completion<100){
+  recommendations.push(
+   "Complete outstanding inspection checklist items before final sign-off."
+  );
+ }
+
+ if(findings.length===0){
+  recommendations.push(
+   "No defects were entered; absence of records does not establish defect-free condition."
+  );
+ }
+
+ recommendations.push(
+  "Verify observations, repair scope and cost allowances before creating a work order."
+ );
+
+ recommendations.forEach(text=>{
+  const row=element("div",undefined,"finding");
+  const flex=element("div",undefined,"d-flex gap-3");
+
+  const icon=element("div",undefined,"finding-icon");
+  icon.append(element("i",undefined,"bi bi-lightbulb"));
+
+  const body=element("div");
+  add(body,"p",text);
+
+  flex.append(icon,body);
+  row.append(flex);
+  root.append(row);
+ });
+}
+
+function renderCharts(){
+ if(typeof Chart==="undefined")return;
+
+ const severities=["Critical","High","Medium","Low"];
+ const counts=severities.map(s=>
+  findings.filter(f=>f.severity===s).length
+ );
+
+ if(severityChart){
+  severityChart.data.datasets[0].data=counts;
+  severityChart.update();
+ }else{
+  severityChart=new Chart($("severityChart"),{
+   type:"doughnut",
+   data:{
+    labels:severities,
+    datasets:[{
+     data:counts,
+     backgroundColor:[
+      "#eb6174","#f2a53a","#438df5","#16b88a"
+     ],
+     borderWidth:0
+    }]
+   },
+   options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    cutout:"67%",
+    plugins:{
+     legend:{
+      position:"bottom",
+      labels:{boxWidth:10,font:{size:10}}
+     }
+    }
+   }
+  });
+ }
+
+ const totals=new Map();
+
+ findings.forEach(f=>{
+  totals.set(
+   f.component,
+   (totals.get(f.component)||0)+f.cost
+  );
+ });
+
+ const labels=[...totals.keys()];
+ const costs=[...totals.values()];
+
+ if(costChart){
+  costChart.data.labels=labels;
+  costChart.data.datasets[0].data=costs;
+  costChart.update();
+ }else{
+  costChart=new Chart($("costChart"),{
+   type:"bar",
+   data:{
+    labels,
+    datasets:[{
+     label:"Planning Allowance (₹)",
+     data:costs,
+     backgroundColor:"#6855eb",
+     borderRadius:7,
+     maxBarThickness:42
+    }]
+   },
+   options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    indexAxis:"y",
+    plugins:{legend:{display:false}},
+    scales:{
+     x:{
+      beginAtZero:true,
+      ticks:{color:"#8992aa"},
+      grid:{color:"#eef0f7"}
+     },
+     y:{
+      ticks:{color:"#8992aa"},
+      grid:{display:false}
+     }
+    }
+   }
+  });
+ }
+}
+
+function renderHistory(){
+ const root=$("historyTable");
+ root.replaceChildren();
+
+ if(!history.length){
+  const row=element("tr");
+  const cell=element("td",
+   "No assessments completed in this session.",
+   "text-center text-secondary py-4");
+  cell.colSpan=7;
+  row.append(cell);
+  root.append(row);
+  return;
+ }
+
+ history.forEach(record=>{
+  const row=element("tr");
+
+  const title=element("td");
+  add(title,"div",record.id,"table-title");
+  add(title,"div",record.type,"table-sub");
+
+  const asset=element("td",record.asset);
+  const count=element("td",String(record.findings.length));
+  const score=element("td",record.score+"/100");
+  const cost=element("td",currency(record.cost));
+  const time=element("td",record.timestamp);
+
+  const action=element("td");
+  const button=element("button","View JSON","small-action");
+  button.type="button";
+
+  button.addEventListener("click",()=>{
+   $("outputJson").textContent=
+    JSON.stringify(record,null,2);
+   $("outputJson").scrollIntoView({
+    behavior:"smooth",block:"center"
+   });
+  });
+
+  action.append(button);
+
+  row.append(title,asset,count,score,cost,time,action);
+  root.append(row);
+ });
+}
+
+function currentPayload(){
+ const result=calculate();
+
+ return {
+  mode:"simulation",
+  agent:"inspection_agent",
+  asset:selectedAsset(),
+  inspection_type:$("inspectionType").value,
+  image:{
+   selected:!!currentImageMeta,
+   filename:currentImageMeta?.name||null,
+   size_bytes:currentImageMeta?.size||null,
+   processed_by_cv_model:false,
+   image_embedded_in_export:false
+  },
+  manual_findings:findings,
+  checklist:{
+   completed:[...checked],
+   total:checklistItems.length,
+   completion_percent:result.completion
+  },
+  assessment:{
+   completed:!!assessment,
+   score:assessment?result.score:null,
+   condition:assessment?result.status:null,
+   cost_allowance_inr:result.cost,
+   formula:"max(0, 100 - sum(severity penalties))",
+   penalties:severityPenalty,
+   methodology:"Illustrative deterministic scoring"
+  },
+  human_validation_required:true,
+  real_ai_inference:false,
+  equipment_actions_executed:false
+ };
+}
+
+function renderJson(){
+ $("outputJson").textContent=
+  JSON.stringify(currentPayload(),null,2);
+}
+
+function renderAll(){
+ renderKpis();
+ renderChecklist();
+ renderFindings();
+ renderRecommendations();
+ renderCharts();
+ renderHistory();
+ renderJson();
+}
+
+function addFinding(event){
+ event.preventDefault();
+
+ const component=$("componentName").value.trim();
+ const note=$("findingNote").value.trim();
+ const cost=Number($("estimatedCost").value);
+
+ if(!component||!Number.isFinite(cost)||
+    cost<0||cost>100000000){
+  notify("Enter a valid component and planning cost");
+  return;
+ }
+
+ findings.push({
+  id:"FND-"+nextFindingId++,
+  type:$("defectType").value,
+  severity:$("defectSeverity").value,
+  component,
+  cost,
+  note
+ });
+
+ $("findingForm").reset();
+ invalidateAssessment();
+ notify("Manual inspection finding added");
+}
+
+function runAssessment(){
+ const result=calculate();
+
+ assessment={
+  completedAt:now(),
+  score:result.score,
+  status:result.status
+ };
+
+ history.unshift({
+  id:"INSP-"+String(nextInspectionId++).padStart(4,"0"),
+  asset:selectedAsset(),
+  type:$("inspectionType").value,
+  score:result.score,
+  cost:result.cost,
+  completion:result.completion,
+  findings:structuredClone(findings),
+  timestamp:assessment.completedAt,
+  simulated:true
+ });
+
+ renderAll();
+ notify("Rule-based inspection assessment completed");
+}
+
+function acceptImage(file){
+ if(!file)return;
+
+ const allowed=[
+  "image/png","image/jpeg","image/webp"
+ ];
+
+ if(!allowed.includes(file.type)){
+  notify("Select a PNG, JPG or WEBP image");
+  return;
+ }
+
+ if(file.size>8*1024*1024){
+  notify("Image exceeds the 8 MB limit");
+  return;
+ }
+
+ if(currentImageUrl){
+  URL.revokeObjectURL(currentImageUrl);
+ }
+
+ currentImageUrl=URL.createObjectURL(file);
+ currentImageMeta={
+  name:file.name,
+  size:file.size,
+  type:file.type
+ };
+
+ $("imagePreview").src=currentImageUrl;
+ $("imagePreview").hidden=false;
+ $("uploadPlaceholder").hidden=true;
+
+ $("imageInfo").textContent=
+  `${file.name} · ${(file.size/1024/1024).toFixed(2)} MB · Local preview`;
+
+ invalidateAssessment();
+ notify("Inspection image loaded locally");
+}
+
+function removeImage(){
+ if(currentImageUrl){
+  URL.revokeObjectURL(currentImageUrl);
+  currentImageUrl=null;
+ }
+
+ currentImageMeta=null;
+ $("imageInput").value="";
+ $("imagePreview").removeAttribute("src");
+ $("imagePreview").hidden=true;
+ $("uploadPlaceholder").hidden=false;
+ $("imageInfo").textContent=
+  "No image selected. Manual observations can still be recorded.";
+
+ invalidateAssessment();
+}
+
+function csvCell(value){
+ const valueText=String(value??"");
+ const safe=/^\s*[=+\-@]/.test(valueText)?
+  "'"+valueText:valueText;
+
+ return '"'+safe.replaceAll('"','""')+'"';
+}
+
+function download(content,name,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+
+ link.href=url;
+ link.download=name;
+ document.body.append(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[
+  [
+   "Finding ID","Asset","Defect Type","Severity",
+   "Component","Planning Cost INR","Observation"
+  ],
+  ...findings.map(f=>[
+   f.id,selectedAsset(),f.type,f.severity,
+   f.component,f.cost,f.note
+  ])
+ ];
+
+ download(
+  rows.map(row=>row.map(csvCell).join(",")).join("\r\n"),
+  "inspection-agent-findings.csv",
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Inspection findings exported");
+}
+
+function exportJson(){
+ download(
+  JSON.stringify({
+   current_inspection:currentPayload(),
+   inspection_history:history
+  },null,2),
+  "inspection-agent-assessment.json",
+  "application/json"
+ );
+
+ notify("Inspection assessment exported");
+}
+
+async function copyJson(){
+ try{
+  await navigator.clipboard.writeText(
+   $("outputJson").textContent
+  );
+  notify("Inspection JSON copied");
+ }catch{
+  notify("Clipboard unavailable; select JSON manually");
+ }
+}
+
+function reset(){
+ findings=[];
+ checked.clear();
+ history=[];
+ assessment=null;
+ nextFindingId=1;
+ nextInspectionId=1;
+
+ $("assetSelect").selectedIndex=0;
+ $("inspectionType").selectedIndex=0;
+ $("findingForm").reset();
+
+ removeImage();
+ renderAll();
+ notify("Inspection demonstration reset");
+}
+
+function initNavigation(){
+ const sidebar=$("sidebar");
+ const shade=$("shade");
+
+ function close(){
+  sidebar.classList.remove("open");
+  shade.classList.remove("show");
+ }
+
+ $("menuButton").addEventListener("click",()=>{
+  sidebar.classList.add("open");
+  shade.classList.add("show");
+ });
+
+ shade.addEventListener("click",close);
+
+ document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")close();
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ initNavigation();
+ renderAll();
+
+ $("assetSelect").addEventListener("change",()=>{
+  findings=[];
+  checked.clear();
+  removeImage();
+  invalidateAssessment();
+ });
+
+ $("inspectionType").addEventListener(
+  "change",invalidateAssessment
+ );
+
+ $("findingForm").addEventListener("submit",addFinding);
+ $("runButton").addEventListener("click",runAssessment);
+
+ $("uploadZone").addEventListener("click",()=>{
+  $("imageInput").click();
+ });
+
+ $("uploadZone").addEventListener("keydown",event=>{
+  if(event.key==="Enter"||event.key===" "){
+   event.preventDefault();
+   $("imageInput").click();
+  }
+ });
+
+ $("imageInput").addEventListener("change",event=>{
+  acceptImage(event.target.files[0]);
+ });
+
+ $("uploadZone").addEventListener("dragover",event=>{
+  event.preventDefault();
+  $("uploadZone").classList.add("dragover");
+ });
+
+ $("uploadZone").addEventListener("dragleave",()=>{
+  $("uploadZone").classList.remove("dragover");
+ });
+
+ $("uploadZone").addEventListener("drop",event=>{
+  event.preventDefault();
+  $("uploadZone").classList.remove("dragover");
+  acceptImage(event.dataTransfer.files[0]);
+ });
+
+ $("removeImageButton").addEventListener(
+  "click",removeImage
+ );
+
+ $("exportCsvButton").addEventListener(
+  "click",exportCsv
+ );
+
+ $("exportJsonButton").addEventListener(
+  "click",exportJson
+ );
+
+ $("copyButton").addEventListener(
+  "click",copyJson
+ );
+
+ $("resetButton").addEventListener(
+  "click",reset
+ );
+});
+</script>
+
+</body>
+</html>

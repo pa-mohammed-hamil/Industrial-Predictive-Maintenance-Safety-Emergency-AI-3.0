@@ -1,0 +1,1819 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Repair Replacement Agent | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / agents</p><h1 id="page-title">Repair Replacement Agent</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Repair Replacement Agent workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Repair & Replacement Agent | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--purple2:#8b7af9;
+ --green:#16b88a;--orange:#f2a53a;--red:#eb6174;
+ --blue:#438df5;--bg:#f5f6fb;--text:#202640;
+ --muted:#8b93aa;--border:#e9ebf3;--sidebar:258px
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif
+}
+h1,h2,h3,h4,h5,h6{
+ font-family:Manrope,sans-serif;letter-spacing:-.6px
+}
+a{text-decoration:none}
+button:focus-visible,a:focus-visible,
+input:focus-visible,select:focus-visible,
+textarea:focus-visible{
+ outline:3px solid #a99cff!important;outline-offset:2px
+}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:#aab1ce;z-index:1050;
+ display:flex;flex-direction:column;transition:transform .25s
+}
+.brand{
+ height:83px;padding:21px 23px;display:flex;align-items:center;
+ gap:12px;border-bottom:1px solid #ffffff12
+}
+.brand-mark{
+ width:43px;height:43px;border-radius:14px;
+ background:linear-gradient(135deg,#9c83ff,#5a48e4);
+ color:white;display:grid;place-items:center;font-size:22px
+}
+.brand strong{color:white;font-size:17px}
+.brand small{
+ display:block;font-size:9px;letter-spacing:2px;color:#7883b0
+}
+.sidebar-body{overflow-y:auto;flex:1;padding:16px 12px}
+.sidebar-label{
+ color:#687397;text-transform:uppercase;font-size:9px;
+ font-weight:800;letter-spacing:2px;padding:20px 15px 9px
+}
+.side-link{
+ display:flex;align-items:center;gap:13px;
+ padding:11px 14px;margin:3px 0;color:#9da8ca;
+ border-radius:11px;font-size:12px;font-weight:600;
+ transition:.2s
+}
+.side-link i{font-size:17px;width:21px;text-align:center}
+.side-link:hover{background:#ffffff10;color:white}
+.side-link.active{
+ background:linear-gradient(90deg,#6b59e8,#5346ba);
+ color:white
+}
+.sidebar-foot{padding:18px;border-top:1px solid #ffffff12}
+.sidebar-status{
+ border-radius:13px;padding:13px;background:#ffffff09;
+ border:1px solid #ffffff12
+}
+.status-dot{
+ display:inline-block;width:8px;height:8px;
+ border-radius:50%;background:#2cdaa2;margin-right:7px
+}
+.app{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ background:white;min-height:76px;display:flex;
+ align-items:center;justify-content:space-between;
+ gap:15px;padding:15px 30px;
+ border-bottom:1px solid var(--border);
+ position:sticky;top:0;z-index:100
+}
+.topbar-title{font-size:15px;font-weight:800}
+.topbar-sub{color:var(--muted);font-size:11px;margin-top:3px}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ height:39px;width:39px;display:grid;place-items:center;
+ border-radius:12px;border:1px solid var(--border);
+ background:#fafaff;color:#555e7b;font-size:16px
+}
+.top-icon:hover{background:#eeecff;color:var(--purple)}
+.avatar{
+ height:39px;width:39px;border-radius:13px;
+ display:grid;place-items:center;color:white;font-weight:800;
+ background:linear-gradient(135deg,#7e6bf4,#a18dff)
+}
+.content{padding:29px;max-width:1850px;margin:auto}
+.eyebrow{
+ text-transform:uppercase;letter-spacing:2px;
+ font-size:10px;font-weight:800;color:var(--purple)
+}
+.page-title{
+ font-size:29px;font-weight:800;margin:9px 0 6px
+}
+.page-description{color:var(--muted);line-height:1.7}
+.btn-premium,.btn-soft,.btn-danger-soft{
+ display:inline-flex;align-items:center;justify-content:center;
+ gap:8px;border-radius:11px;padding:11px 16px;
+ font-size:12px;font-weight:700;transition:.2s;cursor:pointer
+}
+.btn-premium{
+ background:var(--purple);color:white;
+ border:1px solid var(--purple)
+}
+.btn-premium:hover{background:#5542d5;color:white}
+.btn-soft{
+ background:white;color:#5e6680;border:1px solid var(--border)
+}
+.btn-soft:hover{background:#f1efff;color:var(--purple)}
+.btn-danger-soft{
+ background:#ffebee;color:#d9435b;
+ border:1px solid #ffd9e0
+}
+.btn-danger-soft:hover{background:#ffdfe5}
+button:disabled{opacity:.5;cursor:not-allowed}
+.surface{
+ background:white;border:1px solid var(--border);
+ border-radius:18px;box-shadow:0 8px 30px #24305b08
+}
+.hero{
+ position:relative;overflow:hidden;
+ background:linear-gradient(115deg,#6651e9,#8e74f4 65%,#a894ff);
+ color:white;border-radius:22px;padding:31px 33px;
+ box-shadow:0 15px 35px #7564ea28
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ right:-60px;top:-145px;border:1px solid #ffffff45;
+ border-radius:50%;
+ box-shadow:0 0 0 45px #ffffff0b,0 0 0 95px #ffffff09;
+ pointer-events:none
+}
+.hero h2{font-size:25px;font-weight:800}
+.hero p{max-width:740px;color:#eeeaff;line-height:1.8}
+.hero-chip{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff23;border:1px solid #ffffff30;
+ padding:8px 12px;border-radius:9px;
+ font-size:10px;font-weight:700
+}
+.metric{padding:21px;height:100%}
+.metric-top{
+ display:flex;justify-content:space-between;align-items:center
+}
+.metric-label{color:#8a92a8;font-size:11px;font-weight:700}
+.metric-icon{
+ width:44px;height:44px;border-radius:14px;
+ display:grid;place-items:center;font-size:20px
+}
+.metric-value{
+ font:800 25px Manrope,sans-serif;margin:14px 0 6px
+}
+.metric-foot{font-size:10px;color:#9aa1b3}
+.section-title{font-size:17px;font-weight:800}
+.section-sub{font-size:11px;color:var(--muted)}
+.badge-soft{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:6px 10px;border-radius:8px;
+ font-size:10px;font-weight:800
+}
+.b-success{background:#e5f8f0;color:#13a776}
+.b-warning{background:#fff4e2;color:#d58c20}
+.b-danger{background:#ffebee;color:#df4d64}
+.b-info{background:#eaf2ff;color:#438df5}
+.b-neutral{background:#f0f1f6;color:#788098}
+.b-purple{background:#eeebff;color:#6855eb}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ padding:11px 12px;font-size:12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#a69aff;box-shadow:0 0 0 3px #6855eb12
+}
+.form-label{font-size:11px;font-weight:800;color:#5b6480}
+.asset-card{
+ border:1px solid var(--border);border-radius:13px;
+ padding:15px;margin-bottom:10px;transition:.2s
+}
+.asset-card.active{
+ background:#faf9ff;border-color:#a99aff
+}
+.asset-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;font-size:20px;
+ background:#eeebff;color:var(--purple);flex-shrink:0
+}
+.asset-title{font-size:12px;font-weight:800}
+.asset-meta{
+ font-size:10px;color:var(--muted);line-height:1.7
+}
+.condition-ring{
+ width:160px;height:160px;border-radius:50%;
+ display:grid;place-items:center;margin:17px auto;
+ background:conic-gradient(var(--purple) 0 75%,#eceef6 75% 100%)
+}
+.condition-inner{
+ width:128px;height:128px;border-radius:50%;
+ background:white;display:flex;flex-direction:column;
+ align-items:center;justify-content:center
+}
+.condition-number{font:800 36px Manrope,sans-serif}
+.condition-label{font-size:10px;color:var(--muted)}
+.detail-row{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border)
+}
+.detail-row:last-child{border-bottom:0}
+.detail-label{font-size:11px;color:var(--muted)}
+.detail-value{
+ font-size:11px;font-weight:800;text-align:right
+}
+.option-card{
+ border:1px solid var(--border);border-radius:15px;
+ padding:20px;height:100%
+}
+.option-card.recommended{
+ border-color:#aaa0f8;background:#fbfaff
+}
+.option-icon{
+ width:48px;height:48px;border-radius:14px;
+ display:grid;place-items:center;font-size:23px;
+ background:#eeebff;color:var(--purple)
+}
+.option-total{
+ font:800 26px Manrope,sans-serif;margin:13px 0
+}
+.progress-thin{
+ height:8px;border-radius:8px;background:#eff0f6
+}
+.progress-thin .progress-bar{border-radius:8px}
+.recommendation{
+ display:flex;gap:13px;padding:15px;
+ border:1px solid var(--border);
+ border-radius:13px;margin-bottom:11px
+}
+.recommendation-icon{
+ width:40px;height:40px;flex-shrink:0;
+ border-radius:12px;display:grid;place-items:center;
+ background:#eeebff;color:var(--purple);font-size:19px
+}
+.recommendation strong{font-size:11px}
+.recommendation p{
+ font-size:10px;color:var(--muted);
+ line-height:1.7;margin:6px 0 0
+}
+.chart-wrap{height:290px;position:relative}
+.table thead th{
+ background:#fafbfe;color:#9099ae;
+ font-size:10px;text-transform:uppercase;
+ letter-spacing:.7px;padding:15px 18px;
+ white-space:nowrap;border-bottom:1px solid var(--border)
+}
+.table tbody td{
+ padding:15px 18px;font-size:11px;color:#66708a;
+ vertical-align:middle;border-color:#f0f1f7
+}
+.table-title{font-weight:800;color:#252c48}
+.table-sub{font-size:9px;color:#9ca4b8;margin-top:5px}
+.small-action{
+ border:1px solid var(--border);background:white;
+ border-radius:8px;padding:7px 10px;color:#66718d;
+ font-size:10px;font-weight:700
+}
+.small-action:hover{
+ background:#eeebff;color:var(--purple)
+}
+.report-code{
+ background:#141a31;color:#dce6ff;
+ border-radius:13px;padding:18px;
+ font:11px/1.8 monospace;white-space:pre-wrap;
+ overflow-wrap:anywhere;max-height:350px;overflow:auto
+}
+.safety-note{
+ background:#f3f0ff;border:1px solid #ded8ff;
+ color:#6052a7;border-radius:13px;
+ padding:16px;font-size:11px;line-height:1.8
+}
+.footer{
+ padding:23px 30px;border-top:1px solid var(--border);
+ color:#9aa2b5;font-size:10px;
+ display:flex;justify-content:space-between;gap:12px
+}
+.mobile-shade{display:none}
+@media(max-width:1199px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .app{margin-left:0}
+ .mobile-shade.show{
+  display:block;position:fixed;inset:0;
+  background:#0008;z-index:1040
+ }
+}
+@media(max-width:575px){
+ .content{padding:17px}
+ .topbar{padding:13px 17px}
+ .page-title{font-size:23px}
+ .hero{padding:23px}
+ .hero h2{font-size:20px}
+ .metric-value{font-size:21px}
+ .footer{flex-direction:column;padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-shade" id="shade"></div>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div class="brand-mark">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a997ff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <nav class="sidebar-body" aria-label="Main navigation">
+  <div class="sidebar-label">Main Menu</div>
+  <a class="side-link" href="../index.html"><i class="bi bi-house-door"></i>Home</a>
+  <a class="side-link" href="../dashboard.html"><i class="bi bi-grid-1x2"></i>Dashboard</a>
+  <a class="side-link" href="../command-center.html"><i class="bi bi-broadcast"></i>Command Center</a>
+  <a class="side-link" href="../analytics.html"><i class="bi bi-bar-chart-line"></i>Analytics Studio</a>
+  <a class="side-link" href="../reports.html"><i class="bi bi-file-earmark-bar-graph"></i>Reports</a>
+  <a class="side-link" href="../notifications.html"><i class="bi bi-bell"></i>Notifications</a>
+
+  <div class="sidebar-label">Operations</div>
+  <a class="side-link" href="../assets/assets.html"><i class="bi bi-cpu"></i>Asset Intelligence</a>
+  <a class="side-link" href="../telemetry/live-telemetry.html"><i class="bi bi-activity"></i>Live Telemetry</a>
+  <a class="side-link" href="../predictive-maintenance/maintenance-dashboard.html"><i class="bi bi-tools"></i>Predictive Maintenance</a>
+  <a class="side-link" href="../maintenance/work-orders.html"><i class="bi bi-clipboard-check"></i>Work Orders</a>
+  <a class="side-link" href="../computer-vision/vision-dashboard.html"><i class="bi bi-camera"></i>Computer Vision</a>
+
+  <div class="sidebar-label">Risk & Intelligence</div>
+  <a class="side-link" href="../safety/safety-dashboard.html"><i class="bi bi-shield-check"></i>Safety Intelligence</a>
+  <a class="side-link" href="../emergency/emergency-dashboard.html"><i class="bi bi-exclamation-triangle"></i>Emergency Response</a>
+  <a class="side-link" href="../cost-intelligence/cost-dashboard.html"><i class="bi bi-currency-rupee"></i>Cost Intelligence</a>
+  <a class="side-link" href="../copilot/ai-copilot.html"><i class="bi bi-stars"></i>AI Copilot</a>
+
+  <div class="sidebar-label">Agentic AI</div>
+  <a class="side-link" href="agent-dashboard.html"><i class="bi bi-diagram-3"></i>Agent Dashboard</a>
+  <a class="side-link" href="agent-workflows.html"><i class="bi bi-bezier2"></i>Agent Workflows</a>
+  <a class="side-link" href="agent-executions.html"><i class="bi bi-play-circle"></i>Agent Executions</a>
+  <a class="side-link" href="agent-tool-calls.html"><i class="bi bi-wrench-adjustable"></i>Agent Tool Calls</a>
+  <a class="side-link" href="agent-evaluation.html"><i class="bi bi-clipboard-data"></i>Agent Evaluation</a>
+  <a class="side-link" href="asset-health-agent.html"><i class="bi bi-heart-pulse"></i>Asset Health Agent</a>
+  <a class="side-link" href="cost-agent.html"><i class="bi bi-currency-rupee"></i>Cost Agent</a>
+  <a class="side-link" href="emergency-response-agent.html"><i class="bi bi-exclamation-octagon"></i>Emergency Response Agent</a>
+  <a class="side-link" href="failure-analysis-agent.html"><i class="bi bi-search-heart"></i>Failure Analysis Agent</a>
+  <a class="side-link" href="human-approvals.html"><i class="bi bi-person-check"></i>Human Approvals</a>
+  <a class="side-link" href="incident-agent.html"><i class="bi bi-clipboard-pulse"></i>Incident Agent</a>
+  <a class="side-link" href="inspection-agent.html"><i class="bi bi-camera"></i>Inspection Agent</a>
+  <a class="side-link" href="maintenance-agent.html"><i class="bi bi-tools"></i>Maintenance Agent</a>
+  <a class="side-link active" href="repair-replacement-agent.html" aria-current="page">
+   <i class="bi bi-arrow-left-right"></i>Repair & Replacement Agent
+  </a>
+
+  <div class="sidebar-label">Administration</div>
+  <a class="side-link" href="../observability/observability-dashboard.html"><i class="bi bi-speedometer2"></i>Observability</a>
+  <a class="side-link" href="../security/security-dashboard.html"><i class="bi bi-lock"></i>Security</a>
+  <a class="side-link" href="../settings/settings.html"><i class="bi bi-gear"></i>Settings</a>
+ </nav>
+
+ <div class="sidebar-foot">
+  <div class="sidebar-status">
+   <div class="fw-bold text-white small">
+    <span class="status-dot"></span>Repair & Replacement Advisor
+   </div>
+   <div class="mt-2" style="font-size:10px">
+    Lifecycle economics · Demo mode
+   </div>
+  </div>
+ </div>
+</aside>
+
+<div class="app">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon d-xl-none" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="topbar-title">Repair & Replacement Intelligence</div>
+   <div class="topbar-sub">Workspace / AI Agents / Repair & Replacement</div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="d-none d-md-inline text-secondary small">
+   Financial scenario simulator
+  </span>
+  <button class="top-icon" id="resetButton" aria-label="Reset simulation">
+   <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <a href="../notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <a href="../settings/settings.html" class="avatar" aria-label="Settings">AI</a>
+ </div>
+</header>
+
+<main class="content">
+
+ <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div>
+   <div class="eyebrow">Industrial Asset Lifecycle Intelligence</div>
+   <h1 class="page-title">
+    Repair & Replacement Agent
+    <span style="color:var(--purple)">✦</span>
+   </h1>
+   <div class="page-description">
+    Compare repair and replacement economics, evaluate asset condition,
+    explore lifecycle costs and prepare decisions for qualified human review.
+   </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-soft" id="exportCsvButton">
+    <i class="bi bi-filetype-csv"></i> Export CSV
+   </button>
+   <button class="btn-soft" id="exportJsonButton">
+    <i class="bi bi-download"></i> Export JSON
+   </button>
+   <button class="btn-premium" id="analyzeButton">
+    <i class="bi bi-stars"></i> Compare Options
+   </button>
+  </div>
+ </div>
+
+ <section class="hero mb-4">
+  <div class="position-relative" style="z-index:1">
+   <div class="text-uppercase fw-bold mb-3"
+    style="font-size:10px;letter-spacing:2px">
+    <i class="bi bi-arrow-left-right me-1"></i>
+    Asset Lifecycle Decision Intelligence
+   </div>
+   <h2>Repair intelligently.<br>Replace when justified.</h2>
+   <p class="mt-3 mb-4">
+    Bring asset health, spare parts, labor, downtime,
+    future maintenance and capital replacement costs into
+    a transparent side-by-side decision workspace.
+   </p>
+   <div class="d-flex flex-wrap gap-2">
+    <span class="hero-chip"><i class="bi bi-tools"></i> Repair Economics</span>
+    <span class="hero-chip"><i class="bi bi-box-seam"></i> Replacement Planning</span>
+    <span class="hero-chip"><i class="bi bi-graph-up-arrow"></i> Lifecycle Cost</span>
+    <span class="hero-chip"><i class="bi bi-calculator"></i> ROI & Payback</span>
+    <span class="hero-chip"><i class="bi bi-person-check"></i> Human Approval</span>
+   </div>
+  </div>
+ </section>
+
+ <section class="safety-note mb-4">
+  <i class="bi bi-info-circle me-2"></i>
+  <strong>Financial decision-support demo:</strong>
+  Asset data and initial prices are fictional.
+  The tool does not evaluate equipment certification,
+  regulatory compliance, technical repair feasibility,
+  procurement constraints or actual safety suitability.
+  All recommendations require engineering and financial validation.
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Repair Lifecycle Cost</span>
+     <span class="metric-icon" style="background:#eeebff;color:var(--purple)">
+      <i class="bi bi-tools"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="repairKpi">—</div>
+    <div class="metric-foot">Undiscounted planning horizon</div>
+   </div>
+  </div>
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Replacement Lifecycle Cost</span>
+     <span class="metric-icon" style="background:#eaf2ff;color:var(--blue)">
+      <i class="bi bi-box-seam"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="replaceKpi">—</div>
+    <div class="metric-foot">Undiscounted planning horizon</div>
+   </div>
+  </div>
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Modeled Cost Advantage</span>
+     <span class="metric-icon" style="background:#e5f8f0;color:var(--green)">
+      <i class="bi bi-graph-down-arrow"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="savingsKpi">—</div>
+    <div class="metric-foot">Difference between compared options</div>
+   </div>
+  </div>
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Preferred Cost Option</span>
+     <span class="metric-icon" style="background:#fff4e2;color:var(--orange)">
+      <i class="bi bi-lightbulb"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="decisionKpi">—</div>
+    <div class="metric-foot">Financial comparison only</div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Asset Selection</h2>
+    <p class="section-sub mb-3">
+     Choose a synthetic industrial asset
+    </p>
+
+    <input id="assetSearch" type="search" class="form-control mb-3"
+     placeholder="Search asset or equipment..."
+     aria-label="Search industrial assets">
+
+    <div id="assetQueue"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+     <div>
+      <div class="eyebrow mb-2">Asset Condition</div>
+      <h2 class="section-title mb-1" id="assetTitle">—</h2>
+      <p class="section-sub mb-0" id="assetSubtitle">—</p>
+     </div>
+     <span id="assetPriority" class="badge-soft b-neutral">—</span>
+    </div>
+
+    <div class="row g-3">
+     <div class="col-lg-5">
+      <div class="condition-ring" id="conditionRing">
+       <div class="condition-inner">
+        <div class="condition-number" id="conditionValue">—</div>
+        <div class="condition-label">Condition Score</div>
+       </div>
+      </div>
+      <div class="text-center">
+       <span id="conditionBadge" class="badge-soft b-neutral">—</span>
+      </div>
+     </div>
+
+     <div class="col-lg-7" id="assetDetails"></div>
+    </div>
+
+    <div class="safety-note mt-3">
+     A low condition score flags the need for technical review.
+     It does not independently prove that replacement is necessary.
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">Repair & Replacement Cost Inputs</h2>
+    <p class="section-sub mb-0">
+     Edit scenario assumptions and run a new comparison
+    </p>
+   </div>
+   <span class="badge-soft b-purple">EDITABLE SCENARIO</span>
+  </div>
+
+  <div class="row g-4">
+   <div class="col-xl-6">
+    <h3 class="section-title mb-3">
+     <i class="bi bi-tools text-primary me-2"></i>
+     Repair Scenario
+    </h3>
+    <div class="row g-3">
+     <div class="col-md-6">
+      <label class="form-label" for="repairParts">Repair Parts (₹)</label>
+      <input id="repairParts" type="number" class="form-control"
+       min="0" max="1000000000" step="100">
+     </div>
+     <div class="col-md-6">
+      <label class="form-label" for="repairLabor">Repair Labor (₹)</label>
+      <input id="repairLabor" type="number" class="form-control"
+       min="0" max="1000000000" step="100">
+     </div>
+     <div class="col-md-6">
+      <label class="form-label" for="repairDowntime">Repair Downtime (₹)</label>
+      <input id="repairDowntime" type="number" class="form-control"
+       min="0" max="1000000000" step="100">
+     </div>
+     <div class="col-md-6">
+      <label class="form-label" for="repairAnnual">
+       Annual Maintenance (₹)
+      </label>
+      <input id="repairAnnual" type="number" class="form-control"
+       min="0" max="1000000000" step="100">
+     </div>
+    </div>
+   </div>
+
+   <div class="col-xl-6">
+    <h3 class="section-title mb-3">
+     <i class="bi bi-box-seam text-primary me-2"></i>
+     Replacement Scenario
+    </h3>
+    <div class="row g-3">
+     <div class="col-md-6">
+      <label class="form-label" for="newAssetCost">New Equipment (₹)</label>
+      <input id="newAssetCost" type="number" class="form-control"
+       min="0" max="1000000000" step="100">
+     </div>
+     <div class="col-md-6">
+      <label class="form-label" for="installationCost">Installation (₹)</label>
+      <input id="installationCost" type="number" class="form-control"
+       min="0" max="1000000000" step="100">
+     </div>
+     <div class="col-md-6">
+      <label class="form-label" for="replacementDowntime">
+       Replacement Downtime (₹)
+      </label>
+      <input id="replacementDowntime" type="number"
+       class="form-control" min="0" max="1000000000" step="100">
+     </div>
+     <div class="col-md-6">
+      <label class="form-label" for="replacementAnnual">
+       Annual Maintenance (₹)
+      </label>
+      <input id="replacementAnnual" type="number"
+       class="form-control" min="0" max="1000000000" step="100">
+     </div>
+    </div>
+   </div>
+
+   <div class="col-12">
+    <hr style="border-color:var(--border)">
+    <div class="row g-3 align-items-end">
+     <div class="col-md-4">
+      <label class="form-label" for="horizon">Analysis Horizon (Years)</label>
+      <input id="horizon" type="number" class="form-control"
+       min="1" max="30" step="1" value="5">
+     </div>
+     <div class="col-md-4">
+      <label class="form-label" for="discountRate">
+       Annual Discount Rate (%)
+      </label>
+      <input id="discountRate" type="number" class="form-control"
+       min="0" max="50" step="0.5" value="8">
+     </div>
+     <div class="col-md-4">
+      <button class="btn-premium w-100" id="calculateButton">
+       <i class="bi bi-calculator"></i> Calculate Decision
+      </button>
+     </div>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+     <div>
+      <h2 class="section-title mb-1">Repair Option</h2>
+      <p class="section-sub mb-0">Existing asset maintenance strategy</p>
+     </div>
+     <span class="badge-soft b-info">OPTION A</span>
+    </div>
+    <div class="option-card" id="repairOption">
+     <div class="option-icon"><i class="bi bi-tools"></i></div>
+     <div class="option-total" id="repairTotal">—</div>
+     <div class="section-sub mb-3">Undiscounted lifecycle cost</div>
+     <div id="repairBreakdown"></div>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+     <div>
+      <h2 class="section-title mb-1">Replacement Option</h2>
+      <p class="section-sub mb-0">New equipment procurement strategy</p>
+     </div>
+     <span class="badge-soft b-purple">OPTION B</span>
+    </div>
+    <div class="option-card" id="replacementOption">
+     <div class="option-icon"><i class="bi bi-box-seam"></i></div>
+     <div class="option-total" id="replacementTotal">—</div>
+     <div class="section-sub mb-3">Undiscounted lifecycle cost</div>
+     <div id="replacementBreakdown"></div>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Lifecycle Cost Comparison</h2>
+    <p class="section-sub mb-3">
+     Cumulative undiscounted expenditure over the selected horizon
+    </p>
+    <div class="chart-wrap">
+     <canvas id="lifecycleChart" aria-label="Lifecycle cost comparison"></canvas>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Decision Economics</h2>
+    <p class="section-sub mb-3">
+     Comparative financial indicators
+    </p>
+    <div id="decisionEconomics"></div>
+    <div class="safety-note mt-3">
+     ROI and payback are calculated relative to the repair
+     option. A negative ROI indicates the modeled replacement
+     does not recover its additional upfront cost during the horizon.
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Cost Composition</h2>
+    <p class="section-sub mb-3">
+     Initial and recurring cost components
+    </p>
+    <div class="chart-wrap">
+     <canvas id="compositionChart" aria-label="Cost composition chart"></canvas>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Decision Recommendations</h2>
+    <p class="section-sub mb-3">
+     Transparent rules and technical-review prompts
+    </p>
+    <div id="recommendations"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">Human Decision Review</h2>
+    <p class="section-sub mb-0">
+     Record a local reviewer decision on the current scenario
+    </p>
+   </div>
+   <span id="approvalStatus" class="badge-soft b-warning">
+    Awaiting Analysis
+   </span>
+  </div>
+
+  <div class="row g-3">
+   <div class="col-md-4">
+    <label class="form-label" for="reviewerName">Reviewer Name</label>
+    <input id="reviewerName" class="form-control"
+     maxlength="80" placeholder="Authorized reviewer">
+   </div>
+   <div class="col-md-4">
+    <label class="form-label" for="reviewDecision">Decision</label>
+    <select id="reviewDecision" class="form-select">
+     <option value="Approve Recommendation">Approve Recommendation</option>
+     <option value="Request Further Review">Request Further Review</option>
+     <option value="Reject Recommendation">Reject Recommendation</option>
+    </select>
+   </div>
+   <div class="col-md-4">
+    <label class="form-label" for="reviewComment">Review Comment</label>
+    <input id="reviewComment" class="form-control"
+     maxlength="300" placeholder="Decision rationale">
+   </div>
+   <div class="col-12">
+    <button class="btn-premium" id="reviewButton" disabled>
+     <i class="bi bi-person-check"></i> Record Demo Review
+    </button>
+   </div>
+  </div>
+
+  <div class="safety-note mt-3">
+   This action records only a simulated review.
+   It does not approve procurement, equipment shutdown,
+   repair execution or replacement work.
+  </div>
+ </section>
+
+ <section class="surface mb-4">
+  <div class="p-4 pb-3">
+   <h2 class="section-title mb-1">Decision History</h2>
+   <p class="section-sub mb-0">
+    Repair-versus-replacement scenarios analyzed in this session
+   </p>
+  </div>
+  <div class="table-responsive">
+   <table class="table mb-0">
+    <thead>
+     <tr>
+      <th>Decision</th>
+      <th>Asset</th>
+      <th>Repair Cost</th>
+      <th>Replacement Cost</th>
+      <th>Preferred Option</th>
+      <th>Review</th>
+      <th>Timestamp</th>
+     </tr>
+    </thead>
+    <tbody id="historyTable"></tbody>
+   </table>
+  </div>
+ </section>
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">Structured Decision Agent Output</h2>
+    <p class="section-sub mb-0">
+     Scenario assumptions, calculations, review status and audit metadata
+    </p>
+   </div>
+   <button class="btn-soft" id="copyButton">
+    <i class="bi bi-copy"></i> Copy JSON
+   </button>
+  </div>
+  <pre class="report-code mb-0" id="outputJson"></pre>
+ </section>
+
+</main>
+
+<footer class="footer">
+ <span>© 2026 INDUSTRA AI · Repair & Replacement Agent</span>
+ <span>Scenario simulation · Engineering validation required</span>
+</footer>
+
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3"
+ style="z-index:1200">
+ <div class="toast border-0 shadow" id="appToast"
+  role="status" aria-live="polite">
+  <div class="toast-body d-flex align-items-center gap-2">
+   <i class="bi bi-info-circle text-primary"></i>
+   <span id="toastMessage"></span>
+  </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ REPAIR & REPLACEMENT AGENT — DEMO
+
+ - Synthetic industrial asset data
+ - Deterministic cost comparison
+ - Undiscounted lifecycle costs
+ - Discounted NPV costs
+ - ROI and payback estimates
+ - Human review log
+ - JSON and CSV export
+
+ No real procurement, CMMS, ML inference or asset control.
+*/
+
+const $=id=>document.getElementById(id);
+
+const assets=[
+ {
+  id:"MOTOR-12",name:"Electric Motor",
+  plant:"Plant A",location:"Motor Bay 2",
+  health:63,age:8,life:12,priority:"High",
+  repairParts:22000,repairLabor:8500,
+  repairDowntime:12000,repairAnnual:19000,
+  newAssetCost:145000,installationCost:18000,
+  replacementDowntime:10000,replacementAnnual:6500
+ },
+ {
+  id:"PUMP-12",name:"Hydraulic Pump",
+  plant:"Plant A",location:"Pump Station 1",
+  health:74,age:5,life:14,priority:"Medium",
+  repairParts:15000,repairLabor:7000,
+  repairDowntime:8000,repairAnnual:12000,
+  newAssetCost:115000,installationCost:16000,
+  replacementDowntime:9000,replacementAnnual:5500
+ },
+ {
+  id:"FURNACE-02",name:"Industrial Furnace",
+  plant:"Plant B",location:"Thermal Line",
+  health:49,age:14,life:16,priority:"Critical",
+  repairParts:185000,repairLabor:48000,
+  repairDowntime:95000,repairAnnual:95000,
+  newAssetCost:780000,installationCost:125000,
+  replacementDowntime:130000,replacementAnnual:26000
+ },
+ {
+  id:"HYD-08",name:"Hydraulic Unit",
+  plant:"Plant B",location:"Hydraulic Station",
+  health:58,age:9,life:13,priority:"High",
+  repairParts:65000,repairLabor:17000,
+  repairDowntime:28000,repairAnnual:33000,
+  newAssetCost:255000,installationCost:37000,
+  replacementDowntime:32000,replacementAnnual:10500
+ },
+ {
+  id:"COMP-06",name:"Air Compressor",
+  plant:"Plant C",location:"Compressor Hall",
+  health:84,age:4,life:15,priority:"Low",
+  repairParts:9000,repairLabor:4500,
+  repairDowntime:3000,repairAnnual:8500,
+  newAssetCost:175000,installationCost:24000,
+  replacementDowntime:15000,replacementAnnual:4200
+ },
+ {
+  id:"CONV-04",name:"Conveyor System",
+  plant:"Plant A",location:"Conveyor Line 4",
+  health:79,age:6,life:16,priority:"Medium",
+  repairParts:32000,repairLabor:11000,
+  repairDowntime:17000,repairAnnual:16500,
+  newAssetCost:310000,installationCost:42000,
+  replacementDowntime:27000,replacementAnnual:7200
+ }
+];
+
+const fields=[
+ "repairParts","repairLabor","repairDowntime",
+ "repairAnnual","newAssetCost","installationCost",
+ "replacementDowntime","replacementAnnual"
+];
+
+let selectedId="MOTOR-12";
+let currentResult=null;
+let history=[];
+let nextDecisionId=1;
+let lifecycleChart=null;
+let compositionChart=null;
+
+function element(tag,text,className){
+ const node=document.createElement(tag);
+ if(className)node.className=className;
+ if(text!==undefined)node.textContent=text;
+ return node;
+}
+
+function add(parent,tag,text,className){
+ const node=element(tag,text,className);
+ parent.append(node);
+ return node;
+}
+
+function badge(text,kind){
+ return element("span",text,"badge-soft "+kind);
+}
+
+function priorityClass(priority){
+ return priority==="Critical"?"b-danger":
+  priority==="High"?"b-warning":
+  priority==="Medium"?"b-info":"b-success";
+}
+
+function currency(value){
+ return "₹"+Number(value).toLocaleString("en-IN",{
+  maximumFractionDigits:0
+ });
+}
+
+function now(){
+ return new Date().toLocaleString("en-IN",{
+  year:"numeric",month:"short",day:"2-digit",
+  hour:"2-digit",minute:"2-digit"
+ });
+}
+
+function asset(){
+ return assets.find(a=>a.id===selectedId);
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance(
+  $("appToast"),{delay:3000}
+ ).show();
+}
+
+function detailRow(label,value){
+ const row=element("div",undefined,"detail-row");
+ add(row,"span",label,"detail-label");
+ add(row,"span",value,"detail-value");
+ return row;
+}
+
+function renderQueue(){
+ const root=$("assetQueue");
+ root.replaceChildren();
+
+ const query=$("assetSearch").value.trim().toLowerCase();
+
+ const filtered=assets.filter(a=>
+  `${a.id} ${a.name} ${a.plant} ${a.location}`
+   .toLowerCase().includes(query)
+ );
+
+ if(!filtered.length){
+  add(root,"p","No matching assets found.",
+   "text-secondary");
+  return;
+ }
+
+ filtered.forEach(a=>{
+  const card=element(
+   "div",undefined,
+   "asset-card"+(a.id===selectedId?" active":"")
+  );
+
+  const row=element("div",undefined,"d-flex gap-3");
+
+  const icon=element("div",undefined,"asset-icon");
+  icon.append(element("i",undefined,"bi bi-cpu"));
+
+  const body=element("div",undefined,"flex-grow-1");
+  add(body,"div",`${a.id} · ${a.name}`,"asset-title");
+  add(body,"div",`${a.plant} · ${a.location}`,"asset-meta");
+
+  const tags=element("div",undefined,"d-flex flex-wrap gap-2 mt-2");
+  tags.append(
+   badge(a.priority,priorityClass(a.priority)),
+   badge(`Health ${a.health}/100`,"b-neutral")
+  );
+
+  body.append(tags);
+
+  const button=element("button","Compare","small-action mt-2");
+  button.type="button";
+
+  button.addEventListener("click",()=>{
+   selectedId=a.id;
+   loadAsset();
+  });
+
+  body.append(button);
+  row.append(icon,body);
+  card.append(row);
+  root.append(card);
+ });
+}
+
+function renderAsset(){
+ const a=asset();
+
+ $("assetTitle").textContent=`${a.id} · ${a.name}`;
+ $("assetSubtitle").textContent=
+  `${a.plant} · ${a.location}`;
+
+ $("assetPriority").textContent=a.priority+" Priority";
+ $("assetPriority").className=
+  "badge-soft "+priorityClass(a.priority);
+
+ $("conditionValue").textContent=a.health;
+
+ const color=a.health<50?"#eb6174":
+  a.health<70?"#f2a53a":
+  a.health<85?"#438df5":"#16b88a";
+
+ $("conditionRing").style.background=
+  `conic-gradient(${color} 0 ${a.health}%,#eceef6 ${a.health}% 100%)`;
+
+ $("conditionBadge").textContent=
+  a.health<50?"Critical Condition":
+  a.health<70?"Needs Attention":
+  a.health<85?"Monitor":"Good Condition";
+
+ $("conditionBadge").className="badge-soft "+(
+  a.health<50?"b-danger":
+  a.health<70?"b-warning":
+  a.health<85?"b-info":"b-success"
+ );
+
+ $("assetDetails").replaceChildren(
+  detailRow("Asset ID",a.id),
+  detailRow("Facility",a.plant),
+  detailRow("Equipment Age",a.age+" years"),
+  detailRow("Nominal Design Life",a.life+" years"),
+  detailRow("Condition Score",a.health+"/100"),
+  detailRow("Data Source","Synthetic Demo")
+ );
+}
+
+function loadAsset(){
+ const a=asset();
+
+ fields.forEach(field=>{
+  $(field).value=a[field];
+ });
+
+ $("horizon").value=5;
+ $("discountRate").value=8;
+
+ currentResult=null;
+ $("reviewerName").value="";
+ $("reviewComment").value="";
+ $("reviewDecision").selectedIndex=0;
+
+ renderQueue();
+ renderAsset();
+ clearResults();
+}
+
+function inputs(){
+ const data={};
+
+ fields.forEach(field=>{
+  data[field]=Number($(field).value);
+ });
+
+ data.horizon=Number($("horizon").value);
+ data.discountRate=Number($("discountRate").value);
+
+ return data;
+}
+
+function validInputs(data){
+ return fields.every(field=>
+  Number.isFinite(data[field])&&
+  data[field]>=0&&
+  data[field]<=1000000000
+ )&&
+ Number.isInteger(data.horizon)&&
+ data.horizon>=1&&data.horizon<=30&&
+ Number.isFinite(data.discountRate)&&
+ data.discountRate>=0&&data.discountRate<=50;
+}
+
+function calculate(data){
+ const repairInitial=
+  data.repairParts+
+  data.repairLabor+
+  data.repairDowntime;
+
+ const replacementInitial=
+  data.newAssetCost+
+  data.installationCost+
+  data.replacementDowntime;
+
+ const repairTotal=
+  repairInitial+data.repairAnnual*data.horizon;
+
+ const replacementTotal=
+  replacementInitial+data.replacementAnnual*data.horizon;
+
+ const discount=data.discountRate/100;
+
+ let repairNPV=repairInitial;
+ let replacementNPV=replacementInitial;
+
+ const repairSeries=[repairInitial];
+ const replacementSeries=[replacementInitial];
+
+ for(let year=1;year<=data.horizon;year++){
+  repairNPV+=data.repairAnnual/Math.pow(1+discount,year);
+  replacementNPV+=
+   data.replacementAnnual/Math.pow(1+discount,year);
+
+  repairSeries.push(repairInitial+data.repairAnnual*year);
+  replacementSeries.push(
+   replacementInitial+data.replacementAnnual*year
+  );
+ }
+
+ const advantage=Math.abs(repairTotal-replacementTotal);
+
+ const preferred=
+  Math.abs(repairTotal-replacementTotal)<0.01?
+  "Cost Tie":
+  repairTotal<replacementTotal?"Repair":"Replace";
+
+ const additionalInitial=
+  replacementInitial-repairInitial;
+
+ const annualSavings=
+  data.repairAnnual-data.replacementAnnual;
+
+ let payback=null;
+
+ if(additionalInitial<=0){
+  payback=0;
+ }else if(annualSavings>0){
+  payback=additionalInitial/annualSavings;
+ }
+
+ const netBenefit=
+  repairTotal-replacementTotal;
+
+ const roi=additionalInitial>0?
+  netBenefit/additionalInitial*100:null;
+
+ return {
+  repairInitial,replacementInitial,
+  repairTotal,replacementTotal,
+  repairNPV,replacementNPV,
+  advantage,preferred,
+  additionalInitial,annualSavings,
+  payback,roi,
+  repairSeries,replacementSeries
+ };
+}
+
+function clearResults(){
+ [
+  "repairKpi","replaceKpi","savingsKpi",
+  "decisionKpi","repairTotal","replacementTotal"
+ ].forEach(id=>$(id).textContent="—");
+
+ [
+  "repairBreakdown","replacementBreakdown",
+  "decisionEconomics","recommendations"
+ ].forEach(id=>$(id).replaceChildren());
+
+ $("repairOption").classList.remove("recommended");
+ $("replacementOption").classList.remove("recommended");
+
+ $("approvalStatus").textContent="Awaiting Analysis";
+ $("approvalStatus").className="badge-soft b-warning";
+ $("reviewButton").disabled=true;
+
+ if(lifecycleChart){
+  lifecycleChart.destroy();
+  lifecycleChart=null;
+ }
+
+ if(compositionChart){
+  compositionChart.destroy();
+  compositionChart=null;
+ }
+
+ renderJson();
+}
+
+function renderKpis(){
+ const r=currentResult;
+ if(!r)return;
+
+ $("repairKpi").textContent=currency(r.repairTotal);
+ $("replaceKpi").textContent=currency(r.replacementTotal);
+ $("savingsKpi").textContent=currency(r.advantage);
+ $("decisionKpi").textContent=r.preferred;
+
+ $("repairTotal").textContent=currency(r.repairTotal);
+ $("replacementTotal").textContent=currency(r.replacementTotal);
+
+ $("repairOption").classList.toggle(
+  "recommended",r.preferred==="Repair"
+ );
+
+ $("replacementOption").classList.toggle(
+  "recommended",r.preferred==="Replace"
+ );
+}
+
+function renderBreakdown(){
+ const r=currentResult;
+ const d=inputs();
+
+ $("repairBreakdown").replaceChildren(
+  detailRow("Parts",currency(d.repairParts)),
+  detailRow("Labor",currency(d.repairLabor)),
+  detailRow("Downtime",currency(d.repairDowntime)),
+  detailRow("Annual Maintenance",currency(d.repairAnnual)),
+  detailRow("Initial Cost",currency(r.repairInitial)),
+  detailRow("Discounted Cost",currency(r.repairNPV))
+ );
+
+ $("replacementBreakdown").replaceChildren(
+  detailRow("New Equipment",currency(d.newAssetCost)),
+  detailRow("Installation",currency(d.installationCost)),
+  detailRow("Downtime",currency(d.replacementDowntime)),
+  detailRow("Annual Maintenance",currency(d.replacementAnnual)),
+  detailRow("Initial Cost",currency(r.replacementInitial)),
+  detailRow("Discounted Cost",currency(r.replacementNPV))
+ );
+}
+
+function renderEconomics(){
+ const r=currentResult;
+ const root=$("decisionEconomics");
+
+ root.replaceChildren(
+  detailRow("Cost-Preferred Option",r.preferred),
+  detailRow("Undiscounted Advantage",currency(r.advantage)),
+  detailRow("Repair NPV",currency(r.repairNPV)),
+  detailRow("Replacement NPV",currency(r.replacementNPV)),
+  detailRow(
+   "Discounted Cost Advantage",
+   currency(Math.abs(r.repairNPV-r.replacementNPV))
+  ),
+  detailRow(
+   "Additional Replacement Upfront",
+   currency(r.additionalInitial)
+  ),
+  detailRow(
+   "Annual Maintenance Savings",
+   currency(r.annualSavings)
+  ),
+  detailRow(
+   "Replacement Payback",
+   r.payback===null?"Not achieved":
+   r.payback===0?"No additional upfront cost":
+   r.payback.toFixed(2)+" years"
+  ),
+  detailRow(
+   "Replacement ROI",
+   r.roi===null?"Not applicable":
+   r.roi.toFixed(1)+"%"
+  )
+ );
+}
+
+function recommendationsFor(){
+ const a=asset();
+ const r=currentResult;
+ const items=[];
+
+ if(r.preferred==="Repair"){
+  items.push(
+   "Repair has the lower modeled undiscounted lifecycle cost under the entered assumptions."
+  );
+ }else if(r.preferred==="Replace"){
+  items.push(
+   "Replacement has the lower modeled undiscounted lifecycle cost under the entered assumptions."
+  );
+ }else{
+  items.push(
+   "Both options have approximately equal modeled undiscounted lifecycle costs."
+  );
+ }
+
+ if(a.health<60){
+  items.push(
+   "Low asset condition warrants engineering review before a financial preference is accepted."
+  );
+ }
+
+ if(a.age/a.life>=0.8){
+  items.push(
+   "The asset is near or beyond 80% of its nominal design life; verify actual condition and service-life assumptions."
+  );
+ }
+
+ if(r.payback!==null&&r.payback>inputs().horizon){
+  items.push(
+   "Modeled replacement payback exceeds the selected planning horizon."
+  );
+ }
+
+ if(Math.abs(r.repairNPV-r.replacementNPV)<r.repairNPV*0.05){
+  items.push(
+   "Discounted costs are close; conduct sensitivity analysis on downtime and maintenance assumptions."
+  );
+ }
+
+ items.push(
+  "Validate technical feasibility, safety, procurement, energy efficiency, residual value and financing before deciding."
+ );
+
+ return items;
+}
+
+function renderRecommendations(){
+ const root=$("recommendations");
+ root.replaceChildren();
+
+ recommendationsFor().forEach(text=>{
+  const row=element("div",undefined,"recommendation");
+
+  const icon=element("div",undefined,"recommendation-icon");
+  icon.append(element("i",undefined,"bi bi-lightbulb"));
+
+  const body=element("div");
+  add(body,"strong",text);
+  add(body,"p","Scenario guidance · Human validation required");
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderCharts(){
+ if(typeof Chart==="undefined")return;
+
+ const r=currentResult;
+ const d=inputs();
+
+ const labels=Array.from(
+  {length:d.horizon+1},
+  (_,i)=>"Year "+i
+ );
+
+ if(lifecycleChart)lifecycleChart.destroy();
+
+ lifecycleChart=new Chart($("lifecycleChart"),{
+  type:"line",
+  data:{
+   labels,
+   datasets:[
+    {
+     label:"Repair",
+     data:r.repairSeries,
+     borderColor:"#6855eb",
+     backgroundColor:"#6855eb12",
+     fill:false,tension:.25,borderWidth:3
+    },
+    {
+     label:"Replace",
+     data:r.replacementSeries,
+     borderColor:"#16b88a",
+     backgroundColor:"#16b88a12",
+     fill:false,tension:.25,borderWidth:3
+    }
+   ]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   plugins:{
+    legend:{position:"bottom"}
+   },
+   scales:{
+    x:{grid:{display:false}},
+    y:{
+     beginAtZero:true,
+     grid:{color:"#eef0f7"},
+     ticks:{
+      callback:value=>"₹"+Math.round(value/1000)+"k"
+     }
+    }
+   }
+  }
+ });
+
+ if(compositionChart)compositionChart.destroy();
+
+ compositionChart=new Chart($("compositionChart"),{
+  type:"bar",
+  data:{
+   labels:["Repair","Replacement"],
+   datasets:[
+    {
+     label:"Initial Cost",
+     data:[r.repairInitial,r.replacementInitial],
+     backgroundColor:"#6855eb",
+     borderRadius:6
+    },
+    {
+     label:"Recurring Maintenance",
+     data:[
+      d.repairAnnual*d.horizon,
+      d.replacementAnnual*d.horizon
+     ],
+     backgroundColor:"#438df5",
+     borderRadius:6
+    }
+   ]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   plugins:{legend:{position:"bottom"}},
+   scales:{
+    x:{stacked:true,grid:{display:false}},
+    y:{
+     stacked:true,beginAtZero:true,
+     grid:{color:"#eef0f7"}
+    }
+   }
+  }
+ });
+}
+
+function renderHistory(){
+ const root=$("historyTable");
+ root.replaceChildren();
+
+ if(!history.length){
+  const row=element("tr");
+  const cell=element(
+   "td","No scenarios analyzed yet.",
+   "text-center text-secondary py-4"
+  );
+  cell.colSpan=7;
+  row.append(cell);
+  root.append(row);
+  return;
+ }
+
+ history.forEach(record=>{
+  const row=element("tr");
+
+  const title=element("td");
+  add(title,"div",record.id,"table-title");
+  add(title,"div","Scenario comparison","table-sub");
+
+  const assetCell=element("td",record.asset);
+  const repair=element("td",currency(record.repairTotal));
+  const replace=element("td",currency(record.replacementTotal));
+  const decision=element("td");
+  decision.append(badge(
+   record.preferred,
+   record.preferred==="Repair"?"b-info":
+   record.preferred==="Replace"?"b-success":"b-neutral"
+  ));
+
+  const review=element("td");
+  review.append(badge(
+   record.review?.decision||"Pending Review",
+   record.review?.decision==="Approve Recommendation"?
+   "b-success":
+   record.review?.decision==="Reject Recommendation"?
+   "b-danger":"b-warning"
+  ));
+
+  const time=element("td",record.timestamp);
+
+  row.append(
+   title,assetCell,repair,replace,
+   decision,review,time
+  );
+
+  root.append(row);
+ });
+}
+
+function currentPayload(){
+ const a=asset();
+
+ return {
+  mode:"simulation",
+  agent:"repair_replacement_agent",
+  asset:{
+   id:a.id,name:a.name,
+   plant:a.plant,location:a.location,
+   condition_score:a.health,
+   age_years:a.age,
+   nominal_design_life_years:a.life
+  },
+  inputs:inputs(),
+  result:currentResult,
+  assumptions:{
+   annual_maintenance_constant:true,
+   residual_value_included:false,
+   energy_savings_included:false,
+   taxes_included:false,
+   costs_are_synthetic:true,
+   roi_reference:"Incremental replacement upfront cost",
+   financial_approval_not_granted:true
+  },
+  recommendations:
+   currentResult?recommendationsFor():[],
+  review:
+   history[0]?.asset===selectedId?
+   history[0].review:null,
+  real_procurement_executed:false,
+  real_maintenance_executed:false
+ };
+}
+
+function renderJson(){
+ $("outputJson").textContent=
+  JSON.stringify(currentPayload(),null,2);
+}
+
+function runAnalysis(){
+ const data=inputs();
+
+ if(!validInputs(data)){
+  notify("Enter valid nonnegative costs, horizon and discount rate");
+  return;
+ }
+
+ const result=calculate(data);
+
+ currentResult=result;
+
+ history.unshift({
+  id:"DEC-"+String(nextDecisionId++).padStart(4,"0"),
+  asset:selectedId,
+  repairTotal:result.repairTotal,
+  replacementTotal:result.replacementTotal,
+  preferred:result.preferred,
+  timestamp:now(),
+  inputs:structuredClone(data),
+  result:structuredClone(result),
+  review:null,
+  simulated:true
+ });
+
+ $("approvalStatus").textContent="Pending Human Review";
+ $("approvalStatus").className="badge-soft b-warning";
+ $("reviewButton").disabled=false;
+
+ renderKpis();
+ renderBreakdown();
+ renderEconomics();
+ renderRecommendations();
+ renderCharts();
+ renderHistory();
+ renderJson();
+
+ notify("Repair-versus-replacement comparison completed");
+}
+
+function invalidate(){
+ currentResult=null;
+ clearResults();
+}
+
+function recordReview(){
+ if(!currentResult||!history.length){
+  notify("Run a comparison before reviewing");
+  return;
+ }
+
+ const name=$("reviewerName").value.trim();
+ const comment=$("reviewComment").value.trim();
+ const decision=$("reviewDecision").value;
+
+ if(!name){
+  notify("Enter the reviewer's name");
+  return;
+ }
+
+ if(!comment){
+  notify("Enter a decision rationale");
+  return;
+ }
+
+ const record=history[0];
+
+ if(record.asset!==selectedId||record.review){
+  notify("Current scenario cannot be reviewed again");
+  return;
+ }
+
+ record.review={
+  reviewer:name,
+  decision,
+  comment,
+  timestamp:now(),
+  simulated:true
+ };
+
+ $("approvalStatus").textContent=decision+" · Demo";
+ $("approvalStatus").className="badge-soft "+(
+  decision==="Approve Recommendation"?"b-success":
+  decision==="Reject Recommendation"?"b-danger":"b-warning"
+ );
+
+ $("reviewButton").disabled=true;
+
+ renderHistory();
+ renderJson();
+
+ notify("Simulated human review recorded");
+}
+
+function csvCell(value){
+ const text=String(value??"");
+ const safe=/^\s*[=+\-@]/.test(text)?"'"+text:text;
+ return '"'+safe.replaceAll('"','""')+'"';
+}
+
+function download(content,filename,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[
+  [
+   "Decision ID","Asset","Repair Lifecycle INR",
+   "Replacement Lifecycle INR","Preferred",
+   "Review Status","Timestamp"
+  ],
+  ...history.map(r=>[
+   r.id,r.asset,r.repairTotal,r.replacementTotal,
+   r.preferred,r.review?.decision||"Pending Review",
+   r.timestamp
+  ])
+ ];
+
+ download(
+  rows.map(row=>row.map(csvCell).join(",")).join("\r\n"),
+  "repair-replacement-decisions.csv",
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Decision history exported");
+}
+
+function exportJson(){
+ download(
+  JSON.stringify({
+   current_scenario:currentPayload(),
+   decision_history:history
+  },null,2),
+  "repair-replacement-agent.json",
+  "application/json"
+ );
+
+ notify("Decision analysis exported");
+}
+
+async function copyJson(){
+ try{
+  await navigator.clipboard.writeText(
+   $("outputJson").textContent
+  );
+  notify("Decision JSON copied");
+ }catch{
+  notify("Clipboard unavailable; select JSON manually");
+ }
+}
+
+function reset(){
+ selectedId="MOTOR-12";
+ currentResult=null;
+ history=[];
+ nextDecisionId=1;
+ $("assetSearch").value="";
+ loadAsset();
+ renderHistory();
+ notify("Repair and replacement simulation reset");
+}
+
+function initNavigation(){
+ const sidebar=$("sidebar");
+ const shade=$("shade");
+
+ function close(){
+  sidebar.classList.remove("open");
+  shade.classList.remove("show");
+ }
+
+ $("menuButton").addEventListener("click",()=>{
+  sidebar.classList.add("open");
+  shade.classList.add("show");
+ });
+
+ shade.addEventListener("click",close);
+
+ document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")close();
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ initNavigation();
+ loadAsset();
+ renderHistory();
+
+ $("assetSearch").addEventListener("input",renderQueue);
+
+ $("analyzeButton").addEventListener("click",runAnalysis);
+ $("calculateButton").addEventListener("click",runAnalysis);
+
+ $("reviewButton").addEventListener("click",recordReview);
+
+ [...fields,"horizon","discountRate"].forEach(id=>{
+  $(id).addEventListener("input",invalidate);
+ });
+
+ $("exportCsvButton").addEventListener("click",exportCsv);
+ $("exportJsonButton").addEventListener("click",exportJson);
+ $("copyButton").addEventListener("click",copyJson);
+ $("resetButton").addEventListener("click",reset);
+});
+</script>
+
+</body>
+</html>

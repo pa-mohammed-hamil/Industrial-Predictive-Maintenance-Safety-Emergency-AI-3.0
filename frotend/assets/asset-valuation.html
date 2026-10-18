@@ -1,0 +1,1190 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Asset Valuation | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / assets</p><h1 id="page-title">Asset Valuation</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Asset Valuation workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asset Valuation | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px Arial,Helvetica,sans-serif
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{background:var(--purple);color:white}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;
+ box-shadow:0 5px 20px #10152d05
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:16px
+}
+.grid-2{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));gap:16px
+}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.4fr) minmax(300px,.8fr);
+ gap:17px
+}
+.flex{
+ display:flex;align-items:center;
+ justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;color:#69738e;
+ border-radius:9px;padding:10px 13px;font-size:11px;font-weight:700
+}
+.btn.primary{
+ background:var(--purple);border-color:var(--purple);color:white
+}
+.btn.danger{
+ background:#ffedf0;border-color:#ffedf0;color:#d84b63
+}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{
+ display:block;color:#69738e;font-size:11px;
+ font-weight:700;margin-bottom:7px
+}
+.badge{
+ display:inline-block;padding:7px 10px;
+ border-radius:8px;font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:12px
+}
+.scenarios{
+ display:grid;grid-template-columns:repeat(2,1fr);gap:13px
+}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);
+ text-align:left;padding:13px;white-space:nowrap
+}
+td{padding:13px;border-bottom:1px solid #eef0f6;white-space:nowrap}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);
+ font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);
+ border-radius:11px;padding:14px;margin-bottom:12px
+}
+.record p{font-size:11px;color:#69738e;line-height:1.8}
+.chart{width:100%;height:300px;display:block}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric{
+ padding:14px;background:#f8f9fd;
+ border:1px solid var(--border);border-radius:11px
+}
+.metric strong{display:block;font-size:20px;margin-top:9px}
+.progress{
+ height:9px;border-radius:10px;
+ background:#edf0f7;overflow:hidden;margin-top:9px
+}
+.progress span{
+ display:block;height:100%;
+ background:var(--purple);border-radius:10px
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:11px;
+ padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;
+ background:var(--navy);color:white;
+ padding:13px 17px;border-radius:10px;
+ display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}.mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.scenarios,.metric-grid{
+  grid-template-columns:1fr
+ }
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ .scenario-panel,#toast,.notice{display:none!important}
+ .main{margin:0}.content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">ASSET MANAGEMENT</div>
+ <a class="nav-link" href="asset-management.html">◆ Asset Management</a>
+ <a class="nav-link" href="asset-details.html">▦ Asset Details</a>
+ <a class="nav-link" href="asset-health.html">◇ Asset Health</a>
+ <a class="nav-link" href="asset-history.html">◉ Asset History</a>
+ <a class="nav-link" href="asset-inspection.html">◆ Asset Inspection</a>
+ <a class="nav-link" href="asset-lifecycle.html">▦ Asset Lifecycle</a>
+ <a class="nav-link" href="asset-upload.html">◇ Asset Upload</a>
+ <a class="nav-link active" href="asset-valuation.html">◉ Asset Valuation</a>
+ <a class="nav-link" href="asset-comparison.html">◆ Asset Comparison</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">▦ Cost Intelligence</a>
+ <a class="nav-link" href="replacement-cost.html">◇ Replacement Cost</a>
+ <a class="nav-link" href="repair-replacement.html">◉ Repair vs Replacement</a>
+ <a class="nav-link" href="total-cost-ownership.html">◆ Total Cost of Ownership</a>
+ <a class="nav-link" href="r-o-i-analysis.html">▦ ROI Analysis</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Asset Management / Financial Valuation</div>
+   <strong>Industrial Asset Valuation Intelligence</strong>
+  </div>
+ </div>
+ <span class="badge purple">DEMONSTRATION VALUATION MODEL</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / INDUSTRIAL ASSET FINANCIAL INTELLIGENCE
+ </div>
+ <h1>Asset Valuation & Depreciation Intelligence</h1>
+ <p>
+  Analyze industrial equipment book value, depreciation,
+  estimated market value, replacement cost, salvage proceeds
+  and valuation exposure. Explore financial scenarios across
+  plants and equipment portfolios.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Industrial Asset Valuation Overview</h3>
+  <div class="muted" id="summaryText">Calculating portfolio valuation...</div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="calculateBtn">Recalculate</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Portfolio Net Book Value</div>
+  <div class="stat-value" id="bookKpi">₹0</div>
+  <div class="stat-note">Straight-line accounting model</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Estimated Market Value</div>
+  <div class="stat-value" id="marketKpi">₹0</div>
+  <div class="stat-note">Illustrative resale estimate</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Current Replacement Cost</div>
+  <div class="stat-value" id="replacementKpi">₹0</div>
+  <div class="stat-note">Modeled new-equipment replacement value</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Indicative Value Shortfall</div>
+  <div class="stat-value" id="shortfallKpi">₹0</div>
+  <div class="stat-note">Positive NBV less estimated market value</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Valuation Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="assetFilter">Equipment</label>
+   <select class="input" id="assetFilter">
+    <option value="all">All Equipment</option>
+   </select>
+  </div>
+  <div>
+   <label for="yearFilter">Valuation Year</label>
+   <select class="input" id="yearFilter">
+    <option value="2026" selected>2026</option>
+    <option value="2027">2027</option>
+    <option value="2028">2028</option>
+    <option value="2030">2030</option>
+    <option value="2035">2035</option>
+   </select>
+  </div>
+  <div>
+   <label for="sortFilter">Sort Assets</label>
+   <select class="input" id="sortFilter">
+    <option value="book">Highest Book Value</option>
+    <option value="market">Highest Market Value</option>
+    <option value="replacement">Highest Replacement Cost</option>
+    <option value="shortfall">Highest Value Shortfall</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Industrial Asset Valuation Register</h3>
+    <p class="muted">
+     Acquisition cost, depreciation, book value and market estimates
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 assets</span>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Equipment</th>
+      <th>Plant</th>
+      <th>Acquisition</th>
+      <th>Age</th>
+      <th>Accum. Depreciation</th>
+      <th>Book Value</th>
+      <th>Market Estimate</th>
+      <th>Replacement Cost</th>
+      <th>Net Realizable</th>
+      <th>Value Shortfall</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="valuationTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Asset Valuation Inspector</h3>
+   <span class="badge purple">FINANCIAL PROFILE</span>
+  </div>
+  <div id="assetDetails"></div>
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Book Value</span>
+    <strong id="assetBook">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Market Estimate</span>
+    <strong id="assetMarket">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Replacement Cost</span>
+    <strong id="assetReplacement">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Value Shortfall</span>
+    <strong id="assetShortfall">₹0</strong>
+   </div>
+  </div>
+  <div class="actions" style="margin-top:17px">
+   <a class="btn primary" id="detailsLink" href="asset-details.html">
+    Open Asset Details
+   </a>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Asset Book Value vs Market Value</h3>
+   <span class="badge purple">VALUATION COMPARISON</span>
+  </div>
+  <svg class="chart" id="comparisonChart" viewBox="0 0 640 300"
+   role="img" aria-label="Book and market value comparison"></svg>
+ </div>
+ <div class="panel">
+  <div class="flex">
+   <h3>Selected Asset Depreciation Curve</h3>
+   <span class="badge blue">STRAIGHT-LINE DEPRECIATION</span>
+  </div>
+  <svg class="chart" id="depreciationChart" viewBox="0 0 640 300"
+   role="img" aria-label="Depreciation curve"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel scenario-panel">
+  <h3>Asset Valuation Scenario Simulator</h3>
+  <p class="muted">
+   Adjust estimated market conditions, replacement inflation
+   and asset condition assumptions.
+  </p>
+  <div class="scenarios">
+   <div>
+    <label for="marketMultiplier">Market Value Multiplier</label>
+    <input class="input" type="number" id="marketMultiplier"
+     min=".1" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="replacementInflation">Annual Replacement Inflation (%)</label>
+    <input class="input" type="number" id="replacementInflation"
+     min="-10" max="30" step=".5" value="4">
+   </div>
+   <div>
+    <label for="conditionMultiplier">Condition Value Multiplier</label>
+    <input class="input" type="number" id="conditionMultiplier"
+     min=".1" max="2" step=".05" value="1">
+   </div>
+   <div>
+    <label for="disposalMultiplier">Disposal Cost Multiplier</label>
+    <input class="input" type="number" id="disposalMultiplier"
+     min="0" max="5" step=".1" value="1">
+   </div>
+  </div>
+  <div class="actions" style="margin-top:18px">
+   <button class="btn primary" id="applyScenarioBtn">
+    Apply Scenario
+   </button>
+   <button class="btn" id="defaultScenarioBtn">
+    Restore Defaults
+   </button>
+  </div>
+ </div>
+
+ <div class="panel">
+  <h3>Portfolio Valuation Financial Summary</h3>
+  <div id="financialSummary"></div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Plant-Level Asset Valuation</h3>
+  <div id="plantSummary"></div>
+ </div>
+ <div class="panel">
+  <h3>Asset Valuation Intelligence</h3>
+  <div id="insights"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Financial methodology and limitations:</strong>
+ All equipment records are synthetic. Straight-line book
+ values are modeled from acquisition cost, useful life
+ and residual value, assuming acquisition at the beginning
+ of the installation year. Market value is an illustrative
+ condition-adjusted resale estimate, not an independent
+ appraisal. Replacement cost is modeled using annual
+ inflation. Net realizable value deducts estimated disposal
+ costs from modeled market value. The displayed value
+ shortfall is a screening indicator only, not a recognized
+ accounting impairment loss. Formal impairment testing
+ requires applicable accounting standards, recoverable
+ amount calculations and professional review. These
+ figures are not suitable for audited financial reporting,
+ insurance coverage or lending decisions.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const KEY="industra-asset-valuation-v1";
+
+const ASSETS=[
+ {
+  id:"MTR-001",name:"Main Drive Motor",plant:"Plant A",
+  installed:2021,acquisition:520000,usefulLife:12,
+  residual:45000,marketFactor:.88,disposal:12000,
+  condition:74
+ },
+ {
+  id:"CMP-001",name:"Air Compressor",plant:"Plant A",
+  installed:2020,acquisition:440000,usefulLife:12,
+  residual:35000,marketFactor:.92,disposal:10000,
+  condition:81
+ },
+ {
+  id:"FAN-001",name:"Cooling Fan",plant:"Plant A",
+  installed:2023,acquisition:160000,usefulLife:10,
+  residual:12000,marketFactor:1.05,disposal:5000,
+  condition:91
+ },
+ {
+  id:"GEN-001",name:"Power Generator",plant:"Plant B",
+  installed:2018,acquisition:1100000,usefulLife:15,
+  residual:135000,marketFactor:.72,disposal:42000,
+  condition:52
+ },
+ {
+  id:"PMP-001",name:"Cooling Pump",plant:"Plant B",
+  installed:2022,acquisition:280000,usefulLife:12,
+  residual:28000,marketFactor:.97,disposal:8000,
+  condition:84
+ },
+ {
+  id:"GBX-001",name:"Industrial Gearbox",plant:"Plant B",
+  installed:2019,acquisition:850000,usefulLife:14,
+  residual:85000,marketFactor:.78,disposal:28000,
+  condition:59
+ },
+ {
+  id:"HYD-001",name:"Hydraulic Power Unit",plant:"Plant C",
+  installed:2021,acquisition:390000,usefulLife:12,
+  residual:34000,marketFactor:.91,disposal:12000,
+  condition:76
+ },
+ {
+  id:"PMP-002",name:"Process Pump",plant:"Plant C",
+  installed:2020,acquisition:650000,usefulLife:13,
+  residual:65000,marketFactor:.83,disposal:18000,
+  condition:63
+ },
+ {
+  id:"CNV-001",name:"Conveyor Drive",plant:"Plant C",
+  installed:2023,acquisition:210000,usefulLife:11,
+  residual:22000,marketFactor:1.02,disposal:6500,
+  condition:88
+ }
+];
+
+let results=[];
+let selectedId="GEN-001";
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(n){return currency.format(n)}
+function compact(n){
+ const sign=n<0?"-":"";
+ const x=Math.abs(n);
+ if(x>=10000000)return sign+"₹"+(x/10000000).toFixed(2)+"Cr";
+ if(x>=100000)return sign+"₹"+(x/100000).toFixed(2)+"L";
+ if(x>=1000)return sign+"₹"+(x/1000).toFixed(1)+"K";
+ return money(n);
+}
+function sum(list,key){
+ return list.reduce((total,item)=>total+(item[key]||0),0);
+}
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(el("span","",label),el("strong","",value));
+ return row;
+}
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function scenario(){
+ const values={
+  market:Number($("marketMultiplier").value),
+  inflation:Number($("replacementInflation").value),
+  condition:Number($("conditionMultiplier").value),
+  disposal:Number($("disposalMultiplier").value)
+ };
+
+ if(
+  !Number.isFinite(values.market)||
+  values.market<.1||values.market>3||
+  !Number.isFinite(values.inflation)||
+  values.inflation< -10||values.inflation>30||
+  !Number.isFinite(values.condition)||
+  values.condition<.1||values.condition>2||
+  !Number.isFinite(values.disposal)||
+  values.disposal<0||values.disposal>5
+ ){
+  throw new Error("Enter valid scenario values.");
+ }
+
+ return values;
+}
+
+function valueAsset(asset,year,config){
+ const age=Math.max(0,year-asset.installed);
+ const effectiveAge=Math.min(age,asset.usefulLife);
+
+ const depreciable=asset.acquisition-asset.residual;
+ const annualDepreciation=depreciable/asset.usefulLife;
+ const accumulated=annualDepreciation*effectiveAge;
+
+ const book=Math.max(
+  asset.residual,asset.acquisition-accumulated
+ );
+
+ const remainingFraction=Math.max(
+  0,1-effectiveAge/asset.usefulLife
+ );
+
+ const conditionAdjustment=
+  (.5+asset.condition/200)*config.condition;
+
+ const market=Math.max(
+  0,
+  (asset.residual+
+   depreciable*remainingFraction*.95)*
+  asset.marketFactor*config.market*conditionAdjustment
+ );
+
+ const replacement=
+  asset.acquisition*
+  Math.pow(1+config.inflation/100,age);
+
+ const disposal=asset.disposal*config.disposal;
+ const netRealizable=Math.max(0,market-disposal);
+ const shortfall=Math.max(0,book-market);
+
+ return{
+  ...asset,year,age,
+  annualDepreciation,accumulated,
+  book,market,replacement,
+  disposal,netRealizable,shortfall
+ };
+}
+
+function calculate(){
+ try{
+  const config=scenario();
+  const year=Number($("yearFilter").value);
+  results=ASSETS.map(asset=>valueAsset(asset,year,config));
+  render();
+  return true;
+ }catch(error){
+  notify(error.message);
+  return false;
+ }
+}
+
+function visible(){
+ const plant=$("plantFilter").value;
+ const id=$("assetFilter").value;
+
+ return results.filter(asset=>
+  (plant==="all"||asset.plant===plant)&&
+  (id==="all"||asset.id===id)
+ );
+}
+
+function sorted(){
+ const list=[...visible()];
+ const key=$("sortFilter").value;
+ return list.sort((a,b)=>b[key]-a[key]);
+}
+
+function selected(){
+ return visible().find(x=>x.id===selectedId)||
+  visible()[0]||null;
+}
+
+function populateAssets(){
+ const filter=$("assetFilter");
+ const previous=filter.value||"all";
+ filter.replaceChildren();
+
+ const all=el("option","","All Equipment");
+ all.value="all";
+ filter.append(all);
+
+ const plant=$("plantFilter").value;
+
+ ASSETS.filter(a=>plant==="all"||a.plant===plant)
+ .forEach(asset=>{
+  const option=el("option","",asset.name+" · "+asset.id);
+  option.value=asset.id;
+  filter.append(option);
+ });
+
+ filter.value=[...filter.options].some(x=>x.value===previous)?
+  previous:"all";
+}
+
+function renderKpis(){
+ const list=visible();
+
+ $("bookKpi").textContent=compact(sum(list,"book"));
+ $("marketKpi").textContent=compact(sum(list,"market"));
+ $("replacementKpi").textContent=compact(sum(list,"replacement"));
+ $("shortfallKpi").textContent=compact(sum(list,"shortfall"));
+
+ $("summaryText").textContent=
+  list.length+" assets · "+
+  $("plantFilter").value+" · "+
+  "Valuation year "+$("yearFilter").value;
+}
+
+function renderTable(){
+ const body=$("valuationTable");
+ body.replaceChildren();
+
+ const list=sorted();
+ $("visibleCount").textContent=list.length+" assets";
+
+ list.forEach(asset=>{
+  const row=el("tr");
+
+  [
+   asset.name+" · "+asset.id,
+   asset.plant,
+   money(asset.acquisition),
+   asset.age+" years",
+   money(asset.accumulated),
+   money(asset.book),
+   money(asset.market),
+   money(asset.replacement),
+   money(asset.netRealizable),
+   money(asset.shortfall)
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+
+  button.onclick=()=>{
+   selectedId=asset.id;
+   renderInspector();
+   renderDepreciationChart();
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","No assets match the selected filters.");
+  cell.colSpan=11;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const asset=selected();
+ const box=$("assetDetails");
+ box.replaceChildren();
+
+ if(!asset){
+  box.append(el("p","muted","No equipment selected."));
+  ["assetBook","assetMarket","assetReplacement","assetShortfall"]
+   .forEach(id=>$(id).textContent="--");
+  $("detailsLink").href="asset-details.html";
+  return;
+ }
+
+ [
+  ["Equipment",asset.name],
+  ["Equipment ID",asset.id],
+  ["Plant",asset.plant],
+  ["Installation Year",asset.installed],
+  ["Valuation Year",asset.year],
+  ["Asset Age",asset.age+" years"],
+  ["Useful Life",asset.usefulLife+" years"],
+  ["Original Acquisition Cost",money(asset.acquisition)],
+  ["Residual Value",money(asset.residual)],
+  ["Annual Depreciation",money(asset.annualDepreciation)],
+  ["Accumulated Depreciation",money(asset.accumulated)],
+  ["Net Book Value",money(asset.book)],
+  ["Estimated Market Value",money(asset.market)],
+  ["Replacement Cost",money(asset.replacement)],
+  ["Disposal Cost",money(asset.disposal)],
+  ["Net Realizable Value",money(asset.netRealizable)],
+  ["Indicative Value Shortfall",money(asset.shortfall)]
+ ].forEach(([label,value])=>box.append(detail(label,value)));
+
+ $("assetBook").textContent=compact(asset.book);
+ $("assetMarket").textContent=compact(asset.market);
+ $("assetReplacement").textContent=compact(asset.replacement);
+ $("assetShortfall").textContent=compact(asset.shortfall);
+
+ $("detailsLink").href=
+  "asset-details.html?id="+encodeURIComponent(asset.id);
+}
+
+function drawComparison(){
+ const svg=$("comparisonChart");
+ svg.replaceChildren();
+
+ const list=sorted();
+
+ if(!list.length){
+  svg.append(svgEl("text",{
+   x:210,y:150,fill:"#8992aa","font-size":"13"
+  },"No assets available"));
+  return;
+ }
+
+ const max=Math.max(
+  1,...list.flatMap(a=>[a.book,a.market])
+ )*1.15;
+
+ const left=60,right=615,top=25,bottom=245;
+ const space=(right-left)/list.length;
+ const barWidth=Math.min(22,space*.33);
+
+ for(let i=0;i<=4;i++){
+  const y=bottom-(bottom-top)*i/4;
+
+  svg.append(svgEl("line",{
+   x1:left,y1:y,x2:right,y2:y,stroke:"#e9ebf4"
+  }));
+
+  svg.append(svgEl("text",{
+   x:3,y:y+4,fill:"#8992aa","font-size":"10"
+  },compact(max*i/4)));
+ }
+
+ list.forEach((a,i)=>{
+  const center=left+i*space+space/2;
+
+  [
+   {value:a.book,color:"#6855eb",offset:-barWidth},
+   {value:a.market,color:"#18b58c",offset:0}
+  ].forEach(item=>{
+   const height=item.value/max*(bottom-top);
+
+   svg.append(svgEl("rect",{
+    x:center+item.offset,
+    y:bottom-height,
+    width:barWidth,
+    height,
+    rx:3,
+    fill:item.color
+   }));
+  });
+
+  svg.append(svgEl("text",{
+   x:center,y:266,fill:"#8992aa",
+   "font-size":"9","text-anchor":"middle"
+  },a.id));
+ });
+
+ svg.append(svgEl("text",{
+  x:390,y:16,fill:"#6855eb","font-size":"11"
+ },"■ Book Value"));
+
+ svg.append(svgEl("text",{
+  x:495,y:16,fill:"#18b58c","font-size":"11"
+ },"■ Market Value"));
+}
+
+function renderDepreciationChart(){
+ const svg=$("depreciationChart");
+ svg.replaceChildren();
+
+ const asset=selected();
+ if(!asset)return;
+
+ const years=asset.usefulLife;
+ const max=asset.acquisition*1.1;
+ const left=55,right=615,top=25,bottom=245;
+
+ for(let i=0;i<=4;i++){
+  const y=bottom-(bottom-top)*i/4;
+  svg.append(svgEl("line",{
+   x1:left,y1:y,x2:right,y2:y,stroke:"#e9ebf4"
+  }));
+  svg.append(svgEl("text",{
+   x:4,y:y+4,fill:"#8992aa","font-size":"10"
+  },compact(max*i/4)));
+ }
+
+ const points=[];
+
+ for(let i=0;i<=years;i++){
+  const value=Math.max(
+   asset.residual,
+   asset.acquisition-
+   asset.annualDepreciation*i
+  );
+
+  const x=left+(right-left)*i/years;
+  const y=bottom-value/max*(bottom-top);
+  points.push(x+","+y);
+
+  if(i%Math.max(1,Math.floor(years/5))===0||i===years){
+   svg.append(svgEl("text",{
+    x:x-12,y:268,fill:"#8992aa","font-size":"10"
+   },String(asset.installed+i)));
+  }
+ }
+
+ svg.append(svgEl("polyline",{
+  points:points.join(" "),
+  fill:"none",stroke:"#6855eb",
+  "stroke-width":"3","stroke-linejoin":"round"
+ }));
+}
+
+function renderFinancialSummary(){
+ const box=$("financialSummary");
+ box.replaceChildren();
+ const list=visible();
+
+ [
+  ["Compared Assets",list.length],
+  ["Original Acquisition Cost",money(sum(list,"acquisition"))],
+  ["Accumulated Depreciation",money(sum(list,"accumulated"))],
+  ["Portfolio Net Book Value",money(sum(list,"book"))],
+  ["Estimated Market Value",money(sum(list,"market"))],
+  ["Replacement Cost",money(sum(list,"replacement"))],
+  ["Disposal Cost",money(sum(list,"disposal"))],
+  ["Net Realizable Value",money(sum(list,"netRealizable"))],
+  ["Indicative Value Shortfall",money(sum(list,"shortfall"))]
+ ].forEach(([label,value])=>box.append(detail(label,value)));
+}
+
+function renderPlants(){
+ const box=$("plantSummary");
+ box.replaceChildren();
+
+ ["Plant A","Plant B","Plant C"].forEach(plant=>{
+  const list=visible().filter(a=>a.plant===plant);
+  if(!list.length)return;
+
+  const card=el("div","record");
+  card.append(el("h4","",plant));
+  card.append(detail("Equipment",list.length));
+  card.append(detail("Book Value",money(sum(list,"book"))));
+  card.append(detail("Market Estimate",money(sum(list,"market"))));
+  card.append(detail("Replacement Cost",money(sum(list,"replacement"))));
+  card.append(detail("Value Shortfall",money(sum(list,"shortfall"))));
+  box.append(card);
+ });
+
+ if(!box.children.length){
+  box.append(el("p","muted","No matching plants."));
+ }
+}
+
+function renderInsights(){
+ const box=$("insights");
+ box.replaceChildren();
+
+ const list=visible();
+ const highest=[...list].sort((a,b)=>b.shortfall-a.shortfall)[0];
+ const mostValuable=[...list].sort((a,b)=>b.market-a.market)[0];
+
+ const insights=[
+  [
+   "Largest Indicative Value Shortfall",
+   highest?
+    highest.name+" has a modeled shortfall of "+
+    money(highest.shortfall)+".":"No selected equipment."
+  ],
+  [
+   "Highest Estimated Market Value",
+   mostValuable?
+    mostValuable.name+" has a market estimate of "+
+    money(mostValuable.market)+".":"No selected equipment."
+  ],
+  [
+   "Replacement Planning",
+   "Compare current replacement cost with future maintenance expenditure and remaining useful life."
+  ],
+  [
+   "Financial Review",
+   "Reconcile book values with the fixed-asset ledger and use qualified appraisals for material valuation decisions."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+  card.append(el("h4","",title),el("p","",description));
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawComparison();
+ renderDepreciationChart();
+ renderFinancialSummary();
+ renderPlants();
+ renderInsights();
+}
+
+function saveScenario(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify({
+   market:$("marketMultiplier").value,
+   inflation:$("replacementInflation").value,
+   condition:$("conditionMultiplier").value,
+   disposal:$("disposalMultiplier").value
+  }));
+ }catch{}
+}
+
+function loadScenario(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+  if(!saved)return;
+
+  const fields={
+   market:"marketMultiplier",
+   inflation:"replacementInflation",
+   condition:"conditionMultiplier",
+   disposal:"disposalMultiplier"
+  };
+
+  Object.entries(fields).forEach(([key,id])=>{
+   if(saved[key]!==undefined)$(id).value=saved[key];
+  });
+ }catch{}
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+ a.href=url;a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "equipment_id","equipment_name","plant","valuation_year",
+  "installation_year","age_years","acquisition_inr",
+  "accumulated_depreciation_inr","book_value_inr",
+  "market_estimate_inr","replacement_cost_inr",
+  "disposal_cost_inr","net_realizable_inr",
+  "indicative_value_shortfall_inr"
+ ]];
+
+ visible().forEach(a=>{
+  rows.push([
+   a.id,a.name,a.plant,a.year,a.installed,a.age,
+   a.acquisition,a.accumulated.toFixed(2),
+   a.book.toFixed(2),a.market.toFixed(2),
+   a.replacement.toFixed(2),a.disposal.toFixed(2),
+   a.netRealizable.toFixed(2),a.shortfall.toFixed(2)
+  ]);
+ });
+
+ const csv=rows.map(row=>row.map(value=>
+  '"'+String(value).replaceAll('"','""')+'"'
+ ).join(",")).join("\r\n");
+
+ download(
+  "industra-asset-valuation.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+ notify("Asset valuation CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-asset-valuation.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   valuationYear:Number($("yearFilter").value),
+   scenario:scenario(),
+   assets:visible()
+  },null,2),
+  "application/json"
+ );
+ notify("Asset valuation JSON exported.");
+}
+
+$("calculateBtn").onclick=()=>{
+ if(calculate()){
+  saveScenario();
+  notify("Asset valuations recalculated.");
+ }
+};
+
+$("applyScenarioBtn").onclick=()=>{
+ if(calculate()){
+  saveScenario();
+  notify("Valuation scenario applied.");
+ }
+};
+
+$("defaultScenarioBtn").onclick=()=>{
+ $("marketMultiplier").value=1;
+ $("replacementInflation").value=4;
+ $("conditionMultiplier").value=1;
+ $("disposalMultiplier").value=1;
+ calculate();
+ saveScenario();
+ notify("Default scenario restored.");
+};
+
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ $("plantFilter").value="all";
+ $("assetFilter").value="all";
+ $("yearFilter").value="2026";
+ $("sortFilter").value="book";
+ $("marketMultiplier").value=1;
+ $("replacementInflation").value=4;
+ $("conditionMultiplier").value=1;
+ $("disposalMultiplier").value=1;
+
+ selectedId="GEN-001";
+ populateAssets();
+ calculate();
+ saveScenario();
+ notify("Valuation dashboard reset.");
+};
+
+$("plantFilter").onchange=()=>{
+ populateAssets();
+ calculate();
+};
+
+["assetFilter","yearFilter","sortFilter"].forEach(id=>{
+ $(id).addEventListener("change",calculate);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+const requestedId=new URLSearchParams(
+ window.location.search
+).get("id");
+
+if(requestedId&&ASSETS.some(a=>a.id===requestedId)){
+ selectedId=requestedId;
+ $("assetFilter").value=requestedId;
+}
+
+loadScenario();
+populateAssets();
+
+if(requestedId&&ASSETS.some(a=>a.id===requestedId)){
+ $("assetFilter").value=requestedId;
+}
+
+calculate();
+</script>
+</body>
+</html>

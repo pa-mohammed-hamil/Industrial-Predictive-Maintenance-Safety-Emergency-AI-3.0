@@ -1,0 +1,1570 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Smoke Detection | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / computer-vision</p><h1 id="page-title">Smoke Detection</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Smoke Detection workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Smoke Detection | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple2:#9583ff;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+ --sidebar:258px;
+}
+
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5{
+ font-family:"Manrope",sans-serif;
+ letter-spacing:-.5px;
+}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+button:disabled{opacity:.5;cursor:not-allowed}
+
+.sidebar{
+ position:fixed;
+ inset:0 auto 0 0;
+ width:var(--sidebar);
+ background:var(--navy);
+ color:white;
+ z-index:1000;
+ display:flex;
+ flex-direction:column;
+ overflow-y:auto;
+ scrollbar-width:thin;
+ scrollbar-color:#42496b transparent;
+}
+.brand{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ padding:26px 22px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;height:43px;
+ border-radius:13px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);
+ font-size:22px;
+}
+.brand strong{
+ font:800 18px "Manrope",sans-serif;
+ color:white;
+}
+.brand small{
+ display:block;
+ color:#8994bd;
+ font-size:8px;
+ letter-spacing:1.7px;
+ margin-top:4px;
+}
+.nav-section{
+ padding:23px 20px 8px;
+ color:#687399;
+ font-size:9px;
+ font-weight:800;
+ letter-spacing:1.7px;
+ text-transform:uppercase;
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;
+ margin:3px 12px;
+ padding:12px 13px;
+ border-radius:10px;
+ color:#a4aecf;
+ font-size:11px;
+ font-weight:700;
+ transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+ color:white;
+}
+.sidebar-footer{
+ margin-top:auto;
+ padding:20px;
+ color:#7884ac;
+ font-size:10px;
+ border-top:1px solid #ffffff12;
+}
+
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;
+ background:white;
+ border-bottom:1px solid var(--border);
+ padding:0 32px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;
+ border:1px solid var(--border);
+ border-radius:11px;
+ background:white;
+ display:grid;place-items:center;
+ color:#68718e;
+ font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;
+ border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{
+ padding:28px 32px 45px;
+ max-width:1650px;
+ margin:auto;
+}
+.hero{
+ position:relative;
+ overflow:hidden;
+ border-radius:19px;
+ padding:30px;
+ color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:25px;
+}
+.hero:after{
+ content:"";
+ position:absolute;
+ width:330px;height:330px;
+ border-radius:50%;
+ border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;
+ text-transform:uppercase;
+ letter-spacing:2px;
+ color:#ddd6ff;
+}
+.hero h1{
+ font-size:26px;font-weight:800;
+ margin:12px 0;
+}
+.hero p{
+ color:#e6e0ff;
+ font-size:12px;
+ line-height:1.9;
+ max-width:760px;
+ margin:0;
+}
+.hero-tag{
+ display:inline-flex;
+ align-items:center;gap:7px;
+ background:#ffffff20;
+ border:1px solid #ffffff25;
+ border-radius:9px;
+ padding:8px 11px;
+ font-size:10px;font-weight:700;
+ margin-top:20px;
+}
+.stat-card,.panel{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:16px;
+ box-shadow:0 5px 23px #18204105;
+}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;
+ display:grid;place-items:center;
+ border-radius:12px;
+ font-size:19px;
+ margin-bottom:16px;
+}
+.stat-label{
+ font-size:11px;
+ color:var(--muted);
+ font-weight:700;
+}
+.stat-value{
+ font:800 26px "Manrope",sans-serif;
+ margin-top:6px;
+}
+.stat-note{
+ color:#a0a8ba;
+ font-size:10px;
+ margin-top:6px;
+}
+.panel{padding:23px;height:100%}
+.panel-heading{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:10px;
+ margin-bottom:21px;
+}
+.panel-heading h3{
+ font-size:15px;
+ font-weight:800;
+ margin:0;
+}
+.panel-subtitle{
+ color:var(--muted);
+ font-size:11px;
+ margin-top:5px;
+}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;
+ border:0;
+ border-radius:10px;
+ padding:11px 17px;
+ font-size:11px;
+ font-weight:800;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);
+ border-radius:10px;
+ padding:10px 14px;
+ background:white;
+ color:#69738e;
+ font-size:11px;
+ font-weight:800;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+}
+.btn-outline-custom:hover{
+ background:#f5f3ff;
+ color:var(--purple);
+}
+.status-badge{
+ display:inline-flex;
+ align-items:center;
+ gap:6px;
+ border-radius:8px;
+ padding:7px 10px;
+ font-size:10px;
+ font-weight:800;
+ background:#f1f2f8;
+ color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffecef;color:#d64b62}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.section-label{
+ display:block;
+ font-size:10px;
+ color:#59637f;
+ font-weight:800;
+ margin-bottom:9px;
+}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;
+ min-height:43px;
+ font-size:12px;
+ padding:10px 12px;
+ color:var(--text);
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+.smoke-display{
+ border-radius:16px;
+ padding:25px;
+ background:linear-gradient(135deg,#171d38,#2a275e);
+ color:white;
+ position:relative;
+ overflow:hidden;
+}
+.smoke-number{
+ font:800 54px "Manrope",sans-serif;
+ letter-spacing:-2px;
+ line-height:1.2;
+}
+.smoke-number small{
+ font-size:17px;
+ color:#a89aff;
+}
+.smoke-caption{
+ color:#aab3d7;
+ font-size:11px;
+ margin-top:7px;
+}
+.smoke-track{
+ width:100%;height:10px;
+ background:#ffffff20;
+ border-radius:10px;
+ margin-top:22px;
+ overflow:hidden;
+}
+.smoke-fill{
+ height:100%;
+ border-radius:10px;
+ background:linear-gradient(90deg,#18b58c,#f4a443,#ed6175);
+ transition:width .3s;
+}
+.smoke-legend{
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ color:#b4bddc;
+ font-size:10px;
+ margin-top:9px;
+}
+.camera-preview{
+ position:relative;
+ min-height:255px;
+ border-radius:15px;
+ overflow:hidden;
+ background:
+  linear-gradient(145deg,#131c32,#27304d);
+ display:flex;
+ justify-content:center;
+ align-items:center;
+}
+.camera-preview img{
+ width:100%;
+ max-height:380px;
+ object-fit:contain;
+ position:relative;
+ z-index:1;
+}
+.camera-empty{
+ color:#8996ba;
+ text-align:center;
+ padding:30px;
+}
+.camera-empty i{
+ font-size:42px;
+ display:block;
+ margin-bottom:12px;
+ color:#9182e9;
+}
+.camera-label{
+ position:absolute;
+ top:12px;left:12px;
+ z-index:3;
+ background:#10152de0;
+ color:white;
+ padding:8px 11px;
+ border-radius:8px;
+ font-size:10px;
+ font-weight:800;
+}
+.smoke-overlay{
+ position:absolute;
+ inset:0;
+ z-index:2;
+ pointer-events:none;
+ opacity:0;
+ background:
+  radial-gradient(ellipse at 48% 80%,#d3d6e2b0,transparent 48%),
+  radial-gradient(ellipse at 55% 38%,#adb4c2b0,transparent 60%),
+  radial-gradient(ellipse at 25% 65%,#c2c6d5a0,transparent 55%);
+ filter:blur(18px);
+ transition:opacity .35s;
+}
+.visual-label{
+ position:absolute;
+ bottom:12px;left:12px;
+ z-index:3;
+ color:white;
+ background:#10152dd9;
+ padding:7px 10px;
+ border-radius:8px;
+ font-size:10px;
+}
+.chart-container{height:260px;position:relative}
+.zone-item{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:15px 0;
+ border-bottom:1px solid #f0f1f7;
+}
+.zone-item:last-child{border-bottom:0}
+.zone-icon{
+ width:42px;height:42px;
+ border-radius:12px;
+ background:#eeeaff;
+ color:var(--purple);
+ display:grid;place-items:center;
+ font-size:19px;
+ flex-shrink:0;
+}
+.zone-info{flex:1;min-width:0}
+.zone-name{font-size:11px;font-weight:800}
+.zone-meta{font-size:10px;color:var(--muted);margin-top:5px}
+.zone-value{
+ font:800 17px "Manrope",sans-serif;
+ white-space:nowrap;
+}
+.info-row{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+ padding:12px 0;
+ border-bottom:1px solid #f0f1f7;
+}
+.info-row span{color:var(--muted);font-size:11px}
+.info-row strong{font-size:11px;text-align:right}
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;
+ font-size:10px;
+ font-weight:800;
+ padding:13px;
+ background:#f9faff;
+ border-bottom:1px solid var(--border);
+ white-space:nowrap;
+}
+.table tbody td{
+ padding:14px 13px;
+ vertical-align:middle;
+ border-color:#f0f1f7;
+}
+.empty-state{
+ text-align:center;
+ padding:35px 15px;
+ color:var(--muted);
+ font-size:11px;
+}
+.empty-state i{
+ display:block;
+ font-size:33px;
+ color:#c2b9ff;
+ margin-bottom:12px;
+}
+.notice{
+ background:#fff8eb;
+ border:1px solid #ffe8c3;
+ color:#986b2d;
+ border-radius:12px;
+ padding:15px 17px;
+ font-size:11px;
+ line-height:1.8;
+ display:flex;
+ align-items:flex-start;
+ gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+
+@media(max-width:1150px){
+ :root{--sidebar:225px}
+ .content{padding:25px 22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{
+  transform:translateX(-100%);
+  transition:transform .25s;
+  width:260px;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;
+  position:fixed;
+  inset:0;
+  background:#10152d88;
+  z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:18px 14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:17px}
+ .mobile-hide{display:none}
+ .smoke-number{font-size:43px}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+ <a class="side-link" href="notifications.html"><i class="bi bi-bell"></i> Notifications</a>
+
+ <div class="nav-section">Vision Intelligence</div>
+ <a class="side-link" href="live-camera.html"><i class="bi bi-camera-video"></i> Live Camera</a>
+ <a class="side-link" href="image-inspection.html"><i class="bi bi-image"></i> Image Inspection</a>
+ <a class="side-link" href="p-p-e-detection.html"><i class="bi bi-shield-check"></i> PPE Detection</a>
+ <a class="side-link" href="motion-detection.html"><i class="bi bi-bounding-box"></i> Motion Detection</a>
+ <a class="side-link" href="fire-detection.html"><i class="bi bi-fire"></i> Fire Detection</a>
+ <a class="side-link active" href="smoke-detection.html"><i class="bi bi-cloud-haze2"></i> Smoke Detection</a>
+ <a class="side-link" href="overheating-detection.html"><i class="bi bi-thermometer-high"></i> Overheating Detection</a>
+ <a class="side-link" href="equipment-condition.html"><i class="bi bi-speedometer2"></i> Equipment Condition</a>
+ <a class="side-link" href="detection-results.html"><i class="bi bi-clipboard-data"></i> Detection Results</a>
+ <a class="side-link" href="inspection-history.html"><i class="bi bi-clock-history"></i> Inspection History</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/inspection-agent.html"><i class="bi bi-clipboard-check"></i> Inspection Agent</a>
+ <a class="side-link" href="agents/safety-agent.html"><i class="bi bi-shield-check"></i> Safety Agent</a>
+ <a class="side-link" href="agents/emergency-response-agent.html"><i class="bi bi-exclamation-octagon"></i> Emergency Response Agent</a>
+ <a class="side-link" href="agents/supervisor-agent.html"><i class="bi bi-diagram-3"></i> Supervisor Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Simulated Smoke Monitoring
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">
+    Vision Intelligence / <strong>Smoke Detection</strong>
+   </div>
+   <div class="fw-bold mt-1" style="font-size:13px">
+    Smoke & Air Safety Intelligence
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="status-badge info mobile-hide">
+   <i class="bi bi-cpu"></i> Simulation Mode
+  </span>
+  <a href="notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">Industrial Intelligence / Smoke Monitoring</div>
+ <h1>
+  <i class="bi bi-cloud-haze2 me-2"></i>
+  Smoke Detection & Air Safety Monitoring
+ </h1>
+ <p>
+  Explore synthetic smoke-sensor readings, inspect
+  industrial monitoring zones, configure illustrative
+  smoke thresholds, review scenario events, and
+  document safety observations.
+ </p>
+ <div class="hero-tag">
+  <i class="bi bi-info-circle"></i>
+  Offline demonstration — no real smoke detection or fire alarm
+ </div>
+</section>
+
+<div class="row g-3 mb-4">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+    <i class="bi bi-cloud-haze2"></i>
+   </div>
+   <div class="stat-label">Selected Smoke Index</div>
+   <div class="stat-value" id="smokeKpi">—</div>
+   <div class="stat-note">Arbitrary demo units</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e8f9f1;color:#18b58c">
+    <i class="bi bi-hdd-stack"></i>
+   </div>
+   <div class="stat-label">Monitoring Zones</div>
+   <div class="stat-value" id="zonesKpi">6</div>
+   <div class="stat-note">Synthetic zone profiles</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#fff4e6;color:#f4a443">
+    <i class="bi bi-exclamation-triangle"></i>
+   </div>
+   <div class="stat-label">Zones Above Warning</div>
+   <div class="stat-value" id="warningKpi">0</div>
+   <div class="stat-note">Based on demo thresholds</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#ffecef;color:#ed6175">
+    <i class="bi bi-activity"></i>
+   </div>
+   <div class="stat-label">Critical Events</div>
+   <div class="stat-value" id="criticalKpi">0</div>
+   <div class="stat-note">Recorded scenario transitions</div>
+  </div>
+ </div>
+</div>
+
+<div class="row g-4 mb-4">
+ <div class="col-xl-8">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Smoke Monitoring Console</h3>
+     <div class="panel-subtitle">
+      Selected industrial zone and synthetic smoke telemetry
+     </div>
+    </div>
+    <span id="monitorBadge" class="status-badge">Simulation Paused</span>
+   </div>
+
+   <div class="row g-3 mb-4">
+    <div class="col-md-7">
+     <label class="section-label" for="zoneSelect">Industrial Monitoring Zone</label>
+     <select class="form-select" id="zoneSelect"></select>
+    </div>
+    <div class="col-md-5">
+     <label class="section-label" for="scenarioSelect">Demo Scenario</label>
+     <select class="form-select" id="scenarioSelect">
+      <option value="normal">Normal Conditions</option>
+      <option value="dust">Illustrative Dust Interference</option>
+      <option value="smoke">Illustrative Smoke Event</option>
+      <option value="severe">Severe Smoke Scenario</option>
+     </select>
+    </div>
+   </div>
+
+   <div class="smoke-display">
+    <div class="d-flex justify-content-between align-items-start">
+     <div>
+      <div style="color:#b4bde0;font-size:11px">
+       Current Simulated Smoke Index
+      </div>
+      <div class="smoke-number">
+       <span id="mainSmoke">—</span>
+       <small>index</small>
+      </div>
+      <div class="smoke-caption" id="zoneName">Warehouse Zone</div>
+     </div>
+     <span id="smokeStatus" class="status-badge success">Normal</span>
+    </div>
+
+    <div class="smoke-track">
+     <div class="smoke-fill" id="smokeFill" style="width:0"></div>
+    </div>
+    <div class="smoke-legend">
+     <span>0</span>
+     <span id="warningMarker">Warning: 35</span>
+     <span id="criticalMarker">Critical: 70</span>
+    </div>
+   </div>
+
+   <div class="d-flex flex-wrap gap-2 mt-4">
+    <button class="btn-purple" id="startButton">
+     <i class="bi bi-play-fill"></i> Start Simulation
+    </button>
+    <button class="btn-outline-custom" id="pauseButton" disabled>
+     <i class="bi bi-pause-fill"></i> Pause
+    </button>
+    <button class="btn-outline-custom" id="sampleButton">
+     <i class="bi bi-arrow-repeat"></i> Generate Sample
+    </button>
+    <button class="btn-outline-custom" id="resetButton">
+     <i class="bi bi-arrow-counterclockwise"></i> Reset
+    </button>
+   </div>
+
+   <div class="mt-4">
+    <div class="panel-heading mb-3">
+     <div>
+      <h3>Smoke Index Trend</h3>
+      <div class="panel-subtitle">Recent synthetic readings</div>
+     </div>
+    </div>
+    <div class="chart-container">
+     <canvas id="smokeChart"></canvas>
+    </div>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-4">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Monitoring Configuration</h3>
+     <div class="panel-subtitle">
+      Illustrative threshold settings
+     </div>
+    </div>
+   </div>
+
+   <label class="section-label" for="warningThreshold">
+    Warning Index
+   </label>
+   <input type="number" id="warningThreshold"
+    class="form-control mb-3" value="35" min="1" max="99">
+
+   <label class="section-label" for="criticalThreshold">
+    Critical Index
+   </label>
+   <input type="number" id="criticalThreshold"
+    class="form-control mb-3" value="70" min="2" max="100">
+
+   <button class="btn-purple w-100 mb-4" id="applyThresholds">
+    <i class="bi bi-check-circle"></i> Apply Thresholds
+   </button>
+
+   <div class="info-row">
+    <span>Data Source</span>
+    <strong>Synthetic</strong>
+   </div>
+   <div class="info-row">
+    <span>Smoke Detector</span>
+    <strong>Not Connected</strong>
+   </div>
+   <div class="info-row">
+    <span>Air Sensor</span>
+    <strong>Not Connected</strong>
+   </div>
+   <div class="info-row">
+    <span>Camera AI</span>
+    <strong>Not Connected</strong>
+   </div>
+   <div class="info-row">
+    <span>Fire Alarm Integration</span>
+    <strong style="color:#ed6175">Disabled</strong>
+   </div>
+
+   <div class="mt-4">
+    <label class="section-label" for="inspectionNotes">
+     Zone Inspection Notes
+    </label>
+    <textarea id="inspectionNotes" class="form-control"
+     rows="4" maxlength="2000"
+     placeholder="Enter observations and follow-up notes..."></textarea>
+    <button class="btn-outline-custom w-100 mt-2" id="saveNotes">
+     <i class="bi bi-floppy"></i> Save Session Notes
+    </button>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="row g-4 mb-4">
+ <div class="col-lg-7">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Illustrative Smoke Visualization</h3>
+     <div class="panel-subtitle">
+      Synthetic overlay — not a computer-vision result
+     </div>
+    </div>
+    <span class="status-badge info">Visual Demo</span>
+   </div>
+
+   <div class="camera-preview" id="cameraPreview">
+    <span class="camera-label">OFFLINE IMAGE PREVIEW</span>
+    <div class="camera-empty" id="cameraEmpty">
+     <i class="bi bi-camera-video-off"></i>
+     No image loaded
+     <div class="mt-2" style="font-size:10px">
+      Upload a local image to preview the illustrative smoke overlay
+     </div>
+    </div>
+    <img id="previewImage" class="hidden" alt="Uploaded industrial zone">
+    <div class="smoke-overlay" id="smokeOverlay"></div>
+    <span class="visual-label">Simulated smoke overlay only</span>
+   </div>
+
+   <input type="file" id="imageInput" hidden
+    accept="image/jpeg,image/png,image/webp">
+
+   <div class="d-flex flex-wrap gap-2 mt-3">
+    <button class="btn-purple" id="uploadImage">
+     <i class="bi bi-upload"></i> Upload Zone Image
+    </button>
+    <button class="btn-outline-custom" id="removeImage">
+     <i class="bi bi-trash"></i> Remove Image
+    </button>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-lg-5">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Industrial Zone Overview</h3>
+     <div class="panel-subtitle">
+      Select a zone to view its simulated readings
+     </div>
+    </div>
+   </div>
+   <div id="zoneList"></div>
+  </section>
+ </div>
+</div>
+
+<section class="panel mb-4">
+ <div class="panel-heading">
+  <div>
+   <h3>Smoke Monitoring Event History</h3>
+   <div class="panel-subtitle">
+    Scenario-generated threshold transition records
+   </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-outline-custom" id="exportCsv">
+    <i class="bi bi-filetype-csv"></i> Export CSV
+   </button>
+   <button class="btn-purple" id="exportJson">
+    <i class="bi bi-download"></i> Export JSON
+   </button>
+   <button class="btn-outline-custom" id="clearEvents">
+    <i class="bi bi-trash"></i> Clear
+   </button>
+  </div>
+ </div>
+
+ <div class="table-responsive">
+  <table class="table align-middle mb-0">
+   <thead>
+    <tr>
+     <th>Timestamp</th>
+     <th>Zone</th>
+     <th>Smoke Index</th>
+     <th>Previous</th>
+     <th>New Status</th>
+     <th>Scenario</th>
+    </tr>
+   </thead>
+   <tbody id="eventTable"></tbody>
+  </table>
+ </div>
+</section>
+
+<div class="notice">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Safety limitation:</strong>
+  All smoke readings are synthetic and expressed in arbitrary
+  index units. They are not smoke concentration measurements,
+  air-quality measurements, or calibrated detector outputs.
+  The illustrative smoke overlay does not analyze image pixels.
+  This dashboard cannot detect an actual fire or smoke emergency.
+  Certified detection, independent alarms, and established
+  emergency procedures remain essential.
+ </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+
+const definitions=[
+ {id:"ZN-001",name:"Warehouse",icon:"bi-box-seam",base:12},
+ {id:"ZN-002",name:"Electrical Room",icon:"bi-lightning",base:17},
+ {id:"ZN-003",name:"Production Line",icon:"bi-gear",base:21},
+ {id:"ZN-004",name:"Boiler Room",icon:"bi-thermometer-high",base:27},
+ {id:"ZN-005",name:"Chemical Storage",icon:"bi-droplet",base:15},
+ {id:"ZN-006",name:"Maintenance Bay",icon:"bi-tools",base:19}
+];
+
+const scenarioTargets={
+ normal:0,
+ dust:20,
+ smoke:48,
+ severe:82
+};
+
+let zones={};
+let events=[];
+let readings=[];
+let notes={};
+let running=false;
+let timer=null;
+let chart=null;
+let imageUrl=null;
+let thresholds={warning:35,critical:70};
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+function statusOf(value){
+ if(value>=thresholds.critical)return "critical";
+ if(value>=thresholds.warning)return "warning";
+ return "normal";
+}
+function statusLabel(status){
+ return {
+  normal:"Normal",
+  warning:"Warning",
+  critical:"Critical"
+ }[status];
+}
+function statusClass(status){
+ return {
+  normal:"success",
+  warning:"warning",
+  critical:"danger"
+ }[status];
+}
+function statusColor(status){
+ return {
+  normal:"#18b58c",
+  warning:"#f4a443",
+  critical:"#ed6175"
+ }[status];
+}
+
+function selectedZone(){
+ return zones[$("zoneSelect").value];
+}
+
+function initializeZones(){
+ zones={};
+ events=[];
+ readings=[];
+ notes={};
+
+ definitions.forEach(def=>{
+  zones[def.id]={
+   ...def,
+   value:def.base,
+   scenario:"normal",
+   status:statusOf(def.base),
+   history:[]
+  };
+ });
+
+ definitions.forEach(def=>{
+  recordReading(zones[def.id],"initial-synthetic");
+ });
+}
+
+function recordReading(zone,source){
+ const reading={
+  timestamp:new Date().toISOString(),
+  zoneId:zone.id,
+  zoneName:zone.name,
+  smokeIndex:Number(zone.value.toFixed(2)),
+  status:zone.status,
+  scenario:zone.scenario,
+  source
+ };
+
+ readings.unshift(reading);
+ if(readings.length>500)readings.length=500;
+
+ zone.history.push(reading);
+ if(zone.history.length>50)zone.history.shift();
+}
+
+function updateZone(zone,value,source){
+ const previous=zone.status;
+
+ zone.value=Math.max(0,Math.min(100,value));
+ zone.status=statusOf(zone.value);
+
+ if(previous!==zone.status){
+  events.unshift({
+   timestamp:new Date().toISOString(),
+   zoneId:zone.id,
+   zoneName:zone.name,
+   smokeIndex:Number(zone.value.toFixed(2)),
+   previousStatus:previous,
+   newStatus:zone.status,
+   scenario:zone.scenario,
+   source:"synthetic-threshold-transition"
+  });
+  if(events.length>150)events.length=150;
+ }
+
+ recordReading(zone,source);
+}
+
+function simulateTick(){
+ definitions.forEach(def=>{
+  const zone=zones[def.id];
+
+  const scenarioBoost=scenarioTargets[zone.scenario];
+  const target=Math.min(100,zone.base+scenarioBoost);
+  const random=(Math.random()-.5)*5;
+  const correction=(target-zone.value)*.18;
+
+  updateZone(
+   zone,
+   zone.value+correction+random,
+   "synthetic-simulation"
+  );
+ });
+
+ renderAll();
+}
+
+function pause(){
+ if(timer)clearInterval(timer);
+ timer=null;
+ running=false;
+
+ $("startButton").disabled=false;
+ $("pauseButton").disabled=true;
+ $("monitorBadge").className="status-badge";
+ $("monitorBadge").textContent="Simulation Paused";
+}
+
+function start(){
+ if(running)return;
+ running=true;
+
+ $("startButton").disabled=true;
+ $("pauseButton").disabled=false;
+ $("monitorBadge").className="status-badge success";
+ $("monitorBadge").textContent="Simulation Running";
+
+ timer=setInterval(simulateTick,1500);
+ notify("Synthetic smoke monitoring started.");
+}
+
+function reset(){
+ pause();
+ initializeZones();
+ $("scenarioSelect").value="normal";
+ $("inspectionNotes").value="";
+ renderAll();
+ notify("Smoke monitoring simulation reset.");
+}
+
+function renderKpis(){
+ const selected=selectedZone();
+
+ $("smokeKpi").textContent=selected?
+  selected.value.toFixed(1):"—";
+
+ $("zonesKpi").textContent=definitions.length;
+
+ $("warningKpi").textContent=
+  Object.values(zones).filter(zone=>
+   zone.status!=="normal"
+  ).length;
+
+ $("criticalKpi").textContent=
+  events.filter(event=>
+   event.newStatus==="critical"
+  ).length;
+}
+
+function renderMonitor(){
+ const zone=selectedZone();
+ if(!zone)return;
+
+ $("mainSmoke").textContent=zone.value.toFixed(1);
+ $("zoneName").textContent=zone.id+" — "+zone.name;
+
+ const badge=$("smokeStatus");
+ badge.className="status-badge "+statusClass(zone.status);
+ badge.textContent=statusLabel(zone.status);
+
+ $("warningMarker").textContent=
+  "Warning: "+thresholds.warning;
+ $("criticalMarker").textContent=
+  "Critical: "+thresholds.critical;
+
+ $("smokeFill").style.width=zone.value+"%";
+
+ $("scenarioSelect").value=zone.scenario;
+ $("inspectionNotes").value=notes[zone.id]||"";
+
+ $("smokeOverlay").style.opacity=
+  String(Math.min(.8,zone.value/115));
+}
+
+function renderZones(){
+ const container=$("zoneList");
+ container.replaceChildren();
+
+ definitions.forEach(def=>{
+  const zone=zones[def.id];
+  const row=document.createElement("div");
+  row.className="zone-item";
+  row.style.cursor="pointer";
+
+  const icon=document.createElement("div");
+  icon.className="zone-icon";
+  const i=document.createElement("i");
+  i.className="bi "+zone.icon;
+  icon.append(i);
+
+  const info=document.createElement("div");
+  info.className="zone-info";
+
+  const name=document.createElement("div");
+  name.className="zone-name";
+  name.textContent=zone.name;
+
+  const meta=document.createElement("div");
+  meta.className="zone-meta";
+  meta.textContent=zone.id+" · Simulated sensor";
+
+  info.append(name,meta);
+
+  const right=document.createElement("div");
+  right.className="text-end";
+
+  const value=document.createElement("div");
+  value.className="zone-value";
+  value.style.color=statusColor(zone.status);
+  value.textContent=zone.value.toFixed(1);
+
+  const badge=document.createElement("span");
+  badge.className="status-badge "+statusClass(zone.status);
+  badge.textContent=statusLabel(zone.status);
+
+  right.append(value,badge);
+  row.append(icon,info,right);
+
+  row.addEventListener("click",()=>{
+   $("zoneSelect").value=zone.id;
+   renderAll();
+  });
+
+  container.append(row);
+ });
+}
+
+function renderEvents(){
+ const tbody=$("eventTable");
+ tbody.replaceChildren();
+
+ if(!events.length){
+  const tr=document.createElement("tr");
+  const td=document.createElement("td");
+  td.colSpan=6;
+  td.className="empty-state";
+  td.textContent="No simulated threshold events recorded yet.";
+  tr.append(td);
+  tbody.append(tr);
+  return;
+ }
+
+ events.slice(0,20).forEach(event=>{
+  const tr=document.createElement("tr");
+
+  const values=[
+   new Date(event.timestamp).toLocaleString(),
+   event.zoneName,
+   event.smokeIndex.toFixed(1),
+   statusLabel(event.previousStatus),
+   statusLabel(event.newStatus),
+   event.scenario
+  ];
+
+  values.forEach((value,index)=>{
+   const td=document.createElement("td");
+   td.textContent=value;
+
+   if(index===4){
+    td.style.fontWeight="800";
+    td.style.color=statusColor(event.newStatus);
+   }
+   tr.append(td);
+  });
+
+  tbody.append(tr);
+ });
+}
+
+function initializeChart(){
+ if(typeof Chart==="undefined")return;
+
+ chart=new Chart($("smokeChart"),{
+  type:"line",
+  data:{
+   labels:[],
+   datasets:[
+    {
+     label:"Smoke Index",
+     data:[],
+     borderColor:"#6855eb",
+     backgroundColor:"#6855eb15",
+     fill:true,
+     borderWidth:2.5,
+     tension:.35,
+     pointRadius:2
+    },
+    {
+     label:"Warning",
+     data:[],
+     borderColor:"#f4a443",
+     borderDash:[6,5],
+     borderWidth:1.5,
+     pointRadius:0
+    },
+    {
+     label:"Critical",
+     data:[],
+     borderColor:"#ed6175",
+     borderDash:[6,5],
+     borderWidth:1.5,
+     pointRadius:0
+    }
+   ]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   animation:false,
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{usePointStyle:true,padding:17}
+    }
+   },
+   scales:{
+    x:{
+     grid:{display:false},
+     ticks:{maxTicksLimit:7}
+    },
+    y:{
+     min:0,
+     max:100,
+     grid:{color:"#f0f1f7"}
+    }
+   }
+  }
+ });
+}
+
+function renderChart(){
+ if(!chart)return;
+
+ const history=selectedZone().history.slice(-35);
+
+ chart.data.labels=history.map(item=>
+  new Date(item.timestamp).toLocaleTimeString()
+ );
+
+ chart.data.datasets[0].data=
+  history.map(item=>item.smokeIndex);
+
+ chart.data.datasets[1].data=
+  history.map(()=>thresholds.warning);
+
+ chart.data.datasets[2].data=
+  history.map(()=>thresholds.critical);
+
+ chart.update("none");
+}
+
+function renderAll(){
+ renderKpis();
+ renderMonitor();
+ renderZones();
+ renderEvents();
+ renderChart();
+}
+
+function populateZones(){
+ definitions.forEach(def=>{
+  const option=document.createElement("option");
+  option.value=def.id;
+  option.textContent=def.id+" — "+def.name;
+  $("zoneSelect").append(option);
+ });
+}
+
+$("zoneSelect").addEventListener("change",renderAll);
+
+$("scenarioSelect").addEventListener("change",()=>{
+ const zone=selectedZone();
+ zone.scenario=$("scenarioSelect").value;
+
+ const target=Math.min(
+  100,
+  zone.base+scenarioTargets[zone.scenario]
+ );
+
+ updateZone(zone,target,"manual-scenario-selection");
+ renderAll();
+ notify("Illustrative scenario applied to "+zone.name+".");
+});
+
+$("startButton").addEventListener("click",start);
+$("pauseButton").addEventListener("click",()=>{
+ pause();
+ notify("Simulation paused.");
+});
+$("sampleButton").addEventListener("click",()=>{
+ simulateTick();
+ notify("Synthetic readings generated.");
+});
+$("resetButton").addEventListener("click",reset);
+
+$("applyThresholds").addEventListener("click",()=>{
+ const warning=Number($("warningThreshold").value);
+ const critical=Number($("criticalThreshold").value);
+
+ if(
+  !Number.isFinite(warning)||
+  !Number.isFinite(critical)||
+  warning<1||
+  critical>100||
+  critical<=warning
+ ){
+  notify("Enter valid thresholds with critical greater than warning.");
+  return;
+ }
+
+ thresholds={warning,critical};
+
+ Object.values(zones).forEach(zone=>{
+  const previous=zone.status;
+  zone.status=statusOf(zone.value);
+
+  if(previous!==zone.status){
+   events.unshift({
+    timestamp:new Date().toISOString(),
+    zoneId:zone.id,
+    zoneName:zone.name,
+    smokeIndex:Number(zone.value.toFixed(2)),
+    previousStatus:previous,
+    newStatus:zone.status,
+    scenario:zone.scenario,
+    source:"threshold-reconfiguration"
+   });
+  }
+ });
+
+ renderAll();
+ notify("Demonstration thresholds updated.");
+});
+
+$("saveNotes").addEventListener("click",()=>{
+ notes[selectedZone().id]=$("inspectionNotes").value;
+ notify("Zone notes saved for this session.");
+});
+
+/* IMAGE PREVIEW */
+
+$("uploadImage").addEventListener("click",()=>{
+ $("imageInput").click();
+});
+
+$("imageInput").addEventListener("change",event=>{
+ const file=event.target.files[0];
+ if(!file)return;
+
+ if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+  notify("Select JPG, PNG or WebP.");
+  return;
+ }
+
+ if(file.size>10*1024*1024){
+  notify("Maximum image size is 10 MB.");
+  return;
+ }
+
+ if(imageUrl)URL.revokeObjectURL(imageUrl);
+ imageUrl=URL.createObjectURL(file);
+
+ $("previewImage").src=imageUrl;
+ $("previewImage").classList.remove("hidden");
+ $("cameraEmpty").classList.add("hidden");
+
+ notify("Image loaded. Overlay remains illustrative.");
+});
+
+$("removeImage").addEventListener("click",()=>{
+ if(imageUrl)URL.revokeObjectURL(imageUrl);
+ imageUrl=null;
+ $("previewImage").removeAttribute("src");
+ $("previewImage").classList.add("hidden");
+ $("cameraEmpty").classList.remove("hidden");
+ $("imageInput").value="";
+});
+
+/* EXPORT */
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportCsv").addEventListener("click",()=>{
+ const columns=[
+  "timestamp","zoneId","zoneName",
+  "smokeIndex","previousStatus",
+  "newStatus","scenario","source"
+ ];
+
+ const escapeCsv=value=>
+  '"'+String(value??"").replace(/"/g,'""')+'"';
+
+ const csv=[
+  columns.join(","),
+  ...events.map(event=>
+   columns.map(key=>escapeCsv(event[key])).join(",")
+  )
+ ].join("\r\n");
+
+ downloadFile(
+  "industra-smoke-events.csv",
+  csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Smoke event CSV exported.");
+});
+
+$("exportJson").addEventListener("click",()=>{
+ const report={
+  application:"INDUSTRA AI",
+  module:"Smoke Detection",
+  generatedAt:new Date().toISOString(),
+  mode:"synthetic-simulation",
+  units:"arbitrary-smoke-index",
+  actualSmokeDetection:false,
+  cameraInference:false,
+  certifiedFireAlarm:false,
+  thresholds,
+  zones:Object.values(zones).map(zone=>({
+   id:zone.id,
+   name:zone.name,
+   smokeIndex:zone.value,
+   scenario:zone.scenario,
+   status:zone.status,
+   notes:notes[zone.id]||""
+  })),
+  events,
+  readings
+ };
+
+ downloadFile(
+  "industra-smoke-report.json",
+  JSON.stringify(report,null,2),
+  "application/json"
+ );
+
+ notify("Smoke monitoring report exported.");
+});
+
+$("clearEvents").addEventListener("click",()=>{
+ events=[];
+ renderAll();
+ notify("Simulation event history cleared.");
+});
+
+window.addEventListener("pagehide",()=>{
+ pause();
+ if(imageUrl)URL.revokeObjectURL(imageUrl);
+});
+
+/* INITIALIZATION */
+
+populateZones();
+initializeZones();
+initializeChart();
+renderAll();
+
+</script>
+
+</body>
+</html>

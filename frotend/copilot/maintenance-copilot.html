@@ -1,0 +1,1176 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Maintenance Copilot | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / copilot</p><h1 id="page-title">Maintenance Copilot</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Maintenance Copilot workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Diagnostics Copilot | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5;--sidebar:258px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5{font-family:"Manrope",sans-serif;letter-spacing:-.5px}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:white;z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto;
+ scrollbar-width:thin;scrollbar-color:#42496b transparent;
+}
+.brand{display:flex;align-items:center;gap:11px;padding:26px 22px;border-bottom:1px solid #ffffff12}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);font-size:22px;
+}
+.brand strong{font:800 18px "Manrope",sans-serif;color:white}
+.brand small{display:block;color:#8994bd;font-size:8px;letter-spacing:1.7px;margin-top:4px}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;letter-spacing:1.7px;text-transform:uppercase;
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;margin:3px 12px;
+ padding:12px 13px;border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700;transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{background:linear-gradient(95deg,#6855eb,#5145b4);color:white}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12;
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;justify-content:space-between;
+ align-items:center;gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;display:grid;place-items:center;
+ color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{padding:28px 30px 45px;max-width:1650px;margin:auto}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;
+ padding:30px;color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:24px;
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ border-radius:50%;border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;text-transform:uppercase;
+ letter-spacing:2px;color:#ddd6ff;
+}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;line-height:1.9;
+ max-width:790px;margin:0;
+}
+.hero-tag{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;font-size:10px;
+ font-weight:700;margin-top:18px;
+}
+.panel,.stat-card{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105;
+}
+.panel{padding:22px}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:15px;
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 25px "Manrope",sans-serif;margin-top:7px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel-heading{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-bottom:20px;
+}
+.panel-heading h3{font-size:14px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:10px;margin-top:5px}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;
+ padding:11px 16px;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 13px;background:white;color:#69738e;
+ font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;background:#f1f2f8;color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffedf0;color:#d84b63}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.status-badge.purple{background:#f0edff;color:#6855eb}
+.form-label{font-size:10px;color:#68718e;font-weight:800;margin-bottom:8px}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:42px;font-size:11px;padding:10px 12px;
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12;
+}
+.section-label{
+ color:#8e97ac;font-size:10px;font-weight:800;
+ text-transform:uppercase;letter-spacing:1.2px;margin:20px 0 14px;
+}
+.section-label:first-child{margin-top:0}
+.sensor-card{
+ padding:14px;border:1px solid var(--border);
+ border-radius:12px;background:#fcfcff;height:100%;
+}
+.sensor-top{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:8px;margin-bottom:12px;
+}
+.sensor-top strong{font-size:11px}
+.sensor-top i{font-size:18px;color:var(--purple)}
+.sensor-unit{font-size:10px;color:var(--muted)}
+.sensor-input{font:800 20px "Manrope",sans-serif;min-height:45px}
+.sensor-input input{font:800 18px "Manrope",sans-serif}
+.chart-box{height:280px;position:relative}
+.chart-box canvas{width:100%!important;height:100%!important}
+.finding{
+ border:1px solid var(--border);border-radius:12px;
+ padding:15px;margin-bottom:11px;background:#fff;
+}
+.finding-top{
+ display:flex;justify-content:space-between;
+ align-items:center;gap:10px;margin-bottom:8px;
+}
+.finding h4{font-size:12px;font-weight:800;margin:0}
+.finding p{font-size:11px;color:#7f89a0;line-height:1.75;margin:0}
+.condition-banner{
+ border:1px solid #e3ddff;background:#f7f5ff;
+ border-radius:13px;padding:17px;
+ display:flex;align-items:center;gap:14px;
+}
+.condition-icon{
+ width:48px;height:48px;border-radius:13px;
+ background:#e9e4ff;color:var(--purple);
+ display:grid;place-items:center;font-size:23px;
+}
+.condition-banner h3{font-size:16px;font-weight:800;margin:0 0 5px}
+.condition-banner p{font-size:10px;color:#828aa1;margin:0;line-height:1.7}
+.chat-panel{
+ display:flex;flex-direction:column;height:560px;
+ padding:0;overflow:hidden;
+}
+.chat-heading{
+ padding:17px 19px;border-bottom:1px solid var(--border);
+ display:flex;align-items:center;gap:10px;
+}
+.chat-heading-icon{
+ width:38px;height:38px;border-radius:11px;
+ background:#eeeaff;color:var(--purple);
+ display:grid;place-items:center;font-size:18px;
+}
+.chat-heading strong{font-size:12px}
+.chat-heading small{
+ display:block;color:var(--muted);
+ font-size:10px;margin-top:3px;
+}
+.chat-messages{
+ flex:1;min-height:0;overflow-y:auto;
+ padding:18px;background:#fdfdff;
+}
+.chat-message{margin-bottom:17px;max-width:95%}
+.chat-message.user{margin-left:auto}
+.chat-meta{
+ font-size:10px;font-weight:800;
+ color:#98a1b5;margin-bottom:6px;
+}
+.chat-message.user .chat-meta{text-align:right}
+.chat-bubble{
+ padding:13px 15px;border-radius:4px 12px 12px 12px;
+ background:white;border:1px solid var(--border);
+ line-height:1.8;font-size:11px;
+ white-space:pre-wrap;overflow-wrap:anywhere;
+}
+.chat-message.user .chat-bubble{
+ background:var(--purple);color:white;
+ border-color:var(--purple);border-radius:12px 4px 12px 12px;
+}
+.chat-composer{border-top:1px solid var(--border);padding:13px}
+.chat-composer textarea{resize:none;min-height:60px}
+.quick-prompts{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.quick-prompt{
+ border:1px solid #e4dfff;border-radius:8px;
+ background:#f7f5ff;color:var(--purple);
+ font-size:10px;font-weight:700;padding:8px 10px;
+}
+.quick-prompt:hover{background:#eeeaff}
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;font-size:10px;font-weight:800;
+ padding:13px;background:#f9faff;
+ border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.table tbody td{
+ padding:13px;vertical-align:middle;border-color:#f0f1f7;
+}
+.table tbody tr:hover{background:#fcfbff}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;padding:15px 17px;
+ font-size:11px;line-height:1.8;
+ display:flex;align-items:flex-start;gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1100px){
+ :root{--sidebar:225px}
+ .content{padding:22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{
+  transform:translateX(-100%);transition:transform .25s;width:260px;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:15px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:16px}
+ .chat-panel{padding:0}
+ .mobile-hide{display:none}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+ <a class="side-link" href="notifications.html"><i class="bi bi-bell"></i> Notifications</a>
+
+ <div class="nav-section">AI Intelligence</div>
+ <a class="side-link" href="a-i-copilot.html"><i class="bi bi-stars"></i> AI Copilot</a>
+ <a class="side-link" href="chat-history.html"><i class="bi bi-clock-history"></i> Chat History</a>
+ <a class="side-link" href="cost-copilot.html"><i class="bi bi-cash-coin"></i> Cost Copilot</a>
+ <a class="side-link active" href="diagnostics-copilot.html"><i class="bi bi-activity"></i> Diagnostics Copilot</a>
+ <a class="side-link" href="equipment-condition.html"><i class="bi bi-cpu"></i> Equipment Condition</a>
+
+ <div class="nav-section">Industrial Intelligence</div>
+ <a class="side-link" href="vision-dashboard.html"><i class="bi bi-eye"></i> Vision Dashboard</a>
+ <a class="side-link" href="inspection-history.html"><i class="bi bi-clipboard-data"></i> Inspection History</a>
+ <a class="side-link" href="detection-results.html"><i class="bi bi-bounding-box-circles"></i> Detection Results</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/agent-dashboard.html"><i class="bi bi-diagram-3"></i> Agent Dashboard</a>
+ <a class="side-link" href="agents/failure-analysis-agent.html"><i class="bi bi-search"></i> Failure Analysis Agent</a>
+ <a class="side-link" href="agents/asset-health-agent.html"><i class="bi bi-heart-pulse"></i> Asset Health Agent</a>
+ <a class="side-link" href="agents/maintenance-agent.html"><i class="bi bi-tools"></i> Maintenance Agent</a>
+ <a class="side-link" href="agents/supervisor-agent.html"><i class="bi bi-diagram-3"></i> Supervisor Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Diagnostic Assessment Workspace
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">AI Intelligence / <strong>Diagnostics Copilot</strong></div>
+   <div class="fw-bold mt-1" style="font-size:13px">Equipment Diagnostics Intelligence</div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="status-badge info mobile-hide"><i class="bi bi-pencil-square"></i> Manual Measurements</span>
+  <a href="notifications.html" class="top-icon" aria-label="Notifications"><i class="bi bi-bell"></i></a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">INDUSTRA AI / Industrial Diagnostics</div>
+ <h1><i class="bi bi-activity me-2"></i> Equipment Diagnostics Copilot</h1>
+ <p>
+  Review equipment operating measurements, screen for threshold deviations,
+  explore possible diagnostic follow-up areas, and document inspection
+  observations in one industrial intelligence workspace.
+ </p>
+ <div class="hero-tag"><i class="bi bi-shield-check"></i> Manual readings · Illustrative screening rules · No live sensor connection</div>
+</section>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+ <div>
+  <h5 class="fw-bold mb-1">Equipment Diagnostic Assessment</h5>
+  <div class="text-secondary" style="font-size:11px">
+   Enter observations and run a transparent threshold-based screening.
+  </div>
+ </div>
+ <div class="d-flex gap-2 flex-wrap">
+  <button class="btn-outline-custom" id="resetButton"><i class="bi bi-arrow-counterclockwise"></i> Reset Example</button>
+  <button class="btn-outline-custom" id="exportCsvButton"><i class="bi bi-filetype-csv"></i> Export CSV</button>
+  <button class="btn-purple" id="exportReportButton"><i class="bi bi-download"></i> Export Report</button>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb"><i class="bi bi-cpu"></i></div>
+   <div class="stat-label">Selected Equipment</div>
+   <div class="stat-value" id="assetKpi" style="font-size:16px">—</div>
+   <div class="stat-note">Current assessment</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eaf2ff;color:#438df5"><i class="bi bi-speedometer2"></i></div>
+   <div class="stat-label">Threshold Checks</div>
+   <div class="stat-value" id="checksKpi">4</div>
+   <div class="stat-note">Temperature, vibration, pressure, current</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#fff4e6;color:#d68a22"><i class="bi bi-exclamation-triangle"></i></div>
+   <div class="stat-label">Flagged Measurements</div>
+   <div class="stat-value" id="flagsKpi">—</div>
+   <div class="stat-note">Outside illustrative limits</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e7f8f1;color:#18b58c"><i class="bi bi-clipboard-check"></i></div>
+   <div class="stat-label">Saved Assessments</div>
+   <div class="stat-value" id="savedKpi">0</div>
+   <div class="stat-note">Current browser session</div>
+  </div>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+
+ <div class="col-xl-5">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3><i class="bi bi-sliders me-2" style="color:var(--purple)"></i> Equipment Measurements</h3>
+     <div class="panel-subtitle">Illustrative example values can be replaced with actual observations.</div>
+    </div>
+    <span class="status-badge purple">Input Panel</span>
+   </div>
+
+   <form id="diagnosticForm">
+    <div class="row g-2">
+     <div class="col-12">
+      <label class="form-label" for="assetName">Equipment / Asset Name</label>
+      <input class="form-control" id="assetName" maxlength="100" value="Centrifugal Pump P-204" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="assetType">Equipment Type</label>
+      <select class="form-select" id="assetType">
+       <option value="pump">Centrifugal Pump</option>
+       <option value="motor">Electric Motor</option>
+       <option value="compressor">Air Compressor</option>
+       <option value="gearbox">Industrial Gearbox</option>
+       <option value="conveyor">Conveyor Drive</option>
+       <option value="other">Other Equipment</option>
+      </select>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="operatingMode">Operating Mode</label>
+      <select class="form-select" id="operatingMode">
+       <option value="running">Running</option>
+       <option value="idle">Idle</option>
+       <option value="startup">Startup</option>
+       <option value="shutdown">Shutdown</option>
+      </select>
+     </div>
+    </div>
+
+    <div class="section-label">Measured Operating Values</div>
+    <div class="row g-3">
+     <div class="col-6">
+      <div class="sensor-card">
+       <div class="sensor-top">
+        <strong>Temperature</strong><i class="bi bi-thermometer-half"></i>
+       </div>
+       <div class="sensor-unit mb-2">Degrees Celsius (°C)</div>
+       <input class="form-control sensor-input" id="temperature" type="number" min="-50" max="300" step="any" value="82" required>
+      </div>
+     </div>
+     <div class="col-6">
+      <div class="sensor-card">
+       <div class="sensor-top">
+        <strong>Vibration</strong><i class="bi bi-activity"></i>
+       </div>
+       <div class="sensor-unit mb-2">Velocity RMS (mm/s)</div>
+       <input class="form-control sensor-input" id="vibration" type="number" min="0" max="100" step="any" value="6.2" required>
+      </div>
+     </div>
+     <div class="col-6">
+      <div class="sensor-card">
+       <div class="sensor-top">
+        <strong>Pressure</strong><i class="bi bi-speedometer"></i>
+       </div>
+       <div class="sensor-unit mb-2">Bar (gauge)</div>
+       <input class="form-control sensor-input" id="pressure" type="number" min="0" max="1000" step="any" value="4.8" required>
+      </div>
+     </div>
+     <div class="col-6">
+      <div class="sensor-card">
+       <div class="sensor-top">
+        <strong>Motor Current</strong><i class="bi bi-lightning-charge"></i>
+       </div>
+       <div class="sensor-unit mb-2">Amperes (A)</div>
+       <input class="form-control sensor-input" id="current" type="number" min="0" max="10000" step="any" value="32" required>
+      </div>
+     </div>
+    </div>
+
+    <div class="section-label">Illustrative Screening Thresholds</div>
+    <div class="row g-2">
+     <div class="col-6">
+      <label class="form-label" for="temperatureLimit">Temperature Upper Limit (°C)</label>
+      <input class="form-control" id="temperatureLimit" type="number" min="-50" max="300" step="any" value="75" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="vibrationLimit">Vibration Upper Limit (mm/s)</label>
+      <input class="form-control" id="vibrationLimit" type="number" min="0" max="100" step="any" value="4.5" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="pressureMin">Pressure Minimum (bar)</label>
+      <input class="form-control" id="pressureMin" type="number" min="0" max="1000" step="any" value="3" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="pressureMax">Pressure Maximum (bar)</label>
+      <input class="form-control" id="pressureMax" type="number" min="0" max="1000" step="any" value="8" required>
+     </div>
+     <div class="col-12">
+      <label class="form-label" for="currentLimit">Current Upper Limit (A)</label>
+      <input class="form-control" id="currentLimit" type="number" min="0" max="10000" step="any" value="28" required>
+     </div>
+    </div>
+
+    <div class="section-label">Inspection Context</div>
+    <div class="mb-3">
+     <label class="form-label" for="inspector">Inspector / Technician</label>
+     <input class="form-control" id="inspector" maxlength="100" placeholder="Inspector name or reference">
+    </div>
+    <div class="mb-3">
+     <label class="form-label" for="notes">Observed Symptoms / Notes</label>
+     <textarea class="form-control" id="notes" rows="3" maxlength="2000" placeholder="Unusual noise, leakage, operating changes, maintenance history..."></textarea>
+    </div>
+
+    <button class="btn-purple w-100" type="submit">
+     <i class="bi bi-search"></i> Run Diagnostic Screening
+    </button>
+   </form>
+  </section>
+ </div>
+
+ <div class="col-xl-7">
+  <div class="row g-3">
+   <div class="col-12">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3><i class="bi bi-clipboard-pulse me-2" style="color:var(--purple)"></i> Diagnostic Screening Result</h3>
+       <div class="panel-subtitle">Results reflect only the values and thresholds entered.</div>
+      </div>
+      <span id="resultBadge" class="status-badge info">Awaiting Assessment</span>
+     </div>
+
+     <div class="condition-banner mb-3">
+      <div class="condition-icon"><i class="bi bi-activity"></i></div>
+      <div>
+       <h3 id="conditionTitle">Run a diagnostic assessment</h3>
+       <p id="conditionDetail">No equipment condition conclusion has been established.</p>
+      </div>
+     </div>
+
+     <div id="findingsContainer"></div>
+
+     <div class="d-flex justify-content-end mt-3">
+      <button class="btn-outline-custom" id="saveAssessment">
+       <i class="bi bi-floppy"></i> Save Assessment
+      </button>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-12">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Measurement-to-Limit Comparison</h3>
+       <div class="panel-subtitle">Ratios to illustrative upper limits; pressure uses its upper bound.</div>
+      </div>
+      <span class="status-badge purple">Chart.js</span>
+     </div>
+     <div class="chart-box"><canvas id="measurementChart"></canvas></div>
+    </section>
+   </div>
+  </div>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-7">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3><i class="bi bi-clock-history me-2" style="color:var(--purple)"></i> Diagnostic Assessment History</h3>
+     <div class="panel-subtitle">Records from this page session only.</div>
+    </div>
+    <span class="status-badge info" id="historyCount">0 Records</span>
+   </div>
+   <div class="table-responsive">
+    <table class="table mb-0">
+     <thead>
+      <tr>
+       <th>Time</th><th>Asset</th><th>Flags</th><th>Screening</th><th>Action</th>
+      </tr>
+     </thead>
+     <tbody id="historyTable"></tbody>
+    </table>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-5">
+  <section class="panel chat-panel">
+   <div class="chat-heading">
+    <div class="chat-heading-icon"><i class="bi bi-stars"></i></div>
+    <div>
+     <strong>Diagnostics Copilot</strong>
+     <small>Rule-based explanations of screening results</small>
+    </div>
+    <span class="status-badge purple ms-auto">LOCAL</span>
+   </div>
+
+   <div class="chat-messages" id="chatMessages"></div>
+
+   <div class="chat-composer">
+    <div class="quick-prompts">
+     <button class="quick-prompt" data-question="Explain the diagnostic findings.">Explain findings</button>
+     <button class="quick-prompt" data-question="What should a technician check next?">Next checks</button>
+     <button class="quick-prompt" data-question="What are the limitations?">Limitations</button>
+    </div>
+    <div class="d-flex gap-2">
+     <textarea class="form-control" id="chatInput" rows="2" maxlength="1500" placeholder="Ask about the screening results..."></textarea>
+     <button class="btn-purple align-self-end" id="sendChat" aria-label="Send message"><i class="bi bi-arrow-up"></i></button>
+    </div>
+    <div class="text-secondary mt-2" style="font-size:9px">
+     Not a trained diagnostic AI model or live equipment monitor.
+    </div>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="notice">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Industrial safety limitation:</strong>
+  This demonstration is not a certified fault-detection system.
+  Screening thresholds are illustrative and are not universally valid across
+  equipment types, duty cycles, measurement locations, or manufacturers.
+  A measurement within the entered limits does not prove that equipment is safe.
+  Do not use this interface to authorize operation, bypass protection systems,
+  or make emergency decisions. Follow site procedures, OEM specifications,
+  lockout/tagout requirements, and qualified engineering review.
+ </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+
+const FIELD_IDS=[
+ "assetName","assetType","operatingMode",
+ "temperature","vibration","pressure","current",
+ "temperatureLimit","vibrationLimit","pressureMin",
+ "pressureMax","currentLimit","inspector","notes"
+];
+
+const defaults=Object.fromEntries(
+ FIELD_IDS.map(id=>[id,$(id).value])
+);
+
+const records=[];
+let latest=null;
+let measurementChart=null;
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function readNumber(id){
+ const raw=$(id).value.trim();
+ if(raw==="")throw Error("Complete all measurement and threshold fields.");
+ const value=Number(raw);
+ if(!Number.isFinite(value))throw Error("Enter valid numeric measurements.");
+ return value;
+}
+
+function readInputs(){
+ const p={
+  assetName:$("assetName").value.trim(),
+  assetType:$("assetType").value,
+  operatingMode:$("operatingMode").value,
+  inspector:$("inspector").value.trim(),
+  notes:$("notes").value.trim()
+ };
+
+ if(!p.assetName)throw Error("Enter an equipment name.");
+
+ [
+  "temperature","vibration","pressure","current",
+  "temperatureLimit","vibrationLimit","pressureMin",
+  "pressureMax","currentLimit"
+ ].forEach(id=>p[id]=readNumber(id));
+
+ if(p.temperature< -50||p.temperature>300||
+    p.temperatureLimit< -50||p.temperatureLimit>300){
+  throw Error("Temperature must be between -50 and 300 °C.");
+ }
+
+ for(const id of ["vibration","pressure","current",
+  "vibrationLimit","pressureMin","pressureMax","currentLimit"]){
+  if(p[id]<0)throw Error("Non-temperature values cannot be negative.");
+ }
+
+ if(p.pressureMin>=p.pressureMax){
+  throw Error("Pressure minimum must be lower than pressure maximum.");
+ }
+
+ if(p.vibrationLimit===0||p.currentLimit===0||
+    p.temperatureLimit<=0||p.pressureMax===0){
+  throw Error("Chart upper limits must be greater than zero.");
+ }
+
+ return p;
+}
+
+function screen(p){
+ const findings=[
+  {
+   name:"Temperature",
+   value:p.temperature,
+   unit:"°C",
+   limit:p.temperatureLimit,
+   flagged:p.temperature>p.temperatureLimit,
+   explanation:p.temperature>p.temperatureLimit?
+    "The entered temperature exceeds its selected upper limit. Review operating load, cooling conditions, lubrication, and measurement accuracy.":
+    "The entered temperature does not exceed its selected upper limit."
+  },
+  {
+   name:"Vibration",
+   value:p.vibration,
+   unit:"mm/s RMS",
+   limit:p.vibrationLimit,
+   flagged:p.vibration>p.vibrationLimit,
+   explanation:p.vibration>p.vibrationLimit?
+    "The entered vibration exceeds its selected upper limit. Qualified personnel may investigate mounting, alignment, imbalance, bearings, and measurement conditions.":
+    "The entered vibration does not exceed its selected upper limit."
+  },
+  {
+   name:"Pressure",
+   value:p.pressure,
+   unit:"bar",
+   limit:`${p.pressureMin}–${p.pressureMax}`,
+   flagged:p.pressure<p.pressureMin||p.pressure>p.pressureMax,
+   explanation:p.pressure<p.pressureMin?
+    "The entered pressure is below the selected range. Verify instrumentation, process conditions, flow restrictions, and the correct measurement point.":
+    p.pressure>p.pressureMax?
+    "The entered pressure is above the selected range. Verify instrumentation and follow applicable site pressure-safety procedures.":
+    "The entered pressure falls within its selected range."
+  },
+  {
+   name:"Motor Current",
+   value:p.current,
+   unit:"A",
+   limit:p.currentLimit,
+   flagged:p.current>p.currentLimit,
+   explanation:p.current>p.currentLimit?
+    "The entered current exceeds its selected upper limit. Qualified personnel may review load, supply conditions, motor ratings, and measurement accuracy.":
+    "The entered current does not exceed its selected upper limit."
+  }
+ ];
+
+ const flagged=findings.filter(item=>item.flagged).length;
+
+ return {
+  id:crypto.randomUUID(),
+  timestamp:new Date().toISOString(),
+  inputs:p,
+  findings,
+  flagged,
+  status:flagged===0?"No Threshold Flags":
+   flagged===1?"One Threshold Flag":"Multiple Threshold Flags"
+ };
+}
+
+function renderFindings(){
+ const container=$("findingsContainer");
+ container.replaceChildren();
+
+ if(!latest)return;
+
+ const flagged=latest.flagged;
+ const badge=$("resultBadge");
+
+ badge.className="status-badge "+
+  (flagged===0?"success":flagged===1?"warning":"danger");
+ badge.textContent=latest.status;
+
+ $("conditionTitle").textContent=latest.status;
+ $("conditionDetail").textContent=flagged===0?
+  "All four entered measurements satisfy their illustrative screening limits. This is not a safety clearance.":
+  `${flagged} of 4 entered measurements fall outside the selected screening limits. Further qualified review may be warranted.`;
+
+ $("assetKpi").textContent=latest.inputs.assetName;
+ $("flagsKpi").textContent=flagged;
+
+ latest.findings.forEach(finding=>{
+  const card=document.createElement("div");
+  card.className="finding";
+
+  const top=document.createElement("div");
+  top.className="finding-top";
+
+  const title=document.createElement("h4");
+  title.textContent=finding.name;
+
+  const status=document.createElement("span");
+  status.className="status-badge "+
+   (finding.flagged?"warning":"success");
+  status.textContent=finding.flagged?
+   "Outside Limit":"Within Limit";
+
+  const description=document.createElement("p");
+  description.textContent=
+   `Reading: ${finding.value} ${finding.unit}. `+
+   `Selected limit: ${finding.limit} ${finding.unit}. `+
+   finding.explanation;
+
+  top.append(title,status);
+  card.append(top,description);
+  container.append(card);
+ });
+}
+
+function renderChart(){
+ if(!latest)return;
+ const p=latest.inputs;
+
+ const labels=["Temperature","Vibration","Pressure","Current"];
+ const values=[
+  p.temperature/p.temperatureLimit*100,
+  p.vibration/p.vibrationLimit*100,
+  p.pressure/p.pressureMax*100,
+  p.current/p.currentLimit*100
+ ];
+
+ const data={
+  labels,
+  datasets:[
+   {
+    label:"Reading / Upper Limit (%)",
+    data:values,
+    backgroundColor:values.map(value=>
+     value>100?"#ed6175":"#6855eb"),
+    borderRadius:7,
+    maxBarThickness:48
+   }
+  ]
+ };
+
+ if(measurementChart){
+  measurementChart.data=data;
+  measurementChart.update();
+ }else{
+  measurementChart=new Chart($("measurementChart"),{
+   type:"bar",
+   data,
+   options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+     legend:{display:false},
+     tooltip:{
+      callbacks:{
+       label:context=>context.parsed.y.toFixed(1)+"% of upper limit"
+      }
+     }
+    },
+    scales:{
+     y:{
+      beginAtZero:true,
+      ticks:{callback:value=>value+"%"},
+      grid:{color:"#edf0f6"}
+     },
+     x:{grid:{display:false}}
+    }
+   }
+  });
+ }
+}
+
+function runScreening(){
+ try{
+  latest=screen(readInputs());
+  renderFindings();
+  renderChart();
+  return true;
+ }catch(error){
+  notify(error.message);
+  return false;
+ }
+}
+
+$("diagnosticForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ if(runScreening()){
+  notify("Diagnostic screening completed.");
+  appendChat("assistant",
+   "The latest measurements have been screened. I can explain the flagged values and suggest areas for qualified inspection.");
+ }
+});
+
+$("resetButton").addEventListener("click",()=>{
+ FIELD_IDS.forEach(id=>{$(id).value=defaults[id]});
+ runScreening();
+ notify("Illustrative measurements restored.");
+});
+
+function renderHistory(){
+ const tbody=$("historyTable");
+ tbody.replaceChildren();
+
+ $("historyCount").textContent=records.length+" Records";
+ $("savedKpi").textContent=records.length;
+
+ if(!records.length){
+  const row=document.createElement("tr");
+  const cell=document.createElement("td");
+  cell.colSpan=5;
+  cell.className="text-center text-secondary py-4";
+  cell.textContent="No assessments saved in this session.";
+  row.append(cell);
+  tbody.append(row);
+  return;
+ }
+
+ records.forEach(record=>{
+  const tr=document.createElement("tr");
+
+  const values=[
+   new Date(record.timestamp).toLocaleString(),
+   record.inputs.assetName,
+   String(record.flagged),
+   record.status
+  ];
+
+  values.forEach(value=>{
+   const td=document.createElement("td");
+   td.textContent=value;
+   tr.append(td);
+  });
+
+  const action=document.createElement("td");
+  const button=document.createElement("button");
+  button.className="btn-outline-custom";
+  button.textContent="Load";
+  button.addEventListener("click",()=>{
+   FIELD_IDS.forEach(id=>{
+    if(record.inputs[id]!==undefined){
+     $(id).value=record.inputs[id];
+    }
+   });
+   latest=record;
+   renderFindings();
+   renderChart();
+   notify("Saved assessment loaded.");
+  });
+  action.append(button);
+  tr.append(action);
+  tbody.append(tr);
+ });
+}
+
+$("saveAssessment").addEventListener("click",()=>{
+ if(!runScreening())return;
+
+ records.unshift(structuredClone(latest));
+ if(records.length>50)records.pop();
+
+ renderHistory();
+ notify("Assessment saved for this browser session.");
+});
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportReportButton").addEventListener("click",()=>{
+ if(!latest)return;
+
+ const report={
+  application:"INDUSTRA AI",
+  module:"Diagnostics Copilot",
+  generatedAt:new Date().toISOString(),
+  source:"manual measurements and illustrative limits",
+  realTimeSensorConnection:false,
+  trainedMLInference:false,
+  safetyCertification:false,
+  latestAssessment:latest,
+  savedAssessments:records
+ };
+
+ downloadFile(
+  "industra-diagnostic-report.json",
+  JSON.stringify(report,null,2),
+  "application/json"
+ );
+ notify("Diagnostic report exported.");
+});
+
+$("exportCsvButton").addEventListener("click",()=>{
+ const all=records.length?records:latest?[latest]:[];
+
+ const escapeCsv=value=>
+  '"'+String(value??"").replace(/"/g,'""')+'"';
+
+ const rows=[
+  ["Timestamp","Asset","Temperature_C","Vibration_mm_s",
+   "Pressure_bar","Current_A","Flags","Screening"],
+  ...all.map(record=>[
+   record.timestamp,
+   record.inputs.assetName,
+   record.inputs.temperature,
+   record.inputs.vibration,
+   record.inputs.pressure,
+   record.inputs.current,
+   record.flagged,
+   record.status
+  ])
+ ];
+
+ const csv=rows.map(row=>row.map(escapeCsv).join(",")).join("\r\n");
+ downloadFile(
+  "industra-diagnostic-assessments.csv",
+  csv,
+  "text/csv;charset=utf-8"
+ );
+ notify("Assessment CSV exported.");
+});
+
+function appendChat(role,message){
+ const container=$("chatMessages");
+ const wrapper=document.createElement("div");
+ wrapper.className="chat-message "+role;
+
+ const meta=document.createElement("div");
+ meta.className="chat-meta";
+ meta.textContent=role==="user"?
+  "You":"Diagnostics Copilot · Rule-Based Explanation";
+
+ const bubble=document.createElement("div");
+ bubble.className="chat-bubble";
+ bubble.textContent=message;
+
+ wrapper.append(meta,bubble);
+ container.append(wrapper);
+ container.scrollTop=container.scrollHeight;
+}
+
+function explain(question){
+ if(!latest)return "Run a screening assessment first.";
+
+ const q=question.toLowerCase();
+ const flagged=latest.findings.filter(f=>f.flagged);
+
+ if(/limitation|safe|accuracy|model|confidence/.test(q)){
+  return "This tool checks manually entered values against manually selected limits. It does not diagnose faults, estimate validated failure probabilities, monitor live sensors, or certify safe operation. Manufacturer specifications, operating context, measurement quality, and qualified inspection remain necessary.";
+ }
+
+ if(/next|check|inspect|action|maintenance|recommend/.test(q)){
+  return flagged.length?
+   "Suggested review areas based on the flagged readings:\n\n"+
+   flagged.map(f=>`• ${f.name}: ${f.explanation}`).join("\n\n")+
+   "\n\nFollow approved site procedures and involve qualified maintenance personnel.":
+   "No entered value exceeds its screening limits. Consider verifying measurement accuracy, checking historical trends, reviewing maintenance records, and inspecting any reported symptoms. A passing screening is not proof of safe operation.";
+ }
+
+ if(/temperature|heat|thermal/.test(q)){
+  return latest.findings[0].explanation;
+ }
+ if(/vibration|bearing|alignment/.test(q)){
+  return latest.findings[1].explanation;
+ }
+ if(/pressure|flow/.test(q)){
+  return latest.findings[2].explanation;
+ }
+ if(/current|electrical|motor|load/.test(q)){
+  return latest.findings[3].explanation;
+ }
+
+ return `Diagnostic screening for ${latest.inputs.assetName}:
+
+Result: ${latest.status}.
+Flagged measurements: ${latest.flagged} of 4.
+
+${latest.findings.map(f=>
+  `${f.name}: ${f.value} ${f.unit} — ${f.flagged?"Outside limit":"Within limit"}`
+ ).join("\n")}
+
+These are threshold comparisons, not confirmed fault diagnoses.`;
+}
+
+function sendChat(){
+ const input=$("chatInput");
+ const question=input.value.trim();
+ if(!question)return;
+
+ appendChat("user",question);
+ input.value="";
+ appendChat("assistant",explain(question));
+}
+
+$("sendChat").addEventListener("click",sendChat);
+
+$("chatInput").addEventListener("keydown",event=>{
+ if(event.key==="Enter"&&!event.shiftKey){
+  event.preventDefault();
+  sendChat();
+ }
+});
+
+document.querySelectorAll("[data-question]").forEach(button=>{
+ button.addEventListener("click",()=>{
+  const question=button.dataset.question;
+  appendChat("user",question);
+  appendChat("assistant",explain(question));
+ });
+});
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+runScreening();
+renderHistory();
+
+appendChat(
+ "assistant",
+ "Welcome to the Equipment Diagnostics Copilot.\n\nEnter equipment measurements, run the threshold screening, and ask me to explain any flagged values.\n\nThis local demonstration uses transparent rules. It does not connect to industrial sensors or run a trained fault-diagnosis model."
+);
+</script>
+</body>
+</html>

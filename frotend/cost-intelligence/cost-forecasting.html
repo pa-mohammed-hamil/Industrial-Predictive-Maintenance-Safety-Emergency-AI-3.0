@@ -1,0 +1,1362 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cost Forecasting | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / cost-intelligence</p><h1 id="page-title">Cost Forecasting</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Cost Forecasting workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cost Forecasting | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --white:#fff;--text:#202640;--muted:#8992aa;
+ --border:#e8eaf3;--green:#18b58c;--orange:#f4a443;
+ --red:#ed6175;--blue:#438df5
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px Arial,Helvetica,sans-serif
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{background:var(--purple);color:white}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;
+ box-shadow:0 5px 20px #10152d05
+}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);
+ gap:17px
+}
+.flex{
+ display:flex;align-items:center;
+ justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;
+ color:#69738e;border-radius:9px;padding:10px 13px;
+ font-size:11px;font-weight:700
+}
+.btn.primary{background:var(--purple);border-color:var(--purple);color:white}
+.btn.danger{background:#ffedf0;border-color:#ffedf0;color:#d84b63}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{
+ display:block;color:#69738e;font-size:11px;
+ font-weight:700;margin-bottom:7px
+}
+.badge{
+ display:inline-block;padding:7px 10px;
+ border-radius:8px;font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:12px
+}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);
+ text-align:left;padding:13px;white-space:nowrap
+}
+td{padding:13px;border-bottom:1px solid #eef0f6;white-space:nowrap}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);
+ border-radius:11px;padding:14px;margin-bottom:12px
+}
+.record p{font-size:11px;color:#69738e;line-height:1.8}
+.chart{width:100%;height:290px;display:block}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric{
+ padding:14px;background:#f8f9fd;
+ border:1px solid var(--border);border-radius:11px
+}
+.metric strong{display:block;font-size:20px;margin-top:9px}
+.progress{
+ height:10px;background:#eef0f8;
+ border-radius:10px;overflow:hidden;margin-top:9px
+}
+.progress-fill{height:100%;background:var(--purple);border-radius:10px}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:11px;
+ padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;
+ background:var(--navy);color:white;
+ padding:13px 17px;border-radius:10px;display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.metric-grid{grid-template-columns:1fr}
+ .hero h1{font-size:21px}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">MAINTENANCE INTELLIGENCE</div>
+ <a class="nav-link" href="predictive-maintenance.html">◈ Predictive Maintenance</a>
+ <a class="nav-link" href="maintenance-planning.html">◆ Maintenance Planning</a>
+ <a class="nav-link" href="failure-prediction.html">◇ Failure Prediction</a>
+ <a class="nav-link" href="downtime-analysis.html">▦ Downtime Analysis</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="avoided-cost.html">◆ Avoided Cost</a>
+ <a class="nav-link active" href="cost-forecasting.html">▦ Cost Forecasting</a>
+ <a class="nav-link" href="cost-analytics.html">◇ Cost Analytics</a>
+ <a class="nav-link" href="repair-cost.html">◉ Repair Cost</a>
+ <a class="nav-link" href="replacement-cost.html">◆ Replacement Cost</a>
+ <a class="nav-link" href="downtime-cost.html">▦ Downtime Cost</a>
+ <a class="nav-link" href="roi-analysis.html">◇ ROI Analysis</a>
+
+ <div class="nav-title">OPERATIONS</div>
+ <a class="nav-link" href="asset-management.html">◆ Asset Management</a>
+ <a class="nav-link" href="production-monitoring.html">▦ Production Monitoring</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Cost Intelligence / Financial Forecasting</div>
+   <strong>Maintenance Cost Forecasting</strong>
+  </div>
+ </div>
+ <span class="badge purple">SCENARIO FORECAST · DEMO</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / MAINTENANCE FINANCIAL FORECASTING
+ </div>
+ <h1>Industrial Maintenance Cost Forecasting</h1>
+ <p>
+  Forecast maintenance spending, analyze equipment cost exposure,
+  compare predictive and reactive maintenance scenarios,
+  estimate future budget requirements and evaluate
+  financial sensitivity to inflation and equipment failure risk.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Maintenance Cost Forecast Overview</h3>
+  <div class="muted" id="summaryText">
+   Loading synthetic maintenance cost scenarios...
+  </div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="forecastBtn">Generate Forecast</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn danger" id="resetBtn">Reset Scenario</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Total Forecast Cost</div>
+  <div class="stat-value" id="totalKpi">₹0</div>
+  <div class="stat-note">Projected maintenance spending</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Average Monthly Cost</div>
+  <div class="stat-value" id="monthlyKpi">₹0</div>
+  <div class="stat-note">Average across forecast months</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Forecast Budget Variance</div>
+  <div class="stat-value" id="varianceKpi">0%</div>
+  <div class="stat-note">Forecast versus selected-period budget</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Expected Scenario Savings</div>
+  <div class="stat-value" id="savingsKpi">₹0</div>
+  <div class="stat-note">Reactive minus predictive cost</div>
+ </div>
+</section>
+
+<section class="panel mb">
+ <h3>Forecast Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="equipmentFilter">Equipment</label>
+   <select class="input" id="equipmentFilter">
+    <option value="all">All Equipment</option>
+   </select>
+  </div>
+  <div>
+   <label for="horizonFilter">Forecast Horizon</label>
+   <select class="input" id="horizonFilter">
+    <option value="3">3 Months</option>
+    <option value="6">6 Months</option>
+    <option value="12" selected>12 Months</option>
+    <option value="24">24 Months</option>
+   </select>
+  </div>
+  <div>
+   <label for="strategyFilter">Maintenance Strategy</label>
+   <select class="input" id="strategyFilter">
+    <option value="predictive" selected>Predictive Maintenance</option>
+    <option value="reactive">Reactive Maintenance</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Equipment Maintenance Cost Forecast</h3>
+    <p class="muted">
+     Expected spending by asset over the selected forecast horizon
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 assets</span>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Equipment</th>
+      <th>Plant</th>
+      <th>Risk</th>
+      <th>Preventive Cost</th>
+      <th>Expected Failure Cost</th>
+      <th>Forecast Total</th>
+      <th>Budget</th>
+      <th>Variance</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="equipmentTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Equipment Forecast Inspector</h3>
+   <span class="badge purple">ASSET FINANCIALS</span>
+  </div>
+  <div id="equipmentDetails"></div>
+
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Forecast Total</span>
+    <strong id="assetForecastMetric">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Expected Failure Cost</span>
+    <strong id="failureMetric">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Budget Variance</span>
+    <strong id="budgetMetric">0%</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Scenario Savings</span>
+    <strong id="assetSavingsMetric">₹0</strong>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Monthly Maintenance Cost Forecast</h3>
+   <span class="badge purple">TIME-SERIES</span>
+  </div>
+  <p class="muted">
+   Monthly projected cost with illustrative sensitivity bounds
+  </p>
+  <svg class="chart" id="forecastChart"
+   viewBox="0 0 640 290"
+   role="img" aria-label="Monthly maintenance cost forecast"></svg>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Predictive vs Reactive Maintenance</h3>
+   <span class="badge blue">STRATEGY COMPARISON</span>
+  </div>
+  <p class="muted">
+   Expected total spending under alternative maintenance strategies
+  </p>
+  <svg class="chart" id="strategyChart"
+   viewBox="0 0 640 290"
+   role="img" aria-label="Predictive versus reactive maintenance cost"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Forecast Scenario Assumptions</h3>
+
+  <div style="margin-bottom:15px">
+   <label for="inflationInput">Annual Cost Inflation (%)</label>
+   <input class="input" id="inflationInput"
+    type="number" min="0" max="30" step=".5" value="5">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="failureMultiplier">Failure Risk Multiplier</label>
+   <input class="input" id="failureMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="effectivenessInput">
+    Predictive Maintenance Risk Reduction (%)
+   </label>
+   <input class="input" id="effectivenessInput"
+    type="number" min="0" max="100" step="1" value="60">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="budgetMultiplier">Budget Adjustment Multiplier</label>
+   <input class="input" id="budgetMultiplier"
+    type="number" min=".5" max="2" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="uncertaintyInput">
+    Illustrative Forecast Sensitivity Band (%)
+   </label>
+   <input class="input" id="uncertaintyInput"
+    type="number" min="0" max="50" step="1" value="15">
+  </div>
+
+  <button class="btn primary" id="saveScenarioBtn">
+   Apply Forecast Assumptions
+  </button>
+
+  <p class="muted">
+   The sensitivity band is not a statistically calibrated confidence interval.
+  </p>
+ </div>
+
+ <div class="panel">
+  <h3>Forecast Cost Breakdown</h3>
+  <p class="muted">
+   Expected spending across maintenance cost categories
+  </p>
+  <div id="costBreakdown"></div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Plant Cost Forecast Summary</h3>
+  <p class="muted">
+   Forecast maintenance spending and budget variance by plant
+  </p>
+  <div id="plantSummary"></div>
+ </div>
+
+ <div class="panel">
+  <h3>Cost Forecast Intelligence Insights</h3>
+  <p class="muted">
+   Descriptive findings based on the active synthetic financial scenario
+  </p>
+  <div id="insightList"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Forecasting notice:</strong>
+ This dashboard uses synthetic maintenance cost assumptions,
+ illustrative annual failure probabilities and deterministic
+ expected-value calculations. Forecast bands are scenario
+ sensitivity ranges, not validated statistical confidence intervals.
+ No trained forecasting model or production finance data is used.
+ Costs are modeled as non-overlapping categories, and annual
+ failure risk is approximated with a constant hazard rate.
+ Production use requires verified maintenance records,
+ cost accounting, model backtesting, calibration,
+ uncertainty analysis and finance review.
+</div>
+
+</main>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const SVG_NS="http://www.w3.org/2000/svg";
+const STORAGE_KEY="industra-cost-forecasting-v1";
+
+const ASSETS=[
+ {
+  id:"MTR-001",name:"Main Drive Motor",plant:"Plant A",
+  risk:"High",annualProbability:.42,
+  monthlyPreventive:18000,repairCost:280000,
+  downtimeCost:650000,annualBudget:850000
+ },
+ {
+  id:"CMP-001",name:"Air Compressor",plant:"Plant A",
+  risk:"Medium",annualProbability:.28,
+  monthlyPreventive:14000,repairCost:210000,
+  downtimeCost:420000,annualBudget:620000
+ },
+ {
+  id:"FAN-001",name:"Cooling Fan",plant:"Plant A",
+  risk:"Low",annualProbability:.12,
+  monthlyPreventive:6500,repairCost:65000,
+  downtimeCost:120000,annualBudget:190000
+ },
+ {
+  id:"GEN-001",name:"Power Generator",plant:"Plant B",
+  risk:"High",annualProbability:.37,
+  monthlyPreventive:26000,repairCost:480000,
+  downtimeCost:1150000,annualBudget:1200000
+ },
+ {
+  id:"PMP-001",name:"Cooling Pump",plant:"Plant B",
+  risk:"Medium",annualProbability:.24,
+  monthlyPreventive:11000,repairCost:135000,
+  downtimeCost:260000,annualBudget:420000
+ },
+ {
+  id:"GBX-001",name:"Industrial Gearbox",plant:"Plant B",
+  risk:"High",annualProbability:.45,
+  monthlyPreventive:21000,repairCost:360000,
+  downtimeCost:840000,annualBudget:990000
+ },
+ {
+  id:"HYD-001",name:"Hydraulic Unit",plant:"Plant C",
+  risk:"Medium",annualProbability:.26,
+  monthlyPreventive:13000,repairCost:185000,
+  downtimeCost:360000,annualBudget:510000
+ },
+ {
+  id:"PMP-002",name:"Process Pump",plant:"Plant C",
+  risk:"High",annualProbability:.39,
+  monthlyPreventive:17000,repairCost:260000,
+  downtimeCost:560000,annualBudget:750000
+ },
+ {
+  id:"CNV-001",name:"Conveyor Drive",plant:"Plant C",
+  risk:"Low",annualProbability:.15,
+  monthlyPreventive:8000,repairCost:95000,
+  downtimeCost:175000,annualBudget:260000
+ }
+];
+
+const DEFAULTS={
+ inflation:5,
+ failureMultiplier:1,
+ effectiveness:60,
+ budgetMultiplier:1,
+ uncertainty:15
+};
+
+let scenario={...DEFAULTS};
+let results=[];
+let selectedId=ASSETS[0].id;
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(value){
+ return currency.format(value);
+}
+
+function compactMoney(value){
+ const sign=value<0?"-":"";
+ const amount=Math.abs(value);
+
+ if(amount>=10000000)
+  return sign+"₹"+(amount/10000000).toFixed(2)+"Cr";
+
+ if(amount>=100000)
+  return sign+"₹"+(amount/100000).toFixed(2)+"L";
+
+ if(amount>=1000)
+  return sign+"₹"+(amount/1000).toFixed(1)+"K";
+
+ return money(value);
+}
+
+function percent(value){
+ return value.toFixed(1)+"%";
+}
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(SVG_NS,tag);
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>$("toast").style.display="none",2500);
+}
+
+function sum(items,key){
+ return items.reduce((total,item)=>total+item[key],0);
+}
+
+function clamp(value,min,max){
+ return Math.max(min,Math.min(max,value));
+}
+
+function monthlyHazard(asset){
+ const adjustedAnnualHazard=
+  -Math.log(1-asset.annualProbability)*
+  scenario.failureMultiplier;
+
+ return adjustedAnnualHazard/12;
+}
+
+function calculateAsset(asset,strategy){
+ const horizon=Number($("horizonFilter").value);
+ const annualInflation=scenario.inflation/100;
+
+ const monthlyHazardRate=monthlyHazard(asset);
+
+ const riskFactor=strategy==="predictive"?
+  1-scenario.effectiveness/100:1;
+
+ let preventive=0;
+ let failure=0;
+ let repair=0;
+ let downtime=0;
+ let budget=0;
+
+ const monthly=[];
+
+ for(let month=1;month<=horizon;month++){
+  const inflationFactor=Math.pow(
+   1+annualInflation,(month-1)/12
+  );
+
+  const maintenanceBase=
+   strategy==="predictive"?
+   asset.monthlyPreventive:
+   asset.monthlyPreventive*.3;
+
+  const preventiveCost=
+   maintenanceBase*inflationFactor;
+
+  // Approximate one-event failure process over the horizon.
+  // Probability mass for the event occurring in this month.
+  const survivalBefore=Math.exp(
+   -monthlyHazardRate*riskFactor*(month-1)
+  );
+
+  const eventProbability=survivalBefore*
+   (1-Math.exp(-monthlyHazardRate*riskFactor));
+
+  const repairCost=
+   eventProbability*asset.repairCost*inflationFactor;
+
+  const downtimeCost=
+   eventProbability*asset.downtimeCost*inflationFactor;
+
+  const total=
+   preventiveCost+repairCost+downtimeCost;
+
+  preventive+=preventiveCost;
+  repair+=repairCost;
+  downtime+=downtimeCost;
+  failure+=repairCost+downtimeCost;
+
+  budget+=asset.annualBudget/12*
+   scenario.budgetMultiplier*inflationFactor;
+
+  monthly.push({
+   month,
+   preventive:preventiveCost,
+   repair:repairCost,
+   downtime:downtimeCost,
+   failure:repairCost+downtimeCost,
+   total
+  });
+ }
+
+ const total=preventive+failure;
+ const variance=budget>0?
+  (total-budget)/budget*100:0;
+
+ return{
+  ...asset,
+  strategy,
+  horizon,
+  preventive,
+  repair,
+  downtime,
+  failure,
+  total,
+  budget,
+  variance,
+  monthly
+ };
+}
+
+function calculateAll(){
+ const strategy=$("strategyFilter").value;
+
+ results=ASSETS.map(asset=>{
+  const predictive=calculateAsset(asset,"predictive");
+  const reactive=calculateAsset(asset,"reactive");
+
+  const active=strategy==="predictive"?
+   predictive:reactive;
+
+  return{
+   ...active,
+   predictiveTotal:predictive.total,
+   reactiveTotal:reactive.total,
+   scenarioSavings:reactive.total-predictive.total
+  };
+ });
+
+ render();
+}
+
+function filtered(){
+ const plant=$("plantFilter").value;
+ const equipment=$("equipmentFilter").value;
+
+ return results.filter(item=>
+  (plant==="all"||item.plant===plant)&&
+  (equipment==="all"||item.id===equipment)
+ );
+}
+
+function selected(){
+ return filtered().find(item=>item.id===selectedId)||
+  filtered()[0]||null;
+}
+
+function populateEquipment(){
+ const select=$("equipmentFilter");
+ select.replaceChildren();
+
+ const all=el("option","","All Equipment");
+ all.value="all";
+ select.append(all);
+
+ ASSETS.forEach(asset=>{
+  const option=el(
+   "option","",asset.name+" · "+asset.id
+  );
+  option.value=asset.id;
+  select.append(option);
+ });
+}
+
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(
+  el("span","",label),
+  el("strong","",value)
+ );
+ return row;
+}
+
+function badge(risk){
+ const cls=risk==="High"?"red":
+  risk==="Medium"?"orange":"green";
+
+ return el("span","badge "+cls,risk);
+}
+
+function renderKpis(){
+ const list=filtered();
+ const total=sum(list,"total");
+ const budget=sum(list,"budget");
+ const months=Number($("horizonFilter").value);
+
+ const savings=sum(list,"scenarioSavings");
+
+ const variance=budget>0?
+  (total-budget)/budget*100:0;
+
+ $("totalKpi").textContent=compactMoney(total);
+ $("monthlyKpi").textContent=
+  compactMoney(total/months);
+
+ $("varianceKpi").textContent=percent(variance);
+ $("savingsKpi").textContent=compactMoney(savings);
+
+ $("summaryText").textContent=
+  months+"-month forecast · "+
+  list.length+" assets · "+
+  $("strategyFilter").selectedOptions[0].textContent+
+  " · Synthetic expected-value model";
+}
+
+function renderTable(){
+ const body=$("equipmentTable");
+ body.replaceChildren();
+
+ const list=filtered();
+ $("visibleCount").textContent=list.length+" assets";
+
+ list.forEach(item=>{
+  const row=el("tr");
+
+  [
+   item.name+" · "+item.id,
+   item.plant
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const riskCell=el("td");
+  riskCell.append(badge(item.risk));
+  row.append(riskCell);
+
+  [
+   money(item.preventive),
+   money(item.failure),
+   money(item.total),
+   money(item.budget),
+   percent(item.variance)
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+
+  button.onclick=()=>{
+   selectedId=item.id;
+   renderInspector();
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el(
+   "td","","No equipment matches the active filters."
+  );
+  cell.colSpan=9;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const item=selected();
+ const box=$("equipmentDetails");
+ box.replaceChildren();
+
+ if(!item){
+  box.append(el("p","muted","No equipment selected."));
+  [
+   "assetForecastMetric","failureMetric",
+   "budgetMetric","assetSavingsMetric"
+  ].forEach(id=>$(id).textContent="--");
+  return;
+ }
+
+ [
+  ["Equipment",item.name],
+  ["Equipment ID",item.id],
+  ["Plant",item.plant],
+  ["Failure Risk",item.risk],
+  ["Annual Baseline Failure Probability",
+   percent(item.annualProbability*100)],
+  ["Forecast Horizon",item.horizon+" months"],
+  ["Maintenance Strategy",item.strategy],
+  ["Planned Maintenance",money(item.preventive)],
+  ["Expected Repair Cost",money(item.repair)],
+  ["Expected Downtime Cost",money(item.downtime)],
+  ["Forecast Budget",money(item.budget)],
+  ["Predictive Scenario",money(item.predictiveTotal)],
+  ["Reactive Scenario",money(item.reactiveTotal)]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+
+ $("assetForecastMetric").textContent=
+  compactMoney(item.total);
+
+ $("failureMetric").textContent=
+  compactMoney(item.failure);
+
+ $("budgetMetric").textContent=
+  percent(item.variance);
+
+ $("assetSavingsMetric").textContent=
+  compactMoney(item.scenarioSavings);
+}
+
+function monthlyTotals(){
+ const list=filtered();
+ const horizon=Number($("horizonFilter").value);
+
+ return Array.from({length:horizon},(_,index)=>{
+  const value=list.reduce(
+   (total,item)=>total+item.monthly[index].total,0
+  );
+
+  const band=scenario.uncertainty/100;
+
+  return{
+   month:index+1,
+   value,
+   lower:Math.max(0,value*(1-band)),
+   upper:value*(1+band)
+  };
+ });
+}
+
+function drawForecastChart(){
+ const svg=$("forecastChart");
+ svg.replaceChildren();
+
+ const data=monthlyTotals();
+
+ const left=50,right=615,top=25,bottom=235;
+
+ const max=Math.max(
+  ...data.map(item=>item.upper),1
+ )*1.1;
+
+ for(let i=0;i<=4;i++){
+  const y=bottom-(bottom-top)*i/4;
+
+  svg.append(svgEl("line",{
+   x1:left,y1:y,x2:right,y2:y,
+   stroke:"#e9ebf4"
+  }));
+
+  svg.append(svgEl("text",{
+   x:4,y:y+4,fill:"#8992aa","font-size":"10"
+  },compactMoney(max*i/4)));
+ }
+
+ const x=index=>left+(right-left)*
+  (data.length===1?0:index/(data.length-1));
+
+ const y=value=>bottom-value/max*(bottom-top);
+
+ const upper=data.map((item,index)=>
+  x(index)+","+y(item.upper)
+ );
+
+ const lower=[...data].reverse().map((item,index)=>
+  x(data.length-1-index)+","+y(item.lower)
+ );
+
+ svg.append(svgEl("polygon",{
+  points:[...upper,...lower].join(" "),
+  fill:"#6855eb",
+  "fill-opacity":".12"
+ }));
+
+ const points=data.map((item,index)=>
+  x(index)+","+y(item.value)
+ ).join(" ");
+
+ svg.append(svgEl("polyline",{
+  points,
+  fill:"none",
+  stroke:"#6855eb",
+  "stroke-width":"3",
+  "stroke-linejoin":"round"
+ }));
+
+ data.forEach((item,index)=>{
+  if(data.length>12&&index%2!==0)return;
+
+  svg.append(svgEl("text",{
+   x:x(index)-9,y:257,
+   fill:"#8992aa","font-size":"10"
+  },"M"+item.month));
+ });
+}
+
+function drawStrategyChart(){
+ const svg=$("strategyChart");
+ svg.replaceChildren();
+
+ const list=filtered();
+
+ const predictive=sum(list,"predictiveTotal");
+ const reactive=sum(list,"reactiveTotal");
+
+ const max=Math.max(predictive,reactive,1);
+
+ [
+  {
+   name:"Predictive",
+   value:predictive,
+   color:"#6855eb"
+  },
+  {
+   name:"Reactive",
+   value:reactive,
+   color:"#ed6175"
+  }
+ ].forEach((item,index)=>{
+  const y=65+index*95;
+  const width=item.value/max*350;
+
+  svg.append(svgEl("text",{
+   x:15,y:y+18,fill:"#69738e","font-size":"13"
+  },item.name));
+
+  svg.append(svgEl("rect",{
+   x:120,y,width,height:34,rx:7,
+   fill:item.color
+  }));
+
+  svg.append(svgEl("text",{
+   x:130+width,y:y+23,
+   fill:"#202640","font-size":"12"
+  },compactMoney(item.value)));
+ });
+}
+
+function renderBreakdown(){
+ const box=$("costBreakdown");
+ box.replaceChildren();
+
+ const list=filtered();
+
+ const categories=[
+  ["Planned Maintenance",sum(list,"preventive")],
+  ["Expected Repairs",sum(list,"repair")],
+  ["Expected Downtime",sum(list,"downtime")]
+ ];
+
+ const total=categories.reduce(
+  (acc,item)=>acc+item[1],0
+ );
+
+ categories.forEach(([name,value])=>{
+  const card=el("div","record");
+
+  const heading=el("div","flex");
+  heading.append(
+   el("strong","",name),
+   el("strong","",money(value))
+  );
+
+  const track=el("div","progress");
+  const fill=el("div","progress-fill");
+
+  fill.style.width=total?
+   (value/total*100)+"%":"0%";
+
+  track.append(fill);
+  card.append(heading,track);
+
+  box.append(card);
+ });
+}
+
+function renderPlants(){
+ const box=$("plantSummary");
+ box.replaceChildren();
+
+ ["Plant A","Plant B","Plant C"].forEach(plant=>{
+  const list=filtered().filter(
+   item=>item.plant===plant
+  );
+
+  const total=sum(list,"total");
+  const budget=sum(list,"budget");
+
+  const variance=budget>0?
+   (total-budget)/budget*100:0;
+
+  const card=el("div","record");
+
+  card.append(
+   el("h4","",plant),
+   el("p","",
+    list.length+" assets · "+
+    compactMoney(total)+" forecast · "+
+    percent(variance)+" budget variance")
+  );
+
+  box.append(card);
+ });
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const list=filtered();
+
+ const highest=[...list].sort(
+  (a,b)=>b.total-a.total
+ )[0];
+
+ const overBudget=list.filter(
+  item=>item.variance>0
+ ).length;
+
+ const savings=sum(list,"scenarioSavings");
+
+ const insights=[
+  [
+   "Highest Forecast Cost",
+   highest?
+    highest.name+" has the highest modeled maintenance cost at "+
+    money(highest.total)+".":
+    "No assets match the selected filters."
+  ],
+  [
+   "Budget Exposure",
+   overBudget+" assets exceed their modeled maintenance budgets."
+  ],
+  [
+   "Strategy Comparison",
+   "Predictive maintenance produces "+
+   money(savings)+" in modeled savings versus the reactive scenario. Negative values indicate higher predictive spending."
+  ],
+  [
+   "Forecast Sensitivity",
+   "The monthly chart displays a ±"+
+   scenario.uncertainty+
+   "% illustrative sensitivity band around point estimates."
+  ],
+  [
+   "Model Limitations",
+   "This deterministic model does not learn from historical data, estimate statistical confidence or capture multiple failures per asset within a forecast horizon."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+  card.append(
+   el("h4","",title),
+   el("p","",description)
+  );
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawForecastChart();
+ drawStrategyChart();
+ renderBreakdown();
+ renderPlants();
+ renderInsights();
+}
+
+function validateScenario(){
+ const inflation=Number($("inflationInput").value);
+ const failureMultiplier=Number($("failureMultiplier").value);
+ const effectiveness=Number($("effectivenessInput").value);
+ const budgetMultiplier=Number($("budgetMultiplier").value);
+ const uncertainty=Number($("uncertaintyInput").value);
+
+ if(
+  !Number.isFinite(inflation)||inflation<0||inflation>30||
+  !Number.isFinite(failureMultiplier)||
+  failureMultiplier<.25||failureMultiplier>3||
+  !Number.isFinite(effectiveness)||
+  effectiveness<0||effectiveness>100||
+  !Number.isFinite(budgetMultiplier)||
+  budgetMultiplier<.5||budgetMultiplier>2||
+  !Number.isFinite(uncertainty)||
+  uncertainty<0||uncertainty>50
+ ){
+  notify("Enter valid forecast scenario assumptions.");
+  return false;
+ }
+
+ scenario={
+  inflation,
+  failureMultiplier,
+  effectiveness,
+  budgetMultiplier,
+  uncertainty
+ };
+
+ return true;
+}
+
+function syncInputs(){
+ $("inflationInput").value=scenario.inflation;
+ $("failureMultiplier").value=scenario.failureMultiplier;
+ $("effectivenessInput").value=scenario.effectiveness;
+ $("budgetMultiplier").value=scenario.budgetMultiplier;
+ $("uncertaintyInput").value=scenario.uncertainty;
+}
+
+function saveScenario(){
+ try{
+  localStorage.setItem(
+   STORAGE_KEY,
+   JSON.stringify(scenario)
+  );
+ }catch{
+  notify("Browser storage unavailable.");
+ }
+}
+
+function loadScenario(){
+ try{
+  const saved=JSON.parse(
+   localStorage.getItem(STORAGE_KEY)
+  );
+
+  const valid=(v,min,max)=>
+   typeof v==="number"&&
+   Number.isFinite(v)&&v>=min&&v<=max;
+
+  if(saved&&
+   valid(saved.inflation,0,30)&&
+   valid(saved.failureMultiplier,.25,3)&&
+   valid(saved.effectiveness,0,100)&&
+   valid(saved.budgetMultiplier,.5,2)&&
+   valid(saved.uncertainty,0,50)
+  ){
+   scenario={...saved};
+  }
+ }catch{}
+
+ syncInputs();
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(
+  new Blob([content],{type})
+ );
+
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "equipment_id","equipment_name","plant","risk",
+  "strategy","forecast_horizon_months",
+  "planned_maintenance_inr","expected_repairs_inr",
+  "expected_downtime_inr","forecast_total_inr",
+  "budget_inr","budget_variance_percent",
+  "predictive_total_inr","reactive_total_inr",
+  "scenario_savings_inr"
+ ]];
+
+ filtered().forEach(item=>{
+  rows.push([
+   item.id,item.name,item.plant,item.risk,
+   item.strategy,item.horizon,
+   item.preventive.toFixed(2),
+   item.repair.toFixed(2),
+   item.downtime.toFixed(2),
+   item.total.toFixed(2),
+   item.budget.toFixed(2),
+   item.variance.toFixed(2),
+   item.predictiveTotal.toFixed(2),
+   item.reactiveTotal.toFixed(2),
+   item.scenarioSavings.toFixed(2)
+  ]);
+ });
+
+ const csv=rows.map(row=>
+  row.map(value=>
+   '"'+String(value).replaceAll('"','""')+'"'
+  ).join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-cost-forecast.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Maintenance cost forecast CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-cost-forecast.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   scenario,
+   horizonMonths:Number($("horizonFilter").value),
+   strategy:$("strategyFilter").value,
+   results:filtered()
+  },null,2),
+  "application/json"
+ );
+
+ notify("Maintenance cost forecast JSON exported.");
+}
+
+$("forecastBtn").onclick=()=>{
+ if(!validateScenario())return;
+
+ saveScenario();
+ calculateAll();
+ notify("Maintenance cost forecast generated.");
+};
+
+$("saveScenarioBtn").onclick=()=>{
+ if(!validateScenario())return;
+
+ saveScenario();
+ calculateAll();
+ notify("Forecast assumptions saved and applied.");
+};
+
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+
+$("resetBtn").onclick=()=>{
+ if(!confirm("Reset maintenance cost forecasting assumptions?"))
+  return;
+
+ scenario={...DEFAULTS};
+ selectedId=ASSETS[0].id;
+
+ $("plantFilter").value="all";
+ $("equipmentFilter").value="all";
+ $("horizonFilter").value="12";
+ $("strategyFilter").value="predictive";
+
+ syncInputs();
+ saveScenario();
+ calculateAll();
+
+ notify("Forecast scenario reset.");
+};
+
+[
+ "plantFilter",
+ "equipmentFilter",
+ "horizonFilter",
+ "strategyFilter"
+].forEach(id=>{
+ $(id).addEventListener("change",calculateAll);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+populateEquipment();
+loadScenario();
+calculateAll();
+</script>
+</body>
+</html>

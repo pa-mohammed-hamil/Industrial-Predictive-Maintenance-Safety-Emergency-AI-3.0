@@ -1,0 +1,1274 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Image Inspection | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / computer-vision</p><h1 id="page-title">Image Inspection</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Image Inspection workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Image Inspection | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5;--sidebar:258px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5{font-family:Manrope,sans-serif;letter-spacing:-.5px}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:white;z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto;
+ scrollbar-width:thin;scrollbar-color:#42496b transparent;
+}
+.brand{
+ display:flex;align-items:center;gap:11px;padding:26px 22px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);font-size:22px;
+}
+.brand strong{font:800 18px Manrope,sans-serif;color:white}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px;
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;letter-spacing:1.7px;
+ text-transform:uppercase;
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;
+ margin:3px 12px;padding:12px 13px;border-radius:10px;
+ color:#a4aecf;font-size:11px;font-weight:700;transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);color:white;
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12;
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;justify-content:space-between;
+ align-items:center;gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;display:grid;
+ place-items:center;color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{padding:28px 32px 45px;max-width:1650px;margin:auto}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;
+ padding:30px;color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:25px;
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ border-radius:50%;border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;text-transform:uppercase;
+ letter-spacing:2px;color:#ddd6ff;
+}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;line-height:1.9;
+ max-width:720px;margin:0;
+}
+.hero-tag{
+ display:inline-flex;gap:7px;align-items:center;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:20px;
+}
+.stat-card,.panel{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105;
+}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:16px;
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 26px Manrope,sans-serif;margin-top:6px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel{padding:23px;height:100%}
+.panel-heading{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-bottom:21px;
+}
+.panel-heading h3{font-size:15px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:11px;margin-top:5px}
+.section-label{font-size:10px;color:#59637f;font-weight:800;margin-bottom:9px}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:43px;font-size:12px;padding:10px 12px;color:var(--text);
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12;
+}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;padding:11px 17px;
+ font-size:11px;font-weight:800;display:inline-flex;
+ align-items:center;justify-content:center;gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 14px;background:white;color:#69738e;
+ font-size:11px;font-weight:800;display:inline-flex;
+ align-items:center;justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.btn-outline-custom:disabled,.btn-purple:disabled{opacity:.5;cursor:not-allowed}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;background:#f1f2f8;color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffecef;color:#d64b62}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.dropzone{
+ border:2px dashed #d7d2fa;background:#faf9ff;
+ border-radius:13px;padding:25px;text-align:center;
+ cursor:pointer;transition:.2s;
+}
+.dropzone:hover,.dropzone.dragover{
+ border-color:var(--purple);background:#f0edff;
+}
+.dropzone i{font-size:28px;color:var(--purple)}
+.dropzone p{font-size:11px;color:var(--muted);margin:8px 0 0}
+.workspace{
+ background:#141a31;border-radius:15px;
+ min-height:350px;display:flex;align-items:center;
+ justify-content:center;overflow:auto;position:relative;
+ padding:16px;
+}
+.workspace-empty{
+ color:#a4afd0;text-align:center;
+ font-size:12px;line-height:1.9;padding:35px;
+}
+.workspace-empty i{
+ display:block;font-size:48px;color:#8d7dfa;margin-bottom:15px;
+}
+.image-frame{
+ position:relative;display:inline-block;
+ max-width:none;line-height:0;transform-origin:center center;
+}
+.image-frame img{
+ display:block;max-width:none;user-select:none;
+ pointer-events:none;
+}
+.annotation-layer{
+ position:absolute;inset:0;cursor:crosshair;
+ touch-action:none;
+}
+.annotation-box{
+ position:absolute;border:2px solid #ed6175;
+ background:#ed61752a;
+ pointer-events:none;
+}
+.annotation-box span{
+ position:absolute;left:-2px;top:-22px;
+ background:#ed6175;color:white;
+ font:700 10px "DM Sans",sans-serif;
+ padding:5px 7px;border-radius:5px 5px 0 0;
+ white-space:nowrap;line-height:1;
+}
+.annotation-box[data-type="Corrosion"]{
+ border-color:#f4a443;background:#f4a44325;
+}
+.annotation-box[data-type="Corrosion"] span{background:#f4a443}
+.annotation-box[data-type="Crack"]{
+ border-color:#ed6175;background:#ed617525;
+}
+.annotation-box[data-type="Defect"]{
+ border-color:#6855eb;background:#6855eb25;
+}
+.annotation-box[data-type="Defect"] span{background:#6855eb}
+.annotation-box[data-type="Other"]{
+ border-color:#438df5;background:#438df525;
+}
+.annotation-box[data-type="Other"] span{background:#438df5}
+.image-strip{display:flex;gap:10px;overflow-x:auto;padding:12px 0}
+.image-thumb{
+ position:relative;flex:0 0 100px;
+ border:2px solid transparent;border-radius:10px;
+ overflow:hidden;cursor:pointer;background:#f2f3f9;
+}
+.image-thumb.active{border-color:var(--purple)}
+.image-thumb img{
+ width:100%;height:76px;object-fit:cover;
+}
+.image-thumb span{
+ display:block;padding:7px;font-size:9px;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.finding-item{
+ border:1px solid var(--border);border-radius:12px;
+ padding:13px;margin-bottom:10px;background:#fbfcff;
+}
+.finding-title{font-size:11px;font-weight:800}
+.finding-meta{font-size:10px;color:var(--muted);margin-top:6px}
+.chart-container{height:240px;position:relative}
+.table{font-size:11px;margin-bottom:0;white-space:nowrap}
+.table thead th{
+ color:#8c95ac;font-size:9px;text-transform:uppercase;
+ letter-spacing:.7px;border-bottom:1px solid var(--border);
+ padding:14px 12px;
+}
+.table tbody td{
+ padding:15px 12px;vertical-align:middle;
+ border-color:#f0f1f6;
+}
+.table tbody tr:hover{background:#fafaff}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;padding:15px 17px;
+ font-size:11px;line-height:1.8;
+ display:flex;align-items:flex-start;gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1150px){
+ :root{--sidebar:225px}
+ .content{padding:25px 22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%);transition:transform .25s;width:260px}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:18px 14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:17px}
+ .mobile-hide{display:none}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+
+ <div class="nav-section">Visual Inspection</div>
+ <a class="side-link active" href="image-inspection.html"><i class="bi bi-image"></i> Image Inspection</a>
+ <a class="side-link" href="corrosion-detection.html"><i class="bi bi-search-heart"></i> Corrosion Detection</a>
+ <a class="side-link" href="crack-detection.html"><i class="bi bi-intersect"></i> Crack Detection</a>
+ <a class="side-link" href="defect-detection.html"><i class="bi bi-bounding-box-circles"></i> Defect Detection</a>
+ <a class="side-link" href="fire-detection.html"><i class="bi bi-fire"></i> Fire Detection</a>
+ <a class="side-link" href="detection-results.html"><i class="bi bi-clipboard-data"></i> Detection Results</a>
+
+ <div class="nav-section">Asset Intelligence</div>
+ <a class="side-link" href="equipment-condition.html"><i class="bi bi-speedometer2"></i> Equipment Condition</a>
+ <a class="side-link" href="asset-health.html"><i class="bi bi-heart-pulse"></i> Asset Health</a>
+ <a class="side-link" href="predictive-maintenance.html"><i class="bi bi-tools"></i> Predictive Maintenance</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/inspection-agent.html"><i class="bi bi-clipboard-check"></i> Inspection Agent</a>
+ <a class="side-link" href="agents/asset-health-agent.html"><i class="bi bi-heart-pulse"></i> Asset Health Agent</a>
+ <a class="side-link" href="agents/safety-agent.html"><i class="bi bi-shield-check"></i> Safety Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Manual Inspection Mode
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+ <header class="topbar">
+  <div class="d-flex align-items-center gap-3">
+   <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+    <i class="bi bi-list"></i>
+   </button>
+   <div>
+    <div class="breadcrumb-text">
+     Visual Inspection / <strong>Image Inspection</strong>
+    </div>
+    <div class="fw-bold mt-1" style="font-size:13px">
+     Industrial Visual Inspection Studio
+    </div>
+   </div>
+  </div>
+  <div class="top-actions">
+   <span class="status-badge info mobile-hide">
+    <i class="bi bi-pencil-square"></i> Manual Annotation
+   </span>
+   <a href="notifications.html" class="top-icon" aria-label="Notifications">
+    <i class="bi bi-bell"></i>
+   </a>
+   <div class="avatar">AI</div>
+  </div>
+ </header>
+
+ <main class="content">
+
+  <section class="hero">
+   <div class="hero-label">Computer Vision / Inspection Workspace</div>
+   <h1><i class="bi bi-image me-2"></i>Industrial Image Inspection</h1>
+   <p>
+    Upload equipment images, inspect visual conditions, manually
+    annotate corrosion, cracks and manufacturing defects,
+    document findings, and export structured inspection reports.
+   </p>
+   <div class="hero-tag">
+    <i class="bi bi-info-circle"></i>
+    Manual inspection — AI inference not connected
+   </div>
+  </section>
+
+  <div class="row g-3 mb-4">
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+      <i class="bi bi-images"></i>
+     </div>
+     <div class="stat-label">Uploaded Images</div>
+     <div class="stat-value" id="statImages">0</div>
+     <div class="stat-note">Current browser session</div>
+    </div>
+   </div>
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#ffecef;color:#ed6175">
+      <i class="bi bi-bounding-box"></i>
+     </div>
+     <div class="stat-label">Manual Findings</div>
+     <div class="stat-value" id="statFindings">0</div>
+     <div class="stat-note">User-created annotations</div>
+    </div>
+   </div>
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#fff4e6;color:#f4a443">
+      <i class="bi bi-exclamation-triangle"></i>
+     </div>
+     <div class="stat-label">High Severity</div>
+     <div class="stat-value" id="statHigh">0</div>
+     <div class="stat-note">Manually assigned</div>
+    </div>
+   </div>
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon" style="background:#e8f9f1;color:#18b58c">
+      <i class="bi bi-clipboard-check"></i>
+     </div>
+     <div class="stat-label">Reviewed Images</div>
+     <div class="stat-value" id="statReviewed">0</div>
+     <div class="stat-note">Session review state</div>
+    </div>
+   </div>
+  </div>
+
+  <!-- UPLOAD AND CONTROLS -->
+  <div class="row g-4 mb-4">
+   <div class="col-xl-8">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Inspection Image Workspace</h3>
+       <div class="panel-subtitle">
+        Upload images and draw bounding boxes around observations
+       </div>
+      </div>
+      <span class="status-badge info">Manual Annotation</span>
+     </div>
+
+     <div class="row g-3 mb-3">
+      <div class="col-md-6">
+       <label class="section-label" for="assetSelect">Asset</label>
+       <select id="assetSelect" class="form-select">
+        <option value="AST-001">AST-001 — Centrifugal Pump</option>
+        <option value="AST-002">AST-002 — Air Compressor</option>
+        <option value="AST-003">AST-003 — Industrial Gearbox</option>
+        <option value="AST-004">AST-004 — Conveyor Motor</option>
+        <option value="AST-005">AST-005 — Storage Tank</option>
+        <option value="AST-006">AST-006 — Pipeline Section</option>
+       </select>
+      </div>
+      <div class="col-md-6">
+       <label class="section-label" for="inspectionType">
+        Inspection Type
+       </label>
+       <select id="inspectionType" class="form-select">
+        <option value="General Visual Inspection">General Visual Inspection</option>
+        <option value="Corrosion Inspection">Corrosion Inspection</option>
+        <option value="Crack Inspection">Crack Inspection</option>
+        <option value="Surface Defect Inspection">Surface Defect Inspection</option>
+        <option value="Equipment Damage Inspection">Equipment Damage Inspection</option>
+       </select>
+      </div>
+     </div>
+
+     <input type="file" id="imageInput"
+      accept="image/jpeg,image/png,image/webp"
+      multiple class="d-none">
+
+     <div class="dropzone mb-3" id="dropzone" role="button" tabindex="0">
+      <i class="bi bi-cloud-arrow-up"></i>
+      <div class="fw-bold mt-2">Upload Equipment Images</div>
+      <p>
+       Drag and drop or click to browse<br>
+       JPG, PNG, WebP · Max 10 MB per image · Up to 12 images
+      </p>
+     </div>
+
+     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+      <div class="d-flex gap-2 flex-wrap">
+       <button id="zoomIn" class="btn-outline-custom">
+        <i class="bi bi-zoom-in"></i>
+       </button>
+       <button id="zoomOut" class="btn-outline-custom">
+        <i class="bi bi-zoom-out"></i>
+       </button>
+       <button id="resetZoom" class="btn-outline-custom">
+        <i class="bi bi-arrows-fullscreen"></i> Fit
+       </button>
+      </div>
+      <span id="zoomLabel" class="status-badge">100%</span>
+     </div>
+
+     <div class="workspace" id="workspace">
+      <div class="workspace-empty" id="emptyWorkspace">
+       <i class="bi bi-image"></i>
+       <strong>No Image Selected</strong>
+       <div>Upload an image to start manual inspection.</div>
+      </div>
+
+      <div id="imageFrame" class="image-frame hidden">
+       <img id="inspectionImage" alt="Selected inspection image">
+       <div id="annotationLayer" class="annotation-layer"></div>
+      </div>
+     </div>
+
+     <div id="imageStrip" class="image-strip"></div>
+
+     <div class="d-flex gap-2 flex-wrap mt-2">
+      <button id="removeImage" class="btn-outline-custom">
+       <i class="bi bi-trash"></i> Remove Selected Image
+      </button>
+      <button id="clearAnnotations" class="btn-outline-custom">
+       <i class="bi bi-eraser"></i> Clear Image Annotations
+      </button>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-xl-4">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Annotation Controls</h3>
+       <div class="panel-subtitle">
+        Define a finding, then drag on the image
+       </div>
+      </div>
+     </div>
+
+     <label class="section-label" for="findingType">Finding Category</label>
+     <select id="findingType" class="form-select mb-3">
+      <option value="Corrosion">Corrosion</option>
+      <option value="Crack">Crack</option>
+      <option value="Defect">Manufacturing Defect</option>
+      <option value="Other">Other Observation</option>
+     </select>
+
+     <label class="section-label" for="severitySelect">Severity</label>
+     <select id="severitySelect" class="form-select mb-3">
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+      <option value="High">High</option>
+     </select>
+
+     <label class="section-label" for="findingDescription">
+      Finding Description
+     </label>
+     <textarea id="findingDescription" class="form-control mb-3"
+      rows="3" maxlength="500"
+      placeholder="Describe the visible observation..."></textarea>
+
+     <div class="notice mb-3">
+      <i class="bi bi-cursor"></i>
+      <div>
+       Choose a category and severity, then click and drag
+       across the image to draw a bounding box.
+      </div>
+     </div>
+
+     <button id="markReviewed" class="btn-purple w-100">
+      <i class="bi bi-check2-circle"></i>
+      Mark Image Reviewed
+     </button>
+
+     <div class="mt-4">
+      <div class="section-label mb-3">Selected Image Findings</div>
+      <div id="findingsList"></div>
+     </div>
+    </section>
+   </div>
+  </div>
+
+  <!-- CHART AND SUMMARY -->
+  <div class="row g-4 mb-4">
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Finding Category Distribution</h3>
+       <div class="panel-subtitle">Current session annotations</div>
+      </div>
+     </div>
+     <div class="chart-container">
+      <canvas id="categoryChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Severity Distribution</h3>
+       <div class="panel-subtitle">Manually assigned severity</div>
+      </div>
+     </div>
+     <div class="chart-container">
+      <canvas id="severityChart"></canvas>
+     </div>
+    </section>
+   </div>
+  </div>
+
+  <!-- INSPECTION HISTORY -->
+  <section class="panel mb-4">
+   <div class="panel-heading">
+    <div>
+     <h3>Inspection Image History</h3>
+     <div class="panel-subtitle">
+      Uploaded images and session review status
+     </div>
+    </div>
+    <button id="exportReport" class="btn-purple">
+     <i class="bi bi-download"></i> Export Inspection JSON
+    </button>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table align-middle">
+     <thead>
+      <tr>
+       <th>Image</th>
+       <th>Asset</th>
+       <th>Inspection</th>
+       <th>Findings</th>
+       <th>Review</th>
+       <th>Action</th>
+      </tr>
+     </thead>
+     <tbody id="historyBody"></tbody>
+    </table>
+   </div>
+  </section>
+
+  <div class="notice">
+   <i class="bi bi-shield-exclamation"></i>
+   <div>
+    <strong>Inspection limitation:</strong>
+    This frontend does not automatically detect corrosion, cracks,
+    defects, equipment failures or safety hazards.
+    All findings and severity values are manually supplied.
+    Real inspections require appropriate methods, qualified personnel,
+    approved acceptance criteria and validated systems.
+   </div>
+  </div>
+
+ </main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button type="button" class="btn-close"
+    data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ INDUSTRA AI — IMAGE INSPECTION
+
+ Browser-only manual annotation.
+ No computer vision inference.
+ No server persistence.
+*/
+
+const $=id=>document.getElementById(id);
+
+let images=[];
+let selectedId=null;
+let zoom=1;
+let drawing=null;
+let categoryChart=null;
+let severityChart=null;
+let nextId=1;
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function closeSidebar(){
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+}
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",closeSidebar);
+
+function selectedImage(){
+ return images.find(x=>x.id===selectedId);
+}
+
+function allFindings(){
+ return images.flatMap(image=>image.findings);
+}
+
+function updateStats(){
+ $("statImages").textContent=images.length;
+ $("statFindings").textContent=allFindings().length;
+ $("statHigh").textContent=
+  allFindings().filter(x=>x.severity==="High").length;
+ $("statReviewed").textContent=
+  images.filter(x=>x.reviewed).length;
+}
+
+function acceptFiles(files){
+ const validTypes=[
+  "image/jpeg","image/png","image/webp"
+ ];
+
+ let added=0;
+
+ for(const file of files){
+  if(images.length>=12){
+   notify("Maximum of 12 images per session.");
+   break;
+  }
+
+  if(!validTypes.includes(file.type)){
+   notify("Unsupported image format: "+file.name);
+   continue;
+  }
+
+  if(file.size>10*1024*1024){
+   notify("Image exceeds 10 MB: "+file.name);
+   continue;
+  }
+
+  const id=nextId++;
+
+  images.push({
+   id,
+   name:file.name,
+   size:file.size,
+   url:URL.createObjectURL(file),
+   asset:$("assetSelect").value,
+   inspection:$("inspectionType").value,
+   findings:[],
+   reviewed:false
+  });
+
+  selectedId=id;
+  added++;
+ }
+
+ if(added){
+  zoom=1;
+  renderAll();
+  notify(added+" image(s) loaded for manual inspection.");
+ }
+}
+
+$("dropzone").addEventListener("click",()=>{
+ $("imageInput").click();
+});
+
+$("dropzone").addEventListener("keydown",event=>{
+ if(event.key==="Enter"||event.key===" "){
+  event.preventDefault();
+  $("imageInput").click();
+ }
+});
+
+$("dropzone").addEventListener("dragover",event=>{
+ event.preventDefault();
+ $("dropzone").classList.add("dragover");
+});
+
+$("dropzone").addEventListener("dragleave",()=>{
+ $("dropzone").classList.remove("dragover");
+});
+
+$("dropzone").addEventListener("drop",event=>{
+ event.preventDefault();
+ $("dropzone").classList.remove("dragover");
+ acceptFiles(event.dataTransfer.files);
+});
+
+$("imageInput").addEventListener("change",event=>{
+ acceptFiles(event.target.files);
+ event.target.value="";
+});
+
+function renderImage(){
+ const image=selectedImage();
+
+ if(!image){
+  $("emptyWorkspace").classList.remove("hidden");
+  $("imageFrame").classList.add("hidden");
+  $("inspectionImage").removeAttribute("src");
+  $("annotationLayer").replaceChildren();
+  return;
+ }
+
+ $("emptyWorkspace").classList.add("hidden");
+ $("imageFrame").classList.remove("hidden");
+
+ $("inspectionImage").src=image.url;
+
+ // Fixed image display width keeps annotation coordinates stable.
+ $("inspectionImage").style.width="650px";
+ $("inspectionImage").style.height="auto";
+
+ $("imageFrame").style.transform="scale("+zoom+")";
+ $("zoomLabel").textContent=Math.round(zoom*100)+"%";
+
+ $("assetSelect").value=image.asset;
+ $("inspectionType").value=image.inspection;
+
+ renderAnnotations();
+}
+
+function renderStrip(){
+ const container=$("imageStrip");
+ container.replaceChildren();
+
+ images.forEach(image=>{
+  const button=document.createElement("button");
+  button.type="button";
+  button.className="image-thumb"+
+   (image.id===selectedId?" active":"");
+
+  const img=document.createElement("img");
+  img.src=image.url;
+  img.alt=image.name;
+
+  const name=document.createElement("span");
+  name.textContent=image.name;
+
+  button.append(img,name);
+
+  button.addEventListener("click",()=>{
+   selectedId=image.id;
+   zoom=1;
+   renderAll();
+  });
+
+  container.append(button);
+ });
+}
+
+function renderAnnotations(){
+ const image=selectedImage();
+ const layer=$("annotationLayer");
+ layer.replaceChildren();
+
+ if(!image)return;
+
+ image.findings.forEach((finding,index)=>{
+  const box=document.createElement("div");
+  box.className="annotation-box";
+  box.dataset.type=finding.type;
+
+  box.style.left=finding.x+"%";
+  box.style.top=finding.y+"%";
+  box.style.width=finding.width+"%";
+  box.style.height=finding.height+"%";
+
+  const label=document.createElement("span");
+  label.textContent=(index+1)+" · "+finding.type;
+  box.append(label);
+
+  layer.append(box);
+ });
+}
+
+function renderFindings(){
+ const container=$("findingsList");
+ container.replaceChildren();
+
+ const image=selectedImage();
+
+ if(!image||!image.findings.length){
+  const empty=document.createElement("p");
+  empty.style.color="#8992aa";
+  empty.style.fontSize="11px";
+  empty.textContent="No manual findings for this image.";
+  container.append(empty);
+  return;
+ }
+
+ image.findings.forEach((finding,index)=>{
+  const card=document.createElement("div");
+  card.className="finding-item";
+
+  const header=document.createElement("div");
+  header.className="d-flex justify-content-between gap-2";
+
+  const title=document.createElement("div");
+  title.className="finding-title";
+  title.textContent=(index+1)+". "+finding.type;
+
+  const button=document.createElement("button");
+  button.className="btn-outline-custom";
+  button.style.padding="5px 9px";
+  button.setAttribute("aria-label","Remove finding");
+  button.innerHTML='<i class="bi bi-trash"></i>';
+
+  button.addEventListener("click",()=>{
+   image.findings.splice(index,1);
+   image.reviewed=false;
+   renderAll();
+   notify("Manual finding removed.");
+  });
+
+  header.append(title,button);
+
+  const meta=document.createElement("div");
+  meta.className="finding-meta";
+  meta.textContent=
+   "Severity: "+finding.severity+
+   " · Box: "+finding.width.toFixed(1)+
+   "% × "+finding.height.toFixed(1)+"%";
+
+  const description=document.createElement("div");
+  description.className="finding-meta";
+  description.textContent=finding.description||"No description.";
+
+  card.append(header,meta,description);
+  container.append(card);
+ });
+}
+
+function pointerPosition(event){
+ const rect=$("annotationLayer").getBoundingClientRect();
+
+ return {
+  x:Math.max(0,Math.min(100,
+   (event.clientX-rect.left)/rect.width*100
+  )),
+  y:Math.max(0,Math.min(100,
+   (event.clientY-rect.top)/rect.height*100
+  ))
+ };
+}
+
+$("annotationLayer").addEventListener("pointerdown",event=>{
+ if(!selectedImage()||event.button!==0)return;
+
+ event.preventDefault();
+
+ const position=pointerPosition(event);
+
+ drawing={
+  pointerId:event.pointerId,
+  startX:position.x,
+  startY:position.y,
+  endX:position.x,
+  endY:position.y
+ };
+
+ $("annotationLayer").setPointerCapture(event.pointerId);
+});
+
+$("annotationLayer").addEventListener("pointermove",event=>{
+ if(!drawing||drawing.pointerId!==event.pointerId)return;
+
+ const position=pointerPosition(event);
+ drawing.endX=position.x;
+ drawing.endY=position.y;
+
+ renderAnnotations();
+
+ const preview=document.createElement("div");
+ preview.className="annotation-box";
+ preview.dataset.type=$("findingType").value;
+
+ preview.style.left=Math.min(drawing.startX,drawing.endX)+"%";
+ preview.style.top=Math.min(drawing.startY,drawing.endY)+"%";
+ preview.style.width=Math.abs(drawing.endX-drawing.startX)+"%";
+ preview.style.height=Math.abs(drawing.endY-drawing.startY)+"%";
+
+ $("annotationLayer").append(preview);
+});
+
+$("annotationLayer").addEventListener("pointerup",event=>{
+ if(!drawing||drawing.pointerId!==event.pointerId)return;
+
+ const position=pointerPosition(event);
+ drawing.endX=position.x;
+ drawing.endY=position.y;
+
+ const width=Math.abs(drawing.endX-drawing.startX);
+ const height=Math.abs(drawing.endY-drawing.startY);
+
+ if(width>=1&&height>=1){
+  const image=selectedImage();
+
+  image.findings.push({
+   type:$("findingType").value,
+   severity:$("severitySelect").value,
+   description:$("findingDescription").value.trim(),
+   x:Math.min(drawing.startX,drawing.endX),
+   y:Math.min(drawing.startY,drawing.endY),
+   width,
+   height
+  });
+
+  image.reviewed=false;
+  $("findingDescription").value="";
+
+  notify("Manual inspection annotation added.");
+ }
+
+ drawing=null;
+ renderAll();
+});
+
+$("annotationLayer").addEventListener("pointercancel",()=>{
+ drawing=null;
+ renderAnnotations();
+});
+
+$("assetSelect").addEventListener("change",event=>{
+ const image=selectedImage();
+ if(image)image.asset=event.target.value;
+ renderHistory();
+});
+
+$("inspectionType").addEventListener("change",event=>{
+ const image=selectedImage();
+ if(image)image.inspection=event.target.value;
+ renderHistory();
+});
+
+$("zoomIn").addEventListener("click",()=>{
+ if(!selectedImage())return;
+ zoom=Math.min(2,Number((zoom+.2).toFixed(2)));
+ renderImage();
+});
+
+$("zoomOut").addEventListener("click",()=>{
+ if(!selectedImage())return;
+ zoom=Math.max(.4,Number((zoom-.2).toFixed(2)));
+ renderImage();
+});
+
+$("resetZoom").addEventListener("click",()=>{
+ zoom=1;
+ renderImage();
+});
+
+$("removeImage").addEventListener("click",()=>{
+ const image=selectedImage();
+ if(!image)return;
+
+ URL.revokeObjectURL(image.url);
+ images=images.filter(x=>x.id!==image.id);
+ selectedId=images.length?images[0].id:null;
+ zoom=1;
+
+ renderAll();
+ notify("Selected image removed.");
+});
+
+$("clearAnnotations").addEventListener("click",()=>{
+ const image=selectedImage();
+ if(!image)return;
+
+ if(!confirm("Clear all annotations for this image?"))return;
+
+ image.findings=[];
+ image.reviewed=false;
+ renderAll();
+ notify("Image annotations cleared.");
+});
+
+$("markReviewed").addEventListener("click",()=>{
+ const image=selectedImage();
+ if(!image){
+  notify("Select an image first.");
+  return;
+ }
+
+ image.reviewed=true;
+ renderAll();
+ notify("Image marked reviewed in this browser session.");
+});
+
+function renderHistory(){
+ const tbody=$("historyBody");
+ tbody.replaceChildren();
+
+ if(!images.length){
+  const row=document.createElement("tr");
+  const cell=document.createElement("td");
+  cell.colSpan=6;
+  cell.style.padding="30px";
+  cell.style.textAlign="center";
+  cell.style.color="#8992aa";
+  cell.textContent="No inspection images uploaded.";
+  row.append(cell);
+  tbody.append(row);
+  return;
+ }
+
+ images.forEach(image=>{
+  const row=document.createElement("tr");
+
+  [
+   image.name,
+   image.asset,
+   image.inspection,
+   String(image.findings.length)
+  ].forEach(value=>{
+   const cell=document.createElement("td");
+   cell.textContent=value;
+   row.append(cell);
+  });
+
+  const statusCell=document.createElement("td");
+  const badge=document.createElement("span");
+  badge.className="status-badge "+
+   (image.reviewed?"success":"warning");
+  badge.textContent=image.reviewed?"Reviewed":"Pending";
+  statusCell.append(badge);
+  row.append(statusCell);
+
+  const actionCell=document.createElement("td");
+  const button=document.createElement("button");
+  button.className="btn-outline-custom";
+  button.textContent="Open";
+
+  button.addEventListener("click",()=>{
+   selectedId=image.id;
+   zoom=1;
+   renderAll();
+   window.scrollTo({top:350,behavior:"smooth"});
+  });
+
+  actionCell.append(button);
+  row.append(actionCell);
+  tbody.append(row);
+ });
+}
+
+function renderCharts(){
+ if(typeof Chart==="undefined")return;
+
+ const findings=allFindings();
+
+ const categories=["Corrosion","Crack","Defect","Other"];
+ const counts=categories.map(type=>
+  findings.filter(x=>x.type===type).length
+ );
+
+ if(categoryChart)categoryChart.destroy();
+
+ categoryChart=new Chart($("categoryChart"),{
+  type:"doughnut",
+  data:{
+   labels:categories,
+   datasets:[{
+    data:counts,
+    backgroundColor:[
+     "#f4a443","#ed6175","#6855eb","#438df5"
+    ],
+    borderWidth:0
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   cutout:"72%",
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{usePointStyle:true,padding:18}
+    }
+   }
+  }
+ });
+
+ const levels=["Low","Medium","High"];
+ const severityCounts=levels.map(level=>
+  findings.filter(x=>x.severity===level).length
+ );
+
+ if(severityChart)severityChart.destroy();
+
+ severityChart=new Chart($("severityChart"),{
+  type:"bar",
+  data:{
+   labels:levels,
+   datasets:[{
+    data:severityCounts,
+    backgroundColor:["#18b58c","#f4a443","#ed6175"],
+    borderRadius:7,
+    maxBarThickness:60
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   scales:{
+    y:{beginAtZero:true,ticks:{precision:0},grid:{color:"#f0f1f7"}},
+    x:{grid:{display:false}}
+   },
+   plugins:{legend:{display:false}}
+  }
+ });
+}
+
+function renderAll(){
+ renderImage();
+ renderStrip();
+ renderFindings();
+ renderHistory();
+ renderCharts();
+ updateStats();
+}
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportReport").addEventListener("click",()=>{
+ const report={
+  mode:"manual-image-inspection",
+  generatedAt:new Date().toISOString(),
+  aiInferencePerformed:false,
+  findingsGeneratedBy:"human-user",
+  images:images.map(image=>({
+   filename:image.name,
+   asset:image.asset,
+   inspection:image.inspection,
+   reviewed:image.reviewed,
+   findings:image.findings
+  }))
+ };
+
+ downloadFile(
+  "industra-image-inspection.json",
+  JSON.stringify(report,null,2),
+  "application/json"
+ );
+
+ notify("Manual inspection report exported.");
+});
+
+window.addEventListener("beforeunload",()=>{
+ images.forEach(image=>URL.revokeObjectURL(image.url));
+});
+
+renderAll();
+</script>
+
+</body>
+</html>

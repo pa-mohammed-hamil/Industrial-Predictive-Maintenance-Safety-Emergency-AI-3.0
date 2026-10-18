@@ -1,0 +1,1425 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f6fb">
+<title>Emergency Response Agent | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--purple2:#8b7af9;
+ --green:#16b88a;--orange:#f2a53a;--red:#eb6174;
+ --blue:#438df5;--bg:#f5f6fb;--text:#202640;
+ --muted:#8b93aa;--border:#e9ebf3;--sidebar:258px
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5,h6{font-family:Manrope,sans-serif;letter-spacing:-.6px}
+a{text-decoration:none}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
+ outline:3px solid #a99cff!important;outline-offset:2px
+}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:#aab1ce;z-index:1050;
+ display:flex;flex-direction:column;transition:transform .25s
+}
+.brand{
+ height:83px;padding:21px 23px;display:flex;align-items:center;
+ gap:12px;border-bottom:1px solid #ffffff12
+}
+.brand-mark{
+ width:43px;height:43px;border-radius:14px;
+ background:linear-gradient(135deg,#9c83ff,#5a48e4);
+ color:white;display:grid;place-items:center;font-size:22px
+}
+.brand strong{color:white;font-size:17px}
+.brand small{display:block;font-size:9px;letter-spacing:2px;color:#7883b0}
+.sidebar-body{overflow-y:auto;flex:1;padding:16px 12px}
+.sidebar-label{
+ color:#687397;text-transform:uppercase;font-size:9px;
+ font-weight:800;letter-spacing:2px;padding:20px 15px 9px
+}
+.side-link{
+ display:flex;align-items:center;gap:13px;padding:11px 14px;
+ margin:3px 0;color:#9da8ca;border-radius:11px;
+ font-size:12px;font-weight:600;transition:.2s
+}
+.side-link i{font-size:17px;width:21px;text-align:center}
+.side-link:hover{background:#ffffff10;color:white}
+.side-link.active{background:linear-gradient(90deg,#6b59e8,#5346ba);color:white}
+.sidebar-foot{padding:18px;border-top:1px solid #ffffff12}
+.sidebar-status{border-radius:13px;padding:13px;background:#ffffff09;border:1px solid #ffffff12}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2cdaa2;margin-right:7px}
+.app{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ background:white;min-height:76px;display:flex;align-items:center;
+ justify-content:space-between;gap:15px;padding:15px 30px;
+ border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100
+}
+.topbar-title{font-size:15px;font-weight:800}
+.topbar-sub{color:var(--muted);font-size:11px;margin-top:3px}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ height:39px;width:39px;display:grid;place-items:center;
+ border-radius:12px;border:1px solid var(--border);
+ background:#fafaff;color:#555e7b;font-size:16px
+}
+.top-icon:hover{background:#eeecff;color:var(--purple)}
+.avatar{
+ height:39px;width:39px;border-radius:13px;display:grid;
+ place-items:center;color:white;font-weight:800;
+ background:linear-gradient(135deg,#7e6bf4,#a18dff)
+}
+.content{padding:29px;max-width:1850px;margin:auto}
+.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:10px;font-weight:800;color:var(--purple)}
+.page-title{font-size:29px;font-weight:800;margin:9px 0 6px}
+.page-description{color:var(--muted);line-height:1.7}
+.btn-premium,.btn-soft,.btn-danger-soft{
+ display:inline-flex;align-items:center;justify-content:center;
+ gap:8px;border-radius:11px;padding:11px 16px;
+ font-size:12px;font-weight:700;transition:.2s
+}
+.btn-premium{background:var(--purple);color:white;border:1px solid var(--purple)}
+.btn-premium:hover{background:#5542d5;color:white}
+.btn-soft{background:white;color:#5e6680;border:1px solid var(--border)}
+.btn-soft:hover{background:#f1efff;color:var(--purple)}
+.btn-danger-soft{background:#ffebee;color:#d9435b;border:1px solid #ffd9e0}
+.btn-danger-soft:hover{background:#ffdfe5}
+.btn-premium:disabled,.btn-soft:disabled,.btn-danger-soft:disabled{opacity:.5;cursor:not-allowed}
+.surface{
+ background:white;border:1px solid var(--border);
+ border-radius:18px;box-shadow:0 8px 30px #24305b08
+}
+.hero{
+ position:relative;overflow:hidden;
+ background:linear-gradient(115deg,#6651e9,#8e74f4 65%,#a894ff);
+ color:white;border-radius:22px;padding:31px 33px;
+ box-shadow:0 15px 35px #7564ea28
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ right:-60px;top:-145px;border:1px solid #ffffff45;
+ border-radius:50%;box-shadow:0 0 0 45px #ffffff0b,0 0 0 95px #ffffff09;
+ pointer-events:none
+}
+.hero h2{font-size:25px;font-weight:800}
+.hero p{max-width:700px;color:#eeeaff;line-height:1.8}
+.hero-chip{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff23;border:1px solid #ffffff30;
+ padding:8px 12px;border-radius:9px;font-size:10px;font-weight:700
+}
+.metric{padding:21px;height:100%}
+.metric-top{display:flex;justify-content:space-between;align-items:center}
+.metric-label{color:#8a92a8;font-size:11px;font-weight:700}
+.metric-icon{
+ width:44px;height:44px;border-radius:14px;
+ display:grid;place-items:center;font-size:20px
+}
+.metric-value{font:800 27px Manrope,sans-serif;margin:14px 0 6px}
+.metric-foot{font-size:10px;color:#9aa1b3}
+.section-title{font-size:17px;font-weight:800}
+.section-sub{font-size:11px;color:var(--muted)}
+.badge-soft{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:6px 10px;border-radius:8px;font-size:10px;font-weight:800
+}
+.b-success{background:#e5f8f0;color:#13a776}
+.b-warning{background:#fff4e2;color:#d58c20}
+.b-danger{background:#ffebee;color:#df4d64}
+.b-info{background:#eaf2ff;color:#438df5}
+.b-neutral{background:#f0f1f6;color:#788098}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ padding:11px 12px;font-size:12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#a69aff;box-shadow:0 0 0 3px #6855eb12
+}
+.form-label{font-size:11px;font-weight:800;color:#5b6480}
+.chart-wrap{height:275px;position:relative}
+.incident-card{
+ border:1px solid var(--border);border-radius:14px;
+ padding:17px;margin-bottom:12px;background:white;transition:.2s
+}
+.incident-card:last-child{margin-bottom:0}
+.incident-card.selected{border-color:#a89cff;background:#fbfaff;box-shadow:0 0 0 2px #6855eb0a}
+.incident-card:hover{border-color:#d1c9ff}
+.incident-icon{
+ width:43px;height:43px;flex-shrink:0;
+ border-radius:13px;display:grid;place-items:center;font-size:20px
+}
+.incident-title{font-size:12px;font-weight:800}
+.incident-meta{font-size:10px;color:var(--muted);line-height:1.7}
+.timeline-item{display:flex;gap:13px;position:relative;padding-bottom:20px}
+.timeline-item:not(:last-child):before{
+ content:"";position:absolute;left:17px;top:37px;
+ bottom:0;width:2px;background:#e8e6f6
+}
+.timeline-icon{
+ width:36px;height:36px;flex-shrink:0;display:grid;place-items:center;
+ border-radius:11px;background:#eeebff;color:var(--purple);z-index:1
+}
+.timeline-item strong{font-size:11px}
+.timeline-item p{font-size:10px;color:var(--muted);line-height:1.7;margin:5px 0}
+.sensor-tile{
+ padding:15px;border:1px solid var(--border);
+ border-radius:12px;background:#fafbff;height:100%
+}
+.sensor-label{font-size:10px;color:var(--muted)}
+.sensor-value{font:800 21px Manrope,sans-serif;margin-top:8px}
+.sensor-unit{font-size:10px;color:#9ba3b6}
+.workflow-step{
+ display:flex;gap:12px;align-items:flex-start;padding:15px;
+ border:1px solid var(--border);border-radius:13px;margin-bottom:10px
+}
+.workflow-step:last-child{margin-bottom:0}
+.workflow-icon{
+ width:40px;height:40px;flex-shrink:0;
+ border-radius:12px;display:grid;place-items:center;
+ background:#eeebff;color:var(--purple);font-size:18px
+}
+.workflow-step strong{font-size:11px}
+.workflow-step p{font-size:10px;color:var(--muted);margin:5px 0;line-height:1.7}
+.check-row{
+ display:flex;gap:11px;align-items:flex-start;
+ padding:13px 0;border-bottom:1px solid var(--border)
+}
+.check-row:last-child{border-bottom:0}
+.check-row input{width:17px;height:17px;accent-color:var(--purple);margin-top:2px}
+.check-row strong{font-size:11px}
+.check-row p{font-size:10px;color:var(--muted);margin:4px 0 0}
+.agent-trace{
+ display:flex;gap:13px;padding:15px 0;border-bottom:1px solid var(--border)
+}
+.agent-trace:last-child{border-bottom:0}
+.trace-icon{
+ width:36px;height:36px;flex-shrink:0;
+ display:grid;place-items:center;border-radius:11px;
+ background:#eeebff;color:var(--purple);font-size:17px
+}
+.agent-trace strong{font-size:11px}
+.agent-trace p{font-size:10px;color:var(--muted);line-height:1.7;margin:5px 0 0}
+.table thead th{
+ background:#fafbfe;color:#9099ae;font-size:10px;
+ text-transform:uppercase;letter-spacing:.7px;padding:15px 18px;
+ white-space:nowrap;border-bottom:1px solid var(--border)
+}
+.table tbody td{
+ padding:15px 18px;font-size:11px;color:#66708a;
+ vertical-align:middle;border-color:#f0f1f7
+}
+.table-title{font-weight:800;color:#252c48}
+.table-sub{font-size:9px;color:#9ca4b8;margin-top:5px}
+.small-action{
+ border:1px solid var(--border);background:white;
+ border-radius:8px;padding:7px 10px;color:#66718d;
+ font-size:10px;font-weight:700
+}
+.small-action:hover{background:#eeebff;color:var(--purple)}
+.report-code{
+ background:#141a31;color:#dce6ff;border-radius:13px;
+ padding:18px;font:11px/1.8 monospace;
+ white-space:pre-wrap;overflow-wrap:anywhere;
+ max-height:330px;overflow:auto
+}
+.safety-banner{
+ border:1px solid #ffd8de;background:#fff4f5;
+ color:#9d394a;border-radius:14px;padding:17px;
+ line-height:1.7;font-size:11px
+}
+.footer{
+ padding:23px 30px;border-top:1px solid var(--border);
+ color:#9aa2b5;font-size:10px;display:flex;
+ justify-content:space-between;gap:12px
+}
+.mobile-shade{display:none}
+@media(max-width:1199px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .app{margin-left:0}
+ .mobile-shade.show{
+  display:block;position:fixed;inset:0;background:#0008;z-index:1040
+ }
+}
+@media(max-width:575px){
+ .content{padding:17px}.topbar{padding:13px 17px}
+ .page-title{font-size:23px}.hero{padding:23px}
+ .hero h2{font-size:20px}.metric-value{font-size:24px}
+ .footer{flex-direction:column;padding:17px}
+}
+</style>
+</head>
+
+<body>
+<div class="mobile-shade" id="shade"></div>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div class="brand-mark"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a997ff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <nav class="sidebar-body" aria-label="Main navigation">
+  <div class="sidebar-label">Main Menu</div>
+  <a class="side-link" href="../index.html"><i class="bi bi-house-door"></i>Home</a>
+  <a class="side-link" href="../dashboard.html"><i class="bi bi-grid-1x2"></i>Dashboard</a>
+  <a class="side-link" href="../command-center.html"><i class="bi bi-broadcast"></i>Command Center</a>
+  <a class="side-link" href="../analytics.html"><i class="bi bi-bar-chart-line"></i>Analytics Studio</a>
+  <a class="side-link" href="../reports.html"><i class="bi bi-file-earmark-bar-graph"></i>Reports</a>
+  <a class="side-link" href="../notifications.html"><i class="bi bi-bell"></i>Notifications</a>
+
+  <div class="sidebar-label">Operations</div>
+  <a class="side-link" href="../assets/assets.html"><i class="bi bi-cpu"></i>Asset Intelligence</a>
+  <a class="side-link" href="../telemetry/live-telemetry.html"><i class="bi bi-activity"></i>Live Telemetry</a>
+  <a class="side-link" href="../predictive-maintenance/maintenance-dashboard.html"><i class="bi bi-tools"></i>Predictive Maintenance</a>
+  <a class="side-link" href="../computer-vision/vision-dashboard.html"><i class="bi bi-eye"></i>Computer Vision</a>
+  <a class="side-link" href="../maintenance/work-orders.html"><i class="bi bi-clipboard-check"></i>Work Orders</a>
+
+  <div class="sidebar-label">Risk & Intelligence</div>
+  <a class="side-link" href="../safety/safety-dashboard.html"><i class="bi bi-shield-check"></i>Safety Intelligence</a>
+  <a class="side-link" href="../emergency/emergency-dashboard.html"><i class="bi bi-exclamation-triangle"></i>Emergency Response</a>
+  <a class="side-link" href="../cost-intelligence/cost-dashboard.html"><i class="bi bi-currency-rupee"></i>Cost Intelligence</a>
+  <a class="side-link" href="../copilot/ai-copilot.html"><i class="bi bi-stars"></i>AI Copilot</a>
+  <a class="side-link" href="agent-dashboard.html"><i class="bi bi-diagram-3"></i>AI Agents</a>
+  <a class="side-link" href="asset-health-agent.html"><i class="bi bi-heart-pulse"></i>Asset Health Agent</a>
+  <a class="side-link" href="cost-agent.html"><i class="bi bi-currency-rupee"></i>Cost Agent</a>
+  <a class="side-link active" href="emergency-response-agent.html" aria-current="page">
+   <i class="bi bi-exclamation-octagon"></i>Emergency Response Agent
+  </a>
+  <a class="side-link" href="agent-workflows.html"><i class="bi bi-bezier2"></i>Agent Workflows</a>
+  <a class="side-link" href="agent-executions.html"><i class="bi bi-play-circle"></i>Agent Executions</a>
+  <a class="side-link" href="agent-tool-calls.html"><i class="bi bi-wrench-adjustable"></i>Agent Tool Calls</a>
+  <a class="side-link" href="agent-evaluation.html"><i class="bi bi-clipboard-data"></i>Agent Evaluation</a>
+  <a class="side-link" href="../rag/knowledge-base.html"><i class="bi bi-journal-text"></i>Knowledge & RAG</a>
+  <a class="side-link" href="../mlops/mlops-dashboard.html"><i class="bi bi-boxes"></i>MLOps</a>
+
+  <div class="sidebar-label">Administration</div>
+  <a class="side-link" href="../observability/observability-dashboard.html"><i class="bi bi-speedometer2"></i>Observability</a>
+  <a class="side-link" href="../security/security-dashboard.html"><i class="bi bi-lock"></i>Security</a>
+  <a class="side-link" href="../settings/settings.html"><i class="bi bi-gear"></i>Settings</a>
+ </nav>
+
+ <div class="sidebar-foot">
+  <div class="sidebar-status">
+   <div class="fw-bold text-white small">
+    <span class="status-dot"></span>Emergency Agent Demo
+   </div>
+   <div class="mt-2" style="font-size:10px">
+    Simulation only · No dispatch or control
+   </div>
+  </div>
+ </div>
+</aside>
+
+<div class="app">
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon d-xl-none" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="topbar-title">Emergency Response Intelligence Agent</div>
+   <div class="topbar-sub">Workspace / AI Agents / Emergency Response</div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="d-none d-md-inline text-secondary small">Simulation environment</span>
+  <button class="top-icon" id="resetButton" aria-label="Reset simulation">
+   <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <a href="../notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <a href="../settings/profile.html" class="avatar" aria-label="Profile">AI</a>
+ </div>
+</header>
+
+<main class="content">
+
+ <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div>
+   <div class="eyebrow">Industrial Safety & Incident Intelligence</div>
+   <h1 class="page-title">Emergency Response Agent <span style="color:var(--purple)">✦</span></h1>
+   <div class="page-description">
+    Simulate incident assessment, response planning, escalation review and emergency coordination.
+   </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-soft" id="exportButton">
+    <i class="bi bi-download"></i> Export Incident Report
+   </button>
+   <button class="btn-premium" id="analyzeButton">
+    <i class="bi bi-stars"></i> Analyze Incident
+   </button>
+  </div>
+ </div>
+
+ <section class="hero mb-4">
+  <div class="position-relative" style="z-index:1">
+   <div class="text-uppercase fw-bold mb-3" style="font-size:10px;letter-spacing:2px">
+    <i class="bi bi-shield-exclamation me-1"></i> Agentic Emergency Intelligence
+   </div>
+   <h2>Detect risk. Coordinate response.<br>Protect people and operations.</h2>
+   <p class="mt-3 mb-4">
+    Explore simulated fire, smoke, overheating, gas and equipment incidents,
+    with severity review, response checklists, escalation planning,
+    evidence tracking and human-in-the-loop governance.
+   </p>
+   <div class="d-flex flex-wrap gap-2">
+    <span class="hero-chip"><i class="bi bi-fire"></i> Fire & Smoke</span>
+    <span class="hero-chip"><i class="bi bi-thermometer-high"></i> Thermal Events</span>
+    <span class="hero-chip"><i class="bi bi-wind"></i> Gas Alerts</span>
+    <span class="hero-chip"><i class="bi bi-diagram-3"></i> Response Planning</span>
+    <span class="hero-chip"><i class="bi bi-person-check"></i> Human Approval</span>
+   </div>
+  </div>
+ </section>
+
+ <div class="safety-banner mb-4">
+  <div class="d-flex align-items-start gap-3">
+   <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+   <div>
+    <strong>Safety-critical demonstration — not an emergency response system</strong>
+    <div class="mt-1">
+     The scenarios on this page are fictional. In a real emergency, use your site's
+     established alarm, evacuation, emergency communication and incident-command procedures.
+     Nothing on this page contacts responders, triggers alarms, controls equipment,
+     authorizes re-entry or confirms that a hazard is safe.
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <section class="row g-3 mb-4">
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Open Demo Incidents</span>
+     <span class="metric-icon" style="background:#ffebee;color:var(--red)">
+      <i class="bi bi-exclamation-triangle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="openKpi">—</div>
+    <div class="metric-foot">Fictional incident records</div>
+   </div>
+  </div>
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Critical Scenarios</span>
+     <span class="metric-icon" style="background:#fff4e2;color:var(--orange)">
+      <i class="bi bi-fire"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="criticalKpi">—</div>
+    <div class="metric-foot">High-severity simulations</div>
+   </div>
+  </div>
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Pending Human Reviews</span>
+     <span class="metric-icon" style="background:#eeebff;color:var(--purple)">
+      <i class="bi bi-person-check"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="reviewKpi">—</div>
+    <div class="metric-foot">Demo response-plan approvals</div>
+   </div>
+  </div>
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Checklist Completion</span>
+     <span class="metric-icon" style="background:#e5f8f0;color:var(--green)">
+      <i class="bi bi-clipboard-check"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="readinessKpi">—</div>
+    <div class="metric-foot">Selected simulation only</div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h2 class="section-title mb-1">Incident Simulation Queue</h2>
+      <p class="section-sub mb-0">Select a fictional incident for assessment</p>
+     </div>
+     <span class="badge-soft b-info">DEMO INCIDENTS</span>
+    </div>
+    <div class="mb-3">
+     <input type="search" class="form-control" id="incidentSearch"
+      placeholder="Search incident, plant, asset..." aria-label="Search incidents">
+    </div>
+    <div id="incidentList"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+     <div>
+      <div class="eyebrow mb-2">Selected Scenario</div>
+      <h2 class="section-title mb-1" id="selectedTitle">—</h2>
+      <p class="section-sub mb-0" id="selectedSubtitle">—</p>
+     </div>
+     <span id="selectedSeverity" class="badge-soft b-neutral">—</span>
+    </div>
+
+    <div class="row g-2 mb-4" id="sensorTiles"></div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h3 class="section-title mb-1">Synthetic Sensor Trends</h3>
+      <p class="section-sub mb-0">Temperature and risk indicators · not live telemetry</p>
+     </div>
+     <span class="badge-soft b-neutral">NOT LIVE</span>
+    </div>
+
+    <div class="chart-wrap">
+     <canvas id="sensorChart" role="img" aria-label="Synthetic incident sensor trend"></canvas>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h2 class="section-title mb-1">Emergency Response Workflow</h2>
+      <p class="section-sub mb-0">Illustrative planning stages · no external actions</p>
+     </div>
+     <span id="workflowBadge" class="badge-soft b-neutral">NOT ANALYZED</span>
+    </div>
+    <div id="workflowList"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Human Review Checklist</h2>
+    <p class="section-sub mb-3">Demo documentation and coordination checks</p>
+    <div id="checklist"></div>
+    <div class="mt-3">
+     <div class="d-flex justify-content-between mb-2">
+      <span class="section-sub">Documentation progress</span>
+      <strong id="checkProgressText">0%</strong>
+     </div>
+     <div class="progress" style="height:9px;background:#eef0f7">
+      <div class="progress-bar" id="checkProgressBar"
+       style="width:0%;background:var(--purple);border-radius:10px"></div>
+     </div>
+    </div>
+    <button class="btn-premium w-100 mt-4" id="approveButton">
+     <i class="bi bi-check2-circle"></i> Approve Demo Plan
+    </button>
+    <p class="section-sub mt-2 mb-0">
+     Approval only changes the local simulation status. It does not approve real emergency actions.
+    </p>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Incident Assessment Trace</h2>
+    <p class="section-sub mb-3">Explainable steps generated by the demo rules engine</p>
+    <div id="traceList"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Incident Timeline</h2>
+    <p class="section-sub mb-3">Local simulation activity log</p>
+    <div id="timelineList"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Incident Type Distribution</h2>
+    <p class="section-sub mb-3">Count of fictional incident records</p>
+    <div class="chart-wrap">
+     <canvas id="typeChart" role="img" aria-label="Incident type distribution"></canvas>
+    </div>
+   </div>
+  </div>
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Severity Distribution</h2>
+    <p class="section-sub mb-3">Synthetic incident classification</p>
+    <div class="chart-wrap">
+     <canvas id="severityChart" role="img" aria-label="Incident severity distribution"></canvas>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="surface mb-4">
+  <div class="p-4 pb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+   <div>
+    <h2 class="section-title mb-1">Emergency Incident Register</h2>
+    <p class="section-sub mb-0">Fictional events with local simulation statuses</p>
+   </div>
+   <button class="btn-soft" id="csvButton">
+    <i class="bi bi-filetype-csv"></i> Export Register CSV
+   </button>
+  </div>
+  <div class="table-responsive">
+   <table class="table mb-0">
+    <thead>
+     <tr>
+      <th>Incident</th>
+      <th>Location</th>
+      <th>Type</th>
+      <th>Severity</th>
+      <th>Demo Status</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="incidentTable"></tbody>
+   </table>
+  </div>
+ </section>
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">Emergency Agent Structured Output</h2>
+    <p class="section-sub mb-0">Simulated assessment, workflow and approval metadata</p>
+   </div>
+   <button class="btn-soft" id="copyButton">
+    <i class="bi bi-copy"></i> Copy JSON
+   </button>
+  </div>
+  <pre class="report-code mb-0" id="outputJson"></pre>
+ </section>
+
+</main>
+
+<footer class="footer">
+ <span>© 2026 INDUSTRA AI · Emergency Response Intelligence Agent</span>
+ <span>Simulation only · Never use as an emergency dispatch or control system</span>
+</footer>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1200">
+ <div class="toast border-0 shadow" id="appToast" role="status" aria-live="polite">
+  <div class="toast-body d-flex align-items-center gap-2">
+   <i class="bi bi-info-circle text-primary"></i>
+   <span id="toastMessage"></span>
+  </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ EMERGENCY RESPONSE AGENT — SIMULATION ONLY
+
+ All incident records and sensor values are synthetic.
+ No real sensors, LLMs, emergency services, alarms, PLCs,
+ SCADA systems or industrial actuators are connected.
+
+ This page MUST NOT be used to make safety-critical decisions.
+
+ Suggested future backend contracts:
+ GET  /api/v1/incidents
+ GET  /api/v1/incidents/{incident_id}
+ POST /api/v1/agents/emergency/assess
+ GET  /api/v1/agents/executions/{execution_id}
+ POST /api/v1/incidents/{incident_id}/reviews
+
+ Production integration requires authenticated roles,
+ verified sensors, site-specific approved response procedures,
+ audit logs, human incident command and independent emergency systems.
+*/
+
+const $=id=>document.getElementById(id);
+
+const seedIncidents=[
+ {
+  id:"INC-1042",title:"Motor Bay Smoke Indicator",type:"Smoke",
+  plant:"Plant A",zone:"Motor Bay 2",asset:"MOTOR-12",
+  severity:"Critical",status:"Pending Review",
+  icon:"bi-cloud-haze2",
+  sensors:{temperature:94,smoke:82,gas:18,vibration:5.4},
+  description:"Fictional smoke indicator near a drive motor.",
+  checklist:{}
+ },
+ {
+  id:"INC-1043",title:"Hydraulic Unit Overheating",type:"Overheating",
+  plant:"Plant B",zone:"Hydraulic Station",asset:"HYD-08",
+  severity:"High",status:"Pending Review",
+  icon:"bi-thermometer-high",
+  sensors:{temperature:106,smoke:24,gas:12,vibration:7.2},
+  description:"Synthetic temperature excursion associated with a hydraulic unit.",
+  checklist:{}
+ },
+ {
+  id:"INC-1044",title:"Gas Detector Scenario",type:"Gas",
+  plant:"Plant C",zone:"Utility Room",asset:"GAS-03",
+  severity:"Critical",status:"Pending Review",
+  icon:"bi-wind",
+  sensors:{temperature:42,smoke:16,gas:91,vibration:1.2},
+  description:"Fictional elevated gas detector reading in a utility area.",
+  checklist:{}
+ },
+ {
+  id:"INC-1045",title:"Conveyor Fire Scenario",type:"Fire",
+  plant:"Plant A",zone:"Conveyor Line 4",asset:"CONV-04",
+  severity:"Critical",status:"Pending Review",
+  icon:"bi-fire",
+  sensors:{temperature:138,smoke:94,gas:35,vibration:6.1},
+  description:"Simulated thermal and smoke indicators near conveyor equipment.",
+  checklist:{}
+ },
+ {
+  id:"INC-1046",title:"Compressor Vibration Event",type:"Equipment",
+  plant:"Plant C",zone:"Compressor Hall",asset:"COMP-06",
+  severity:"Medium",status:"Pending Review",
+  icon:"bi-activity",
+  sensors:{temperature:71,smoke:8,gas:5,vibration:8.6},
+  description:"Synthetic abnormal vibration event for a compressor.",
+  checklist:{}
+ }
+];
+
+const checklistItems=[
+ {
+  id:"record",
+  title:"Incident record reviewed",
+  detail:"Confirm the fictional event details for this exercise."
+ },
+ {
+  id:"procedure",
+  title:"Approved site procedure identified",
+  detail:"Identify the relevant real-world procedure outside this demo."
+ },
+ {
+  id:"roles",
+  title:"Responsible response roles identified",
+  detail:"Record which authorized roles would coordinate the response."
+ },
+ {
+  id:"communications",
+  title:"Communication plan reviewed",
+  detail:"Check the site's established notification and escalation process."
+ },
+ {
+  id:"evidence",
+  title:"Evidence and uncertainty documented",
+  detail:"Record which readings are simulated and what remains unverified."
+ }
+];
+
+const workflow=[
+ {
+  icon:"bi-exclamation-triangle",
+  title:"1. Recognize and record the incident",
+  description:"Capture event details and preserve source provenance. Do not treat demo readings as verified hazards."
+ },
+ {
+  icon:"bi-shield-check",
+  title:"2. Refer to approved emergency procedures",
+  description:"Actual alarm, evacuation and protective actions must follow site-approved protocols and trained personnel."
+ },
+ {
+  icon:"bi-people",
+  title:"3. Identify incident-command responsibilities",
+  description:"Document the authorized response team, escalation roles and communication channels."
+ },
+ {
+  icon:"bi-diagram-3",
+  title:"4. Prepare coordination documentation",
+  description:"Assemble a draft event summary, affected asset details and evidence gaps."
+ },
+ {
+  icon:"bi-person-check",
+  title:"5. Human review of simulation plan",
+  description:"A reviewer may approve the demo documentation only. No real action is triggered."
+ },
+ {
+  icon:"bi-file-earmark-text",
+  title:"6. Preserve audit and follow-up records",
+  description:"Record the simulated decision and any recommendations for procedure review."
+ }
+];
+
+let incidents=structuredClone(seedIncidents);
+let selectedId="INC-1042";
+let sensorChart=null;
+let typeChart=null;
+let severityChart=null;
+let events=[];
+let analyzedIds=new Set();
+
+function selected(){
+ return incidents.find(i=>i.id===selectedId);
+}
+function severityClass(level){
+ return level==="Critical"?"b-danger":
+  level==="High"?"b-warning":"b-info";
+}
+function statusClass(status){
+ return status==="Demo Plan Approved"?"b-success":
+  status==="Assessment Complete"?"b-info":"b-warning";
+}
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast"),{delay:3000}).show();
+}
+function el(tag,text,className){
+ const node=document.createElement(tag);
+ if(className)node.className=className;
+ if(text!==undefined)node.textContent=text;
+ return node;
+}
+function add(parent,tag,text,className){
+ const node=el(tag,text,className);
+ parent.append(node);
+ return node;
+}
+function badge(text,style){
+ return el("span",text,"badge-soft "+style);
+}
+
+function logEvent(message){
+ events.unshift({
+  incident:selectedId,
+  message,
+  time:new Date().toLocaleTimeString("en-IN",{
+   hour:"2-digit",minute:"2-digit",second:"2-digit"
+  })
+ });
+ events=events.slice(0,30);
+}
+
+function checkedCount(i){
+ return checklistItems.filter(item=>i.checklist[item.id]).length;
+}
+
+function renderKpis(){
+ $("openKpi").textContent=incidents.length;
+ $("criticalKpi").textContent=
+  incidents.filter(i=>i.severity==="Critical").length;
+ $("reviewKpi").textContent=
+  incidents.filter(i=>i.status!=="Demo Plan Approved").length;
+
+ const progress=Math.round(
+  checkedCount(selected())/checklistItems.length*100
+ );
+ $("readinessKpi").textContent=progress+"%";
+ $("checkProgressText").textContent=progress+"%";
+ $("checkProgressBar").style.width=progress+"%";
+}
+
+function renderIncidentCards(){
+ const root=$("incidentList");
+ root.replaceChildren();
+
+ const query=$("incidentSearch").value.trim().toLowerCase();
+ const filtered=incidents.filter(i=>
+  `${i.id} ${i.title} ${i.plant} ${i.zone} ${i.asset} ${i.type}`
+   .toLowerCase().includes(query)
+ );
+
+ if(!filtered.length){
+  add(root,"p","No incidents match your search.","text-secondary");
+  return;
+ }
+
+ filtered.forEach(i=>{
+  const card=el("div",undefined,
+   "incident-card"+(i.id===selectedId?" selected":""));
+
+  const top=el("div",undefined,"d-flex align-items-start gap-3");
+
+  const icon=el("div",undefined,"incident-icon");
+  icon.style.background=i.severity==="Critical"?"#ffebee":"#fff4e2";
+  icon.style.color=i.severity==="Critical"?"#eb6174":"#d58c20";
+  icon.append(el("i",undefined,"bi "+i.icon));
+
+  const body=el("div",undefined,"flex-grow-1");
+  add(body,"div",i.title,"incident-title");
+  add(body,"div",i.id+" · "+i.plant+" · "+i.zone,"incident-meta mt-1");
+
+  const labels=el("div",undefined,"d-flex flex-wrap gap-2 mt-2");
+  labels.append(
+   badge(i.severity,severityClass(i.severity)),
+   badge(i.status,statusClass(i.status))
+  );
+  body.append(labels);
+
+  top.append(icon,body);
+  card.append(top);
+
+  const button=el("button","Inspect Scenario","small-action mt-3");
+  button.type="button";
+  button.addEventListener("click",()=>{
+   selectedId=i.id;
+   renderAll();
+  });
+  card.append(button);
+  root.append(card);
+ });
+}
+
+function renderSelected(){
+ const i=selected();
+ $("selectedTitle").textContent=i.title;
+ $("selectedSubtitle").textContent=
+  i.id+" · "+i.plant+" · "+i.zone+" · "+i.asset;
+
+ $("selectedSeverity").className=
+  "badge-soft "+severityClass(i.severity);
+ $("selectedSeverity").textContent=i.severity+" · SIMULATED";
+
+ const sensors=[
+  {label:"Temperature",value:i.sensors.temperature,unit:"°C",icon:"bi-thermometer-high"},
+  {label:"Smoke Index",value:i.sensors.smoke,unit:"demo index",icon:"bi-cloud-haze2"},
+  {label:"Gas Index",value:i.sensors.gas,unit:"demo index",icon:"bi-wind"},
+  {label:"Vibration",value:i.sensors.vibration,unit:"mm/s",icon:"bi-activity"}
+ ];
+
+ const root=$("sensorTiles");
+ root.replaceChildren();
+
+ sensors.forEach(s=>{
+  const column=el("div",undefined,"col-6");
+  const tile=el("div",undefined,"sensor-tile");
+
+  const top=el("div",undefined,"d-flex justify-content-between");
+  add(top,"span",s.label,"sensor-label");
+  const symbol=el("i",undefined,"bi "+s.icon);
+  symbol.style.color="var(--purple)";
+  top.append(symbol);
+
+  add(tile,"div",String(s.value),"sensor-value");
+  add(tile,"div",s.unit,"sensor-unit");
+  tile.prepend(top);
+
+  column.append(tile);
+  root.append(column);
+ });
+}
+
+function syntheticSeries(base,amplitude,phase){
+ return Array.from({length:12},(_,index)=>
+  Number((
+   base+Math.sin(index*.8+phase)*amplitude+
+   (index-6)*amplitude*.07
+  ).toFixed(1))
+ );
+}
+
+function renderSensorChart(){
+ if(typeof Chart==="undefined")return;
+
+ const i=selected();
+ const labels=Array.from({length:12},(_,n)=>"T-"+(11-n));
+ const temp=syntheticSeries(i.sensors.temperature,6,1);
+ const smoke=syntheticSeries(i.sensors.smoke,8,2);
+
+ if(sensorChart){
+  sensorChart.data.labels=labels;
+  sensorChart.data.datasets[0].data=temp;
+  sensorChart.data.datasets[1].data=smoke;
+  sensorChart.update();
+  return;
+ }
+
+ sensorChart=new Chart($("sensorChart"),{
+  type:"line",
+  data:{
+   labels,
+   datasets:[
+    {
+     label:"Temperature °C",data:temp,
+     borderColor:"#eb6174",backgroundColor:"#eb6174",
+     yAxisID:"temp",tension:.35,pointRadius:2,borderWidth:2.5
+    },
+    {
+     label:"Smoke demo index",data:smoke,
+     borderColor:"#8b7af9",backgroundColor:"#8b7af9",
+     yAxisID:"smoke",tension:.35,pointRadius:2,borderWidth:2.5
+    }
+   ]
+  },
+  options:{
+   responsive:true,maintainAspectRatio:false,
+   plugins:{legend:{position:"top",labels:{boxWidth:10,font:{size:10}}}},
+   scales:{
+    temp:{position:"left",grid:{color:"#eef0f7"},ticks:{color:"#8992aa"}},
+    smoke:{
+     position:"right",min:0,max:110,
+     grid:{drawOnChartArea:false},ticks:{color:"#8992aa"}
+    },
+    x:{grid:{display:false},ticks:{color:"#8992aa"}}
+   }
+  }
+ });
+}
+
+function renderWorkflow(){
+ const root=$("workflowList");
+ root.replaceChildren();
+
+ workflow.forEach(step=>{
+  const row=el("div",undefined,"workflow-step");
+  const icon=el("div",undefined,"workflow-icon");
+  icon.append(el("i",undefined,"bi "+step.icon));
+
+  const body=el("div");
+  add(body,"strong",step.title);
+  add(body,"p",step.description);
+
+  row.append(icon,body);
+  root.append(row);
+ });
+
+ const analyzed=analyzedIds.has(selectedId);
+ $("workflowBadge").className=
+  "badge-soft "+(analyzed?"b-success":"b-neutral");
+ $("workflowBadge").textContent=
+  analyzed?"DEMO PLAN GENERATED":"NOT ANALYZED";
+}
+
+function renderChecklist(){
+ const i=selected();
+ const root=$("checklist");
+ root.replaceChildren();
+
+ checklistItems.forEach(item=>{
+  const row=el("label",undefined,"check-row");
+
+  const input=el("input");
+  input.type="checkbox";
+  input.checked=Boolean(i.checklist[item.id]);
+  input.addEventListener("change",()=>{
+   i.checklist[item.id]=input.checked;
+   if(i.status==="Demo Plan Approved"){
+    i.status="Assessment Complete";
+    logEvent("Approved demo plan returned to review after checklist change");
+   }
+   renderKpis();
+   renderIncidentCards();
+   renderTable();
+   renderJson();
+   renderTimeline();
+  });
+
+  const body=el("div");
+  add(body,"strong",item.title);
+  add(body,"p",item.detail);
+
+  row.append(input,body);
+  root.append(row);
+ });
+
+ $("approveButton").disabled=
+  !analyzedIds.has(selectedId)||
+  checkedCount(i)!==checklistItems.length||
+  i.status==="Demo Plan Approved";
+
+ $("approveButton").textContent=
+  i.status==="Demo Plan Approved"
+  ?"Demo Plan Approved"
+  :"Approve Demo Plan";
+}
+
+function renderTrace(){
+ const root=$("traceList");
+ root.replaceChildren();
+
+ if(!analyzedIds.has(selectedId)){
+  add(root,"p",
+   "Run Analyze Incident to generate a simulated assessment trace.",
+   "text-secondary"
+  );
+  return;
+ }
+
+ const i=selected();
+
+ const steps=[
+  {
+   icon:"bi-database",
+   title:"1. Synthetic incident record loaded",
+   detail:"Retrieved fictional event "+i.id+" for "+i.asset+"."
+  },
+  {
+   icon:"bi-activity",
+   title:"2. Sensor fixtures reviewed",
+   detail:"Temperature "+i.sensors.temperature+"°C, smoke index "+
+    i.sensors.smoke+", gas index "+i.sensors.gas+
+    ", vibration "+i.sensors.vibration+" mm/s."
+  },
+  {
+   icon:"bi-exclamation-triangle",
+   title:"3. Seeded severity classification retrieved",
+   detail:"This scenario is labeled "+i.severity+
+    ". No validated hazard classification model was executed."
+  },
+  {
+   icon:"bi-diagram-3",
+   title:"4. Documentation workflow assembled",
+   detail:"Generated a generic incident coordination checklist for simulation."
+  },
+  {
+   icon:"bi-person-check",
+   title:"5. Human review required",
+   detail:"No alarms, dispatches, shutdowns or other physical actions were performed."
+  }
+ ];
+
+ steps.forEach(step=>{
+  const row=el("div",undefined,"agent-trace");
+  const icon=el("div",undefined,"trace-icon");
+  icon.append(el("i",undefined,"bi "+step.icon));
+
+  const body=el("div");
+  add(body,"strong",step.title);
+  add(body,"p",step.detail);
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderTimeline(){
+ const root=$("timelineList");
+ root.replaceChildren();
+
+ const entries=events.filter(e=>e.incident===selectedId);
+
+ if(!entries.length){
+  add(root,"p",
+   "No simulation activity recorded for this incident.",
+   "text-secondary"
+  );
+  return;
+ }
+
+ entries.forEach(entry=>{
+  const row=el("div",undefined,"timeline-item");
+
+  const icon=el("div",undefined,"timeline-icon");
+  icon.append(el("i",undefined,"bi bi-clock-history"));
+
+  const body=el("div");
+  add(body,"strong",entry.message);
+  add(body,"p",entry.time+" · Local demo event");
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderDistributionCharts(){
+ if(typeof Chart==="undefined")return;
+
+ const typeLabels=[...new Set(incidents.map(i=>i.type))];
+ const typeValues=typeLabels.map(type=>
+  incidents.filter(i=>i.type===type).length
+ );
+
+ if(typeChart){
+  typeChart.data.labels=typeLabels;
+  typeChart.data.datasets[0].data=typeValues;
+  typeChart.update();
+ }else{
+  typeChart=new Chart($("typeChart"),{
+   type:"doughnut",
+   data:{
+    labels:typeLabels,
+    datasets:[{
+     data:typeValues,
+     backgroundColor:["#6855eb","#eb6174","#f2a53a","#438df5","#16b88a"],
+     borderWidth:0
+    }]
+   },
+   options:{
+    responsive:true,maintainAspectRatio:false,cutout:"67%",
+    plugins:{legend:{position:"bottom",labels:{boxWidth:10,font:{size:10}}}}
+   }
+  });
+ }
+
+ const levels=["Critical","High","Medium"];
+ const counts=levels.map(level=>
+  incidents.filter(i=>i.severity===level).length
+ );
+
+ if(severityChart){
+  severityChart.data.datasets[0].data=counts;
+  severityChart.update();
+ }else{
+  severityChart=new Chart($("severityChart"),{
+   type:"bar",
+   data:{
+    labels:levels,
+    datasets:[{
+     label:"Demo incidents",
+     data:counts,
+     backgroundColor:["#eb6174","#f2a53a","#438df5"],
+     borderRadius:8,barThickness:36
+    }]
+   },
+   options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+     y:{beginAtZero:true,ticks:{stepSize:1,color:"#8992aa"},grid:{color:"#eef0f7"}},
+     x:{grid:{display:false},ticks:{color:"#8992aa"}}
+    }
+   }
+  });
+ }
+}
+
+function renderTable(){
+ const root=$("incidentTable");
+ root.replaceChildren();
+
+ incidents.forEach(i=>{
+  const row=el("tr");
+
+  const name=el("td");
+  add(name,"div",i.title,"table-title");
+  add(name,"div",i.id+" · "+i.asset,"table-sub");
+
+  const location=el("td",i.plant+" / "+i.zone);
+  const type=el("td",i.type);
+
+  const severity=el("td");
+  severity.append(badge(i.severity,severityClass(i.severity)));
+
+  const status=el("td");
+  status.append(badge(i.status,statusClass(i.status)));
+
+  const action=el("td");
+  const button=el("button","Inspect","small-action");
+  button.type="button";
+  button.addEventListener("click",()=>{
+   selectedId=i.id;
+   renderAll();
+   window.scrollTo({top:0,behavior:"smooth"});
+  });
+  action.append(button);
+
+  row.append(name,location,type,severity,status,action);
+  root.append(row);
+ });
+}
+
+function outputData(){
+ const i=selected();
+
+ return {
+  mode:"simulation",
+  agent:"emergency_response_agent",
+  incident_id:i.id,
+  title:i.title,
+  incident_type:i.type,
+  seeded_severity:i.severity,
+  plant:i.plant,
+  zone:i.zone,
+  asset_id:i.asset,
+  description:i.description,
+  synthetic_sensor_readings:i.sensors,
+  assessment_status:analyzedIds.has(i.id)
+   ?"simulated_complete":"not_run",
+  response_plan_status:i.status,
+  documentation_checklist:Object.fromEntries(
+   checklistItems.map(item=>[
+    item.id,Boolean(i.checklist[item.id])
+   ])
+  ),
+  documentation_completion_percent:Math.round(
+   checkedCount(i)/checklistItems.length*100
+  ),
+  workflow_steps:workflow.map(step=>step.title),
+  human_review_required:true,
+  real_alarm_triggered:false,
+  emergency_services_contacted:false,
+  physical_equipment_controlled:false,
+  actual_ai_model_executed:false,
+  data_source:"synthetic_demo_fixture"
+ };
+}
+
+function renderJson(){
+ $("outputJson").textContent=JSON.stringify(outputData(),null,2);
+}
+
+function renderAll(){
+ renderKpis();
+ renderIncidentCards();
+ renderSelected();
+ renderSensorChart();
+ renderWorkflow();
+ renderChecklist();
+ renderTrace();
+ renderTimeline();
+ renderDistributionCharts();
+ renderTable();
+ renderJson();
+}
+
+function analyze(){
+ const i=selected();
+
+ analyzedIds.add(i.id);
+
+ if(i.status!=="Demo Plan Approved"){
+  i.status="Assessment Complete";
+ }
+
+ logEvent("Simulated incident assessment completed");
+ renderAll();
+ notify("Demo incident assessment completed — no external action taken");
+}
+
+function approve(){
+ const i=selected();
+
+ if(!analyzedIds.has(i.id)){
+  notify("Run the simulated assessment first");
+  return;
+ }
+
+ if(checkedCount(i)!==checklistItems.length){
+  notify("Complete all documentation checklist items");
+  return;
+ }
+
+ if(i.status==="Demo Plan Approved")return;
+
+ i.status="Demo Plan Approved";
+ logEvent("Local demo response plan approved for documentation");
+ renderAll();
+ notify("Simulation plan marked approved — no real actions triggered");
+}
+
+function download(content,filename,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportJson(){
+ download(
+  JSON.stringify(outputData(),null,2),
+  "emergency-agent-"+selectedId+".json",
+  "application/json"
+ );
+ notify("Synthetic incident report exported");
+}
+
+function csvCell(value){
+ const text=String(value);
+ const safe=/^\s*[=+\-@]/.test(text)?"'"+text:text;
+ return '"'+safe.replaceAll('"','""')+'"';
+}
+
+function exportCsv(){
+ const rows=[
+  ["Incident ID","Title","Plant","Zone","Asset","Type","Severity","Demo Status"],
+  ...incidents.map(i=>[
+   i.id,i.title,i.plant,i.zone,i.asset,i.type,i.severity,i.status
+  ])
+ ];
+
+ const csv=rows.map(row=>row.map(csvCell).join(",")).join("\r\n");
+
+ download(csv,"emergency-demo-register.csv","text/csv;charset=utf-8");
+ notify("Synthetic incident register exported");
+}
+
+async function copyJson(){
+ try{
+  await navigator.clipboard.writeText($("outputJson").textContent);
+  notify("Incident JSON copied");
+ }catch{
+  notify("Clipboard unavailable; select JSON manually");
+ }
+}
+
+function reset(){
+ incidents=structuredClone(seedIncidents);
+ selectedId="INC-1042";
+ analyzedIds=new Set();
+ events=[];
+ $("incidentSearch").value="";
+ renderAll();
+ notify("Emergency response simulation reset");
+}
+
+function initNavigation(){
+ const sidebar=$("sidebar");
+ const shade=$("shade");
+
+ function close(){
+  sidebar.classList.remove("open");
+  shade.classList.remove("show");
+ }
+
+ $("menuButton").addEventListener("click",()=>{
+  sidebar.classList.add("open");
+  shade.classList.add("show");
+ });
+
+ shade.addEventListener("click",close);
+ document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")close();
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ initNavigation();
+ logEvent("Fictional incident selected for simulation");
+ renderAll();
+
+ $("incidentSearch").addEventListener("input",renderIncidentCards);
+ $("analyzeButton").addEventListener("click",analyze);
+ $("approveButton").addEventListener("click",approve);
+ $("exportButton").addEventListener("click",exportJson);
+ $("csvButton").addEventListener("click",exportCsv);
+ $("copyButton").addEventListener("click",copyJson);
+ $("resetButton").addEventListener("click",reset);
+});
+</script>
+</body>
+</html>

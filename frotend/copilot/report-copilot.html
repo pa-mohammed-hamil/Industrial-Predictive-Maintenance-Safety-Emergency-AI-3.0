@@ -1,0 +1,1350 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Report Copilot | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / copilot</p><h1 id="page-title">Report Copilot</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Report Copilot workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Report Copilot | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5;--sidebar:258px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5{font-family:"Manrope",sans-serif;letter-spacing:-.5px}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+button:disabled{opacity:.5;cursor:not-allowed}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:white;z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto;
+ scrollbar-width:thin;scrollbar-color:#42496b transparent;
+}
+.brand{display:flex;align-items:center;gap:11px;padding:26px 22px;border-bottom:1px solid #ffffff12}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);font-size:22px;
+}
+.brand strong{font:800 18px "Manrope",sans-serif;color:white}
+.brand small{display:block;color:#8994bd;font-size:8px;letter-spacing:1.7px;margin-top:4px}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;font-size:9px;
+ font-weight:800;letter-spacing:1.7px;text-transform:uppercase;
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;margin:3px 12px;
+ padding:12px 13px;border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700;transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{background:linear-gradient(95deg,#6855eb,#5145b4);color:white}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12;
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;justify-content:space-between;align-items:center;gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;display:grid;place-items:center;
+ color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{padding:27px 30px 45px;max-width:1650px;margin:auto}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;padding:30px;
+ color:white;background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:23px;
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;border-radius:50%;
+ border:1px solid #ffffff25;right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#ddd6ff}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{color:#e6e0ff;font-size:12px;line-height:1.9;max-width:790px;margin:0}
+.hero-tag{
+ display:inline-flex;align-items:center;gap:7px;background:#ffffff20;
+ border:1px solid #ffffff25;border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:17px;
+}
+.panel,.stat-card{
+ background:white;border:1px solid var(--border);border-radius:16px;
+ box-shadow:0 5px 23px #18204105;
+}
+.panel{padding:21px}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:15px;
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 24px "Manrope",sans-serif;margin-top:7px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel-heading{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-bottom:19px;
+}
+.panel-heading h3{font-size:14px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:10px;margin-top:5px}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);color:white;
+ border:0;border-radius:10px;padding:11px 16px;font-size:11px;
+ font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;padding:10px 13px;
+ background:white;color:#69738e;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;border-radius:8px;
+ padding:7px 10px;font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffedf0;color:#d84b63}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.status-badge.purple{background:#f0edff;color:#6855eb}
+.form-label{font-size:10px;color:#68718e;font-weight:800;margin-bottom:8px}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:42px;font-size:11px;padding:10px 12px;
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12;
+}
+.section-label{
+ color:#8e97ac;font-size:10px;font-weight:800;
+ text-transform:uppercase;letter-spacing:1.2px;margin:21px 0 14px;
+}
+.check-option{
+ display:flex;align-items:center;gap:10px;padding:12px 13px;
+ border:1px solid var(--border);border-radius:10px;
+ font-size:11px;font-weight:700;margin-bottom:8px;cursor:pointer;
+}
+.check-option:hover{background:#fbfaff}
+.check-option input{accent-color:var(--purple);width:15px;height:15px}
+.report-paper{
+ background:white;border:1px solid var(--border);
+ border-radius:14px;padding:30px;min-height:480px;
+}
+.report-paper h2{font-size:23px;font-weight:800}
+.report-paper h3{font-size:14px;font-weight:800;margin:23px 0 11px}
+.report-paper p{font-size:11px;line-height:1.85;color:#68718e}
+.report-paper .report-meta{
+ display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 22px;
+}
+.report-section{border-top:1px solid #edf0f6;padding-top:17px;margin-top:20px}
+.report-metric{
+ border:1px solid var(--border);border-radius:11px;
+ padding:15px;background:#fafbff;height:100%;
+}
+.report-metric small{display:block;color:#8b95a9;font-size:10px}
+.report-metric strong{display:block;font:800 20px "Manrope";margin-top:8px}
+.chart-box{height:255px;position:relative}
+.chart-box canvas{width:100%!important;height:100%!important}
+.chat-panel{display:flex;flex-direction:column;height:530px;padding:0;overflow:hidden}
+.chat-heading{
+ padding:17px 19px;border-bottom:1px solid var(--border);
+ display:flex;align-items:center;gap:10px;
+}
+.chat-heading-icon{
+ width:38px;height:38px;border-radius:11px;background:#eeeaff;
+ color:var(--purple);display:grid;place-items:center;font-size:18px;
+}
+.chat-heading strong{font-size:12px}
+.chat-heading small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.chat-messages{flex:1;min-height:0;overflow-y:auto;padding:18px;background:#fdfdff}
+.chat-message{margin-bottom:17px;max-width:95%}
+.chat-message.user{margin-left:auto}
+.chat-meta{font-size:10px;font-weight:800;color:#98a1b5;margin-bottom:6px}
+.chat-message.user .chat-meta{text-align:right}
+.chat-bubble{
+ padding:13px 15px;border-radius:4px 12px 12px 12px;
+ background:white;border:1px solid var(--border);
+ line-height:1.8;font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere;
+}
+.chat-message.user .chat-bubble{
+ background:var(--purple);color:white;border-color:var(--purple);
+ border-radius:12px 4px 12px 12px;
+}
+.chat-composer{border-top:1px solid var(--border);padding:13px}
+.chat-composer textarea{resize:none;min-height:60px}
+.quick-prompts{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.quick-prompt{
+ border:1px solid #e4dfff;border-radius:8px;background:#f7f5ff;
+ color:var(--purple);font-size:10px;font-weight:700;padding:8px 10px;
+}
+.quick-prompt:hover{background:#eeeaff}
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;font-size:10px;font-weight:800;padding:13px;
+ background:#f9faff;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.table tbody td{padding:13px;vertical-align:middle;border-color:#f0f1f7}
+.table tbody tr:hover{background:#fcfbff}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;color:#986b2d;
+ border-radius:12px;padding:15px 17px;font-size:11px;
+ line-height:1.8;display:flex;align-items:flex-start;gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1100px){
+ :root{--sidebar:225px}
+ .content{padding:22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%);transition:transform .25s;width:260px}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;background:#10152d88;z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:15px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:16px}
+ .chat-panel{padding:0}
+ .report-paper{padding:18px}
+ .mobile-hide{display:none}
+}
+@media print{
+ @page{size:A4;margin:15mm}
+ body{background:white}
+ .sidebar,.topbar,.hero,.no-print,.toast-container{display:none!important}
+ .main{margin:0}
+ .content{padding:0;max-width:none}
+ .print-preview-column{width:100%!important;flex:0 0 100%;max-width:100%}
+ .report-paper{border:0;padding:0;min-height:0}
+ .panel{box-shadow:none;border:0;padding:0}
+ .report-section{break-inside:avoid}
+ .report-paper h2{font-size:21px}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+ <a class="side-link" href="notifications.html"><i class="bi bi-bell"></i> Notifications</a>
+
+ <div class="nav-section">AI Intelligence</div>
+ <a class="side-link" href="a-i-copilot.html"><i class="bi bi-stars"></i> AI Copilot</a>
+ <a class="side-link" href="chat-history.html"><i class="bi bi-clock-history"></i> Chat History</a>
+ <a class="side-link" href="cost-copilot.html"><i class="bi bi-cash-coin"></i> Cost Copilot</a>
+ <a class="side-link" href="diagnostics-copilot.html"><i class="bi bi-activity"></i> Diagnostics Copilot</a>
+ <a class="side-link" href="maintenance-copilot.html"><i class="bi bi-tools"></i> Maintenance Copilot</a>
+ <a class="side-link active" href="report-copilot.html"><i class="bi bi-file-earmark-richtext"></i> Report Copilot</a>
+
+ <div class="nav-section">Industrial Intelligence</div>
+ <a class="side-link" href="equipment-condition.html"><i class="bi bi-cpu"></i> Equipment Condition</a>
+ <a class="side-link" href="vision-dashboard.html"><i class="bi bi-eye"></i> Vision Dashboard</a>
+ <a class="side-link" href="inspection-history.html"><i class="bi bi-clipboard-data"></i> Inspection History</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/report-agent.html"><i class="bi bi-file-text"></i> Report Agent</a>
+ <a class="side-link" href="agents/maintenance-agent.html"><i class="bi bi-tools"></i> Maintenance Agent</a>
+ <a class="side-link" href="agents/cost-agent.html"><i class="bi bi-calculator"></i> Cost Agent</a>
+ <a class="side-link" href="agents/supervisor-agent.html"><i class="bi bi-diagram-3"></i> Supervisor Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Industrial Reporting Workspace
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+
+<header class="topbar no-print">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">AI Intelligence / <strong>Report Copilot</strong></div>
+   <div class="fw-bold mt-1" style="font-size:13px">Industrial Report Intelligence</div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="status-badge info mobile-hide"><i class="bi bi-hdd"></i> Sample Dataset</span>
+  <a href="notifications.html" class="top-icon" aria-label="Notifications"><i class="bi bi-bell"></i></a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero no-print">
+ <div class="hero-label">INDUSTRA AI / Intelligent Reporting</div>
+ <h1><i class="bi bi-file-earmark-bar-graph me-2"></i> Industrial Report Copilot</h1>
+ <p>
+  Build equipment condition reports, summarize maintenance operations,
+  review simulated safety observations, compare costs, and generate
+  professional industrial report previews from structured demonstration data.
+ </p>
+ <div class="hero-tag">
+  <i class="bi bi-shield-check"></i>
+  Sample data · Rule-based summaries · Local report generation
+ </div>
+</section>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 no-print">
+ <div>
+  <h5 class="fw-bold mb-1">Industrial Reporting Workspace</h5>
+  <div class="text-secondary" style="font-size:11px">
+   Configure report sections, generate previews, and export your reports.
+  </div>
+ </div>
+ <div class="d-flex gap-2 flex-wrap">
+  <button class="btn-outline-custom" id="exportCsv"><i class="bi bi-filetype-csv"></i> CSV</button>
+  <button class="btn-outline-custom" id="exportJson"><i class="bi bi-filetype-json"></i> JSON</button>
+  <button class="btn-outline-custom" id="printReport"><i class="bi bi-printer"></i> Print / PDF</button>
+  <button class="btn-purple" id="generateReport"><i class="bi bi-stars"></i> Generate Report</button>
+ </div>
+</div>
+
+<div class="row g-3 mb-4 no-print">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb"><i class="bi bi-cpu"></i></div>
+   <div class="stat-label">Sample Assets</div>
+   <div class="stat-value" id="assetsKpi">—</div>
+   <div class="stat-note">Fictional equipment records</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#fff4e6;color:#d68a22"><i class="bi bi-exclamation-triangle"></i></div>
+   <div class="stat-label">Sample Open Incidents</div>
+   <div class="stat-value" id="incidentsKpi">—</div>
+   <div class="stat-note">Synthetic observation records</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eaf2ff;color:#438df5"><i class="bi bi-tools"></i></div>
+   <div class="stat-label">Sample Maintenance Tasks</div>
+   <div class="stat-value" id="maintenanceKpi">—</div>
+   <div class="stat-note">Illustrative service activities</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e7f8f1;color:#18b58c"><i class="bi bi-file-earmark-check"></i></div>
+   <div class="stat-label">Saved Reports</div>
+   <div class="stat-value" id="reportsKpi">0</div>
+   <div class="stat-note">Browser-local report history</div>
+  </div>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+
+ <div class="col-xl-4 no-print">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3><i class="bi bi-sliders me-2" style="color:var(--purple)"></i> Report Builder</h3>
+     <div class="panel-subtitle">Customize the report content and metadata.</div>
+    </div>
+    <span class="status-badge purple">Builder</span>
+   </div>
+
+   <div class="mb-3">
+    <label class="form-label" for="reportTitle">Report Title</label>
+    <input class="form-control" id="reportTitle" maxlength="120" value="Industrial Operations Intelligence Report">
+   </div>
+
+   <div class="mb-3">
+    <label class="form-label" for="reportType">Report Type</label>
+    <select class="form-select" id="reportType">
+     <option>Operations Overview</option>
+     <option>Equipment Condition Report</option>
+     <option>Predictive Maintenance Review</option>
+     <option>Safety Observation Report</option>
+     <option>Maintenance Cost Analysis</option>
+     <option>Executive Management Summary</option>
+    </select>
+   </div>
+
+   <div class="row g-2">
+    <div class="col-6">
+     <label class="form-label" for="startDate">Start Date</label>
+     <input class="form-control" type="date" id="startDate">
+    </div>
+    <div class="col-6">
+     <label class="form-label" for="endDate">End Date</label>
+     <input class="form-control" type="date" id="endDate">
+    </div>
+   </div>
+
+   <div class="mt-3">
+    <label class="form-label" for="department">Department</label>
+    <select class="form-select" id="department">
+     <option value="All">All Departments</option>
+     <option value="Production">Production</option>
+     <option value="Utilities">Utilities</option>
+     <option value="Warehouse">Warehouse</option>
+     <option value="Maintenance">Maintenance</option>
+    </select>
+   </div>
+
+   <div class="mt-3">
+    <label class="form-label" for="preparedBy">Prepared By</label>
+    <input class="form-control" id="preparedBy" maxlength="100" placeholder="Inspector / Analyst / Team">
+   </div>
+
+   <div class="section-label">Include Report Sections</div>
+
+   <label class="check-option">
+    <input type="checkbox" class="report-section-checkbox" value="summary" checked>
+    Executive Summary
+   </label>
+   <label class="check-option">
+    <input type="checkbox" class="report-section-checkbox" value="assets" checked>
+    Equipment Condition
+   </label>
+   <label class="check-option">
+    <input type="checkbox" class="report-section-checkbox" value="maintenance" checked>
+    Maintenance Operations
+   </label>
+   <label class="check-option">
+    <input type="checkbox" class="report-section-checkbox" value="safety" checked>
+    Safety Observations
+   </label>
+   <label class="check-option">
+    <input type="checkbox" class="report-section-checkbox" value="costs" checked>
+    Maintenance Costs
+   </label>
+   <label class="check-option">
+    <input type="checkbox" class="report-section-checkbox" value="recommendations" checked>
+    Review Recommendations
+   </label>
+
+   <div class="section-label">Additional Report Notes</div>
+   <textarea class="form-control" id="reportNotes" rows="4" maxlength="3000" placeholder="Add management observations, inspection context, or follow-up notes..."></textarea>
+
+   <button class="btn-purple w-100 mt-3" id="builderGenerate">
+    <i class="bi bi-file-earmark-plus"></i> Build Report
+   </button>
+  </section>
+ </div>
+
+ <div class="col-xl-8 print-preview-column">
+  <section class="panel">
+   <div class="panel-heading no-print">
+    <div>
+     <h3><i class="bi bi-eye me-2" style="color:var(--purple)"></i> Report Preview</h3>
+     <div class="panel-subtitle">Generated report content ready for printing or exporting.</div>
+    </div>
+    <span class="status-badge success" id="previewStatus">Ready</span>
+   </div>
+
+   <div class="report-paper" id="reportPreview" aria-live="polite"></div>
+  </section>
+ </div>
+
+</div>
+
+<div class="row g-3 mb-4 no-print">
+ <div class="col-xl-7">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3><i class="bi bi-bar-chart me-2" style="color:var(--purple)"></i> Equipment Condition Analytics</h3>
+     <div class="panel-subtitle">Illustrative scores for fictional equipment.</div>
+    </div>
+    <span class="status-badge info">Sample Data</span>
+   </div>
+   <div class="chart-box">
+    <canvas id="assetChart"></canvas>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-5">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>Maintenance Cost Distribution</h3>
+     <div class="panel-subtitle">Synthetic maintenance expenditure.</div>
+    </div>
+   </div>
+   <div class="chart-box">
+    <canvas id="costChart"></canvas>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="row g-3 mb-4 no-print">
+ <div class="col-xl-7">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3><i class="bi bi-clock-history me-2" style="color:var(--purple)"></i> Generated Report History</h3>
+     <div class="panel-subtitle">Saved locally in this browser.</div>
+    </div>
+    <button class="btn-outline-custom" id="clearHistory">
+     <i class="bi bi-trash"></i> Clear History
+    </button>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table mb-0">
+     <thead>
+      <tr>
+       <th>Report</th><th>Type</th><th>Created</th><th>Action</th>
+      </tr>
+     </thead>
+     <tbody id="historyTable"></tbody>
+    </table>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-5">
+  <section class="panel chat-panel">
+   <div class="chat-heading">
+    <div class="chat-heading-icon"><i class="bi bi-stars"></i></div>
+    <div>
+     <strong>Report Copilot</strong>
+     <small>Rule-based reporting assistant</small>
+    </div>
+    <span class="status-badge purple ms-auto">LOCAL</span>
+   </div>
+
+   <div class="chat-messages" id="chatMessages"></div>
+
+   <div class="chat-composer">
+    <div class="quick-prompts">
+     <button class="quick-prompt" data-question="Summarize equipment condition.">Asset summary</button>
+     <button class="quick-prompt" data-question="Summarize maintenance costs.">Costs</button>
+     <button class="quick-prompt" data-question="Explain safety observations.">Safety</button>
+    </div>
+    <div class="d-flex gap-2">
+     <textarea class="form-control" id="chatInput" rows="2" maxlength="1500" placeholder="Ask about the report data..."></textarea>
+     <button class="btn-purple align-self-end" id="sendChat" aria-label="Send message">
+      <i class="bi bi-arrow-up"></i>
+     </button>
+    </div>
+    <div class="text-secondary mt-2" style="font-size:9px">
+     Responses use local sample records, not a connected LLM.
+    </div>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="notice no-print">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Reporting limitation:</strong>
+  All equipment, safety, maintenance, and financial figures shown on this page
+  are fictional demonstration records. They are not connected to plant systems,
+  inspection databases, or financial ledgers. Generated reports are not certified
+  inspection, engineering, safety, or compliance documents. Verify all information
+  against authorized operational records before business or safety decisions.
+ </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3 no-print">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const STORAGE_KEY="industra-report-copilot-v1";
+
+const assets=[
+ {id:"P-204",name:"Centrifugal Pump",department:"Production",score:64},
+ {id:"M-108",name:"Electric Motor",department:"Production",score:86},
+ {id:"C-301",name:"Air Compressor",department:"Utilities",score:58},
+ {id:"G-115",name:"Industrial Gearbox",department:"Production",score:73},
+ {id:"CV-220",name:"Conveyor Drive",department:"Warehouse",score:91},
+ {id:"H-410",name:"Hydraulic Unit",department:"Maintenance",score:69}
+];
+
+const maintenance=[
+ {id:"MT-001",department:"Production",type:"Preventive",cost:6500},
+ {id:"MT-002",department:"Utilities",type:"Corrective",cost:14500},
+ {id:"MT-003",department:"Production",type:"Inspection",cost:3500},
+ {id:"MT-004",department:"Warehouse",type:"Preventive",cost:4800},
+ {id:"MT-005",department:"Maintenance",type:"Corrective",cost:9200}
+];
+
+const incidents=[
+ {id:"IN-001",department:"Production",type:"Equipment Observation",status:"Open"},
+ {id:"IN-002",department:"Utilities",type:"Temperature Observation",status:"Open"},
+ {id:"IN-003",department:"Warehouse",type:"Housekeeping Observation",status:"Closed"},
+ {id:"IN-004",department:"Maintenance",type:"Leakage Observation",status:"Open"}
+];
+
+function readHistory(){
+ try{
+  const data=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  return Array.isArray(data)?data.filter(item=>
+   item&&typeof item==="object"&&
+   typeof item.id==="string"&&
+   item.report&&typeof item.report==="object"
+  ).slice(0,30):[];
+ }catch{return []}
+}
+
+let history=readHistory();
+let currentReport=null;
+let assetChart=null;
+let costChart=null;
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function money(value){
+ return new Intl.NumberFormat("en-IN",{
+  style:"currency",currency:"INR",maximumFractionDigits:0
+ }).format(value);
+}
+
+function dateOffset(days){
+ const date=new Date();
+ date.setDate(date.getDate()+days);
+ return [
+  date.getFullYear(),
+  String(date.getMonth()+1).padStart(2,"0"),
+  String(date.getDate()).padStart(2,"0")
+ ].join("-");
+}
+
+function textNode(tag,value,className=""){
+ const node=document.createElement(tag);
+ node.textContent=value;
+ if(className)node.className=className;
+ return node;
+}
+
+function appendText(parent,tag,value,className=""){
+ const node=textNode(tag,value,className);
+ parent.append(node);
+ return node;
+}
+
+function getFilteredData(department){
+ const matches=item=>
+  department==="All"||item.department===department;
+
+ return {
+  assets:assets.filter(matches),
+  maintenance:maintenance.filter(matches),
+  incidents:incidents.filter(matches)
+ };
+}
+
+function getReportConfig(){
+ const title=$("reportTitle").value.trim();
+ const start=$("startDate").value;
+ const end=$("endDate").value;
+ const sections=[...document.querySelectorAll(".report-section-checkbox:checked")]
+  .map(input=>input.value);
+
+ if(!title)throw Error("Enter a report title.");
+ if(!start||!end)throw Error("Select both report dates.");
+ if(start>end)throw Error("Start date must not exceed end date.");
+ if(!sections.length)throw Error("Select at least one report section.");
+
+ return {
+  title,
+  type:$("reportType").value,
+  startDate:start,
+  endDate:end,
+  department:$("department").value,
+  preparedBy:$("preparedBy").value.trim(),
+  notes:$("reportNotes").value.trim(),
+  sections
+ };
+}
+
+function buildReport(){
+ const config=getReportConfig();
+ const data=getFilteredData(config.department);
+
+ const average=data.assets.length?
+  data.assets.reduce((sum,a)=>sum+a.score,0)/data.assets.length:0;
+
+ const totalCost=data.maintenance.reduce((sum,item)=>sum+item.cost,0);
+ const openIncidents=data.incidents.filter(item=>item.status==="Open").length;
+ const lowScoreAssets=data.assets.filter(item=>item.score<70);
+
+ return {
+  id:"RPT-"+Date.now().toString(36).toUpperCase()+
+   "-"+Math.random().toString(36).slice(2,6).toUpperCase(),
+  createdAt:new Date().toISOString(),
+  source:"fictional static demonstration dataset",
+  realOperationalData:false,
+  trainedLLMGeneration:false,
+  dateFilteringApplied:false,
+  config,
+  metrics:{
+   assetCount:data.assets.length,
+   averageCondition:average,
+   maintenanceCount:data.maintenance.length,
+   totalMaintenanceCost:totalCost,
+   openIncidents,
+   lowScoreAssets:lowScoreAssets.length
+  },
+  data
+ };
+}
+
+function addSection(parent,title){
+ const section=document.createElement("section");
+ section.className="report-section";
+ appendText(section,"h3",title);
+ parent.append(section);
+ return section;
+}
+
+function addMetricGrid(parent,items){
+ const row=document.createElement("div");
+ row.className="row g-2";
+
+ items.forEach(([label,value])=>{
+  const col=document.createElement("div");
+  col.className="col-6 col-md-3";
+
+  const metric=document.createElement("div");
+  metric.className="report-metric";
+
+  appendText(metric,"small",label);
+  appendText(metric,"strong",String(value));
+
+  col.append(metric);
+  row.append(col);
+ });
+
+ parent.append(row);
+}
+
+function addReportTable(parent,headers,rows){
+ const wrapper=document.createElement("div");
+ wrapper.className="table-responsive";
+
+ const table=document.createElement("table");
+ table.className="table table-sm";
+
+ const thead=document.createElement("thead");
+ const headRow=document.createElement("tr");
+
+ headers.forEach(header=>{
+  appendText(headRow,"th",header);
+ });
+ thead.append(headRow);
+
+ const tbody=document.createElement("tbody");
+ rows.forEach(values=>{
+  const tr=document.createElement("tr");
+  values.forEach(value=>appendText(tr,"td",String(value)));
+  tbody.append(tr);
+ });
+
+ table.append(thead,tbody);
+ wrapper.append(table);
+ parent.append(wrapper);
+}
+
+function renderPreview(report){
+ currentReport=report;
+ const preview=$("reportPreview");
+ preview.replaceChildren();
+
+ const config=report.config;
+ const metrics=report.metrics;
+ const data=report.data;
+
+ appendText(preview,"div","INDUSTRA AI / INDUSTRIAL REPORTING","hero-label")
+  .style.color="#6855eb";
+
+ appendText(preview,"h2",config.title).classList.add("mt-3");
+
+ appendText(
+  preview,"p",
+  "DEMONSTRATION REPORT — NOT VERIFIED OPERATIONAL DATA"
+ ).style.color="#d84b63";
+
+ const meta=document.createElement("div");
+ meta.className="report-meta";
+
+ [
+  config.type,
+  config.department==="All"?"All Departments":config.department,
+  config.startDate+" to "+config.endDate,
+  "Created "+new Date(report.createdAt).toLocaleString()
+ ].forEach(value=>{
+  appendText(meta,"span",value,"status-badge info");
+ });
+
+ preview.append(meta);
+
+ if(config.preparedBy){
+  appendText(preview,"p","Prepared by: "+config.preparedBy);
+ }
+
+ appendText(
+  preview,"p",
+  "This report uses fictional demonstration records. The selected date range is report metadata only: the sample records have no event dates, so date-based filtering has not been applied."
+ );
+
+ if(config.sections.includes("summary")){
+  const section=addSection(preview,"Executive Summary");
+
+  addMetricGrid(section,[
+   ["Assets",metrics.assetCount],
+   ["Average Condition",metrics.assetCount?
+    metrics.averageCondition.toFixed(1)+"/100":"N/A"],
+   ["Maintenance Tasks",metrics.maintenanceCount],
+   ["Open Incidents",metrics.openIncidents]
+  ]);
+
+  appendText(
+   section,"p",
+   `The selected sample department contains ${metrics.assetCount} fictional assets, `+
+   `${metrics.maintenanceCount} illustrative maintenance activities, `+
+   `and ${metrics.openIncidents} open synthetic observations. `+
+   `The displayed condition scores are example values rather than measured equipment health.`
+  ).classList.add("mt-3");
+ }
+
+ if(config.sections.includes("assets")){
+  const section=addSection(preview,"Equipment Condition");
+
+  addReportTable(
+   section,
+   ["Asset ID","Equipment","Department","Demo Score"],
+   data.assets.map(a=>[
+    a.id,a.name,a.department,a.score+"/100"
+   ])
+  );
+
+  appendText(
+   section,"p",
+   `${metrics.lowScoreAssets} selected sample assets have example condition scores below 70. `+
+   "This arbitrary reporting threshold is not a validated maintenance or safety limit."
+  );
+ }
+
+ if(config.sections.includes("maintenance")){
+  const section=addSection(preview,"Maintenance Operations");
+
+  addReportTable(
+   section,
+   ["Task","Type","Department","Sample Cost"],
+   data.maintenance.map(m=>[
+    m.id,m.type,m.department,money(m.cost)
+   ])
+  );
+ }
+
+ if(config.sections.includes("safety")){
+  const section=addSection(preview,"Safety and Operational Observations");
+
+  addReportTable(
+   section,
+   ["Observation","Category","Department","Status"],
+   data.incidents.map(i=>[
+    i.id,i.type,i.department,i.status
+   ])
+  );
+
+  appendText(
+   section,"p",
+   "These entries are fictional observation records and do not represent actual alarms, confirmed hazards, or safety inspections."
+  );
+ }
+
+ if(config.sections.includes("costs")){
+  const section=addSection(preview,"Maintenance Cost Summary");
+
+  addMetricGrid(section,[
+   ["Maintenance Records",metrics.maintenanceCount],
+   ["Total Sample Cost",money(metrics.totalMaintenanceCost)]
+  ]);
+
+  appendText(
+   section,"p",
+   "Costs are synthetic INR figures. They exclude taxes, downtime, inventory valuation, procurement charges, and other possible real-world expenses."
+  ).classList.add("mt-3");
+ }
+
+ if(config.sections.includes("recommendations")){
+  const section=addSection(preview,"Suggested Review Priorities");
+
+  const recommendations=[];
+
+  if(metrics.lowScoreAssets){
+   recommendations.push(
+    `Review ${metrics.lowScoreAssets} sample asset(s) below the illustrative condition threshold.`
+   );
+  }
+  if(metrics.openIncidents){
+   recommendations.push(
+    `Review ${metrics.openIncidents} open fictional observation record(s).`
+   );
+  }
+  if(metrics.maintenanceCount){
+   recommendations.push(
+    "Validate maintenance schedules and work records against authorized maintenance systems."
+   );
+  }
+
+  recommendations.push(
+   "Confirm all equipment limits, service requirements, and safety actions with qualified personnel."
+  );
+
+  const list=document.createElement("ul");
+  recommendations.forEach(item=>{
+   appendText(list,"li",item);
+  });
+  section.append(list);
+ }
+
+ if(config.notes){
+  const section=addSection(preview,"Additional Notes");
+  appendText(section,"p",config.notes)
+   .style.whiteSpace="pre-wrap";
+ }
+
+ const footer=addSection(preview,"Data Provenance and Limitations");
+ appendText(
+  footer,"p",
+  "Source: fictional static records embedded in this page. " +
+  "No live telemetry, industrial database, ML inference, LLM inference, " +
+  "automated hazard detection, or independent verification was performed. " +
+  "The report date range is descriptive only and does not filter undated sample records."
+ );
+
+ $("previewStatus").textContent="Preview Generated";
+}
+
+function generateAndSave(){
+ try{
+  const report=buildReport();
+  renderPreview(report);
+
+  history.unshift({
+   id:report.id,
+   report
+  });
+
+  history=history.slice(0,30);
+
+  try{
+   localStorage.setItem(STORAGE_KEY,JSON.stringify(history));
+  }catch{
+   notify("Report generated, but browser history could not be saved.");
+  }
+
+  renderHistory();
+  notify("Demonstration report generated.");
+ }catch(error){
+  notify(error.message);
+ }
+}
+
+$("generateReport").addEventListener("click",generateAndSave);
+$("builderGenerate").addEventListener("click",generateAndSave);
+
+function renderHistory(){
+ const tbody=$("historyTable");
+ tbody.replaceChildren();
+
+ $("reportsKpi").textContent=history.length;
+
+ if(!history.length){
+  const row=document.createElement("tr");
+  const cell=document.createElement("td");
+  cell.colSpan=4;
+  cell.className="text-center text-secondary py-4";
+  cell.textContent="No saved reports.";
+  row.append(cell);
+  tbody.append(row);
+  return;
+ }
+
+ history.forEach(item=>{
+  const tr=document.createElement("tr");
+
+  [
+   item.report.config.title,
+   item.report.config.type,
+   new Date(item.report.createdAt).toLocaleString()
+  ].forEach(value=>appendText(tr,"td",value));
+
+  const action=document.createElement("td");
+  const button=document.createElement("button");
+  button.className="btn-outline-custom";
+  button.textContent="View";
+  button.addEventListener("click",()=>{
+   renderPreview(item.report);
+   window.scrollTo({top:0,behavior:"smooth"});
+   notify("Saved report loaded.");
+  });
+
+  action.append(button);
+  tr.append(action);
+  tbody.append(tr);
+ });
+}
+
+$("clearHistory").addEventListener("click",()=>{
+ if(!confirm("Clear saved report history from this browser?"))return;
+ history=[];
+ localStorage.removeItem(STORAGE_KEY);
+ renderHistory();
+ notify("Report history cleared.");
+});
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportJson").addEventListener("click",()=>{
+ if(!currentReport){
+  notify("Generate a report first.");
+  return;
+ }
+
+ downloadFile(
+  "industra-industrial-report.json",
+  JSON.stringify(currentReport,null,2),
+  "application/json"
+ );
+ notify("Report JSON exported.");
+});
+
+$("exportCsv").addEventListener("click",()=>{
+ if(!currentReport){
+  notify("Generate a report first.");
+  return;
+ }
+
+ const report=currentReport;
+ const escapeCsv=value=>
+  '"'+String(value??"").replace(/"/g,'""')+'"';
+
+ const rows=[
+  ["Section","Metric","Value"],
+  ["Report","Title",report.config.title],
+  ["Report","Type",report.config.type],
+  ["Report","Department",report.config.department],
+  ["Report","Start Date",report.config.startDate],
+  ["Report","End Date",report.config.endDate],
+  ["Provenance","Dataset","Fictional static demonstration data"],
+  ["Provenance","Date Filter Applied","No"],
+  ["Metrics","Assets",report.metrics.assetCount],
+  ["Metrics","Average Condition",report.metrics.averageCondition],
+  ["Metrics","Maintenance Tasks",report.metrics.maintenanceCount],
+  ["Metrics","Open Incidents",report.metrics.openIncidents],
+  ["Metrics","Total Sample Maintenance Cost",report.metrics.totalMaintenanceCost]
+ ];
+
+ const csv=rows.map(row=>row.map(escapeCsv).join(",")).join("\r\n");
+
+ downloadFile(
+  "industra-report-summary.csv",
+  csv,
+  "text/csv;charset=utf-8"
+ );
+ notify("Report summary CSV exported.");
+});
+
+$("printReport").addEventListener("click",()=>{
+ if(!currentReport){
+  notify("Generate a report first.");
+  return;
+ }
+ window.print();
+});
+
+function createCharts(){
+ assetChart=new Chart($("assetChart"),{
+  type:"bar",
+  data:{
+   labels:assets.map(a=>a.id),
+   datasets:[{
+    label:"Illustrative Condition Score",
+    data:assets.map(a=>a.score),
+    backgroundColor:assets.map(a=>
+     a.score<60?"#ed6175":a.score<75?"#f4a443":"#6855eb"
+    ),
+    borderRadius:7
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   plugins:{legend:{display:false}},
+   scales:{
+    y:{beginAtZero:true,max:100,grid:{color:"#edf0f6"}},
+    x:{grid:{display:false}}
+   }
+  }
+ });
+
+ const departments=["Production","Utilities","Warehouse","Maintenance"];
+ const totals=departments.map(department=>
+  maintenance.filter(m=>m.department===department)
+   .reduce((sum,m)=>sum+m.cost,0)
+ );
+
+ costChart=new Chart($("costChart"),{
+  type:"doughnut",
+  data:{
+   labels:departments,
+   datasets:[{
+    data:totals,
+    backgroundColor:["#6855eb","#438df5","#18b58c","#f4a443"],
+    borderWidth:0
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   cutout:"70%",
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{usePointStyle:true,boxWidth:9}
+    },
+    tooltip:{
+     callbacks:{
+      label:context=>context.label+": "+money(context.parsed)
+     }
+    }
+   }
+  }
+ });
+}
+
+function appendChat(role,message){
+ const container=$("chatMessages");
+ const wrapper=document.createElement("div");
+ wrapper.className="chat-message "+role;
+
+ const meta=document.createElement("div");
+ meta.className="chat-meta";
+ meta.textContent=role==="user"?
+  "You":"Report Copilot · Rule-Based Explanation";
+
+ const bubble=document.createElement("div");
+ bubble.className="chat-bubble";
+ bubble.textContent=message;
+
+ wrapper.append(meta,bubble);
+ container.append(wrapper);
+ container.scrollTop=container.scrollHeight;
+}
+
+function explain(question){
+ const q=question.toLowerCase();
+
+ if(!currentReport){
+  return "Generate a report first to review the selected sample records.";
+ }
+
+ const m=currentReport.metrics;
+ const data=currentReport.data;
+
+ if(/asset|equipment|condition|health/.test(q)){
+  return `Equipment condition summary:
+
+Assets: ${m.assetCount}
+Average illustrative score: ${m.assetCount?m.averageCondition.toFixed(1):"N/A"}
+Assets below demo score 70: ${m.lowScoreAssets}
+
+${data.assets.map(a=>`• ${a.id}: ${a.score}/100`).join("\n")}
+
+These are fictional scores, not measured equipment health.`;
+ }
+
+ if(/cost|expense|budget|financial/.test(q)){
+  return `Sample maintenance cost summary:
+
+Maintenance activities: ${m.maintenanceCount}
+Total synthetic cost: ${money(m.totalMaintenanceCost)}
+
+The figures do not represent actual plant expenditure or an approved budget.`;
+ }
+
+ if(/safety|incident|observation|hazard/.test(q)){
+  return `Synthetic observation summary:
+
+Open observations: ${m.openIncidents}
+
+${data.incidents.map(i=>`• ${i.id}: ${i.type} — ${i.status}`).join("\n")}
+
+No actual safety monitoring or hazard verification was performed.`;
+ }
+
+ if(/recommend|action|improve|priority/.test(q)){
+  return "Suggested reporting follow-ups:\n\n"+
+   "1. Validate sample equipment information against approved asset records.\n"+
+   "2. Verify maintenance dates and completed work orders.\n"+
+   "3. Review any actual open incidents through authorized safety processes.\n"+
+   "4. Confirm costs using procurement and financial records.\n"+
+   "5. Obtain qualified engineering review before operational decisions.";
+ }
+
+ if(/source|real|date|filter|limit|accuracy/.test(q)){
+  return "This report is built from static fictional records. Department selection filters the examples, but the chosen date range is metadata only because the records contain no event dates. No real sensors, plant databases, ML models, or LLMs are connected.";
+ }
+
+ return `Current report: ${currentReport.config.title}
+
+Type: ${currentReport.config.type}
+Department: ${currentReport.config.department}
+Sample assets: ${m.assetCount}
+Sample maintenance activities: ${m.maintenanceCount}
+Open fictional observations: ${m.openIncidents}
+Synthetic maintenance cost: ${money(m.totalMaintenanceCost)}
+
+Ask about equipment, costs, safety observations, or reporting limitations.`;
+}
+
+function sendChat(){
+ const input=$("chatInput");
+ const question=input.value.trim();
+ if(!question)return;
+
+ appendChat("user",question);
+ input.value="";
+ appendChat("assistant",explain(question));
+}
+
+$("sendChat").addEventListener("click",sendChat);
+
+$("chatInput").addEventListener("keydown",event=>{
+ if(event.key==="Enter"&&!event.shiftKey){
+  event.preventDefault();
+  sendChat();
+ }
+});
+
+document.querySelectorAll("[data-question]").forEach(button=>{
+ button.addEventListener("click",()=>{
+  const question=button.dataset.question;
+  appendChat("user",question);
+  appendChat("assistant",explain(question));
+ });
+});
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+$("startDate").value=dateOffset(-30);
+$("endDate").value=dateOffset(0);
+
+$("assetsKpi").textContent=assets.length;
+$("incidentsKpi").textContent=
+ incidents.filter(i=>i.status==="Open").length;
+$("maintenanceKpi").textContent=maintenance.length;
+
+renderHistory();
+createCharts();
+
+try{
+ renderPreview(buildReport());
+}catch(error){
+ notify(error.message);
+}
+
+appendChat(
+ "assistant",
+ "Welcome to the Industrial Report Copilot.\n\nI can summarize the sample equipment condition records, maintenance costs, fictional safety observations, and report review priorities.\n\nGenerate a report to customize the department and included sections. All data is simulated and responses are rule-based."
+);
+</script>
+</body>
+</html>

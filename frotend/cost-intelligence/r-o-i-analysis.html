@@ -1,0 +1,1366 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>R O I Analysis | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / cost-intelligence</p><h1 id="page-title">R O I Analysis</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>R O I Analysis workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROI Analysis | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px Arial,Helvetica,sans-serif
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{background:var(--purple);color:white}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;
+ box-shadow:0 5px 20px #10152d05
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:16px
+}
+.grid-2{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));gap:16px
+}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.45fr) minmax(300px,.8fr);
+ gap:17px
+}
+.flex{
+ display:flex;align-items:center;
+ justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;
+ color:#69738e;border-radius:9px;
+ padding:10px 13px;font-size:11px;font-weight:700
+}
+.btn.primary{
+ background:var(--purple);
+ border-color:var(--purple);color:white
+}
+.btn.danger{
+ background:#ffedf0;border-color:#ffedf0;color:#d84b63
+}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{
+ display:block;color:#69738e;
+ font-size:11px;font-weight:700;margin-bottom:7px
+}
+.badge{
+ display:inline-block;padding:7px 10px;
+ border-radius:8px;font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:12px
+}
+.scenarios{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));gap:14px
+}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);
+ text-align:left;padding:13px;white-space:nowrap
+}
+td{
+ padding:13px;border-bottom:1px solid #eef0f6;
+ white-space:nowrap
+}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);
+ font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);border-radius:11px;
+ padding:14px;margin-bottom:12px
+}
+.record p{
+ font-size:11px;color:#69738e;line-height:1.8
+}
+.chart{width:100%;height:300px;display:block}
+.metric-grid{
+ display:grid;grid-template-columns:1fr 1fr;gap:12px
+}
+.metric{
+ padding:14px;background:#f8f9fd;
+ border:1px solid var(--border);border-radius:11px
+}
+.metric strong{display:block;font-size:20px;margin-top:9px}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:11px;
+ padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;
+ background:var(--navy);color:white;
+ padding:13px 17px;border-radius:10px;
+ display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.scenarios,.metric-grid{
+  grid-template-columns:1fr
+ }
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ .scenario-panel,#toast,.notice{display:none!important}
+ .main{margin:0}.content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◆ Cost Intelligence</a>
+ <a class="nav-link" href="cost-analytics.html">▦ Cost Analytics</a>
+ <a class="nav-link" href="cost-forecasting.html">◇ Cost Forecasting</a>
+ <a class="nav-link" href="future-cost-forecast.html">◉ Future Cost Forecast</a>
+ <a class="nav-link" href="expected-failure-cost.html">◆ Expected Failure Cost</a>
+ <a class="nav-link" href="avoided-cost.html">▦ Avoided Cost</a>
+ <a class="nav-link" href="downtime-cost.html">◇ Downtime Cost</a>
+ <a class="nav-link" href="energy-cost.html">◉ Energy Cost</a>
+ <a class="nav-link" href="labor-cost.html">◆ Labor Cost</a>
+ <a class="nav-link" href="production-loss.html">▦ Production Loss</a>
+ <a class="nav-link" href="repair-cost.html">◇ Repair Cost</a>
+ <a class="nav-link" href="replacement-cost.html">◉ Replacement Cost</a>
+ <a class="nav-link active" href="r-o-i-analysis.html">◆ ROI Analysis</a>
+
+ <div class="nav-title">MAINTENANCE</div>
+ <a class="nav-link" href="predictive-maintenance.html">▦ Predictive Maintenance</a>
+ <a class="nav-link" href="failure-prediction.html">◇ Failure Prediction</a>
+ <a class="nav-link" href="maintenance-planning.html">◉ Maintenance Planning</a>
+ <a class="nav-link" href="asset-management.html">◆ Asset Management</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Cost Intelligence / Investment Economics</div>
+   <strong>Predictive Maintenance ROI Analysis</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC INVESTMENT MODEL</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / INDUSTRIAL INVESTMENT INTELLIGENCE
+ </div>
+ <h1>Maintenance ROI & Investment Intelligence</h1>
+ <p>
+  Evaluate predictive maintenance investments using
+  probability-weighted avoided failure losses, implementation
+  expenses, recurring operating costs, return on investment,
+  discounted cash flows and payback analysis.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Predictive Maintenance Investment Overview</h3>
+  <div class="muted" id="summaryText">
+   Calculating investment economics...
+  </div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="calculateBtn">Recalculate ROI</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Portfolio Return on Investment</div>
+  <div class="stat-value" id="roiKpi">0%</div>
+  <div class="stat-note">Undiscounted net benefit / total investment</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Net Present Value</div>
+  <div class="stat-value" id="npvKpi">₹0</div>
+  <div class="stat-note">Discounted incremental project cash flows</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Expected Avoided Failure Loss</div>
+  <div class="stat-value" id="avoidedKpi">₹0</div>
+  <div class="stat-note">Gross modeled benefits over the horizon</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Portfolio Payback Period</div>
+  <div class="stat-value" id="paybackKpi">--</div>
+  <div class="stat-note">First month with nonnegative cumulative cash flow</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Investment Analysis Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="equipmentFilter">Equipment</label>
+   <select class="input" id="equipmentFilter">
+    <option value="all">All Equipment</option>
+   </select>
+  </div>
+  <div>
+   <label for="horizonFilter">Investment Horizon</label>
+   <select class="input" id="horizonFilter">
+    <option value="12">12 Months</option>
+    <option value="24">24 Months</option>
+    <option value="36" selected>36 Months</option>
+    <option value="48">48 Months</option>
+    <option value="60">60 Months</option>
+   </select>
+  </div>
+  <div>
+   <label for="sortFilter">Sort By</label>
+   <select class="input" id="sortFilter">
+    <option value="npv">Highest NPV</option>
+    <option value="roi">Highest ROI</option>
+    <option value="benefit">Highest Avoided Loss</option>
+    <option value="investment">Highest Investment</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Equipment Investment ROI Ranking</h3>
+    <p class="muted">
+     Initial investment, avoided losses, net returns and NPV
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 assets</span>
+  </div>
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Equipment</th>
+      <th>Plant</th>
+      <th>Initial Investment</th>
+      <th>Recurring Cost</th>
+      <th>Avoided Loss</th>
+      <th>Net Benefit</th>
+      <th>ROI</th>
+      <th>NPV</th>
+      <th>Payback</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="roiTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Investment Inspector</h3>
+   <span class="badge purple">ASSET ROI PROFILE</span>
+  </div>
+  <div id="assetDetails"></div>
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Asset ROI</span>
+    <strong id="assetRoi">0%</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">NPV</span>
+    <strong id="assetNpv">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Payback</span>
+    <strong id="assetPayback">--</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Net Benefit</span>
+    <strong id="assetNet">₹0</strong>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Cumulative Investment Cash Flow</h3>
+   <span class="badge purple">PAYBACK TREND</span>
+  </div>
+  <p class="muted">
+   Cumulative incremental cash flow including initial investment
+  </p>
+  <svg class="chart" id="cashflowChart" viewBox="0 0 640 300"
+   role="img" aria-label="Cumulative investment cash flow"></svg>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Investment Return by Equipment</h3>
+   <span class="badge blue">ASSET COMPARISON</span>
+  </div>
+  <p class="muted">Discounted net present value by asset</p>
+  <svg class="chart" id="npvChart" viewBox="0 0 640 300"
+   role="img" aria-label="Asset net present value ranking"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel scenario-panel">
+  <h3>Investment ROI Scenario Simulator</h3>
+  <div class="scenarios">
+   <div>
+    <label for="riskMultiplier">Failure Risk Multiplier</label>
+    <input class="input" id="riskMultiplier"
+     type="number" min=".25" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="reductionInput">Failure Risk Reduction (%)</label>
+    <input class="input" id="reductionInput"
+     type="number" min="0" max="100" step="1" value="60">
+   </div>
+   <div>
+    <label for="capitalMultiplier">Initial Investment Multiplier</label>
+    <input class="input" id="capitalMultiplier"
+     type="number" min=".25" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="operatingMultiplier">Recurring Operating Cost Multiplier</label>
+    <input class="input" id="operatingMultiplier"
+     type="number" min=".25" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="discountInput">Annual Discount Rate (%)</label>
+    <input class="input" id="discountInput"
+     type="number" min="0" max="40" step=".5" value="10">
+   </div>
+   <div>
+    <label for="inflationInput">Annual Cost Escalation (%)</label>
+    <input class="input" id="inflationInput"
+     type="number" min="0" max="25" step=".5" value="4">
+   </div>
+  </div>
+  <div class="actions" style="margin-top:17px">
+   <button class="btn primary" id="applyBtn">
+    Apply Investment Scenario
+   </button>
+  </div>
+  <p class="muted">
+   The model estimates expected financial returns. It does not
+   guarantee that predictive maintenance will prevent failures.
+  </p>
+ </div>
+
+ <div class="panel">
+  <h3>Portfolio Investment Economics</h3>
+  <p class="muted">Total investment, expected benefit, discounted returns and payback</p>
+  <div id="financialSummary"></div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Plant Investment Performance</h3>
+  <p class="muted">Predictive maintenance financial performance by plant</p>
+  <div id="plantSummary"></div>
+ </div>
+ <div class="panel">
+  <h3>Investment Intelligence Insights</h3>
+  <p class="muted">Automated findings from the current financial scenario</p>
+  <div id="insightList"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>ROI methodology:</strong>
+ This dashboard uses synthetic asset costs and failure
+ probabilities. Failure benefits are estimated as the difference
+ between baseline and intervention event probabilities under a
+ constant-hazard, first-failure model. Repair and replacement are
+ mutually exclusive outcomes. Recurring monitoring expenses and
+ initial capital are included in project costs. ROI is calculated
+ from undiscounted net benefits; NPV uses discounted monthly
+ incremental cash flows. Payback is calculated from cumulative
+ undiscounted cash flow. These estimates exclude taxes, financing,
+ depreciation, salvage value and secondary failures. All decisions
+ require validated reliability data, engineering assessment and
+ financial review.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const KEY="industra-roi-analysis-v1";
+
+const ASSETS=[
+ {
+  id:"MTR-001",name:"Main Drive Motor",plant:"Plant A",
+  annualProbability:.34,repair:180000,replacement:520000,
+  replacementChance:.18,downtime:210000,production:390000,
+  emergency:42000,initialInvestment:145000,monthlyOperating:4500
+ },
+ {
+  id:"CMP-001",name:"Air Compressor",plant:"Plant A",
+  annualProbability:.28,repair:145000,replacement:440000,
+  replacementChance:.12,downtime:175000,production:310000,
+  emergency:35000,initialInvestment:125000,monthlyOperating:3800
+ },
+ {
+  id:"FAN-001",name:"Cooling Fan",plant:"Plant A",
+  annualProbability:.12,repair:55000,replacement:160000,
+  replacementChance:.08,downtime:72000,production:115000,
+  emergency:15000,initialInvestment:65000,monthlyOperating:2200
+ },
+ {
+  id:"GEN-001",name:"Power Generator",plant:"Plant B",
+  annualProbability:.46,repair:360000,replacement:1150000,
+  replacementChance:.22,downtime:480000,production:920000,
+  emergency:165000,initialInvestment:285000,monthlyOperating:8200
+ },
+ {
+  id:"PMP-001",name:"Cooling Pump",plant:"Plant B",
+  annualProbability:.21,repair:95000,replacement:280000,
+  replacementChance:.10,downtime:120000,production:190000,
+  emergency:28000,initialInvestment:95000,monthlyOperating:3100
+ },
+ {
+  id:"GBX-001",name:"Industrial Gearbox",plant:"Plant B",
+  annualProbability:.39,repair:280000,replacement:850000,
+  replacementChance:.20,downtime:350000,production:680000,
+  emergency:95000,initialInvestment:225000,monthlyOperating:6700
+ },
+ {
+  id:"HYD-001",name:"Hydraulic Power Unit",plant:"Plant C",
+  annualProbability:.26,repair:125000,replacement:390000,
+  replacementChance:.14,downtime:160000,production:250000,
+  emergency:55000,initialInvestment:115000,monthlyOperating:3500
+ },
+ {
+  id:"PMP-002",name:"Process Pump",plant:"Plant C",
+  annualProbability:.37,repair:215000,replacement:650000,
+  replacementChance:.17,downtime:280000,production:510000,
+  emergency:72000,initialInvestment:185000,monthlyOperating:5700
+ },
+ {
+  id:"CNV-001",name:"Conveyor Drive",plant:"Plant C",
+  annualProbability:.16,repair:75000,replacement:210000,
+  replacementChance:.09,downtime:95000,production:145000,
+  emergency:18000,initialInvestment:78000,monthlyOperating:2600
+ }
+];
+
+const DEFAULTS={
+ riskMultiplier:1,
+ riskReduction:60,
+ capitalMultiplier:1,
+ operatingMultiplier:1,
+ discountRate:10,
+ inflation:4
+};
+
+let scenario={...DEFAULTS};
+let results=[];
+let selectedId=ASSETS[0].id;
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(n){return currency.format(n)}
+
+function compact(n){
+ const sign=n<0?"-":"";
+ const x=Math.abs(n);
+ if(x>=10000000)return sign+"₹"+(x/10000000).toFixed(2)+"Cr";
+ if(x>=100000)return sign+"₹"+(x/100000).toFixed(2)+"L";
+ if(x>=1000)return sign+"₹"+(x/1000).toFixed(1)+"K";
+ return money(n);
+}
+
+function sum(items,key){
+ return items.reduce((a,b)=>a+(b[key]||0),0);
+}
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function calculateAsset(asset){
+ const horizon=Number($("horizonFilter").value);
+
+ const annualHazard=
+  -Math.log(1-asset.annualProbability)*
+  scenario.riskMultiplier;
+
+ const reducedHazard=
+  annualHazard*(1-scenario.riskReduction/100);
+
+ const initialInvestment=
+  asset.initialInvestment*scenario.capitalMultiplier;
+
+ const consequence=
+  asset.repair*(1-asset.replacementChance)+
+  asset.replacement*asset.replacementChance+
+  asset.downtime+asset.production+asset.emergency;
+
+ const monthlyDiscount=
+  Math.pow(1+scenario.discountRate/100,1/12)-1;
+
+ const history=[];
+ let totalAvoided=0;
+ let totalOperating=0;
+ let npv=-initialInvestment;
+ let cumulative=-initialInvestment;
+ let payback=null;
+
+ for(let month=1;month<=horizon;month++){
+  const t0=(month-1)/12;
+  const t1=month/12;
+
+  // First-failure event probabilities in this month.
+  const baselineEvent=
+   Math.exp(-annualHazard*t0)-
+   Math.exp(-annualHazard*t1);
+
+  const reducedEvent=
+   Math.exp(-reducedHazard*t0)-
+   Math.exp(-reducedHazard*t1);
+
+  const escalation=Math.pow(
+   1+scenario.inflation/100,t0
+  );
+
+  const avoidedLoss=
+   (baselineEvent-reducedEvent)*
+   consequence*escalation;
+
+  const operatingCost=
+   asset.monthlyOperating*
+   scenario.operatingMultiplier*escalation;
+
+  const cashFlow=avoidedLoss-operatingCost;
+
+  totalAvoided+=avoidedLoss;
+  totalOperating+=operatingCost;
+
+  cumulative+=cashFlow;
+
+  const discountedCashFlow=
+   cashFlow/Math.pow(1+monthlyDiscount,month);
+
+  npv+=discountedCashFlow;
+
+  if(payback===null&&cumulative>=0){
+   payback=month;
+  }
+
+  history.push({
+   month,
+   baselineEventProbability:baselineEvent,
+   reducedEventProbability:reducedEvent,
+   avoidedLoss,
+   operatingCost,
+   cashFlow,
+   discountedCashFlow,
+   cumulative
+  });
+ }
+
+ const totalInvestment=
+  initialInvestment+totalOperating;
+
+ const netBenefit=totalAvoided-totalInvestment;
+
+ const roi=totalInvestment>0?
+  netBenefit/totalInvestment*100:0;
+
+ return{
+  ...asset,
+  horizon,
+  consequence,
+  initialInvestment,
+  operatingCost:totalOperating,
+  totalInvestment,
+  avoidedLoss:totalAvoided,
+  netBenefit,
+  roi,npv,payback,
+  history,
+  baselineFailureProbability:
+   1-Math.exp(-annualHazard*horizon/12),
+  reducedFailureProbability:
+   1-Math.exp(-reducedHazard*horizon/12)
+ };
+}
+
+function calculateAll(){
+ results=ASSETS.map(calculateAsset);
+ render();
+}
+
+function filtered(){
+ const plant=$("plantFilter").value;
+ const equipment=$("equipmentFilter").value;
+
+ return results.filter(item=>
+  (plant==="all"||item.plant===plant)&&
+  (equipment==="all"||item.id===equipment)
+ );
+}
+
+function selected(){
+ return filtered().find(item=>item.id===selectedId)||
+  filtered()[0]||null;
+}
+
+function populateEquipment(){
+ const select=$("equipmentFilter");
+ select.replaceChildren();
+
+ const all=el("option","","All Equipment");
+ all.value="all";
+ select.append(all);
+
+ ASSETS.forEach(asset=>{
+  const option=el("option","",asset.name+" · "+asset.id);
+  option.value=asset.id;
+  select.append(option);
+ });
+}
+
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(el("span","",label),el("strong","",value));
+ return row;
+}
+
+function portfolio(){
+ const list=filtered();
+ const horizon=Number($("horizonFilter").value);
+ const initial=sum(list,"initialInvestment");
+ const operating=sum(list,"operatingCost");
+ const avoided=sum(list,"avoidedLoss");
+ const investment=initial+operating;
+ const net=avoided-investment;
+ const roi=investment>0?net/investment*100:0;
+ const npv=sum(list,"npv");
+
+ let cumulative=-initial;
+ let payback=null;
+
+ const history=Array.from({length:horizon},(_,index)=>{
+  const month=index+1;
+
+  const avoidedLoss=list.reduce(
+   (a,item)=>a+item.history[index].avoidedLoss,0
+  );
+
+  const operatingCost=list.reduce(
+   (a,item)=>a+item.history[index].operatingCost,0
+  );
+
+  const cashFlow=avoidedLoss-operatingCost;
+  cumulative+=cashFlow;
+
+  if(payback===null&&cumulative>=0)payback=month;
+
+  return{
+   month,avoidedLoss,operatingCost,
+   cashFlow,cumulative
+  };
+ });
+
+ return{
+  initial,operating,avoided,investment,
+  net,roi,npv,payback,history
+ };
+}
+
+function paybackText(value){
+ return value===null?"Not reached":value+" months";
+}
+
+function renderKpis(){
+ const p=portfolio();
+
+ $("roiKpi").textContent=p.roi.toFixed(1)+"%";
+ $("roiKpi").style.color=p.roi>=0?"#18b58c":"#ed6175";
+
+ $("npvKpi").textContent=compact(p.npv);
+ $("npvKpi").style.color=p.npv>=0?"#18b58c":"#ed6175";
+
+ $("avoidedKpi").textContent=compact(p.avoided);
+ $("paybackKpi").textContent=paybackText(p.payback);
+
+ $("summaryText").textContent=
+  $("horizonFilter").value+"-month investment horizon · "+
+  filtered().length+" assets · "+
+  scenario.discountRate+"% annual discount rate";
+}
+
+function sortedList(){
+ const list=[...filtered()];
+ const sort=$("sortFilter").value;
+
+ if(sort==="roi"){
+  list.sort((a,b)=>b.roi-a.roi);
+ }else if(sort==="benefit"){
+  list.sort((a,b)=>b.avoidedLoss-a.avoidedLoss);
+ }else if(sort==="investment"){
+  list.sort((a,b)=>b.totalInvestment-a.totalInvestment);
+ }else{
+  list.sort((a,b)=>b.npv-a.npv);
+ }
+ return list;
+}
+
+function renderTable(){
+ const body=$("roiTable");
+ body.replaceChildren();
+
+ const list=sortedList();
+ $("visibleCount").textContent=list.length+" assets";
+
+ list.forEach(item=>{
+  const row=el("tr");
+
+  [
+   item.name+" · "+item.id,
+   item.plant,
+   money(item.initialInvestment),
+   money(item.operatingCost),
+   money(item.avoidedLoss),
+   money(item.netBenefit),
+   item.roi.toFixed(1)+"%",
+   money(item.npv),
+   paybackText(item.payback)
+  ].forEach(value=>{
+   row.append(el("td","",value));
+  });
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+
+  button.onclick=()=>{
+   selectedId=item.id;
+   renderInspector();
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","No assets match the filters.");
+  cell.colSpan=10;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const item=selected();
+ const box=$("assetDetails");
+ box.replaceChildren();
+
+ if(!item){
+  box.append(el("p","muted","No equipment selected."));
+  ["assetRoi","assetNpv","assetPayback","assetNet"]
+   .forEach(id=>$(id).textContent="--");
+  return;
+ }
+
+ [
+  ["Equipment",item.name],
+  ["Equipment ID",item.id],
+  ["Plant",item.plant],
+  ["Investment Horizon",item.horizon+" months"],
+  ["Annual Baseline Failure Probability",
+   (item.annualProbability*100).toFixed(1)+"%"],
+  ["Horizon Baseline Failure Probability",
+   (item.baselineFailureProbability*100).toFixed(1)+"%"],
+  ["Horizon Reduced Failure Probability",
+   (item.reducedFailureProbability*100).toFixed(1)+"%"],
+  ["Failure Financial Consequence",money(item.consequence)],
+  ["Initial Investment",money(item.initialInvestment)],
+  ["Recurring Operating Costs",money(item.operatingCost)],
+  ["Total Investment",money(item.totalInvestment)],
+  ["Expected Avoided Failure Loss",money(item.avoidedLoss)],
+  ["Net Expected Benefit",money(item.netBenefit)],
+  ["Net Present Value",money(item.npv)],
+  ["Payback Period",paybackText(item.payback)]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+
+ $("assetRoi").textContent=item.roi.toFixed(1)+"%";
+ $("assetNpv").textContent=compact(item.npv);
+ $("assetPayback").textContent=paybackText(item.payback);
+ $("assetNet").textContent=compact(item.netBenefit);
+}
+
+function drawCashflowChart(){
+ const svg=$("cashflowChart");
+ svg.replaceChildren();
+
+ const p=portfolio();
+ const data=[
+  {month:0,cumulative:-p.initial},
+  ...p.history
+ ];
+
+ const left=58,right=615,top=25,bottom=245;
+
+ const values=data.map(item=>item.cumulative);
+ const min=Math.min(0,...values);
+ const max=Math.max(0,...values);
+
+ const range=Math.max(max-min,1);
+ const low=min-range*.08;
+ const high=max+range*.08;
+
+ const x=index=>left+(right-left)*
+  index/Math.max(data.length-1,1);
+
+ const y=value=>bottom-
+  (value-low)/(high-low)*(bottom-top);
+
+ for(let i=0;i<=4;i++){
+  const value=low+(high-low)*i/4;
+  const yy=y(value);
+
+  svg.append(svgEl("line",{
+   x1:left,y1:yy,x2:right,y2:yy,
+   stroke:"#e9ebf4"
+  }));
+
+  svg.append(svgEl("text",{
+   x:3,y:yy+4,fill:"#8992aa","font-size":"10"
+  },compact(value)));
+ }
+
+ const zeroY=y(0);
+
+ svg.append(svgEl("line",{
+  x1:left,y1:zeroY,x2:right,y2:zeroY,
+  stroke:"#ed6175","stroke-width":"1.5",
+  "stroke-dasharray":"5 4"
+ }));
+
+ const points=data.map((item,index)=>
+  x(index)+","+y(item.cumulative)
+ ).join(" ");
+
+ svg.append(svgEl("polyline",{
+  points,fill:"none",stroke:"#6855eb",
+  "stroke-width":"3","stroke-linejoin":"round"
+ }));
+
+ const step=Math.max(1,Math.ceil((data.length-1)/12));
+
+ data.forEach((item,index)=>{
+  if(index%step!==0&&index!==data.length-1)return;
+
+  svg.append(svgEl("text",{
+   x:x(index)-12,y:267,
+   fill:"#8992aa","font-size":"10"
+  },"M"+item.month));
+ });
+}
+
+function drawNpvChart(){
+ const svg=$("npvChart");
+ svg.replaceChildren();
+
+ const list=[...filtered()].sort((a,b)=>b.npv-a.npv);
+ const largest=Math.max(...list.map(item=>Math.abs(item.npv)),1);
+
+ const zero=335;
+ const halfWidth=195;
+
+ svg.append(svgEl("line",{
+  x1:zero,y1:7,x2:zero,y2:278,
+  stroke:"#a8afc2","stroke-dasharray":"4 4"
+ }));
+
+ list.forEach((item,index)=>{
+  const y=8+index*30;
+  const width=Math.abs(item.npv)/largest*halfWidth;
+  const positive=item.npv>=0;
+
+  svg.append(svgEl("text",{
+   x:8,y:y+16,fill:"#69738e","font-size":"11"
+  },item.id));
+
+  svg.append(svgEl("rect",{
+   x:positive?zero:zero-width,
+   y,width,height:19,rx:3,
+   fill:positive?"#18b58c":"#ed6175"
+  }));
+
+  svg.append(svgEl("text",{
+   x:positive?zero+width+7:zero-width-7,
+   y:y+15,
+   "text-anchor":positive?"start":"end",
+   fill:"#202640","font-size":"10"
+  },compact(item.npv)));
+ });
+}
+
+function renderFinancialSummary(){
+ const box=$("financialSummary");
+ box.replaceChildren();
+
+ const p=portfolio();
+
+ [
+  ["Assets Evaluated",String(filtered().length)],
+  ["Initial Capital Investment",money(p.initial)],
+  ["Recurring Operating Costs",money(p.operating)],
+  ["Total Investment",money(p.investment)],
+  ["Expected Avoided Failure Loss",money(p.avoided)],
+  ["Net Expected Benefit",money(p.net)],
+  ["Portfolio ROI",p.roi.toFixed(1)+"%"],
+  ["Net Present Value",money(p.npv)],
+  ["Payback Period",paybackText(p.payback)],
+  ["Annual Discount Rate",scenario.discountRate+"%"],
+  ["Failure Risk Reduction",scenario.riskReduction+"%"],
+  ["Annual Cost Escalation",scenario.inflation+"%"]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+}
+
+function renderPlants(){
+ const box=$("plantSummary");
+ box.replaceChildren();
+
+ ["Plant A","Plant B","Plant C"].forEach(plant=>{
+  const list=filtered().filter(item=>item.plant===plant);
+
+  const investment=sum(list,"totalInvestment");
+  const benefit=sum(list,"avoidedLoss");
+  const net=benefit-investment;
+  const roi=investment>0?net/investment*100:0;
+
+  const card=el("div","record");
+
+  card.append(
+   el("h4","",plant),
+   el("p","",
+    list.length+" assets · "+
+    compact(investment)+" investment · "+
+    compact(benefit)+" avoided loss · "+
+    roi.toFixed(1)+"% ROI · "+
+    compact(sum(list,"npv"))+" NPV")
+  );
+
+  box.append(card);
+ });
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const list=filtered();
+ const p=portfolio();
+
+ const best=[...list].sort((a,b)=>b.npv-a.npv)[0];
+ const positive=list.filter(item=>item.npv>0).length;
+
+ const insights=[
+  [
+   "Highest NPV Asset",
+   best?
+    best.name+" has the highest modeled NPV at "+
+    money(best.npv)+".":
+    "No equipment matches the selected filters."
+  ],
+  [
+   "Financially Positive Investments",
+   positive+" of "+list.length+
+   " assets show positive modeled NPV under the current assumptions."
+  ],
+  [
+   "Portfolio Payback",
+   p.payback===null?
+    "The portfolio does not recover its initial investment within the selected horizon.":
+    "Cumulative undiscounted portfolio cash flow first becomes nonnegative in month "+
+    p.payback+"."
+  ],
+  [
+   "Risk Reduction Assumption",
+   "The modeled predictive maintenance strategy reduces the failure hazard by "+
+   scenario.riskReduction+
+   "%, but effectiveness must be verified against operational evidence."
+  ],
+  [
+   "Investment Governance",
+   "Validate asset failure rates, financial consequences, installation costs, recurring subscriptions and discount rates before approving projects."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+  card.append(el("h4","",title),el("p","",description));
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawCashflowChart();
+ drawNpvChart();
+ renderFinancialSummary();
+ renderPlants();
+ renderInsights();
+}
+
+function validateScenario(){
+ const fields=[
+  ["riskMultiplier",.25,3],
+  ["reductionInput",0,100],
+  ["capitalMultiplier",.25,3],
+  ["operatingMultiplier",.25,3],
+  ["discountInput",0,40],
+  ["inflationInput",0,25]
+ ];
+
+ const values={};
+
+ for(const [id,min,max] of fields){
+  const raw=$(id).value.trim();
+  const value=Number(raw);
+
+  if(raw===""||!Number.isFinite(value)||
+   value<min||value>max){
+   notify("Enter valid investment scenario assumptions.");
+   return false;
+  }
+
+  values[id]=value;
+ }
+
+ scenario={
+  riskMultiplier:values.riskMultiplier,
+  riskReduction:values.reductionInput,
+  capitalMultiplier:values.capitalMultiplier,
+  operatingMultiplier:values.operatingMultiplier,
+  discountRate:values.discountInput,
+  inflation:values.inflationInput
+ };
+
+ return true;
+}
+
+function syncInputs(){
+ $("riskMultiplier").value=scenario.riskMultiplier;
+ $("reductionInput").value=scenario.riskReduction;
+ $("capitalMultiplier").value=scenario.capitalMultiplier;
+ $("operatingMultiplier").value=scenario.operatingMultiplier;
+ $("discountInput").value=scenario.discountRate;
+ $("inflationInput").value=scenario.inflation;
+}
+
+function saveScenario(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(scenario));
+ }catch{
+  notify("Browser storage unavailable.");
+ }
+}
+
+function loadScenario(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+
+  const ranges={
+   riskMultiplier:[.25,3],
+   riskReduction:[0,100],
+   capitalMultiplier:[.25,3],
+   operatingMultiplier:[.25,3],
+   discountRate:[0,40],
+   inflation:[0,25]
+  };
+
+  if(saved&&Object.entries(ranges).every(
+   ([key,[min,max]])=>
+    typeof saved[key]==="number"&&
+    Number.isFinite(saved[key])&&
+    saved[key]>=min&&saved[key]<=max
+  )){
+   scenario={...saved};
+  }
+ }catch{}
+
+ syncInputs();
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "equipment_id","equipment_name","plant",
+  "horizon_months","initial_investment_inr",
+  "recurring_operating_cost_inr",
+  "total_investment_inr","expected_avoided_loss_inr",
+  "net_expected_benefit_inr","roi_percent",
+  "npv_inr","payback_month",
+  "baseline_failure_probability",
+  "reduced_failure_probability"
+ ]];
+
+ filtered().forEach(item=>{
+  rows.push([
+   item.id,item.name,item.plant,item.horizon,
+   item.initialInvestment.toFixed(2),
+   item.operatingCost.toFixed(2),
+   item.totalInvestment.toFixed(2),
+   item.avoidedLoss.toFixed(2),
+   item.netBenefit.toFixed(2),
+   item.roi.toFixed(2),
+   item.npv.toFixed(2),
+   item.payback===null?"":item.payback,
+   item.baselineFailureProbability.toFixed(6),
+   item.reducedFailureProbability.toFixed(6)
+  ]);
+ });
+
+ const csv=rows.map(row=>
+  row.map(value=>
+   '"'+String(value).replaceAll('"','""')+'"'
+  ).join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-roi-analysis.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("ROI analysis CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-roi-analysis.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   scenario,
+   horizonMonths:Number($("horizonFilter").value),
+   filters:{
+    plant:$("plantFilter").value,
+    equipment:$("equipmentFilter").value,
+    sort:$("sortFilter").value
+   },
+   portfolio:portfolio(),
+   assets:filtered()
+  },null,2),
+  "application/json"
+ );
+
+ notify("ROI analysis JSON exported.");
+}
+
+$("calculateBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculateAll();
+ notify("Investment ROI recalculated.");
+};
+
+$("applyBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculateAll();
+ notify("Investment scenario applied.");
+};
+
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ if(!confirm("Reset ROI analysis scenario?"))return;
+
+ scenario={...DEFAULTS};
+ selectedId=ASSETS[0].id;
+
+ $("plantFilter").value="all";
+ $("equipmentFilter").value="all";
+ $("horizonFilter").value="36";
+ $("sortFilter").value="npv";
+
+ syncInputs();
+ saveScenario();
+ calculateAll();
+
+ notify("ROI analysis reset.");
+};
+
+[
+ "plantFilter","equipmentFilter",
+ "horizonFilter","sortFilter"
+].forEach(id=>{
+ $(id).addEventListener("change",calculateAll);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+populateEquipment();
+loadScenario();
+calculateAll();
+</script>
+</body>
+</html>

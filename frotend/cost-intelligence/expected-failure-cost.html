@@ -1,0 +1,1197 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Expected Failure Cost | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / cost-intelligence</p><h1 id="page-title">Expected Failure Cost</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Expected Failure Cost workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Expected Failure Cost | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px Arial,Helvetica,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{background:var(--purple);color:white}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;box-shadow:0 5px 20px #10152d05
+}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.layout{
+ display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);gap:17px
+}
+.flex{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;flex-wrap:wrap
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;color:#69738e;
+ border-radius:9px;padding:10px 13px;font-size:11px;font-weight:700
+}
+.btn.primary{background:var(--purple);border-color:var(--purple);color:white}
+.btn.danger{background:#ffedf0;border-color:#ffedf0;color:#d84b63}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{
+ display:block;color:#69738e;font-size:11px;font-weight:700;margin-bottom:7px
+}
+.badge{
+ display:inline-block;padding:7px 10px;border-radius:8px;
+ font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);text-align:left;
+ padding:13px;white-space:nowrap
+}
+td{padding:13px;border-bottom:1px solid #eef0f6;white-space:nowrap}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);border-radius:11px;
+ padding:14px;margin-bottom:12px
+}
+.record p{font-size:11px;color:#69738e;line-height:1.8}
+.chart{width:100%;height:290px;display:block}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric{
+ padding:14px;background:#f8f9fd;border:1px solid var(--border);
+ border-radius:11px
+}
+.metric strong{display:block;font-size:20px;margin-top:9px}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;color:#986b2d;
+ border-radius:11px;padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;background:var(--navy);
+ color:white;padding:13px 17px;border-radius:10px;display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}.mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.metric-grid{grid-template-columns:1fr}
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ #toast,.notice{display:none!important}
+ .main{margin:0}.content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◆ Cost Intelligence</a>
+ <a class="nav-link" href="cost-analytics.html">▦ Cost Analytics</a>
+ <a class="nav-link" href="cost-forecasting.html">◇ Cost Forecasting</a>
+ <a class="nav-link" href="avoided-cost.html">◉ Avoided Cost</a>
+ <a class="nav-link" href="cost-reports.html">◆ Cost Reports</a>
+ <a class="nav-link" href="downtime-cost.html">▦ Downtime Cost</a>
+ <a class="nav-link" href="emergency-cost.html">◇ Emergency Cost</a>
+ <a class="nav-link" href="energy-cost.html">◉ Energy Cost</a>
+ <a class="nav-link active" href="expected-failure-cost.html">◆ Expected Failure Cost</a>
+ <a class="nav-link" href="repair-cost.html">▦ Repair Cost</a>
+ <a class="nav-link" href="replacement-cost.html">◇ Replacement Cost</a>
+ <a class="nav-link" href="roi-analysis.html">◉ ROI Analysis</a>
+ <div class="nav-title">PREDICTIVE MAINTENANCE</div>
+ <a class="nav-link" href="failure-prediction.html">◆ Failure Prediction</a>
+ <a class="nav-link" href="r-u-l-prediction.html">▦ RUL Prediction</a>
+ <a class="nav-link" href="predictive-maintenance.html">◇ Predictive Maintenance</a>
+ <a class="nav-link" href="maintenance-planning.html">◉ Maintenance Planning</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Cost Intelligence / Predictive Failure Economics</div>
+   <strong>Expected Failure Cost Intelligence</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC RISK MODEL</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / PREDICTIVE FINANCIAL RISK
+ </div>
+ <h1>Expected Failure Cost Intelligence</h1>
+ <p>
+  Estimate equipment failure exposure using modeled failure
+  probabilities and financial consequences. Analyze repair,
+  replacement, downtime and production losses, prioritize
+  assets by expected financial risk, and evaluate preventive
+  maintenance economics.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Expected Failure Financial Overview</h3>
+  <div class="muted" id="summaryText">
+   Calculating equipment failure risk...
+  </div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="calculateBtn">Recalculate</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Total Expected Failure Cost</div>
+  <div class="stat-value" id="expectedKpi">₹0</div>
+  <div class="stat-note">Probability-weighted financial exposure</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Modeled High-Risk Assets</div>
+  <div class="stat-value" id="riskKpi">0</div>
+  <div class="stat-note">Assets above the illustrative risk threshold</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Expected Avoided Loss</div>
+  <div class="stat-value" id="avoidedKpi">₹0</div>
+  <div class="stat-note">Gross benefit of modeled intervention</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Net Expected Benefit</div>
+  <div class="stat-value" id="netKpi">₹0</div>
+  <div class="stat-note">Avoided loss minus intervention expense</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Failure Cost Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="equipmentFilter">Equipment</label>
+   <select class="input" id="equipmentFilter">
+    <option value="all">All Equipment</option>
+   </select>
+  </div>
+  <div>
+   <label for="riskFilter">Failure Risk</label>
+   <select class="input" id="riskFilter">
+    <option value="all">All Risk Levels</option>
+    <option>Low</option>
+    <option>Medium</option>
+    <option>High</option>
+   </select>
+  </div>
+  <div>
+   <label for="periodFilter">Risk Horizon</label>
+   <select class="input" id="periodFilter">
+    <option value="1">1 Month</option>
+    <option value="3">3 Months</option>
+    <option value="6">6 Months</option>
+    <option value="12" selected>12 Months</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Equipment Failure Cost Risk Ranking</h3>
+    <p class="muted">
+     Failure probability × modeled financial consequence
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 assets</span>
+  </div>
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Equipment</th><th>Plant</th><th>Risk</th>
+      <th>Failure Probability</th><th>Failure Consequence</th>
+      <th>Expected Cost</th><th>Avoided Loss</th>
+      <th>Net Benefit</th><th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="failureTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Failure Cost Inspector</h3>
+   <span class="badge purple">ASSET RISK PROFILE</span>
+  </div>
+  <div id="failureDetails"></div>
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Failure Probability</span>
+    <strong id="assetProbability">0%</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Expected Failure Cost</span>
+    <strong id="assetExpected">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Avoided Loss</span>
+    <strong id="assetAvoided">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Net Benefit</span>
+    <strong id="assetNet">₹0</strong>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Expected Failure Cost by Equipment</h3>
+   <span class="badge purple">RISK RANKING</span>
+  </div>
+  <p class="muted">Probability-weighted financial exposure by asset</p>
+  <svg class="chart" id="costChart" viewBox="0 0 640 290"
+   role="img" aria-label="Expected failure cost ranking"></svg>
+ </div>
+ <div class="panel">
+  <div class="flex">
+   <h3>Failure Consequence Composition</h3>
+   <span class="badge blue">COST COMPONENTS</span>
+  </div>
+  <p class="muted">Probability-weighted repair, replacement, downtime and production losses</p>
+  <svg class="chart" id="categoryChart" viewBox="0 0 640 290"
+   role="img" aria-label="Expected failure cost composition"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Predictive Maintenance Cost Simulator</h3>
+
+  <div style="margin-bottom:15px">
+   <label for="probabilityMultiplier">Failure Probability Multiplier</label>
+   <input class="input" id="probabilityMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="repairMultiplier">Repair Cost Multiplier</label>
+   <input class="input" id="repairMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="downtimeMultiplier">Downtime & Production Loss Multiplier</label>
+   <input class="input" id="downtimeMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="riskReduction">Maintenance Failure Risk Reduction (%)</label>
+   <input class="input" id="riskReduction"
+    type="number" min="0" max="100" step="1" value="55">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="maintenanceMultiplier">Maintenance Intervention Cost Multiplier</label>
+   <input class="input" id="maintenanceMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+
+  <button class="btn primary" id="applyScenarioBtn">
+   Apply Failure Cost Scenario
+  </button>
+
+  <p class="muted">
+   Intervention is assumed to reduce failure probability.
+   Maintenance expense is incurred whether failure occurs or not.
+  </p>
+ </div>
+
+ <div class="panel">
+  <h3>Failure Risk Financial Summary</h3>
+  <p class="muted">Expected loss, prevention economics and residual exposure</p>
+  <div id="economicsSummary"></div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Plant Failure Cost Exposure</h3>
+  <p class="muted">Expected losses and intervention economics by plant</p>
+  <div id="plantSummary"></div>
+ </div>
+ <div class="panel">
+  <h3>Predictive Financial Risk Insights</h3>
+  <p class="muted">Automated descriptive analysis of the scenario</p>
+  <div id="insightList"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Predictive risk notice:</strong>
+ All probabilities, failure consequences, intervention costs and
+ expected savings are synthetic. Failure probabilities use a
+ constant-hazard approximation and are not validated model outputs.
+ The cost categories represent mutually exclusive failure outcomes
+ or separately defined losses to avoid intentional double counting.
+ Financially favorable maintenance interventions are not automatically
+ safe or technically appropriate. Actual maintenance and safety
+ decisions require engineering review, validated asset condition data,
+ safety procedures and appropriate risk assessments.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const KEY="industra-expected-failure-cost-v1";
+
+const ASSETS=[
+ {
+  id:"MTR-001",name:"Main Drive Motor",plant:"Plant A",
+  annualProbability:.34,repair:180000,replacement:520000,
+  replacementChance:.18,downtime:210000,production:390000,
+  intervention:95000
+ },
+ {
+  id:"CMP-001",name:"Air Compressor",plant:"Plant A",
+  annualProbability:.28,repair:145000,replacement:440000,
+  replacementChance:.12,downtime:175000,production:310000,
+  intervention:78000
+ },
+ {
+  id:"FAN-001",name:"Cooling Fan",plant:"Plant A",
+  annualProbability:.12,repair:55000,replacement:160000,
+  replacementChance:.08,downtime:72000,production:115000,
+  intervention:30000
+ },
+ {
+  id:"GEN-001",name:"Power Generator",plant:"Plant B",
+  annualProbability:.46,repair:360000,replacement:1150000,
+  replacementChance:.22,downtime:480000,production:920000,
+  intervention:175000
+ },
+ {
+  id:"PMP-001",name:"Cooling Pump",plant:"Plant B",
+  annualProbability:.21,repair:95000,replacement:280000,
+  replacementChance:.10,downtime:120000,production:190000,
+  intervention:52000
+ },
+ {
+  id:"GBX-001",name:"Industrial Gearbox",plant:"Plant B",
+  annualProbability:.39,repair:280000,replacement:850000,
+  replacementChance:.20,downtime:350000,production:680000,
+  intervention:145000
+ },
+ {
+  id:"HYD-001",name:"Hydraulic Power Unit",plant:"Plant C",
+  annualProbability:.26,repair:125000,replacement:390000,
+  replacementChance:.14,downtime:160000,production:250000,
+  intervention:68000
+ },
+ {
+  id:"PMP-002",name:"Process Pump",plant:"Plant C",
+  annualProbability:.37,repair:215000,replacement:650000,
+  replacementChance:.17,downtime:280000,production:510000,
+  intervention:110000
+ },
+ {
+  id:"CNV-001",name:"Conveyor Drive",plant:"Plant C",
+  annualProbability:.16,repair:75000,replacement:210000,
+  replacementChance:.09,downtime:95000,production:145000,
+  intervention:39000
+ }
+];
+
+const DEFAULTS={
+ probabilityMultiplier:1,
+ repairMultiplier:1,
+ downtimeMultiplier:1,
+ riskReduction:55,
+ maintenanceMultiplier:1
+};
+
+let scenario={...DEFAULTS};
+let results=[];
+let selectedId=ASSETS[0].id;
+let toastTimer;
+
+const formatter=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(value){return formatter.format(value)}
+
+function compact(value){
+ const sign=value<0?"-":"";
+ const n=Math.abs(value);
+ if(n>=10000000)return sign+"₹"+(n/10000000).toFixed(2)+"Cr";
+ if(n>=100000)return sign+"₹"+(n/100000).toFixed(2)+"L";
+ if(n>=1000)return sign+"₹"+(n/1000).toFixed(1)+"K";
+ return money(value);
+}
+
+function pct(value){
+ return (value*100).toFixed(1)+"%";
+}
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function sum(items,key){
+ return items.reduce((total,item)=>total+item[key],0);
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function riskLevel(probability){
+ if(probability>=.30)return "High";
+ if(probability>=.15)return "Medium";
+ return "Low";
+}
+
+function calculateAsset(asset){
+ const months=Number($("periodFilter").value);
+
+ // Scale annual event probability under a
+ // constant-hazard approximation.
+ const annualProbability=Math.min(
+  .999999,
+  asset.annualProbability*scenario.probabilityMultiplier
+ );
+
+ const probability=
+  1-Math.pow(1-annualProbability,months/12);
+
+ // Repair and replacement are alternative outcomes,
+ // not costs added together for the same event.
+ const repairCost=asset.repair*scenario.repairMultiplier;
+ const replacementCost=asset.replacement*scenario.repairMultiplier;
+
+ const equipmentConsequence=
+  repairCost*(1-asset.replacementChance)+
+  replacementCost*asset.replacementChance;
+
+ const downtimeCost=
+  asset.downtime*scenario.downtimeMultiplier;
+
+ const productionCost=
+  asset.production*scenario.downtimeMultiplier;
+
+ const consequence=
+  equipmentConsequence+downtimeCost+productionCost;
+
+ const expectedCost=probability*consequence;
+
+ const residualProbability=
+  probability*(1-scenario.riskReduction/100);
+
+ const residualExpectedCost=
+  residualProbability*consequence;
+
+ const avoidedLoss=expectedCost-residualExpectedCost;
+
+ const interventionCost=
+  asset.intervention*scenario.maintenanceMultiplier;
+
+ const netBenefit=avoidedLoss-interventionCost;
+
+ const roi=interventionCost>0?
+  netBenefit/interventionCost*100:0;
+
+ return{
+  ...asset,
+  months,
+  probability,
+  risk:riskLevel(probability),
+  repairCost,
+  replacementCost,
+  equipmentConsequence,
+  downtimeCost,
+  productionCost,
+  consequence,
+  expectedCost,
+  residualProbability,
+  residualExpectedCost,
+  avoidedLoss,
+  interventionCost,
+  netBenefit,
+  roi,
+  expectedEquipment:probability*equipmentConsequence,
+  expectedDowntime:probability*downtimeCost,
+  expectedProduction:probability*productionCost
+ };
+}
+
+function calculateAll(){
+ results=ASSETS.map(calculateAsset);
+ render();
+}
+
+function filtered(){
+ const plant=$("plantFilter").value;
+ const equipment=$("equipmentFilter").value;
+ const risk=$("riskFilter").value;
+
+ return results.filter(item=>
+  (plant==="all"||item.plant===plant)&&
+  (equipment==="all"||item.id===equipment)&&
+  (risk==="all"||item.risk===risk)
+ );
+}
+
+function selected(){
+ return filtered().find(item=>item.id===selectedId)||
+  filtered()[0]||null;
+}
+
+function populateEquipment(){
+ const select=$("equipmentFilter");
+ select.replaceChildren();
+
+ const all=el("option","","All Equipment");
+ all.value="all";
+ select.append(all);
+
+ ASSETS.forEach(asset=>{
+  const option=el("option","",asset.name+" · "+asset.id);
+  option.value=asset.id;
+  select.append(option);
+ });
+}
+
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(el("span","",label),el("strong","",value));
+ return row;
+}
+
+function riskBadge(risk){
+ const cls=risk==="High"?"red":
+  risk==="Medium"?"orange":"green";
+ return el("span","badge "+cls,risk);
+}
+
+function renderKpis(){
+ const list=filtered();
+
+ $("expectedKpi").textContent=compact(sum(list,"expectedCost"));
+ $("riskKpi").textContent=String(
+  list.filter(item=>item.risk==="High").length
+ );
+ $("avoidedKpi").textContent=compact(sum(list,"avoidedLoss"));
+ $("netKpi").textContent=compact(sum(list,"netBenefit"));
+
+ $("summaryText").textContent=
+  $("periodFilter").value+"-month risk horizon · "+
+  list.length+" assets · "+
+  scenario.riskReduction+"% assumed intervention risk reduction";
+}
+
+function renderTable(){
+ const body=$("failureTable");
+ body.replaceChildren();
+ const list=[...filtered()].sort(
+  (a,b)=>b.expectedCost-a.expectedCost
+ );
+
+ $("visibleCount").textContent=list.length+" assets";
+
+ list.forEach(item=>{
+  const row=el("tr");
+
+  [
+   item.name+" · "+item.id,
+   item.plant
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const riskCell=el("td");
+  riskCell.append(riskBadge(item.risk));
+  row.append(riskCell);
+
+  [
+   pct(item.probability),
+   money(item.consequence),
+   money(item.expectedCost),
+   money(item.avoidedLoss),
+   money(item.netBenefit)
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+
+  button.onclick=()=>{
+   selectedId=item.id;
+   renderInspector();
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","No equipment matches the filters.");
+  cell.colSpan=9;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const item=selected();
+ const box=$("failureDetails");
+ box.replaceChildren();
+
+ if(!item){
+  box.append(el("p","muted","No equipment selected."));
+  [
+   "assetProbability","assetExpected",
+   "assetAvoided","assetNet"
+  ].forEach(id=>$(id).textContent="--");
+  return;
+ }
+
+ [
+  ["Equipment",item.name],
+  ["Equipment ID",item.id],
+  ["Plant",item.plant],
+  ["Risk Horizon",item.months+" months"],
+  ["Failure Risk",item.risk],
+  ["Failure Probability",pct(item.probability)],
+  ["Replacement Outcome Probability",pct(item.replacementChance)],
+  ["Repair Cost if Repairable",money(item.repairCost)],
+  ["Replacement Cost if Replaced",money(item.replacementCost)],
+  ["Weighted Equipment Consequence",money(item.equipmentConsequence)],
+  ["Downtime Consequence",money(item.downtimeCost)],
+  ["Production Loss Consequence",money(item.productionCost)],
+  ["Total Failure Consequence",money(item.consequence)],
+  ["Residual Failure Probability",pct(item.residualProbability)],
+  ["Residual Expected Loss",money(item.residualExpectedCost)],
+  ["Intervention Cost",money(item.interventionCost)],
+  ["Scenario ROI",item.roi.toFixed(1)+"%"]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+
+ $("assetProbability").textContent=pct(item.probability);
+ $("assetExpected").textContent=compact(item.expectedCost);
+ $("assetAvoided").textContent=compact(item.avoidedLoss);
+ $("assetNet").textContent=compact(item.netBenefit);
+}
+
+function drawCostChart(){
+ const svg=$("costChart");
+ svg.replaceChildren();
+
+ const list=[...filtered()].sort(
+  (a,b)=>b.expectedCost-a.expectedCost
+ );
+
+ const max=Math.max(...list.map(item=>item.expectedCost),1);
+
+ list.forEach((item,index)=>{
+  const y=10+index*29;
+  const width=item.expectedCost/max*330;
+
+  svg.append(svgEl("text",{
+   x:8,y:y+15,fill:"#69738e","font-size":"11"
+  },item.id));
+
+  svg.append(svgEl("rect",{
+   x:110,y,width,height:18,rx:4,fill:"#6855eb"
+  }));
+
+  svg.append(svgEl("text",{
+   x:120+width,y:y+14,
+   fill:"#202640","font-size":"11"
+  },compact(item.expectedCost)));
+ });
+}
+
+function drawCategoryChart(){
+ const svg=$("categoryChart");
+ svg.replaceChildren();
+ const list=filtered();
+
+ const categories=[
+  {
+   name:"Equipment",
+   value:sum(list,"expectedEquipment"),
+   color:"#6855eb"
+  },
+  {
+   name:"Downtime",
+   value:sum(list,"expectedDowntime"),
+   color:"#438df5"
+  },
+  {
+   name:"Production",
+   value:sum(list,"expectedProduction"),
+   color:"#18b58c"
+  }
+ ];
+
+ const max=Math.max(...categories.map(item=>item.value),1);
+
+ categories.forEach((item,index)=>{
+  const y=45+index*65;
+  const width=item.value/max*330;
+
+  svg.append(svgEl("text",{
+   x:12,y:y+18,fill:"#69738e","font-size":"12"
+  },item.name));
+
+  svg.append(svgEl("rect",{
+   x:120,y,width,height:28,rx:6,fill:item.color
+  }));
+
+  svg.append(svgEl("text",{
+   x:130+width,y:y+19,
+   fill:"#202640","font-size":"11"
+  },compact(item.value)));
+ });
+}
+
+function renderEconomics(){
+ const box=$("economicsSummary");
+ box.replaceChildren();
+
+ const list=filtered();
+
+ [
+  ["Assets Evaluated",String(list.length)],
+  ["High-Risk Assets",String(
+   list.filter(item=>item.risk==="High").length
+  )],
+  ["Expected Equipment Cost",money(sum(list,"expectedEquipment"))],
+  ["Expected Downtime Cost",money(sum(list,"expectedDowntime"))],
+  ["Expected Production Loss",money(sum(list,"expectedProduction"))],
+  ["Total Expected Failure Cost",money(sum(list,"expectedCost"))],
+  ["Maintenance Risk Reduction",scenario.riskReduction+"%"],
+  ["Expected Avoided Loss",money(sum(list,"avoidedLoss"))],
+  ["Intervention Expenditure",money(sum(list,"interventionCost"))],
+  ["Net Expected Benefit",money(sum(list,"netBenefit"))],
+  ["Residual Expected Failure Cost",money(sum(list,"residualExpectedCost"))]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+}
+
+function renderPlants(){
+ const box=$("plantSummary");
+ box.replaceChildren();
+
+ ["Plant A","Plant B","Plant C"].forEach(plant=>{
+  const list=filtered().filter(item=>item.plant===plant);
+  const high=list.filter(item=>item.risk==="High").length;
+
+  const card=el("div","record");
+  card.append(
+   el("h4","",plant),
+   el("p","",
+    list.length+" assets · "+
+    high+" high-risk · "+
+    compact(sum(list,"expectedCost"))+" expected loss · "+
+    compact(sum(list,"netBenefit"))+" net expected benefit")
+  );
+  box.append(card);
+ });
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const list=filtered();
+ const highest=[...list].sort(
+  (a,b)=>b.expectedCost-a.expectedCost
+ )[0];
+
+ const positive=list.filter(item=>item.netBenefit>0).length;
+
+ const insights=[
+  [
+   "Highest Expected Financial Risk",
+   highest?
+    highest.name+" has the largest modeled expected failure loss at "+
+    money(highest.expectedCost)+".":
+    "No equipment matches the selected filters."
+  ],
+  [
+   "Maintenance Economics",
+   positive+" of "+list.length+
+   " selected assets show positive net expected financial benefit under the active assumptions."
+  ],
+  [
+   "Expected Avoided Failure Loss",
+   "The modeled "+scenario.riskReduction+
+   "% risk reduction produces gross avoided losses of "+
+   money(sum(list,"avoidedLoss"))+"."
+  ],
+  [
+   "Residual Risk",
+   "Even after the modeled intervention, expected financial exposure remains "+
+   money(sum(list,"residualExpectedCost"))+"."
+  ],
+  [
+   "Engineering Recommendation",
+   "Validate failure probabilities, failure-mode consequences, repair versus replacement outcomes, downtime costs and intervention effectiveness before making maintenance decisions."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+  card.append(
+   el("h4","",title),
+   el("p","",description)
+  );
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawCostChart();
+ drawCategoryChart();
+ renderEconomics();
+ renderPlants();
+ renderInsights();
+}
+
+function validateScenario(){
+ const probabilityMultiplier=
+  Number($("probabilityMultiplier").value);
+ const repairMultiplier=
+  Number($("repairMultiplier").value);
+ const downtimeMultiplier=
+  Number($("downtimeMultiplier").value);
+ const riskReduction=
+  Number($("riskReduction").value);
+ const maintenanceMultiplier=
+  Number($("maintenanceMultiplier").value);
+
+ const valid=(value,min,max)=>
+  Number.isFinite(value)&&value>=min&&value<=max;
+
+ if(
+  !valid(probabilityMultiplier,.25,3)||
+  !valid(repairMultiplier,.25,3)||
+  !valid(downtimeMultiplier,.25,3)||
+  !valid(riskReduction,0,100)||
+  !valid(maintenanceMultiplier,.25,3)
+ ){
+  notify("Enter valid failure cost scenario assumptions.");
+  return false;
+ }
+
+ scenario={
+  probabilityMultiplier,
+  repairMultiplier,
+  downtimeMultiplier,
+  riskReduction,
+  maintenanceMultiplier
+ };
+
+ return true;
+}
+
+function syncInputs(){
+ $("probabilityMultiplier").value=scenario.probabilityMultiplier;
+ $("repairMultiplier").value=scenario.repairMultiplier;
+ $("downtimeMultiplier").value=scenario.downtimeMultiplier;
+ $("riskReduction").value=scenario.riskReduction;
+ $("maintenanceMultiplier").value=scenario.maintenanceMultiplier;
+}
+
+function saveScenario(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(scenario));
+ }catch{
+  notify("Browser storage unavailable.");
+ }
+}
+
+function loadScenario(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+
+  const valid=(value,min,max)=>
+   typeof value==="number"&&
+   Number.isFinite(value)&&value>=min&&value<=max;
+
+  if(saved&&
+   valid(saved.probabilityMultiplier,.25,3)&&
+   valid(saved.repairMultiplier,.25,3)&&
+   valid(saved.downtimeMultiplier,.25,3)&&
+   valid(saved.riskReduction,0,100)&&
+   valid(saved.maintenanceMultiplier,.25,3)
+  ){
+   scenario={...saved};
+  }
+ }catch{}
+ syncInputs();
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "equipment_id","equipment_name","plant","risk_level",
+  "risk_horizon_months","failure_probability",
+  "repair_cost_inr","replacement_cost_inr",
+  "replacement_outcome_probability",
+  "weighted_equipment_consequence_inr",
+  "downtime_consequence_inr","production_consequence_inr",
+  "total_failure_consequence_inr",
+  "expected_failure_cost_inr",
+  "residual_failure_probability",
+  "residual_expected_cost_inr",
+  "expected_avoided_loss_inr",
+  "intervention_cost_inr","net_expected_benefit_inr",
+  "scenario_roi_percent"
+ ]];
+
+ filtered().forEach(item=>{
+  rows.push([
+   item.id,item.name,item.plant,item.risk,
+   item.months,item.probability.toFixed(6),
+   item.repairCost.toFixed(2),
+   item.replacementCost.toFixed(2),
+   item.replacementChance.toFixed(4),
+   item.equipmentConsequence.toFixed(2),
+   item.downtimeCost.toFixed(2),
+   item.productionCost.toFixed(2),
+   item.consequence.toFixed(2),
+   item.expectedCost.toFixed(2),
+   item.residualProbability.toFixed(6),
+   item.residualExpectedCost.toFixed(2),
+   item.avoidedLoss.toFixed(2),
+   item.interventionCost.toFixed(2),
+   item.netBenefit.toFixed(2),
+   item.roi.toFixed(2)
+  ]);
+ });
+
+ const csv=rows.map(row=>
+  row.map(value=>
+   '"'+String(value).replaceAll('"','""')+'"'
+  ).join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-expected-failure-cost.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Expected failure cost CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-expected-failure-cost.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   scenario,
+   riskHorizonMonths:Number($("periodFilter").value),
+   filters:{
+    plant:$("plantFilter").value,
+    equipment:$("equipmentFilter").value,
+    risk:$("riskFilter").value
+   },
+   results:filtered()
+  },null,2),
+  "application/json"
+ );
+
+ notify("Expected failure cost JSON exported.");
+}
+
+$("calculateBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculateAll();
+ notify("Expected failure costs recalculated.");
+};
+
+$("applyScenarioBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculateAll();
+ notify("Predictive maintenance scenario applied.");
+};
+
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ if(!confirm("Reset expected failure cost scenario?"))return;
+
+ scenario={...DEFAULTS};
+ selectedId=ASSETS[0].id;
+
+ $("plantFilter").value="all";
+ $("equipmentFilter").value="all";
+ $("riskFilter").value="all";
+ $("periodFilter").value="12";
+
+ syncInputs();
+ saveScenario();
+ calculateAll();
+
+ notify("Failure cost scenario reset.");
+};
+
+[
+ "plantFilter",
+ "equipmentFilter",
+ "riskFilter",
+ "periodFilter"
+].forEach(id=>{
+ $(id).addEventListener("change",calculateAll);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+populateEquipment();
+loadScenario();
+calculateAll();
+</script>
+</body>
+</html>

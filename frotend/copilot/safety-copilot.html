@@ -1,0 +1,1586 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Safety Copilot | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / copilot</p><h1 id="page-title">Safety Copilot</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Safety Copilot workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Safety Copilot | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5{
+ font-family:"Manrope",sans-serif;
+ letter-spacing:-.5px;
+}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+button:disabled{opacity:.55;cursor:not-allowed}
+
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:white;z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto;
+ scrollbar-width:thin;scrollbar-color:#42496b transparent;
+}
+.brand{
+ display:flex;align-items:center;gap:11px;
+ padding:26px 22px;border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);
+ font-size:22px;
+}
+.brand strong{
+ font:800 18px "Manrope",sans-serif;color:white;
+}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px;
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;
+ letter-spacing:1.7px;text-transform:uppercase;
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;
+ margin:3px 12px;padding:12px 13px;
+ border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700;transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+ color:white;
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12;
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;
+ border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;
+ justify-content:space-between;align-items:center;gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;
+ border:1px solid var(--border);border-radius:11px;
+ background:white;display:grid;place-items:center;
+ color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{
+ padding:27px 30px 45px;
+ max-width:1650px;margin:auto;
+}
+.hero{
+ position:relative;overflow:hidden;
+ border-radius:19px;padding:30px;color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:23px;
+}
+.hero:after{
+ content:"";position:absolute;
+ width:330px;height:330px;border-radius:50%;
+ border:1px solid #ffffff25;right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;
+ text-transform:uppercase;letter-spacing:2px;color:#ddd6ff;
+}
+.hero h1{
+ font-size:26px;font-weight:800;margin:12px 0;
+}
+.hero p{
+ color:#e6e0ff;font-size:12px;
+ line-height:1.9;max-width:790px;margin:0;
+}
+.hero-tag{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:17px;
+}
+.panel,.stat-card{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105;
+}
+.panel{padding:21px}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:15px;
+}
+.stat-label{
+ font-size:11px;color:var(--muted);font-weight:700;
+}
+.stat-value{
+ font:800 24px "Manrope",sans-serif;margin-top:7px;
+}
+.stat-note{
+ color:#a0a8ba;font-size:10px;margin-top:6px;
+}
+.panel-heading{
+ display:flex;justify-content:space-between;
+ align-items:center;flex-wrap:wrap;
+ gap:10px;margin-bottom:19px;
+}
+.panel-heading h3{
+ font-size:14px;font-weight:800;margin:0;
+}
+.panel-subtitle{
+ color:var(--muted);font-size:10px;margin-top:5px;
+}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;
+ padding:11px 16px;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 13px;background:white;color:#69738e;
+ font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{
+ background:#f5f3ff;color:var(--purple);
+}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffedf0;color:#d84b63}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.status-badge.purple{background:#f0edff;color:#6855eb}
+.form-label{
+ font-size:10px;color:#68718e;
+ font-weight:800;margin-bottom:8px;
+}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:42px;font-size:11px;padding:10px 12px;
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+.section-label{
+ color:#8e97ac;font-size:10px;font-weight:800;
+ text-transform:uppercase;letter-spacing:1.2px;
+ margin:21px 0 14px;
+}
+.section-label:first-child{margin-top:0}
+.zone-card{
+ border:1px solid var(--border);border-radius:12px;
+ padding:15px;background:white;cursor:pointer;
+ transition:.2s;
+}
+.zone-card:hover{
+ border-color:#c3baff;background:#fcfbff;
+}
+.zone-card.active{
+ border-color:#a99aff;background:#f8f6ff;
+}
+.zone-name{
+ font-size:12px;font-weight:800;
+}
+.zone-meta{
+ font-size:10px;color:var(--muted);
+ margin-top:6px;line-height:1.6;
+}
+.check-item{
+ display:flex;align-items:flex-start;gap:11px;
+ padding:12px 13px;border:1px solid var(--border);
+ border-radius:11px;margin-bottom:9px;
+}
+.check-item input{
+ width:16px;height:16px;
+ accent-color:var(--purple);margin-top:2px;
+}
+.check-item strong{font-size:11px}
+.check-item p{
+ font-size:10px;color:#8992aa;
+ margin:5px 0 0;line-height:1.7;
+}
+.risk-result{
+ border:1px solid #e3ddff;background:#f7f5ff;
+ border-radius:13px;padding:17px;
+ display:flex;align-items:center;gap:14px;
+}
+.risk-icon{
+ width:48px;height:48px;border-radius:13px;
+ background:#e9e4ff;color:var(--purple);
+ display:grid;place-items:center;font-size:23px;
+}
+.risk-result h3{
+ font-size:16px;font-weight:800;margin:0 0 5px;
+}
+.risk-result p{
+ font-size:10px;color:#828aa1;
+ margin:0;line-height:1.7;
+}
+.metric-row{
+ display:flex;align-items:center;justify-content:space-between;
+ padding:12px 0;gap:10px;
+ border-bottom:1px solid #f0f1f7;font-size:11px;
+}
+.metric-row:last-child{border-bottom:0}
+.metric-row span{color:#7e88a0}
+.metric-row strong{font-weight:800}
+.chart-box{height:250px;position:relative}
+.chart-box canvas{width:100%!important;height:100%!important}
+.chat-panel{
+ display:flex;flex-direction:column;
+ height:550px;padding:0;overflow:hidden;
+}
+.chat-heading{
+ padding:17px 19px;border-bottom:1px solid var(--border);
+ display:flex;align-items:center;gap:10px;
+}
+.chat-heading-icon{
+ width:38px;height:38px;border-radius:11px;
+ background:#eeeaff;color:var(--purple);
+ display:grid;place-items:center;font-size:18px;
+}
+.chat-heading strong{font-size:12px}
+.chat-heading small{
+ display:block;color:var(--muted);
+ font-size:10px;margin-top:3px;
+}
+.chat-messages{
+ flex:1;min-height:0;overflow-y:auto;
+ padding:18px;background:#fdfdff;
+}
+.chat-message{margin-bottom:17px;max-width:95%}
+.chat-message.user{margin-left:auto}
+.chat-meta{
+ font-size:10px;font-weight:800;
+ color:#98a1b5;margin-bottom:6px;
+}
+.chat-message.user .chat-meta{text-align:right}
+.chat-bubble{
+ padding:13px 15px;border-radius:4px 12px 12px 12px;
+ background:white;border:1px solid var(--border);
+ line-height:1.8;font-size:11px;
+ white-space:pre-wrap;overflow-wrap:anywhere;
+}
+.chat-message.user .chat-bubble{
+ background:var(--purple);color:white;
+ border-color:var(--purple);
+ border-radius:12px 4px 12px 12px;
+}
+.chat-composer{
+ border-top:1px solid var(--border);padding:13px;
+}
+.chat-composer textarea{
+ resize:none;min-height:60px;
+}
+.quick-prompts{
+ display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;
+}
+.quick-prompt{
+ border:1px solid #e4dfff;border-radius:8px;
+ background:#f7f5ff;color:var(--purple);
+ font-size:10px;font-weight:700;padding:8px 10px;
+}
+.quick-prompt:hover{background:#eeeaff}
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;font-size:10px;font-weight:800;
+ padding:13px;background:#f9faff;
+ border-bottom:1px solid var(--border);
+ white-space:nowrap;
+}
+.table tbody td{
+ padding:13px;vertical-align:middle;
+ border-color:#f0f1f7;
+}
+.table tbody tr:hover{background:#fcfbff}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;
+ padding:15px 17px;font-size:11px;line-height:1.8;
+ display:flex;align-items:flex-start;gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1100px){
+ :root{--sidebar:225px}
+ .content{padding:22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{
+  transform:translateX(-100%);
+  transition:transform .25s;width:260px;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:15px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:16px}
+ .chat-panel{padding:0}
+ .mobile-hide{display:none}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+ <a class="side-link" href="notifications.html"><i class="bi bi-bell"></i> Notifications</a>
+
+ <div class="nav-section">AI Intelligence</div>
+ <a class="side-link" href="a-i-copilot.html"><i class="bi bi-stars"></i> AI Copilot</a>
+ <a class="side-link" href="chat-history.html"><i class="bi bi-clock-history"></i> Chat History</a>
+ <a class="side-link" href="cost-copilot.html"><i class="bi bi-cash-coin"></i> Cost Copilot</a>
+ <a class="side-link" href="diagnostics-copilot.html"><i class="bi bi-activity"></i> Diagnostics Copilot</a>
+ <a class="side-link" href="maintenance-copilot.html"><i class="bi bi-tools"></i> Maintenance Copilot</a>
+ <a class="side-link" href="report-copilot.html"><i class="bi bi-file-earmark-richtext"></i> Report Copilot</a>
+ <a class="side-link active" href="safety-copilot.html"><i class="bi bi-shield-check"></i> Safety Copilot</a>
+
+ <div class="nav-section">Industrial Safety</div>
+ <a class="side-link" href="vision-dashboard.html"><i class="bi bi-eye"></i> Vision Dashboard</a>
+ <a class="side-link" href="p-p-e-detection.html"><i class="bi bi-person-check"></i> PPE Detection</a>
+ <a class="side-link" href="fire-detection.html"><i class="bi bi-fire"></i> Fire Detection</a>
+ <a class="side-link" href="smoke-detection.html"><i class="bi bi-cloud-haze2"></i> Smoke Detection</a>
+ <a class="side-link" href="overheating-detection.html"><i class="bi bi-thermometer-high"></i> Overheating Detection</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/safety-agent.html"><i class="bi bi-shield-exclamation"></i> Safety Agent</a>
+ <a class="side-link" href="agents/incident-agent.html"><i class="bi bi-exclamation-octagon"></i> Incident Agent</a>
+ <a class="side-link" href="agents/emergency-response-agent.html"><i class="bi bi-life-preserver"></i> Emergency Response Agent</a>
+ <a class="side-link" href="agents/supervisor-agent.html"><i class="bi bi-diagram-3"></i> Supervisor Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Safety Documentation Workspace
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">AI Intelligence / <strong>Safety Copilot</strong></div>
+   <div class="fw-bold mt-1" style="font-size:13px">Industrial Safety Intelligence</div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="status-badge info mobile-hide">
+   <i class="bi bi-info-circle"></i> Documentation Demo
+  </span>
+  <a href="notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">INDUSTRA AI / Industrial Safety Intelligence</div>
+ <h1><i class="bi bi-shield-check me-2"></i> Industrial Safety Copilot</h1>
+ <p>
+  Document workplace hazards, organize PPE review checklists,
+  screen incident priorities, track corrective actions, and prepare
+  safety observation reports in one unified industrial workspace.
+ </p>
+ <div class="hero-tag">
+  <i class="bi bi-shield-exclamation"></i>
+  Manual observations · Illustrative screening · No live hazard detection
+ </div>
+</section>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+ <div>
+  <h5 class="fw-bold mb-1">Safety Operations Overview</h5>
+  <div class="text-secondary" style="font-size:11px">
+   Locally managed demonstration safety records and review workflows.
+  </div>
+ </div>
+ <div class="d-flex gap-2 flex-wrap">
+  <button class="btn-outline-custom" id="resetDemo">
+   <i class="bi bi-arrow-counterclockwise"></i> Reset Demo
+  </button>
+  <button class="btn-outline-custom" id="exportCsv">
+   <i class="bi bi-filetype-csv"></i> Export CSV
+  </button>
+  <button class="btn-purple" id="exportJson">
+   <i class="bi bi-download"></i> Export Safety Report
+  </button>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+    <i class="bi bi-buildings"></i>
+   </div>
+   <div class="stat-label">Example Safety Zones</div>
+   <div class="stat-value" id="zoneCount">—</div>
+   <div class="stat-note">Fictional facility locations</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#fff4e6;color:#d68a22">
+    <i class="bi bi-exclamation-triangle"></i>
+   </div>
+   <div class="stat-label">Open Observations</div>
+   <div class="stat-value" id="openCount">0</div>
+   <div class="stat-note">Locally documented records</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#ffedf0;color:#ed6175">
+    <i class="bi bi-flag"></i>
+   </div>
+   <div class="stat-label">High / Critical Screens</div>
+   <div class="stat-value" id="highCount">0</div>
+   <div class="stat-note">Illustrative priority matrix</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e7f8f1;color:#18b58c">
+    <i class="bi bi-clipboard-check"></i>
+   </div>
+   <div class="stat-label">Recorded Reviews</div>
+   <div class="stat-value" id="reviewCount">0</div>
+   <div class="stat-note">Saved in this browser</div>
+  </div>
+ </div>
+
+</div>
+
+<div class="row g-3 mb-4">
+
+ <div class="col-xl-4">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3><i class="bi bi-geo-alt me-2" style="color:var(--purple)"></i> Safety Review Zones</h3>
+     <div class="panel-subtitle">Select a fictional facility zone.</div>
+    </div>
+    <span class="status-badge purple">Sample Zones</span>
+   </div>
+
+   <div id="zoneList" class="d-grid gap-2"></div>
+
+   <div class="section-label">Selected Zone</div>
+   <div id="zoneDetails"></div>
+  </section>
+ </div>
+
+ <div class="col-xl-8">
+  <div class="row g-3">
+
+   <div class="col-12">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3><i class="bi bi-person-check me-2" style="color:var(--purple)"></i> PPE and Safety Review Checklist</h3>
+       <div class="panel-subtitle">
+        Manual administrative checklist, not automated PPE recognition.
+       </div>
+      </div>
+      <span class="status-badge info" id="checklistCount">0 / 0</span>
+     </div>
+
+     <div id="checklistContainer" class="row g-2"></div>
+
+     <div class="d-flex justify-content-between align-items-center mt-3 gap-2">
+      <span class="text-secondary" style="font-size:10px">
+       Checklist responses are not safety clearance.
+      </span>
+      <button class="btn-outline-custom" id="resetChecklist">
+       <i class="bi bi-arrow-counterclockwise"></i> Reset
+      </button>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel h-100">
+     <div class="panel-heading">
+      <div>
+       <h3>Observation Priority Distribution</h3>
+       <div class="panel-subtitle">Locally documented records.</div>
+      </div>
+     </div>
+     <div class="chart-box">
+      <canvas id="priorityChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel h-100">
+     <div class="panel-heading">
+      <div>
+       <h3>Corrective Action Status</h3>
+       <div class="panel-subtitle">Administrative tracking only.</div>
+      </div>
+     </div>
+     <div class="chart-box">
+      <canvas id="statusChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+  </div>
+ </div>
+
+</div>
+
+<div class="row g-3 mb-4">
+
+ <div class="col-xl-6">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3><i class="bi bi-clipboard-plus me-2" style="color:var(--purple)"></i> Hazard Observation Builder</h3>
+     <div class="panel-subtitle">
+      Record an observation and calculate an illustrative review priority.
+     </div>
+    </div>
+    <span class="status-badge purple">Manual Entry</span>
+   </div>
+
+   <form id="observationForm">
+
+    <div class="row g-3">
+     <div class="col-md-6">
+      <label class="form-label" for="observationZone">Location / Zone</label>
+      <select class="form-select" id="observationZone"></select>
+     </div>
+
+     <div class="col-md-6">
+      <label class="form-label" for="hazardType">Observation Category</label>
+      <select class="form-select" id="hazardType">
+       <option>Personal Protective Equipment</option>
+       <option>Fire / Smoke Observation</option>
+       <option>Equipment Overheating</option>
+       <option>Electrical Safety</option>
+       <option>Mechanical Guarding</option>
+       <option>Slip / Trip / Fall</option>
+       <option>Chemical Handling</option>
+       <option>Housekeeping</option>
+       <option>Other Observation</option>
+      </select>
+     </div>
+
+     <div class="col-md-6">
+      <label class="form-label" for="likelihood">Illustrative Likelihood</label>
+      <select class="form-select" id="likelihood">
+       <option value="1">1 — Unlikely</option>
+       <option value="2">2 — Less Likely</option>
+       <option value="3" selected>3 — Possible</option>
+       <option value="4">4 — Likely</option>
+       <option value="5">5 — Very Likely</option>
+      </select>
+     </div>
+
+     <div class="col-md-6">
+      <label class="form-label" for="severity">Illustrative Severity</label>
+      <select class="form-select" id="severity">
+       <option value="1">1 — Minor</option>
+       <option value="2">2 — Moderate</option>
+       <option value="3" selected>3 — Significant</option>
+       <option value="4">4 — Major</option>
+       <option value="5">5 — Severe</option>
+      </select>
+     </div>
+
+     <div class="col-md-6">
+      <label class="form-label" for="observer">Recorded By</label>
+      <input class="form-control" id="observer" maxlength="100" placeholder="Observer / Team">
+     </div>
+
+     <div class="col-md-6">
+      <label class="form-label" for="reviewDate">Review Date</label>
+      <input class="form-control" id="reviewDate" type="date" required>
+     </div>
+
+     <div class="col-12">
+      <label class="form-label" for="observationDescription">Observation Description</label>
+      <textarea class="form-control" id="observationDescription" rows="3" maxlength="2000" required placeholder="Describe what was observed. Avoid assuming an unverified cause..."></textarea>
+     </div>
+
+     <div class="col-12">
+      <label class="form-label" for="correctiveAction">Proposed Follow-Up / Corrective Action</label>
+      <textarea class="form-control" id="correctiveAction" rows="3" maxlength="2000" placeholder="Document proposed follow-up for qualified review..."></textarea>
+     </div>
+    </div>
+
+    <div class="risk-result my-3">
+     <div class="risk-icon">
+      <i class="bi bi-clipboard-pulse"></i>
+     </div>
+     <div>
+      <h3 id="riskTitle">Illustrative Priority: Medium</h3>
+      <p id="riskDescription">
+       Likelihood × severity screening. This is not an approved risk assessment.
+      </p>
+     </div>
+    </div>
+
+    <button class="btn-purple w-100" type="submit">
+     <i class="bi bi-plus-circle"></i> Save Safety Observation
+    </button>
+
+   </form>
+  </section>
+ </div>
+
+ <div class="col-xl-6">
+  <section class="panel chat-panel">
+   <div class="chat-heading">
+    <div class="chat-heading-icon"><i class="bi bi-stars"></i></div>
+    <div>
+     <strong>Safety Copilot</strong>
+     <small>Rule-based safety documentation assistant</small>
+    </div>
+    <span class="status-badge purple ms-auto">LOCAL</span>
+   </div>
+
+   <div class="chat-messages" id="chatMessages"></div>
+
+   <div class="chat-composer">
+    <div class="quick-prompts">
+     <button class="quick-prompt" data-question="Summarize open safety observations.">Open observations</button>
+     <button class="quick-prompt" data-question="Explain the risk matrix.">Risk matrix</button>
+     <button class="quick-prompt" data-question="Explain PPE review limitations.">PPE review</button>
+    </div>
+
+    <div class="d-flex gap-2">
+     <textarea class="form-control" id="chatInput" rows="2" maxlength="1500" placeholder="Ask about safety documentation..."></textarea>
+     <button class="btn-purple align-self-end" id="sendChat" aria-label="Send message">
+      <i class="bi bi-arrow-up"></i>
+     </button>
+    </div>
+
+    <div class="text-secondary mt-2" style="font-size:9px">
+     Not an emergency communication channel or certified safety advisor.
+    </div>
+   </div>
+  </section>
+ </div>
+
+</div>
+
+<section class="panel mb-4">
+ <div class="panel-heading">
+  <div>
+   <h3><i class="bi bi-table me-2" style="color:var(--purple)"></i> Safety Observations and Corrective Actions</h3>
+   <div class="panel-subtitle">
+    Update administrative statuses and export browser-local records.
+   </div>
+  </div>
+
+  <div class="d-flex gap-2 flex-wrap">
+   <input class="form-control" id="searchObservations" style="max-width:200px" placeholder="Search observations...">
+   <select class="form-select" id="statusFilter" style="max-width:160px">
+    <option value="All">All Statuses</option>
+    <option value="Open">Open</option>
+    <option value="Under Review">Under Review</option>
+    <option value="Closed">Closed</option>
+   </select>
+  </div>
+ </div>
+
+ <div class="table-responsive">
+  <table class="table mb-0">
+   <thead>
+    <tr>
+     <th>Reference</th>
+     <th>Zone</th>
+     <th>Category</th>
+     <th>Priority</th>
+     <th>Date</th>
+     <th>Status</th>
+     <th>Action</th>
+    </tr>
+   </thead>
+   <tbody id="observationsTable"></tbody>
+  </table>
+ </div>
+</section>
+
+<div class="notice">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Critical safety limitation:</strong>
+  This is a documentation and training demonstration, not a real-time
+  emergency alert, industrial protection, hazard-detection, or certified
+  risk-assessment system. No cameras, fire alarms, smoke detectors, PPE
+  models, IoT devices, or emergency services are connected. Do not rely on
+  this interface to identify hazards, approve work, authorize equipment
+  operation, or coordinate an emergency. Follow approved site procedures,
+  trained safety personnel, and emergency response arrangements.
+ </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const STORAGE_KEY="industra-safety-copilot-v1";
+
+const zones=[
+ {
+  id:"Z-01",
+  name:"Production Line A",
+  area:"Production",
+  description:"Fictional machining and production area."
+ },
+ {
+  id:"Z-02",
+  name:"Electrical Control Room",
+  area:"Electrical",
+  description:"Fictional electrical distribution area."
+ },
+ {
+  id:"Z-03",
+  name:"Compressor Utility Room",
+  area:"Utilities",
+  description:"Fictional compressed-air equipment area."
+ },
+ {
+  id:"Z-04",
+  name:"Warehouse and Loading",
+  area:"Logistics",
+  description:"Fictional materials-handling area."
+ },
+ {
+  id:"Z-05",
+  name:"Maintenance Workshop",
+  area:"Maintenance",
+  description:"Fictional mechanical service area."
+ },
+ {
+  id:"Z-06",
+  name:"Chemical Storage Area",
+  area:"Storage",
+  description:"Fictional controlled-material storage area."
+ }
+];
+
+const checklistItems=[
+ {
+  name:"PPE requirements reviewed",
+  description:"Check relevant site and task-specific PPE requirements."
+ },
+ {
+  name:"Access and authorization reviewed",
+  description:"Confirm required access permissions through approved procedures."
+ },
+ {
+  name:"Equipment isolation requirements reviewed",
+  description:"Refer to approved lockout/tagout and isolation procedures."
+ },
+ {
+  name:"Emergency arrangements reviewed",
+  description:"Verify site emergency communication and evacuation procedures."
+ },
+ {
+  name:"Housekeeping observations documented",
+  description:"Record visible housekeeping issues for follow-up."
+ },
+ {
+  name:"Task-specific hazard assessment referenced",
+  description:"Consult the approved job hazard assessment where required."
+ }
+];
+
+function loadObservations(){
+ try{
+  const parsed=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if(!Array.isArray(parsed))return [];
+  return parsed.filter(item=>
+   item&&typeof item==="object"&&
+   typeof item.id==="string"&&
+   zones.some(z=>z.id===item.zoneId)&&
+   ["Open","Under Review","Closed"].includes(item.status)&&
+   Number.isFinite(Number(item.score))
+  ).slice(0,200);
+ }catch{
+  return [];
+ }
+}
+
+let observations=loadObservations();
+let selectedZoneId=zones[0].id;
+let checklistState={};
+let priorityChart=null;
+let statusChart=null;
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function todayIso(){
+ const d=new Date();
+ return [
+  d.getFullYear(),
+  String(d.getMonth()+1).padStart(2,"0"),
+  String(d.getDate()).padStart(2,"0")
+ ].join("-");
+}
+
+function saveObservations(){
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(observations));
+  return true;
+ }catch{
+  notify("Unable to save locally. Export your records for backup.");
+  return false;
+ }
+}
+
+function selectedZone(){
+ return zones.find(z=>z.id===selectedZoneId);
+}
+
+function riskLevel(score){
+ if(score>=20)return "Critical";
+ if(score>=12)return "High";
+ if(score>=6)return "Medium";
+ return "Low";
+}
+
+function badgeClass(value){
+ if(value==="Critical"||value==="High")return "danger";
+ if(value==="Medium"||value==="Under Review")return "warning";
+ if(value==="Low"||value==="Closed")return "success";
+ return "info";
+}
+
+function currentRisk(){
+ const likelihood=Number($("likelihood").value);
+ const severity=Number($("severity").value);
+ const score=likelihood*severity;
+ return {likelihood,severity,score,level:riskLevel(score)};
+}
+
+function updateRiskPreview(){
+ const risk=currentRisk();
+ $("riskTitle").textContent=
+  `Illustrative Priority: ${risk.level} (${risk.score}/25)`;
+
+ $("riskDescription").textContent=
+  `Likelihood ${risk.likelihood} × Severity ${risk.severity}. `+
+  "This simplified matrix is not a validated site risk assessment.";
+}
+
+["likelihood","severity"].forEach(id=>{
+ $(id).addEventListener("change",updateRiskPreview);
+});
+
+function renderZones(){
+ const container=$("zoneList");
+ container.replaceChildren();
+
+ zones.forEach(zone=>{
+  const card=document.createElement("div");
+  card.className="zone-card "+
+   (zone.id===selectedZoneId?"active":"");
+
+  card.tabIndex=0;
+  card.setAttribute("role","button");
+  card.setAttribute("aria-label","Select "+zone.name);
+
+  const top=document.createElement("div");
+  top.className="d-flex justify-content-between align-items-center gap-2";
+
+  const title=document.createElement("div");
+  title.className="zone-name";
+  title.textContent=zone.name;
+
+  const badge=document.createElement("span");
+  badge.className="status-badge purple";
+  badge.textContent=zone.id;
+
+  top.append(title,badge);
+
+  const meta=document.createElement("div");
+  meta.className="zone-meta";
+  meta.textContent=zone.area+" · Demonstration zone";
+
+  card.append(top,meta);
+
+  card.addEventListener("click",()=>selectZone(zone.id));
+  card.addEventListener("keydown",event=>{
+   if(event.key==="Enter"||event.key===" "){
+    event.preventDefault();
+    selectZone(zone.id);
+   }
+  });
+
+  container.append(card);
+ });
+}
+
+function renderZoneDetails(){
+ const zone=selectedZone();
+ const container=$("zoneDetails");
+ container.replaceChildren();
+
+ const rows=[
+  ["Zone",zone.id],
+  ["Area",zone.area],
+  ["Recorded Observations",
+   observations.filter(o=>o.zoneId===zone.id).length],
+  ["Data Source","Manual / Demo"]
+ ];
+
+ rows.forEach(([label,value])=>{
+  const row=document.createElement("div");
+  row.className="metric-row";
+
+  const left=document.createElement("span");
+  left.textContent=label;
+
+  const right=document.createElement("strong");
+  right.textContent=String(value);
+
+  row.append(left,right);
+  container.append(row);
+ });
+
+ const description=document.createElement("p");
+ description.className="text-secondary mt-3 mb-0";
+ description.style.fontSize="10px";
+ description.style.lineHeight="1.8";
+ description.textContent=zone.description;
+
+ container.append(description);
+}
+
+function populateZoneSelect(){
+ const select=$("observationZone");
+ select.replaceChildren();
+
+ zones.forEach(zone=>{
+  const option=document.createElement("option");
+  option.value=zone.id;
+  option.textContent=zone.name;
+  select.append(option);
+ });
+
+ select.value=selectedZoneId;
+}
+
+function renderChecklist(){
+ const container=$("checklistContainer");
+ container.replaceChildren();
+
+ if(!checklistState[selectedZoneId]){
+  checklistState[selectedZoneId]=checklistItems.map(()=>false);
+ }
+
+ checklistItems.forEach((item,index)=>{
+  const col=document.createElement("div");
+  col.className="col-md-6";
+
+  const label=document.createElement("label");
+  label.className="check-item h-100";
+
+  const input=document.createElement("input");
+  input.type="checkbox";
+  input.checked=checklistState[selectedZoneId][index];
+
+  input.addEventListener("change",()=>{
+   checklistState[selectedZoneId][index]=input.checked;
+   updateChecklistCount();
+  });
+
+  const content=document.createElement("div");
+  const name=document.createElement("strong");
+  name.textContent=item.name;
+
+  const description=document.createElement("p");
+  description.textContent=item.description;
+
+  content.append(name,description);
+  label.append(input,content);
+  col.append(label);
+  container.append(col);
+ });
+
+ updateChecklistCount();
+}
+
+function updateChecklistCount(){
+ const completed=checklistState[selectedZoneId].filter(Boolean).length;
+ $("checklistCount").textContent=
+  completed+" / "+checklistItems.length;
+}
+
+function selectZone(id){
+ selectedZoneId=id;
+ $("observationZone").value=id;
+ renderZones();
+ renderZoneDetails();
+ renderChecklist();
+}
+
+$("resetChecklist").addEventListener("click",()=>{
+ checklistState[selectedZoneId]=checklistItems.map(()=>false);
+ renderChecklist();
+ notify("Selected zone checklist reset.");
+});
+
+function updateKpis(){
+ $("zoneCount").textContent=zones.length;
+ $("reviewCount").textContent=observations.length;
+ $("openCount").textContent=
+  observations.filter(o=>o.status!=="Closed").length;
+ $("highCount").textContent=
+  observations.filter(o=>
+   o.status!=="Closed"&&
+   ["High","Critical"].includes(o.level)
+  ).length;
+}
+
+function renderCharts(){
+ const levels=["Low","Medium","High","Critical"];
+ const levelCounts=levels.map(level=>
+  observations.filter(o=>o.level===level).length
+ );
+
+ const priorityData={
+  labels:levels,
+  datasets:[{
+   data:levelCounts,
+   backgroundColor:["#18b58c","#f4a443","#ed6175","#a43c64"],
+   borderWidth:0
+  }]
+ };
+
+ if(priorityChart){
+  priorityChart.data=priorityData;
+  priorityChart.update();
+ }else{
+  priorityChart=new Chart($("priorityChart"),{
+   type:"doughnut",
+   data:priorityData,
+   options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    cutout:"70%",
+    plugins:{
+     legend:{
+      position:"bottom",
+      labels:{usePointStyle:true,boxWidth:9}
+     }
+    }
+   }
+  });
+ }
+
+ const statuses=["Open","Under Review","Closed"];
+ const statusCounts=statuses.map(status=>
+  observations.filter(o=>o.status===status).length
+ );
+
+ const statusData={
+  labels:statuses,
+  datasets:[{
+   label:"Observation Records",
+   data:statusCounts,
+   backgroundColor:["#6855eb","#f4a443","#18b58c"],
+   borderRadius:7
+  }]
+ };
+
+ if(statusChart){
+  statusChart.data=statusData;
+  statusChart.update();
+ }else{
+  statusChart=new Chart($("statusChart"),{
+   type:"bar",
+   data:statusData,
+   options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+     y:{
+      beginAtZero:true,
+      ticks:{precision:0},
+      grid:{color:"#edf0f6"}
+     },
+     x:{grid:{display:false}}
+    }
+   }
+  });
+ }
+}
+
+function renderObservations(){
+ const tbody=$("observationsTable");
+ tbody.replaceChildren();
+
+ const search=$("searchObservations").value.trim().toLowerCase();
+ const filter=$("statusFilter").value;
+
+ const filtered=observations.filter(o=>{
+  const zone=zones.find(z=>z.id===o.zoneId);
+  const matchesText=[
+   o.id,o.type,o.description,
+   zone?zone.name:"",
+   o.observer
+  ].some(value=>
+   String(value||"").toLowerCase().includes(search)
+  );
+
+  return matchesText&&
+   (filter==="All"||o.status===filter);
+ });
+
+ if(!filtered.length){
+  const row=document.createElement("tr");
+  const cell=document.createElement("td");
+  cell.colSpan=7;
+  cell.className="text-center text-secondary py-4";
+  cell.textContent="No safety observations match the current filters.";
+  row.append(cell);
+  tbody.append(row);
+  return;
+ }
+
+ filtered.forEach(o=>{
+  const tr=document.createElement("tr");
+  const zone=zones.find(z=>z.id===o.zoneId);
+
+  [
+   o.id,
+   zone?zone.name:o.zoneId,
+   o.type
+  ].forEach(value=>{
+   const td=document.createElement("td");
+   td.textContent=value;
+   tr.append(td);
+  });
+
+  const riskTd=document.createElement("td");
+  const riskBadge=document.createElement("span");
+  riskBadge.className="status-badge "+badgeClass(o.level);
+  riskBadge.textContent=o.level+" · "+o.score;
+  riskTd.append(riskBadge);
+  tr.append(riskTd);
+
+  const dateTd=document.createElement("td");
+  dateTd.textContent=o.reviewDate;
+  tr.append(dateTd);
+
+  const statusTd=document.createElement("td");
+  const statusBadge=document.createElement("span");
+  statusBadge.className="status-badge "+badgeClass(o.status);
+  statusBadge.textContent=o.status;
+  statusTd.append(statusBadge);
+  tr.append(statusTd);
+
+  const actionTd=document.createElement("td");
+  const select=document.createElement("select");
+  select.className="form-select";
+  select.style.minWidth="125px";
+  select.setAttribute("aria-label","Update observation status");
+
+  ["Open","Under Review","Closed"].forEach(value=>{
+   const option=document.createElement("option");
+   option.value=value;
+   option.textContent=value;
+   select.append(option);
+  });
+
+  select.value=o.status;
+
+  select.addEventListener("change",()=>{
+   o.status=select.value;
+   saveObservations();
+   renderAll();
+   notify("Administrative observation status updated.");
+  });
+
+  actionTd.append(select);
+  tr.append(actionTd);
+  tbody.append(tr);
+ });
+}
+
+function renderAll(){
+ updateKpis();
+ renderZones();
+ renderZoneDetails();
+ renderObservations();
+ renderCharts();
+}
+
+$("observationForm").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ const description=$("observationDescription").value.trim();
+ const action=$("correctiveAction").value.trim();
+
+ if(!description){
+  notify("Enter an observation description.");
+  return;
+ }
+
+ if(observations.length>=200){
+  notify("The local demo supports up to 200 observations. Export or reset records.");
+  return;
+ }
+
+ const risk=currentRisk();
+
+ const record={
+  id:"OBS-"+Date.now().toString(36).toUpperCase()+
+   "-"+Math.random().toString(36).slice(2,6).toUpperCase(),
+  createdAt:new Date().toISOString(),
+  zoneId:$("observationZone").value,
+  type:$("hazardType").value,
+  likelihood:risk.likelihood,
+  severity:risk.severity,
+  score:risk.score,
+  level:risk.level,
+  observer:$("observer").value.trim(),
+  reviewDate:$("reviewDate").value,
+  description,
+  correctiveAction:action,
+  status:"Open",
+  source:"manual browser-local observation"
+ };
+
+ observations.unshift(record);
+ saveObservations();
+
+ $("observationDescription").value="";
+ $("correctiveAction").value="";
+
+ renderAll();
+ notify("Safety observation saved locally.");
+});
+
+$("searchObservations").addEventListener("input",renderObservations);
+$("statusFilter").addEventListener("change",renderObservations);
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportJson").addEventListener("click",()=>{
+ const report={
+  application:"INDUSTRA AI",
+  module:"Safety Copilot",
+  generatedAt:new Date().toISOString(),
+  source:"manual observations and fictional zones",
+  realTimeHazardDetection:false,
+  emergencyAlertSystem:false,
+  certifiedRiskAssessment:false,
+  zones,
+  observations,
+  checklistState,
+  limitations:
+   "Documentation and training demonstration only. Not for safety clearance or emergency response."
+ };
+
+ downloadFile(
+  "industra-safety-report.json",
+  JSON.stringify(report,null,2),
+  "application/json"
+ );
+
+ notify("Safety report exported.");
+});
+
+$("exportCsv").addEventListener("click",()=>{
+ const escapeCsv=value=>
+  '"'+String(value??"").replace(/"/g,'""')+'"';
+
+ const rows=[
+  ["Reference","Zone","Category","Likelihood","Severity",
+   "Illustrative Score","Priority","Date","Observer",
+   "Status","Description","Corrective Action"],
+  ...observations.map(o=>[
+   o.id,o.zoneId,o.type,o.likelihood,o.severity,
+   o.score,o.level,o.reviewDate,o.observer,
+   o.status,o.description,o.correctiveAction
+  ])
+ ];
+
+ const csv=rows.map(row=>
+  row.map(escapeCsv).join(",")
+ ).join("\r\n");
+
+ downloadFile(
+  "industra-safety-observations.csv",
+  csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Safety observation CSV exported.");
+});
+
+$("resetDemo").addEventListener("click",()=>{
+ if(!confirm("Clear all locally saved observations and reset the safety demo?")){
+  return;
+ }
+
+ observations=[];
+ checklistState={};
+ localStorage.removeItem(STORAGE_KEY);
+
+ $("statusFilter").value="All";
+ $("searchObservations").value="";
+ selectZone(zones[0].id);
+ renderAll();
+
+ notify("Safety demonstration reset.");
+});
+
+function appendChat(role,message){
+ const container=$("chatMessages");
+ const wrapper=document.createElement("div");
+ wrapper.className="chat-message "+role;
+
+ const meta=document.createElement("div");
+ meta.className="chat-meta";
+ meta.textContent=role==="user"?
+  "You":"Safety Copilot · Rule-Based Explanation";
+
+ const bubble=document.createElement("div");
+ bubble.className="chat-bubble";
+ bubble.textContent=message;
+
+ wrapper.append(meta,bubble);
+ container.append(wrapper);
+ container.scrollTop=container.scrollHeight;
+}
+
+function explain(question){
+ const q=question.toLowerCase();
+
+ if(/emergency|fire now|smoke now|injur|immediate danger|evacuat/.test(q)){
+  return "If there is an actual or suspected emergency, use the site's established emergency alarm and response procedures immediately. Contact the designated emergency response team or local emergency services as appropriate. This chat cannot detect hazards, dispatch help, or provide real-time emergency guidance.";
+ }
+
+ if(/open|observation|incident|record/.test(q)){
+  const open=observations.filter(o=>o.status!=="Closed");
+
+  return `Safety observation summary:
+
+Total recorded: ${observations.length}
+Open or under review: ${open.length}
+High / Critical open screens: ${open.filter(o=>
+ ["High","Critical"].includes(o.level)
+).length}
+
+These are manually documented records, not live incident detections.`;
+ }
+
+ if(/matrix|risk|priority|score/.test(q)){
+  const risk=currentRisk();
+
+  return `Illustrative risk matrix:
+
+Likelihood: ${risk.likelihood}/5
+Severity: ${risk.severity}/5
+Calculated score: ${risk.score}/25
+Priority: ${risk.level}
+
+Example bands:
+1–5: Low
+6–11: Medium
+12–19: High
+20–25: Critical
+
+These bands are demonstration rules and must not replace an approved site-specific risk assessment.`;
+ }
+
+ if(/ppe|helmet|glove|vest|protection/.test(q)){
+  return "PPE selection depends on the specific task, exposure, equipment, and approved hazard assessment. This page provides a manual review checklist only. It does not identify people, detect PPE from video, verify fit, or certify compliance. Consult site PPE requirements and qualified safety personnel.";
+ }
+
+ if(/corrective|action|follow|review/.test(q)){
+  return "For documented observations, assign responsible personnel, record the proposed corrective action, verify it through the approved site process, and maintain an auditable record. A status marked Closed in this demo is only an administrative label and does not establish that a hazard has been eliminated.";
+ }
+
+ if(/limit|accuracy|camera|sensor|real|detect/.test(q)){
+  return "The Safety Copilot is a local demonstration. It has no camera, IoT, smoke, fire, PPE, or alarm integration. It does not run trained AI models or communicate with emergency services. All hazard descriptions are manually entered and priority values use a simplified arithmetic matrix.";
+ }
+
+ return `Safety documentation overview:
+
+Selected zone: ${selectedZone().name}
+Recorded observations: ${observations.length}
+Open / under review: ${observations.filter(o=>o.status!=="Closed").length}
+
+You can document an observation, review the manual checklist, track corrective-action status, and export records. For real safety decisions, use approved site procedures and qualified personnel.`;
+}
+
+function sendChat(){
+ const input=$("chatInput");
+ const question=input.value.trim();
+ if(!question)return;
+
+ appendChat("user",question);
+ input.value="";
+ appendChat("assistant",explain(question));
+}
+
+$("sendChat").addEventListener("click",sendChat);
+
+$("chatInput").addEventListener("keydown",event=>{
+ if(event.key==="Enter"&&!event.shiftKey){
+  event.preventDefault();
+  sendChat();
+ }
+});
+
+document.querySelectorAll("[data-question]").forEach(button=>{
+ button.addEventListener("click",()=>{
+  const question=button.dataset.question;
+  appendChat("user",question);
+  appendChat("assistant",explain(question));
+ });
+});
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+$("reviewDate").value=todayIso();
+
+populateZoneSelect();
+selectZone(selectedZoneId);
+updateRiskPreview();
+renderAll();
+
+appendChat(
+ "assistant",
+ "Welcome to the Industrial Safety Copilot.\n\nI can summarize manually recorded safety observations, explain the illustrative priority matrix, review PPE documentation limitations, and describe administrative corrective-action tracking.\n\nThis is not a live safety monitoring, hazard detection, or emergency response service."
+);
+</script>
+</body>
+</html>

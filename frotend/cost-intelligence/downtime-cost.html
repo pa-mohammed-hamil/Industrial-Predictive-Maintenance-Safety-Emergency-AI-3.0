@@ -1,0 +1,1490 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Downtime Cost | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / cost-intelligence</p><h1 id="page-title">Downtime Cost</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Downtime Cost workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Downtime Cost | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --bg:#f5f6fb;
+ --surface:#fff;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px Arial,Helvetica,sans-serif;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;
+ inset:0 auto 0 0;
+ width:258px;
+ background:var(--navy);
+ overflow:auto;
+ z-index:100;
+}
+.brand{
+ padding:25px 20px;
+ color:white;
+ font-size:19px;
+ font-weight:800;
+}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;
+ color:#687399;
+ font-size:10px;
+ font-weight:800;
+ letter-spacing:1px;
+}
+.nav-link{
+ display:block;
+ padding:12px;
+ margin:3px;
+ border-radius:10px;
+ color:#a4aecf;
+ font-size:12px;
+}
+.nav-link:hover,.nav-link.active{
+ background:var(--purple);
+ color:white;
+}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;
+ background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+}
+.content{
+ padding:26px;
+ max-width:1750px;
+ margin:auto;
+}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;
+ color:white;
+ border-radius:17px;
+ margin-bottom:23px;
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{
+ font-size:12px;
+ color:#eeeaff;
+ line-height:1.8;
+}
+.panel,.stat{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:15px;
+ padding:20px;
+ box-shadow:0 5px 20px #10152d05;
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:16px;
+}
+.grid-2{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:16px;
+}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);
+ gap:17px;
+}
+.flex{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ flex-wrap:wrap;
+}
+.actions{
+ display:flex;
+ gap:9px;
+ flex-wrap:wrap;
+}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{
+ color:var(--muted);
+ font-size:11px;
+ line-height:1.8;
+}
+.stat-label{
+ color:var(--muted);
+ font-size:11px;
+ font-weight:700;
+}
+.stat-value{
+ font-size:25px;
+ font-weight:800;
+ margin-top:12px;
+}
+.stat-note{
+ font-size:10px;
+ color:var(--muted);
+ margin-top:8px;
+}
+.btn{
+ border:1px solid var(--border);
+ background:white;
+ color:#69738e;
+ border-radius:9px;
+ padding:10px 13px;
+ font-size:11px;
+ font-weight:700;
+}
+.btn.primary{
+ background:var(--purple);
+ border-color:var(--purple);
+ color:white;
+}
+.btn.danger{
+ background:#ffedf0;
+ border-color:#ffedf0;
+ color:#d84b63;
+}
+.input{
+ width:100%;
+ padding:11px;
+ border:1px solid var(--border);
+ border-radius:9px;
+ background:white;
+ color:var(--text);
+}
+label{
+ display:block;
+ color:#69738e;
+ font-size:11px;
+ font-weight:700;
+ margin-bottom:7px;
+}
+.badge{
+ display:inline-block;
+ padding:7px 10px;
+ border-radius:8px;
+ font-size:10px;
+ font-weight:800;
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:12px;
+}
+.table-wrap{overflow:auto}
+table{
+ width:100%;
+ border-collapse:collapse;
+ font-size:11px;
+}
+th{
+ background:#f8f9fd;
+ color:var(--muted);
+ text-align:left;
+ padding:13px;
+ white-space:nowrap;
+}
+td{
+ padding:13px;
+ border-bottom:1px solid #eef0f6;
+ white-space:nowrap;
+}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;
+ justify-content:space-between;
+ gap:12px;
+ padding:12px 0;
+ border-bottom:1px solid var(--border);
+ font-size:11px;
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);
+ border-radius:11px;
+ padding:14px;
+ margin-bottom:12px;
+}
+.record p{
+ font-size:11px;
+ color:#69738e;
+ line-height:1.8;
+}
+.chart{
+ width:100%;
+ height:290px;
+ display:block;
+}
+.metric-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+}
+.metric{
+ padding:14px;
+ background:#f8f9fd;
+ border:1px solid var(--border);
+ border-radius:11px;
+}
+.metric strong{
+ display:block;
+ font-size:20px;
+ margin-top:9px;
+}
+.progress{
+ height:10px;
+ background:#eef0f8;
+ border-radius:10px;
+ overflow:hidden;
+ margin-top:9px;
+}
+.progress-fill{
+ height:100%;
+ background:var(--purple);
+ border-radius:10px;
+}
+.notice{
+ background:#fff8eb;
+ border:1px solid #ffe8c3;
+ color:#986b2d;
+ border-radius:11px;
+ padding:15px;
+ font-size:11px;
+ line-height:1.8;
+}
+#toast{
+ position:fixed;
+ bottom:20px;
+ right:20px;
+ background:var(--navy);
+ color:white;
+ padding:13px 17px;
+ border-radius:10px;
+ display:none;
+ z-index:300;
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}
+ .topbar{padding:14px}
+ .grid,.grid-2,.filters,.metric-grid{
+  grid-template-columns:1fr;
+ }
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ #toast,.notice{display:none!important}
+ .main{margin:0}
+ .content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◆ Cost Intelligence</a>
+ <a class="nav-link" href="cost-analytics.html">▦ Cost Analytics</a>
+ <a class="nav-link" href="cost-forecasting.html">◇ Cost Forecasting</a>
+ <a class="nav-link" href="avoided-cost.html">◉ Avoided Cost</a>
+ <a class="nav-link" href="cost-reports.html">◆ Cost Reports</a>
+ <a class="nav-link active" href="downtime-cost.html">▦ Downtime Cost</a>
+ <a class="nav-link" href="repair-cost.html">◇ Repair Cost</a>
+ <a class="nav-link" href="replacement-cost.html">◉ Replacement Cost</a>
+ <a class="nav-link" href="roi-analysis.html">◆ ROI Analysis</a>
+
+ <div class="nav-title">MAINTENANCE</div>
+ <a class="nav-link" href="downtime-analysis.html">▦ Downtime Analysis</a>
+ <a class="nav-link" href="predictive-maintenance.html">◇ Predictive Maintenance</a>
+ <a class="nav-link" href="maintenance-planning.html">◉ Maintenance Planning</a>
+ <a class="nav-link" href="asset-management.html">◆ Asset Management</a>
+</aside>
+
+<div class="main">
+
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Cost Intelligence / Downtime Economics</div>
+   <strong>Industrial Downtime Cost</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC FINANCIAL MODEL</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / INDUSTRIAL DOWNTIME INTELLIGENCE
+ </div>
+ <h1>Downtime Cost Intelligence</h1>
+ <p>
+  Quantify the financial impact of equipment downtime,
+  analyze unplanned and scheduled interruptions,
+  evaluate production and labor losses,
+  estimate recovery expenses and model the potential
+  financial benefits of downtime reduction.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Downtime Financial Overview</h3>
+  <div class="muted" id="summaryText">
+   Loading downtime cost scenario...
+  </div>
+ </div>
+
+ <div class="actions">
+  <button class="btn primary" id="calculateBtn">Recalculate</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Total Downtime Cost</div>
+  <div class="stat-value" id="totalCostKpi">₹0</div>
+  <div class="stat-note">Estimated period downtime losses</div>
+ </div>
+
+ <div class="stat">
+  <div class="stat-label">Total Downtime Hours</div>
+  <div class="stat-value" id="hoursKpi">0 h</div>
+  <div class="stat-note">Scheduled and unplanned downtime</div>
+ </div>
+
+ <div class="stat">
+  <div class="stat-label">Unplanned Downtime Cost</div>
+  <div class="stat-value" id="unplannedKpi">₹0</div>
+  <div class="stat-note">Failure-related downtime expense</div>
+ </div>
+
+ <div class="stat">
+  <div class="stat-label">Potential Cost Avoidance</div>
+  <div class="stat-value" id="avoidedKpi">₹0</div>
+  <div class="stat-note">Modeled benefit from reducing unplanned downtime</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Downtime Cost Filters</h3>
+
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+
+  <div>
+   <label for="equipmentFilter">Equipment</label>
+   <select class="input" id="equipmentFilter">
+    <option value="all">All Equipment</option>
+   </select>
+  </div>
+
+  <div>
+   <label for="typeFilter">Downtime Type</label>
+   <select class="input" id="typeFilter">
+    <option value="all">All Downtime</option>
+    <option value="Unplanned">Unplanned</option>
+    <option value="Planned">Planned</option>
+   </select>
+  </div>
+
+  <div>
+   <label for="periodFilter">Analysis Period</label>
+   <select class="input" id="periodFilter">
+    <option value="1">1 Month</option>
+    <option value="3">3 Months</option>
+    <option value="6">6 Months</option>
+    <option value="12" selected>12 Months</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Equipment Downtime Cost Analysis</h3>
+    <p class="muted">
+     Financial losses by equipment and downtime category
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 records</span>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Equipment</th>
+      <th>Plant</th>
+      <th>Type</th>
+      <th>Hours</th>
+      <th>Production Loss</th>
+      <th>Labor Cost</th>
+      <th>Recovery Cost</th>
+      <th>Total Cost</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="downtimeTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Downtime Financial Inspector</h3>
+   <span class="badge purple">ASSET DETAILS</span>
+  </div>
+
+  <div id="downtimeDetails"></div>
+
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Downtime Hours</span>
+    <strong id="assetHours">0 h</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Total Cost</span>
+    <strong id="assetTotal">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Cost per Hour</span>
+    <strong id="assetRate">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Avoidable Cost</span>
+    <strong id="assetAvoided">₹0</strong>
+   </div>
+  </div>
+ </div>
+
+</section>
+
+<section class="grid-2 mb">
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Downtime Cost by Equipment</h3>
+   <span class="badge purple">ASSET COMPARISON</span>
+  </div>
+  <p class="muted">
+   Estimated downtime financial impact by asset
+  </p>
+  <svg class="chart" id="equipmentChart"
+   viewBox="0 0 640 290"
+   role="img"
+   aria-label="Downtime cost by equipment"></svg>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Downtime Cost Composition</h3>
+   <span class="badge blue">FINANCIAL CATEGORIES</span>
+  </div>
+  <p class="muted">
+   Production loss, idle labor and recovery expense
+  </p>
+  <svg class="chart" id="categoryChart"
+   viewBox="0 0 640 290"
+   role="img"
+   aria-label="Downtime cost category breakdown"></svg>
+ </div>
+
+</section>
+
+<section class="grid-2 mb">
+
+ <div class="panel">
+  <h3>Downtime Scenario Simulator</h3>
+
+  <div style="margin-bottom:15px">
+   <label for="durationMultiplier">
+    Downtime Duration Multiplier
+   </label>
+   <input class="input" id="durationMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="productionMultiplier">
+    Production Loss Rate Multiplier
+   </label>
+   <input class="input" id="productionMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="laborMultiplier">
+    Labor Cost Multiplier
+   </label>
+   <input class="input" id="laborMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="recoveryMultiplier">
+    Recovery Cost Multiplier
+   </label>
+   <input class="input" id="recoveryMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="reductionInput">
+    Unplanned Downtime Reduction (%)
+   </label>
+   <input class="input" id="reductionInput"
+    type="number" min="0" max="100" step="1" value="35">
+  </div>
+
+  <button class="btn primary" id="applyScenarioBtn">
+   Apply Scenario
+  </button>
+
+  <p class="muted">
+   The reduction assumption applies only to unplanned
+   downtime and its associated costs.
+  </p>
+ </div>
+
+ <div class="panel">
+  <h3>Downtime Economics Summary</h3>
+  <p class="muted">
+   Consolidated financial impact of the selected downtime records
+  </p>
+  <div id="economicsSummary"></div>
+ </div>
+
+</section>
+
+<section class="grid-2 mb">
+
+ <div class="panel">
+  <h3>Plant Downtime Financial Performance</h3>
+  <p class="muted">
+   Downtime hours, total cost and avoidable losses by plant
+  </p>
+  <div id="plantSummary"></div>
+ </div>
+
+ <div class="panel">
+  <h3>Downtime Cost Intelligence Insights</h3>
+  <p class="muted">
+   Automated descriptive analysis of the active scenario
+  </p>
+  <div id="insightList"></div>
+ </div>
+
+</section>
+
+<div class="notice">
+ <strong>Financial and operational notice:</strong>
+ All downtime records, durations, loss rates and cost estimates
+ are synthetic. Production loss is modeled as lost contribution
+ margin rather than gross sales revenue. Labor costs represent
+ incremental idle labor expense and recovery costs represent
+ separate restart-related expenditure, avoiding intentional
+ double-counting. Scenario-based avoided cost is hypothetical
+ and is not verified savings. This dashboard is not connected
+ to live PLC, SCADA, MES or financial systems and must not
+ be used for safety-critical operational decisions.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const SVG_NS="http://www.w3.org/2000/svg";
+const STORAGE_KEY="industra-downtime-cost-v1";
+
+const ASSETS=[
+ {
+  id:"MTR-001",name:"Main Drive Motor",
+  plant:"Plant A",
+  unplannedHours:36,plannedHours:12,
+  productionRate:18000,laborRate:2400,
+  unplannedRecovery:65000,plannedRecovery:12000
+ },
+ {
+  id:"CMP-001",name:"Air Compressor",
+  plant:"Plant A",
+  unplannedHours:28,plannedHours:10,
+  productionRate:15000,laborRate:1800,
+  unplannedRecovery:48000,plannedRecovery:10000
+ },
+ {
+  id:"FAN-001",name:"Cooling Fan",
+  plant:"Plant A",
+  unplannedHours:12,plannedHours:8,
+  productionRate:9000,laborRate:1100,
+  unplannedRecovery:18000,plannedRecovery:5000
+ },
+ {
+  id:"GEN-001",name:"Power Generator",
+  plant:"Plant B",
+  unplannedHours:48,plannedHours:16,
+  productionRate:24000,laborRate:3200,
+  unplannedRecovery:110000,plannedRecovery:18000
+ },
+ {
+  id:"PMP-001",name:"Cooling Pump",
+  plant:"Plant B",
+  unplannedHours:22,plannedHours:9,
+  productionRate:12000,laborRate:1600,
+  unplannedRecovery:36000,plannedRecovery:8000
+ },
+ {
+  id:"GBX-001",name:"Industrial Gearbox",
+  plant:"Plant B",
+  unplannedHours:40,plannedHours:14,
+  productionRate:21000,laborRate:2800,
+  unplannedRecovery:85000,plannedRecovery:15000
+ },
+ {
+  id:"HYD-001",name:"Hydraulic Unit",
+  plant:"Plant C",
+  unplannedHours:26,plannedHours:11,
+  productionRate:14000,laborRate:1900,
+  unplannedRecovery:44000,plannedRecovery:9000
+ },
+ {
+  id:"PMP-002",name:"Process Pump",
+  plant:"Plant C",
+  unplannedHours:32,plannedHours:12,
+  productionRate:17500,laborRate:2200,
+  unplannedRecovery:62000,plannedRecovery:11000
+ },
+ {
+  id:"CNV-001",name:"Conveyor Drive",
+  plant:"Plant C",
+  unplannedHours:16,plannedHours:8,
+  productionRate:11000,laborRate:1300,
+  unplannedRecovery:24000,plannedRecovery:6000
+ }
+];
+
+const DEFAULTS={
+ durationMultiplier:1,
+ productionMultiplier:1,
+ laborMultiplier:1,
+ recoveryMultiplier:1,
+ reduction:35
+};
+
+let scenario={...DEFAULTS};
+let results=[];
+let selectedKey=null;
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",
+ currency:"INR",
+ maximumFractionDigits:0
+});
+
+function money(value){
+ return currency.format(value);
+}
+
+function compactMoney(value){
+ const sign=value<0?"-":"";
+ const amount=Math.abs(value);
+
+ if(amount>=10000000)
+  return sign+"₹"+(amount/10000000).toFixed(2)+"Cr";
+
+ if(amount>=100000)
+  return sign+"₹"+(amount/100000).toFixed(2)+"L";
+
+ if(amount>=1000)
+  return sign+"₹"+(amount/1000).toFixed(1)+"K";
+
+ return money(value);
+}
+
+function number(value){
+ return new Intl.NumberFormat("en-IN",{
+  maximumFractionDigits:1
+ }).format(value);
+}
+
+function percent(value){
+ return value.toFixed(1)+"%";
+}
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(SVG_NS,tag);
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function sum(items,key){
+ return items.reduce((total,item)=>total+item[key],0);
+}
+
+function calculateRecord(asset,type){
+ const months=Number($("periodFilter").value);
+ const periodFactor=months/12;
+
+ const baseHours=type==="Unplanned"?
+  asset.unplannedHours:asset.plannedHours;
+
+ const hours=
+  baseHours*periodFactor*scenario.durationMultiplier;
+
+ // Planned maintenance is scheduled at lower
+ // production and labor disruption factors.
+ const productionFactor=type==="Planned"?.35:1;
+ const laborFactor=type==="Planned"?.6:1;
+
+ const productionLoss=
+  hours*asset.productionRate*
+  scenario.productionMultiplier*
+  productionFactor;
+
+ const laborCost=
+  hours*asset.laborRate*
+  scenario.laborMultiplier*
+  laborFactor;
+
+ const recoveryBase=type==="Unplanned"?
+  asset.unplannedRecovery:asset.plannedRecovery;
+
+ const recoveryCost=
+  recoveryBase*periodFactor*
+  scenario.recoveryMultiplier;
+
+ const totalCost=
+  productionLoss+laborCost+recoveryCost;
+
+ const avoidedCost=type==="Unplanned"?
+  totalCost*scenario.reduction/100:0;
+
+ const residualCost=totalCost-avoidedCost;
+
+ return{
+  id:asset.id,
+  name:asset.name,
+  plant:asset.plant,
+  type,
+  months,
+  hours,
+  productionRate:asset.productionRate,
+  laborRate:asset.laborRate,
+  productionLoss,
+  laborCost,
+  recoveryCost,
+  totalCost,
+  avoidedCost,
+  residualCost,
+  costPerHour:hours>0?totalCost/hours:0
+ };
+}
+
+function calculateAll(){
+ results=ASSETS.flatMap(asset=>[
+  calculateRecord(asset,"Unplanned"),
+  calculateRecord(asset,"Planned")
+ ]);
+
+ render();
+}
+
+function filtered(){
+ const plant=$("plantFilter").value;
+ const equipment=$("equipmentFilter").value;
+ const type=$("typeFilter").value;
+
+ return results.filter(item=>
+  (plant==="all"||item.plant===plant)&&
+  (equipment==="all"||item.id===equipment)&&
+  (type==="all"||item.type===type)
+ );
+}
+
+function selected(){
+ const list=filtered();
+
+ return list.find(
+  item=>item.id+"-"+item.type===selectedKey
+ )||list[0]||null;
+}
+
+function populateEquipment(){
+ const select=$("equipmentFilter");
+ select.replaceChildren();
+
+ const all=el("option","","All Equipment");
+ all.value="all";
+ select.append(all);
+
+ ASSETS.forEach(asset=>{
+  const option=el(
+   "option","",asset.name+" · "+asset.id
+  );
+  option.value=asset.id;
+  select.append(option);
+ });
+}
+
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(
+  el("span","",label),
+  el("strong","",value)
+ );
+ return row;
+}
+
+function typeBadge(type){
+ return el(
+  "span",
+  "badge "+(type==="Unplanned"?"red":"green"),
+  type
+ );
+}
+
+function renderKpis(){
+ const list=filtered();
+ const unplanned=list.filter(
+  item=>item.type==="Unplanned"
+ );
+
+ $("totalCostKpi").textContent=
+  compactMoney(sum(list,"totalCost"));
+
+ $("hoursKpi").textContent=
+  number(sum(list,"hours"))+" h";
+
+ $("unplannedKpi").textContent=
+  compactMoney(sum(unplanned,"totalCost"));
+
+ $("avoidedKpi").textContent=
+  compactMoney(sum(list,"avoidedCost"));
+
+ $("summaryText").textContent=
+  $("periodFilter").value+"-month analysis · "+
+  list.length+" downtime records · "+
+  "Illustrative downtime reduction "+
+  scenario.reduction+"%";
+}
+
+function renderTable(){
+ const body=$("downtimeTable");
+ body.replaceChildren();
+
+ const list=filtered();
+ $("visibleCount").textContent=list.length+" records";
+
+ list.forEach(item=>{
+  const row=el("tr");
+
+  [
+   item.name+" · "+item.id,
+   item.plant
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const typeCell=el("td");
+  typeCell.append(typeBadge(item.type));
+  row.append(typeCell);
+
+  [
+   number(item.hours)+" h",
+   money(item.productionLoss),
+   money(item.laborCost),
+   money(item.recoveryCost),
+   money(item.totalCost)
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+
+  button.onclick=()=>{
+   selectedKey=item.id+"-"+item.type;
+   renderInspector();
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el(
+   "td","","No downtime records match the filters."
+  );
+  cell.colSpan=9;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const item=selected();
+ const box=$("downtimeDetails");
+ box.replaceChildren();
+
+ if(!item){
+  box.append(el("p","muted","No downtime record selected."));
+
+  ["assetHours","assetTotal","assetRate","assetAvoided"]
+   .forEach(id=>$(id).textContent="--");
+
+  return;
+ }
+
+ [
+  ["Equipment",item.name],
+  ["Equipment ID",item.id],
+  ["Plant",item.plant],
+  ["Downtime Type",item.type],
+  ["Analysis Period",item.months+" months"],
+  ["Downtime Duration",number(item.hours)+" hours"],
+  ["Base Production Loss Rate",money(item.productionRate)+"/h"],
+  ["Base Labor Rate",money(item.laborRate)+"/h"],
+  ["Production Loss",money(item.productionLoss)],
+  ["Idle Labor Expense",money(item.laborCost)],
+  ["Recovery Expense",money(item.recoveryCost)],
+  ["Residual Cost After Reduction",money(item.residualCost)]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+
+ $("assetHours").textContent=number(item.hours)+" h";
+ $("assetTotal").textContent=compactMoney(item.totalCost);
+ $("assetRate").textContent=compactMoney(item.costPerHour);
+ $("assetAvoided").textContent=compactMoney(item.avoidedCost);
+}
+
+function drawEquipmentChart(){
+ const svg=$("equipmentChart");
+ svg.replaceChildren();
+
+ const list=filtered();
+
+ const grouped=ASSETS.map(asset=>({
+  id:asset.id,
+  value:sum(
+   list.filter(item=>item.id===asset.id),
+   "totalCost"
+  )
+ }));
+
+ const max=Math.max(
+  ...grouped.map(item=>item.value),1
+ );
+
+ grouped.forEach((item,index)=>{
+  const y=10+index*29;
+  const width=item.value/max*330;
+
+  svg.append(svgEl("text",{
+   x:8,y:y+15,fill:"#69738e","font-size":"11"
+  },item.id));
+
+  svg.append(svgEl("rect",{
+   x:110,y,width,height:18,rx:4,
+   fill:"#6855eb"
+  }));
+
+  svg.append(svgEl("text",{
+   x:120+width,y:y+14,
+   fill:"#202640","font-size":"11"
+  },compactMoney(item.value)));
+ });
+}
+
+function drawCategoryChart(){
+ const svg=$("categoryChart");
+ svg.replaceChildren();
+
+ const list=filtered();
+
+ const categories=[
+  {
+   name:"Production",
+   value:sum(list,"productionLoss"),
+   color:"#6855eb"
+  },
+  {
+   name:"Labor",
+   value:sum(list,"laborCost"),
+   color:"#438df5"
+  },
+  {
+   name:"Recovery",
+   value:sum(list,"recoveryCost"),
+   color:"#18b58c"
+  }
+ ];
+
+ const max=Math.max(
+  ...categories.map(item=>item.value),1
+ );
+
+ categories.forEach((item,index)=>{
+  const y=45+index*65;
+  const width=item.value/max*350;
+
+  svg.append(svgEl("text",{
+   x:12,y:y+17,fill:"#69738e","font-size":"13"
+  },item.name));
+
+  svg.append(svgEl("rect",{
+   x:120,y,width,height:28,rx:6,
+   fill:item.color
+  }));
+
+  svg.append(svgEl("text",{
+   x:130+width,y:y+19,
+   fill:"#202640","font-size":"12"
+  },compactMoney(item.value)));
+ });
+}
+
+function renderEconomics(){
+ const box=$("economicsSummary");
+ box.replaceChildren();
+
+ const list=filtered();
+
+ const planned=list.filter(
+  item=>item.type==="Planned"
+ );
+
+ const unplanned=list.filter(
+  item=>item.type==="Unplanned"
+ );
+
+ [
+  ["Total Downtime Hours",number(sum(list,"hours"))+" h"],
+  ["Planned Downtime Hours",number(sum(planned,"hours"))+" h"],
+  ["Unplanned Downtime Hours",number(sum(unplanned,"hours"))+" h"],
+  ["Production Loss",money(sum(list,"productionLoss"))],
+  ["Idle Labor Cost",money(sum(list,"laborCost"))],
+  ["Recovery Expense",money(sum(list,"recoveryCost"))],
+  ["Planned Downtime Cost",money(sum(planned,"totalCost"))],
+  ["Unplanned Downtime Cost",money(sum(unplanned,"totalCost"))],
+  ["Total Downtime Cost",money(sum(list,"totalCost"))],
+  ["Potential Avoided Cost",money(sum(list,"avoidedCost"))],
+  ["Residual Downtime Cost",money(sum(list,"residualCost"))]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+}
+
+function renderPlants(){
+ const box=$("plantSummary");
+ box.replaceChildren();
+
+ ["Plant A","Plant B","Plant C"].forEach(plant=>{
+  const list=filtered().filter(
+   item=>item.plant===plant
+  );
+
+  const hours=sum(list,"hours");
+  const cost=sum(list,"totalCost");
+  const avoided=sum(list,"avoidedCost");
+
+  const card=el("div","record");
+
+  card.append(
+   el("h4","",plant),
+   el("p","",
+    number(hours)+" downtime hours · "+
+    compactMoney(cost)+" total cost · "+
+    compactMoney(avoided)+" potential avoided cost")
+  );
+
+  box.append(card);
+ });
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const list=filtered();
+
+ const highest=[...list].sort(
+  (a,b)=>b.totalCost-a.totalCost
+ )[0];
+
+ const total=sum(list,"totalCost");
+ const production=sum(list,"productionLoss");
+
+ const unplanned=list.filter(
+  item=>item.type==="Unplanned"
+ );
+
+ const insights=[
+  [
+   "Highest Downtime Cost",
+   highest?
+    highest.name+" ("+highest.type+
+    ") has the highest modeled downtime expense at "+
+    money(highest.totalCost)+".":
+    "No records match the current filters."
+  ],
+  [
+   "Production Loss Contribution",
+   "Production losses represent "+
+   (total?percent(production/total*100):"0.0%")+
+   " of total modeled downtime cost."
+  ],
+  [
+   "Unplanned Downtime Exposure",
+   "Unplanned downtime contributes "+
+   money(sum(unplanned,"totalCost"))+
+   " to the selected financial scenario."
+  ],
+  [
+   "Potential Cost Avoidance",
+   "The assumed "+scenario.reduction+
+   "% reduction in unplanned downtime produces "+
+   money(sum(list,"avoidedCost"))+
+   " of modeled cost avoidance."
+  ],
+  [
+   "Operational Recommendation",
+   "Investigate equipment with high unplanned downtime costs and validate actual failure causes, production contribution margins and recovery expenses."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+
+  card.append(
+   el("h4","",title),
+   el("p","",description)
+  );
+
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawEquipmentChart();
+ drawCategoryChart();
+ renderEconomics();
+ renderPlants();
+ renderInsights();
+}
+
+function validateScenario(){
+ const durationMultiplier=
+  Number($("durationMultiplier").value);
+
+ const productionMultiplier=
+  Number($("productionMultiplier").value);
+
+ const laborMultiplier=
+  Number($("laborMultiplier").value);
+
+ const recoveryMultiplier=
+  Number($("recoveryMultiplier").value);
+
+ const reduction=
+  Number($("reductionInput").value);
+
+ if(
+  !Number.isFinite(durationMultiplier)||
+  durationMultiplier<.25||durationMultiplier>3||
+  !Number.isFinite(productionMultiplier)||
+  productionMultiplier<.25||productionMultiplier>3||
+  !Number.isFinite(laborMultiplier)||
+  laborMultiplier<.25||laborMultiplier>3||
+  !Number.isFinite(recoveryMultiplier)||
+  recoveryMultiplier<.25||recoveryMultiplier>3||
+  !Number.isFinite(reduction)||
+  reduction<0||reduction>100
+ ){
+  notify("Enter valid downtime scenario assumptions.");
+  return false;
+ }
+
+ scenario={
+  durationMultiplier,
+  productionMultiplier,
+  laborMultiplier,
+  recoveryMultiplier,
+  reduction
+ };
+
+ return true;
+}
+
+function syncInputs(){
+ $("durationMultiplier").value=scenario.durationMultiplier;
+ $("productionMultiplier").value=scenario.productionMultiplier;
+ $("laborMultiplier").value=scenario.laborMultiplier;
+ $("recoveryMultiplier").value=scenario.recoveryMultiplier;
+ $("reductionInput").value=scenario.reduction;
+}
+
+function saveScenario(){
+ try{
+  localStorage.setItem(
+   STORAGE_KEY,
+   JSON.stringify(scenario)
+  );
+ }catch{
+  notify("Browser storage unavailable.");
+ }
+}
+
+function loadScenario(){
+ try{
+  const saved=JSON.parse(
+   localStorage.getItem(STORAGE_KEY)
+  );
+
+  const valid=(v,min,max)=>
+   typeof v==="number"&&
+   Number.isFinite(v)&&v>=min&&v<=max;
+
+  if(saved&&
+   valid(saved.durationMultiplier,.25,3)&&
+   valid(saved.productionMultiplier,.25,3)&&
+   valid(saved.laborMultiplier,.25,3)&&
+   valid(saved.recoveryMultiplier,.25,3)&&
+   valid(saved.reduction,0,100)
+  ){
+   scenario={...saved};
+  }
+ }catch{}
+
+ syncInputs();
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(
+  new Blob([content],{type})
+ );
+
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "equipment_id","equipment_name","plant",
+  "downtime_type","period_months","downtime_hours",
+  "production_loss_inr","labor_cost_inr",
+  "recovery_cost_inr","total_cost_inr",
+  "cost_per_hour_inr","potential_avoided_cost_inr",
+  "residual_cost_inr"
+ ]];
+
+ filtered().forEach(item=>{
+  rows.push([
+   item.id,item.name,item.plant,item.type,
+   item.months,item.hours.toFixed(2),
+   item.productionLoss.toFixed(2),
+   item.laborCost.toFixed(2),
+   item.recoveryCost.toFixed(2),
+   item.totalCost.toFixed(2),
+   item.costPerHour.toFixed(2),
+   item.avoidedCost.toFixed(2),
+   item.residualCost.toFixed(2)
+  ]);
+ });
+
+ const csv=rows.map(row=>
+  row.map(value=>
+   '"'+String(value).replaceAll('"','""')+'"'
+  ).join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-downtime-cost.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Downtime cost CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-downtime-cost.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   scenario,
+   analysisMonths:Number($("periodFilter").value),
+   filters:{
+    plant:$("plantFilter").value,
+    equipment:$("equipmentFilter").value,
+    downtimeType:$("typeFilter").value
+   },
+   results:filtered()
+  },null,2),
+  "application/json"
+ );
+
+ notify("Downtime cost JSON exported.");
+}
+
+$("calculateBtn").onclick=()=>{
+ if(!validateScenario())return;
+
+ saveScenario();
+ calculateAll();
+ notify("Downtime cost scenario recalculated.");
+};
+
+$("applyScenarioBtn").onclick=()=>{
+ if(!validateScenario())return;
+
+ saveScenario();
+ calculateAll();
+ notify("Downtime scenario applied.");
+};
+
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ if(!confirm("Reset downtime cost scenario?"))return;
+
+ scenario={...DEFAULTS};
+ selectedKey=null;
+
+ $("plantFilter").value="all";
+ $("equipmentFilter").value="all";
+ $("typeFilter").value="all";
+ $("periodFilter").value="12";
+
+ syncInputs();
+ saveScenario();
+ calculateAll();
+
+ notify("Downtime cost scenario reset.");
+};
+
+[
+ "plantFilter",
+ "equipmentFilter",
+ "typeFilter",
+ "periodFilter"
+].forEach(id=>{
+ $(id).addEventListener("change",calculateAll);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+populateEquipment();
+loadScenario();
+calculateAll();
+</script>
+
+</body>
+</html>

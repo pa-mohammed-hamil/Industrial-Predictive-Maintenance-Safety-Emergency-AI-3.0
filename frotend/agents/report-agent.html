@@ -1,0 +1,1697 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Report Agent | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / agents</p><h1 id="page-title">Report Agent</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Report Agent workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Report Agent | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--purple2:#8b7af9;
+ --green:#16b88a;--orange:#f2a53a;--red:#eb6174;
+ --blue:#438df5;--bg:#f5f6fb;--text:#202640;
+ --muted:#8b93aa;--border:#e9ebf3;--sidebar:258px
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif
+}
+h1,h2,h3,h4,h5,h6{
+ font-family:Manrope,sans-serif;letter-spacing:-.6px
+}
+a{text-decoration:none}
+button:focus-visible,a:focus-visible,
+input:focus-visible,select:focus-visible,
+textarea:focus-visible{
+ outline:3px solid #a99cff!important;outline-offset:2px
+}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:#aab1ce;z-index:1050;
+ display:flex;flex-direction:column;transition:transform .25s
+}
+.brand{
+ height:83px;padding:21px 23px;display:flex;align-items:center;
+ gap:12px;border-bottom:1px solid #ffffff12
+}
+.brand-mark{
+ width:43px;height:43px;border-radius:14px;
+ background:linear-gradient(135deg,#9c83ff,#5a48e4);
+ color:white;display:grid;place-items:center;font-size:22px
+}
+.brand strong{color:white;font-size:17px}
+.brand small{
+ display:block;font-size:9px;letter-spacing:2px;color:#7883b0
+}
+.sidebar-body{overflow-y:auto;flex:1;padding:16px 12px}
+.sidebar-label{
+ color:#687397;text-transform:uppercase;font-size:9px;
+ font-weight:800;letter-spacing:2px;padding:20px 15px 9px
+}
+.side-link{
+ display:flex;align-items:center;gap:13px;
+ padding:11px 14px;margin:3px 0;color:#9da8ca;
+ border-radius:11px;font-size:12px;font-weight:600;
+ transition:.2s
+}
+.side-link i{font-size:17px;width:21px;text-align:center}
+.side-link:hover{background:#ffffff10;color:white}
+.side-link.active{
+ background:linear-gradient(90deg,#6b59e8,#5346ba);
+ color:white
+}
+.sidebar-foot{padding:18px;border-top:1px solid #ffffff12}
+.sidebar-status{
+ border-radius:13px;padding:13px;background:#ffffff09;
+ border:1px solid #ffffff12
+}
+.status-dot{
+ display:inline-block;width:8px;height:8px;
+ border-radius:50%;background:#2cdaa2;margin-right:7px
+}
+.app{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ background:white;min-height:76px;display:flex;
+ align-items:center;justify-content:space-between;
+ gap:15px;padding:15px 30px;
+ border-bottom:1px solid var(--border);
+ position:sticky;top:0;z-index:100
+}
+.topbar-title{font-size:15px;font-weight:800}
+.topbar-sub{color:var(--muted);font-size:11px;margin-top:3px}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ height:39px;width:39px;display:grid;place-items:center;
+ border-radius:12px;border:1px solid var(--border);
+ background:#fafaff;color:#555e7b;font-size:16px
+}
+.top-icon:hover{background:#eeecff;color:var(--purple)}
+.avatar{
+ height:39px;width:39px;border-radius:13px;
+ display:grid;place-items:center;color:white;font-weight:800;
+ background:linear-gradient(135deg,#7e6bf4,#a18dff)
+}
+.content{padding:29px;max-width:1850px;margin:auto}
+.eyebrow{
+ text-transform:uppercase;letter-spacing:2px;
+ font-size:10px;font-weight:800;color:var(--purple)
+}
+.page-title{
+ font-size:29px;font-weight:800;margin:9px 0 6px
+}
+.page-description{color:var(--muted);line-height:1.7}
+.btn-premium,.btn-soft{
+ display:inline-flex;align-items:center;justify-content:center;
+ gap:8px;border-radius:11px;padding:11px 16px;
+ font-size:12px;font-weight:700;transition:.2s;cursor:pointer
+}
+.btn-premium{
+ background:var(--purple);color:white;
+ border:1px solid var(--purple)
+}
+.btn-premium:hover{background:#5542d5;color:white}
+.btn-soft{
+ background:white;color:#5e6680;border:1px solid var(--border)
+}
+.btn-soft:hover{background:#f1efff;color:var(--purple)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.surface{
+ background:white;border:1px solid var(--border);
+ border-radius:18px;box-shadow:0 8px 30px #24305b08
+}
+.hero{
+ position:relative;overflow:hidden;
+ background:linear-gradient(115deg,#6651e9,#8e74f4 65%,#a894ff);
+ color:white;border-radius:22px;padding:31px 33px;
+ box-shadow:0 15px 35px #7564ea28
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ right:-60px;top:-145px;border:1px solid #ffffff45;
+ border-radius:50%;
+ box-shadow:0 0 0 45px #ffffff0b,0 0 0 95px #ffffff09;
+ pointer-events:none
+}
+.hero h2{font-size:25px;font-weight:800}
+.hero p{max-width:740px;color:#eeeaff;line-height:1.8}
+.hero-chip{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff23;border:1px solid #ffffff30;
+ padding:8px 12px;border-radius:9px;
+ font-size:10px;font-weight:700
+}
+.metric{padding:21px;height:100%}
+.metric-top{
+ display:flex;justify-content:space-between;align-items:center
+}
+.metric-label{color:#8a92a8;font-size:11px;font-weight:700}
+.metric-icon{
+ width:44px;height:44px;border-radius:14px;
+ display:grid;place-items:center;font-size:20px
+}
+.metric-value{
+ font:800 25px Manrope,sans-serif;margin:14px 0 6px
+}
+.metric-foot{font-size:10px;color:#9aa1b3}
+.section-title{font-size:17px;font-weight:800}
+.section-sub{font-size:11px;color:var(--muted)}
+.badge-soft{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:6px 10px;border-radius:8px;
+ font-size:10px;font-weight:800
+}
+.b-success{background:#e5f8f0;color:#13a776}
+.b-warning{background:#fff4e2;color:#d58c20}
+.b-danger{background:#ffebee;color:#df4d64}
+.b-info{background:#eaf2ff;color:#438df5}
+.b-neutral{background:#f0f1f6;color:#788098}
+.b-purple{background:#eeebff;color:#6855eb}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ padding:11px 12px;font-size:12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#a69aff;box-shadow:0 0 0 3px #6855eb12
+}
+.form-label{font-size:11px;font-weight:800;color:#5b6480}
+.module-card{
+ border:1px solid var(--border);border-radius:13px;
+ padding:16px;height:100%;cursor:pointer;transition:.2s;
+ display:flex;gap:12px;align-items:flex-start
+}
+.module-card:hover{border-color:#b9afff;background:#fcfbff}
+.module-card.selected{
+ border-color:#a99aff;background:#f8f6ff
+}
+.module-icon{
+ width:42px;height:42px;border-radius:12px;
+ display:grid;place-items:center;flex-shrink:0;
+ background:#eeebff;color:var(--purple);font-size:19px
+}
+.module-title{font-size:12px;font-weight:800}
+.module-description{
+ font-size:10px;color:var(--muted);line-height:1.7
+}
+.detail-row{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border)
+}
+.detail-row:last-child{border-bottom:0}
+.detail-label{font-size:11px;color:var(--muted)}
+.detail-value{font-size:11px;font-weight:800;text-align:right}
+.report-cover{
+ background:linear-gradient(135deg,#171d42,#38347f);
+ color:white;border-radius:15px;padding:28px
+}
+.report-cover h3{font-size:23px;font-weight:800}
+.report-cover p{color:#d2d4ec;font-size:11px}
+.report-section{
+ padding:20px 0;border-bottom:1px solid var(--border)
+}
+.report-section:last-child{border-bottom:0}
+.report-section h3{font-size:15px;font-weight:800}
+.report-section p{
+ font-size:12px;color:#66708a;line-height:1.9
+}
+.insight-item{
+ display:flex;gap:12px;padding:14px;
+ border:1px solid var(--border);border-radius:12px;
+ margin-bottom:10px
+}
+.insight-icon{
+ width:37px;height:37px;flex-shrink:0;
+ display:grid;place-items:center;border-radius:11px;
+ background:#eeebff;color:var(--purple);font-size:17px
+}
+.insight-item strong{font-size:11px}
+.insight-item p{
+ margin:5px 0 0;color:var(--muted);
+ font-size:10px;line-height:1.7
+}
+.chart-wrap{height:285px;position:relative}
+.table thead th{
+ background:#fafbfe;color:#9099ae;
+ font-size:10px;text-transform:uppercase;
+ letter-spacing:.7px;padding:15px 18px;
+ white-space:nowrap;border-bottom:1px solid var(--border)
+}
+.table tbody td{
+ padding:15px 18px;font-size:11px;color:#66708a;
+ vertical-align:middle;border-color:#f0f1f7
+}
+.table-title{font-weight:800;color:#252c48}
+.table-sub{font-size:9px;color:#9ca4b8;margin-top:5px}
+.small-action{
+ border:1px solid var(--border);background:white;
+ border-radius:8px;padding:7px 10px;color:#66718d;
+ font-size:10px;font-weight:700
+}
+.small-action:hover{background:#eeebff;color:var(--purple)}
+.report-code{
+ background:#141a31;color:#dce6ff;border-radius:13px;
+ padding:18px;font:11px/1.8 monospace;
+ white-space:pre-wrap;overflow-wrap:anywhere;
+ max-height:350px;overflow:auto
+}
+.safety-note{
+ background:#f3f0ff;border:1px solid #ded8ff;
+ color:#6052a7;border-radius:13px;
+ padding:16px;font-size:11px;line-height:1.8
+}
+.trace-item{
+ display:flex;gap:12px;padding:13px 0;
+ border-bottom:1px solid var(--border)
+}
+.trace-item:last-child{border-bottom:0}
+.trace-icon{
+ width:35px;height:35px;border-radius:10px;
+ background:#eeebff;color:var(--purple);
+ display:grid;place-items:center;flex-shrink:0
+}
+.trace-item strong{font-size:11px}
+.trace-item p{
+ margin:5px 0 0;color:var(--muted);
+ font-size:10px;line-height:1.7
+}
+.footer{
+ padding:23px 30px;border-top:1px solid var(--border);
+ color:#9aa2b5;font-size:10px;
+ display:flex;justify-content:space-between;gap:12px
+}
+.mobile-shade{display:none}
+@media(max-width:1199px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .app{margin-left:0}
+ .mobile-shade.show{
+  display:block;position:fixed;inset:0;
+  background:#0008;z-index:1040
+ }
+}
+@media(max-width:575px){
+ .content{padding:17px}
+ .topbar{padding:13px 17px}
+ .page-title{font-size:23px}
+ .hero{padding:23px}
+ .hero h2{font-size:20px}
+ .metric-value{font-size:21px}
+ .footer{flex-direction:column;padding:17px}
+}
+@media print{
+ @page{size:A4;margin:15mm}
+ body{background:white;color:#111}
+ .sidebar,.topbar,.hero,.no-print,.footer,
+ .mobile-shade,.toast-container{display:none!important}
+ .app{margin:0!important}
+ .content{padding:0!important}
+ .surface{box-shadow:none;border:0}
+ #printReport{display:block!important}
+ #printReport .report-cover{
+  background:#171d42!important;
+  color:white!important;
+  print-color-adjust:exact;
+  -webkit-print-color-adjust:exact
+ }
+ #printReport .report-section{break-inside:avoid}
+ .report-section p{color:#333}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-shade" id="shade"></div>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div class="brand-mark"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a997ff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <nav class="sidebar-body" aria-label="Main navigation">
+  <div class="sidebar-label">Main Menu</div>
+  <a class="side-link" href="../index.html"><i class="bi bi-house-door"></i>Home</a>
+  <a class="side-link" href="../dashboard.html"><i class="bi bi-grid-1x2"></i>Dashboard</a>
+  <a class="side-link" href="../command-center.html"><i class="bi bi-broadcast"></i>Command Center</a>
+  <a class="side-link" href="../analytics.html"><i class="bi bi-bar-chart-line"></i>Analytics Studio</a>
+  <a class="side-link" href="../reports.html"><i class="bi bi-file-earmark-bar-graph"></i>Reports</a>
+  <a class="side-link" href="../notifications.html"><i class="bi bi-bell"></i>Notifications</a>
+
+  <div class="sidebar-label">Operations</div>
+  <a class="side-link" href="../assets/assets.html"><i class="bi bi-cpu"></i>Asset Intelligence</a>
+  <a class="side-link" href="../telemetry/live-telemetry.html"><i class="bi bi-activity"></i>Live Telemetry</a>
+  <a class="side-link" href="../predictive-maintenance/maintenance-dashboard.html"><i class="bi bi-tools"></i>Predictive Maintenance</a>
+  <a class="side-link" href="../maintenance/work-orders.html"><i class="bi bi-clipboard-check"></i>Work Orders</a>
+  <a class="side-link" href="../computer-vision/vision-dashboard.html"><i class="bi bi-camera"></i>Computer Vision</a>
+
+  <div class="sidebar-label">Risk & Intelligence</div>
+  <a class="side-link" href="../safety/safety-dashboard.html"><i class="bi bi-shield-check"></i>Safety Intelligence</a>
+  <a class="side-link" href="../emergency/emergency-dashboard.html"><i class="bi bi-exclamation-triangle"></i>Emergency Response</a>
+  <a class="side-link" href="../cost-intelligence/cost-dashboard.html"><i class="bi bi-currency-rupee"></i>Cost Intelligence</a>
+  <a class="side-link" href="../copilot/ai-copilot.html"><i class="bi bi-stars"></i>AI Copilot</a>
+
+  <div class="sidebar-label">Agentic AI</div>
+  <a class="side-link" href="agent-dashboard.html"><i class="bi bi-diagram-3"></i>Agent Dashboard</a>
+  <a class="side-link" href="agent-workflows.html"><i class="bi bi-bezier2"></i>Agent Workflows</a>
+  <a class="side-link" href="agent-executions.html"><i class="bi bi-play-circle"></i>Agent Executions</a>
+  <a class="side-link" href="agent-tool-calls.html"><i class="bi bi-wrench-adjustable"></i>Agent Tool Calls</a>
+  <a class="side-link" href="agent-evaluation.html"><i class="bi bi-clipboard-data"></i>Agent Evaluation</a>
+  <a class="side-link" href="asset-health-agent.html"><i class="bi bi-heart-pulse"></i>Asset Health Agent</a>
+  <a class="side-link" href="cost-agent.html"><i class="bi bi-currency-rupee"></i>Cost Agent</a>
+  <a class="side-link" href="emergency-response-agent.html"><i class="bi bi-exclamation-octagon"></i>Emergency Response Agent</a>
+  <a class="side-link" href="failure-analysis-agent.html"><i class="bi bi-search-heart"></i>Failure Analysis Agent</a>
+  <a class="side-link" href="human-approvals.html"><i class="bi bi-person-check"></i>Human Approvals</a>
+  <a class="side-link" href="incident-agent.html"><i class="bi bi-clipboard-pulse"></i>Incident Agent</a>
+  <a class="side-link" href="inspection-agent.html"><i class="bi bi-camera"></i>Inspection Agent</a>
+  <a class="side-link" href="maintenance-agent.html"><i class="bi bi-tools"></i>Maintenance Agent</a>
+  <a class="side-link" href="repair-replacement-agent.html"><i class="bi bi-arrow-left-right"></i>Repair & Replacement Agent</a>
+  <a class="side-link active" href="report-agent.html" aria-current="page">
+   <i class="bi bi-file-earmark-richtext"></i>Report Agent
+  </a>
+
+  <div class="sidebar-label">Administration</div>
+  <a class="side-link" href="../observability/observability-dashboard.html"><i class="bi bi-speedometer2"></i>Observability</a>
+  <a class="side-link" href="../security/security-dashboard.html"><i class="bi bi-lock"></i>Security</a>
+  <a class="side-link" href="../settings/settings.html"><i class="bi bi-gear"></i>Settings</a>
+ </nav>
+
+ <div class="sidebar-foot">
+  <div class="sidebar-status">
+   <div class="fw-bold text-white small">
+    <span class="status-dot"></span>Report Intelligence Agent
+   </div>
+   <div class="mt-2" style="font-size:10px">
+    Cross-module reporting · Demo mode
+   </div>
+  </div>
+ </div>
+</aside>
+
+<div class="app">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon d-xl-none" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="topbar-title">Industrial Report Intelligence</div>
+   <div class="topbar-sub">Workspace / AI Agents / Report Agent</div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="d-none d-md-inline text-secondary small">
+   Synthetic reporting workspace
+  </span>
+  <button class="top-icon" id="resetButton" aria-label="Reset report workspace">
+   <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <a href="../notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <a href="../settings/settings.html" class="avatar" aria-label="Settings">AI</a>
+ </div>
+</header>
+
+<main class="content">
+
+ <div class="no-print">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+   <div>
+    <div class="eyebrow">Industrial Reporting & Decision Intelligence</div>
+    <h1 class="page-title">
+     Report Agent <span style="color:var(--purple)">✦</span>
+    </h1>
+    <div class="page-description">
+     Generate consolidated industrial reports covering asset health,
+     maintenance, safety, incidents, inspections and cost intelligence.
+    </div>
+   </div>
+   <div class="d-flex flex-wrap gap-2">
+    <button class="btn-soft" id="exportCsvButton">
+     <i class="bi bi-filetype-csv"></i> CSV
+    </button>
+    <button class="btn-soft" id="exportJsonButton">
+     <i class="bi bi-download"></i> JSON
+    </button>
+    <button class="btn-soft" id="printButton">
+     <i class="bi bi-printer"></i> Print / PDF
+    </button>
+    <button class="btn-premium" id="generateButton">
+     <i class="bi bi-stars"></i> Generate Report
+    </button>
+   </div>
+  </div>
+
+  <section class="hero mb-4">
+   <div class="position-relative" style="z-index:1">
+    <div class="text-uppercase fw-bold mb-3"
+     style="font-size:10px;letter-spacing:2px">
+     <i class="bi bi-file-earmark-richtext me-1"></i>
+     Industrial Reporting Intelligence
+    </div>
+    <h2>Transform operational data<br>into decision-ready reports.</h2>
+    <p class="mt-3 mb-4">
+     Assemble cross-functional insights, asset condition indicators,
+     maintenance priorities, safety observations and cost summaries
+     into a consistent, reviewable reporting workflow.
+    </p>
+    <div class="d-flex flex-wrap gap-2">
+     <span class="hero-chip"><i class="bi bi-file-text"></i> Executive Reports</span>
+     <span class="hero-chip"><i class="bi bi-heart-pulse"></i> Asset Health</span>
+     <span class="hero-chip"><i class="bi bi-shield-check"></i> Safety</span>
+     <span class="hero-chip"><i class="bi bi-currency-rupee"></i> Cost Analytics</span>
+     <span class="hero-chip"><i class="bi bi-clipboard-check"></i> Human Review</span>
+    </div>
+   </div>
+  </section>
+
+  <section class="safety-note mb-4">
+   <i class="bi bi-info-circle me-2"></i>
+   <strong>Demonstration only.</strong>
+   Reports use fictional, predefined records and deterministic
+   summarization rules. The date filters select a reporting label;
+   they do not query historical telemetry. No live backend, LLM,
+   database or external reporting service is connected.
+  </section>
+
+  <section class="row g-3 mb-4">
+   <div class="col-6 col-xl-3">
+    <div class="surface metric">
+     <div class="metric-top">
+      <span class="metric-label">Reports Generated</span>
+      <span class="metric-icon" style="background:#eeebff;color:var(--purple)">
+       <i class="bi bi-file-earmark-text"></i>
+      </span>
+     </div>
+     <div class="metric-value" id="reportsKpi">0</div>
+     <div class="metric-foot">This browser session</div>
+    </div>
+   </div>
+   <div class="col-6 col-xl-3">
+    <div class="surface metric">
+     <div class="metric-top">
+      <span class="metric-label">Assets in Report</span>
+      <span class="metric-icon" style="background:#eaf2ff;color:var(--blue)">
+       <i class="bi bi-cpu"></i>
+      </span>
+     </div>
+     <div class="metric-value" id="assetsKpi">—</div>
+     <div class="metric-foot">Selected report scope</div>
+    </div>
+   </div>
+   <div class="col-6 col-xl-3">
+    <div class="surface metric">
+     <div class="metric-top">
+      <span class="metric-label">High-Risk Assets</span>
+      <span class="metric-icon" style="background:#ffebee;color:var(--red)">
+       <i class="bi bi-exclamation-triangle"></i>
+      </span>
+     </div>
+     <div class="metric-value" id="riskKpi">—</div>
+     <div class="metric-foot">High and critical priorities</div>
+    </div>
+   </div>
+   <div class="col-6 col-xl-3">
+    <div class="surface metric">
+     <div class="metric-top">
+      <span class="metric-label">Estimated Cost Exposure</span>
+      <span class="metric-icon" style="background:#fff4e2;color:var(--orange)">
+       <i class="bi bi-currency-rupee"></i>
+      </span>
+     </div>
+     <div class="metric-value" id="costKpi">—</div>
+     <div class="metric-foot">Synthetic planning estimates</div>
+    </div>
+   </div>
+  </section>
+
+  <section class="surface p-4 mb-4">
+   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+     <h2 class="section-title mb-1">Report Configuration</h2>
+     <p class="section-sub mb-0">
+      Choose report scope, sections and presentation settings
+     </p>
+    </div>
+    <span class="badge-soft b-purple">REPORT BUILDER</span>
+   </div>
+
+   <div class="row g-3">
+    <div class="col-md-4">
+     <label class="form-label" for="reportType">Report Type</label>
+     <select id="reportType" class="form-select">
+      <option value="Executive Operations">Executive Operations</option>
+      <option value="Asset Health">Asset Health</option>
+      <option value="Predictive Maintenance">Predictive Maintenance</option>
+      <option value="Safety & Incidents">Safety & Incidents</option>
+      <option value="Inspection Intelligence">Inspection Intelligence</option>
+      <option value="Cost Intelligence">Cost Intelligence</option>
+      <option value="Comprehensive Industrial">Comprehensive Industrial</option>
+     </select>
+    </div>
+    <div class="col-md-4">
+     <label class="form-label" for="facility">Facility</label>
+     <select id="facility" class="form-select">
+      <option value="All">All Facilities</option>
+      <option value="Plant A">Plant A</option>
+      <option value="Plant B">Plant B</option>
+      <option value="Plant C">Plant C</option>
+     </select>
+    </div>
+    <div class="col-md-4">
+     <label class="form-label" for="reportAsset">Asset</label>
+     <select id="reportAsset" class="form-select">
+      <option value="All">All Assets</option>
+     </select>
+    </div>
+    <div class="col-md-4">
+     <label class="form-label" for="dateFrom">Reporting From</label>
+     <input id="dateFrom" type="date" class="form-control">
+    </div>
+    <div class="col-md-4">
+     <label class="form-label" for="dateTo">Reporting To</label>
+     <input id="dateTo" type="date" class="form-control">
+    </div>
+    <div class="col-md-4">
+     <label class="form-label" for="reportAudience">Audience</label>
+     <select id="reportAudience" class="form-select">
+      <option>Plant Management</option>
+      <option>Maintenance Engineering</option>
+      <option>Safety Team</option>
+      <option>Operations Leadership</option>
+      <option>Finance & Procurement</option>
+     </select>
+    </div>
+    <div class="col-12">
+     <label class="form-label" for="reportTitle">Custom Report Title</label>
+     <input id="reportTitle" class="form-control" maxlength="120"
+      placeholder="Optional custom title">
+    </div>
+   </div>
+  </section>
+
+  <section class="surface p-4 mb-4">
+   <h2 class="section-title mb-1">Report Sections</h2>
+   <p class="section-sub mb-3">
+    Select the modules to include in your generated report
+   </p>
+   <div class="row g-3" id="moduleGrid"></div>
+  </section>
+ </div>
+
+ <section class="surface p-4 mb-4" id="printReport">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 no-print">
+   <div>
+    <h2 class="section-title mb-1">Generated Report Preview</h2>
+    <p class="section-sub mb-0">
+     Report content updates after generation
+    </p>
+   </div>
+   <span id="reportStatus" class="badge-soft b-warning">
+    Not Generated
+   </span>
+  </div>
+
+  <div id="reportPreview">
+   <div class="text-center py-5 text-secondary">
+    <i class="bi bi-file-earmark-richtext"
+     style="font-size:45px;color:#aaa0f8"></i>
+    <h3 class="section-title mt-3">No report generated</h3>
+    <p class="section-sub">
+     Configure your report and select Generate Report.
+    </p>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4 no-print">
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Asset Health Distribution</h2>
+    <p class="section-sub mb-3">
+     Condition scores of assets included in the report
+    </p>
+    <div class="chart-wrap">
+     <canvas id="healthChart" aria-label="Asset health distribution"></canvas>
+    </div>
+   </div>
+  </div>
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Risk Priority Mix</h2>
+    <p class="section-sub mb-3">
+     Synthetic risk classification
+    </p>
+    <div class="chart-wrap">
+     <canvas id="riskChart" aria-label="Risk priority distribution"></canvas>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4 no-print">
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Report Agent Execution Trace</h2>
+    <p class="section-sub mb-3">
+     Deterministic reporting workflow
+    </p>
+    <div id="agentTrace"></div>
+   </div>
+  </div>
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Human Report Review</h2>
+    <p class="section-sub mb-3">
+     Record a local review decision before simulated publication
+    </p>
+
+    <div class="mb-3">
+     <label class="form-label" for="reviewerName">Reviewer</label>
+     <input id="reviewerName" class="form-control"
+      maxlength="80" placeholder="Reviewer name">
+    </div>
+    <div class="mb-3">
+     <label class="form-label" for="reviewDecision">Review Decision</label>
+     <select id="reviewDecision" class="form-select">
+      <option>Approve Demo Report</option>
+      <option>Request Changes</option>
+      <option>Reject Report</option>
+     </select>
+    </div>
+    <div class="mb-3">
+     <label class="form-label" for="reviewComment">Review Notes</label>
+     <textarea id="reviewComment" class="form-control"
+      maxlength="500" rows="3"
+      placeholder="Add review rationale..."></textarea>
+    </div>
+    <button class="btn-premium" id="reviewButton" disabled>
+     <i class="bi bi-person-check"></i> Record Review
+    </button>
+    <div class="safety-note mt-3">
+     Review decisions are held in memory only.
+     No real report is published or distributed.
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="surface mb-4 no-print">
+  <div class="p-4 pb-3">
+   <h2 class="section-title mb-1">Report Generation History</h2>
+   <p class="section-sub mb-0">
+    Reports generated during this browser session
+   </p>
+  </div>
+  <div class="table-responsive">
+   <table class="table mb-0">
+    <thead>
+     <tr>
+      <th>Report ID</th>
+      <th>Report Type</th>
+      <th>Facility</th>
+      <th>Assets</th>
+      <th>Review</th>
+      <th>Created</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="historyTable"></tbody>
+   </table>
+  </div>
+ </section>
+
+ <section class="surface p-4 mb-4 no-print">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">Structured Report Agent Output</h2>
+    <p class="section-sub mb-0">
+     Machine-readable report and review metadata
+    </p>
+   </div>
+   <button class="btn-soft" id="copyButton">
+    <i class="bi bi-copy"></i> Copy JSON
+   </button>
+  </div>
+  <pre class="report-code mb-0" id="outputJson"></pre>
+ </section>
+
+</main>
+
+<footer class="footer no-print">
+ <span>© 2026 INDUSTRA AI · Report Intelligence Agent</span>
+ <span>Synthetic reports · Human review required</span>
+</footer>
+
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3 no-print"
+ style="z-index:1200">
+ <div class="toast border-0 shadow" id="appToast"
+  role="status" aria-live="polite">
+  <div class="toast-body d-flex align-items-center gap-2">
+   <i class="bi bi-info-circle text-primary"></i>
+   <span id="toastMessage"></span>
+  </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ REPORT AGENT — DEMONSTRATION
+
+ Synthetic fixtures.
+ Deterministic report assembly.
+ No live telemetry, database, LLM, PDF server,
+ email distribution or backend integrations.
+
+ Print/PDF uses the browser's print dialog.
+*/
+
+const $=id=>document.getElementById(id);
+
+const assets=[
+ {
+  id:"MOTOR-12",name:"Electric Motor",plant:"Plant A",
+  health:63,risk:72,rul:28,priority:"High",
+  maintenanceCost:42500,incidents:1,inspections:3
+ },
+ {
+  id:"PUMP-12",name:"Hydraulic Pump",plant:"Plant A",
+  health:74,risk:48,rul:67,priority:"Medium",
+  maintenanceCost:28000,incidents:0,inspections:4
+ },
+ {
+  id:"FURNACE-02",name:"Industrial Furnace",plant:"Plant B",
+  health:49,risk:86,rul:14,priority:"Critical",
+  maintenanceCost:155000,incidents:2,inspections:5
+ },
+ {
+  id:"HYD-08",name:"Hydraulic Unit",plant:"Plant B",
+  health:58,risk:77,rul:21,priority:"High",
+  maintenanceCost:78500,incidents:1,inspections:3
+ },
+ {
+  id:"COMP-06",name:"Air Compressor",plant:"Plant C",
+  health:84,risk:27,rul:115,priority:"Low",
+  maintenanceCost:18500,incidents:0,inspections:2
+ },
+ {
+  id:"CONV-04",name:"Conveyor System",plant:"Plant A",
+  health:79,risk:35,rul:89,priority:"Medium",
+  maintenanceCost:34000,incidents:0,inspections:4
+ }
+];
+
+const modules=[
+ {
+  id:"assetHealth",title:"Asset Health",
+  icon:"bi-heart-pulse",
+  description:"Condition scores and risk indicators"
+ },
+ {
+  id:"maintenance",title:"Predictive Maintenance",
+  icon:"bi-tools",
+  description:"RUL examples and maintenance priorities"
+ },
+ {
+  id:"safety",title:"Safety Intelligence",
+  icon:"bi-shield-check",
+  description:"Risk exposure and safety review"
+ },
+ {
+  id:"incidents",title:"Incident Analysis",
+  icon:"bi-clipboard-pulse",
+  description:"Synthetic incident count and observations"
+ },
+ {
+  id:"inspection",title:"Inspection Intelligence",
+  icon:"bi-camera",
+  description:"Inspection coverage and review needs"
+ },
+ {
+  id:"cost",title:"Cost Intelligence",
+  icon:"bi-currency-rupee",
+  description:"Illustrative maintenance cost exposure"
+ }
+];
+
+let selectedModules=new Set(modules.map(m=>m.id));
+let history=[];
+let currentReport=null;
+let nextReportId=1;
+let healthChart=null;
+let riskChart=null;
+
+function element(tag,text,className){
+ const node=document.createElement(tag);
+ if(className)node.className=className;
+ if(text!==undefined)node.textContent=text;
+ return node;
+}
+
+function add(parent,tag,text,className){
+ const node=element(tag,text,className);
+ parent.append(node);
+ return node;
+}
+
+function badge(text,kind){
+ return element("span",text,"badge-soft "+kind);
+}
+
+function currency(value){
+ return "₹"+Number(value).toLocaleString("en-IN",{
+  maximumFractionDigits:0
+ });
+}
+
+function now(){
+ return new Date().toLocaleString("en-IN",{
+  year:"numeric",month:"short",day:"2-digit",
+  hour:"2-digit",minute:"2-digit"
+ });
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance(
+  $("appToast"),{delay:3000}
+ ).show();
+}
+
+function priorityClass(priority){
+ return priority==="Critical"?"b-danger":
+  priority==="High"?"b-warning":
+  priority==="Medium"?"b-info":"b-success";
+}
+
+function populateAssets(){
+ const select=$("reportAsset");
+ const current=select.value;
+
+ select.replaceChildren(
+  new Option("All Assets","All")
+ );
+
+ const facility=$("facility").value;
+
+ assets.filter(a=>
+  facility==="All"||a.plant===facility
+ ).forEach(a=>{
+  select.add(new Option(
+   `${a.id} · ${a.name}`,a.id
+  ));
+ });
+
+ if([...select.options].some(o=>o.value===current)){
+  select.value=current;
+ }
+}
+
+function renderModules(){
+ const root=$("moduleGrid");
+ root.replaceChildren();
+
+ modules.forEach(module=>{
+  const col=element("div",undefined,"col-md-6 col-xl-4");
+
+  const card=element(
+   "label",undefined,
+   "module-card"+(
+    selectedModules.has(module.id)?" selected":""
+   )
+  );
+
+  const checkbox=element("input");
+  checkbox.type="checkbox";
+  checkbox.className="form-check-input mt-1";
+  checkbox.checked=selectedModules.has(module.id);
+  checkbox.setAttribute("aria-label",module.title);
+
+  checkbox.addEventListener("change",()=>{
+   if(checkbox.checked){
+    selectedModules.add(module.id);
+   }else{
+    selectedModules.delete(module.id);
+   }
+
+   card.classList.toggle(
+    "selected",checkbox.checked
+   );
+  });
+
+  const icon=element("div",undefined,"module-icon");
+  icon.append(element("i",undefined,"bi "+module.icon));
+
+  const body=element("div",undefined,"flex-grow-1");
+  add(body,"div",module.title,"module-title");
+  add(body,"div",module.description,"module-description mt-1");
+
+  card.append(checkbox,icon,body);
+  col.append(card);
+  root.append(col);
+ });
+}
+
+function selectedAssets(){
+ const facility=$("facility").value;
+ const selected=$("reportAsset").value;
+
+ return assets.filter(a=>
+  (facility==="All"||a.plant===facility)&&
+  (selected==="All"||a.id===selected)
+ );
+}
+
+function reportMetrics(list){
+ const count=list.length;
+
+ const sum=(key)=>list.reduce(
+  (total,a)=>total+a[key],0
+ );
+
+ const average=count?
+  sum("health")/count:0;
+
+ return {
+  asset_count:count,
+  average_health:Math.round(average),
+  high_risk_assets:list.filter(
+   a=>a.priority==="High"||a.priority==="Critical"
+  ).length,
+  critical_assets:list.filter(
+   a=>a.priority==="Critical"
+  ).length,
+  estimated_maintenance_cost_inr:sum("maintenanceCost"),
+  synthetic_incident_count:sum("incidents"),
+  synthetic_inspection_count:sum("inspections")
+ };
+}
+
+function reportInsights(list,metrics){
+ const insights=[];
+
+ if(metrics.high_risk_assets>0){
+  insights.push(
+   `${metrics.high_risk_assets} asset(s) are classified High or Critical in the synthetic risk fixtures.`
+  );
+ }
+
+ if(metrics.critical_assets>0){
+  insights.push(
+   "Critical-priority equipment should receive qualified engineering and safety review."
+  );
+ }
+
+ if(metrics.average_health<70){
+  insights.push(
+   "The selected assets have an average condition score below 70/100 in the demonstration dataset."
+  );
+ }
+
+ if(metrics.synthetic_incident_count>0){
+  insights.push(
+   `${metrics.synthetic_incident_count} synthetic incident record(s) are associated with the selected assets.`
+  );
+ }
+
+ insights.push(
+  "Validate asset condition, incident records and maintenance cost estimates against actual operational systems before making decisions."
+ );
+
+ return insights;
+}
+
+function generateReport(){
+ const from=$("dateFrom").value;
+ const to=$("dateTo").value;
+
+ if(!from||!to||from>to){
+  notify("Choose a valid reporting date range");
+  return;
+ }
+
+ if(selectedModules.size===0){
+  notify("Select at least one report section");
+  return;
+ }
+
+ const list=selectedAssets();
+
+ if(!list.length){
+  notify("No assets match the selected scope");
+  return;
+ }
+
+ const metrics=reportMetrics(list);
+
+ const title=$("reportTitle").value.trim()||
+  $("reportType").value+" Report";
+
+ const report={
+  id:"RPT-"+String(nextReportId++).padStart(4,"0"),
+  title,
+  type:$("reportType").value,
+  facility:$("facility").value,
+  selected_asset:$("reportAsset").value,
+  audience:$("reportAudience").value,
+  reporting_from:from,
+  reporting_to:to,
+  generated_at:now(),
+  modules:[...selectedModules],
+  assets:structuredClone(list),
+  metrics,
+  insights:reportInsights(list,metrics),
+  review:null,
+  data_source:"Synthetic static fixtures",
+  historical_data_filtered:false,
+  generated_by:"Deterministic browser rules",
+  simulated:true
+ };
+
+ currentReport=report;
+ history.unshift(report);
+
+ renderAll();
+ notify("Synthetic industrial report generated");
+}
+
+function section(title,paragraphs){
+ const root=element("div",undefined,"report-section");
+ add(root,"h3",title);
+
+ paragraphs.forEach(text=>{
+  add(root,"p",text);
+ });
+
+ return root;
+}
+
+function renderReport(){
+ const root=$("reportPreview");
+ root.replaceChildren();
+
+ if(!currentReport){
+  const empty=element("div",undefined,"text-center py-5 text-secondary");
+  add(empty,"h3","No report generated","section-title");
+  add(empty,"p","Configure your report and generate a preview.","section-sub");
+  root.append(empty);
+  return;
+ }
+
+ const r=currentReport;
+ const m=r.metrics;
+
+ const cover=element("div",undefined,"report-cover");
+
+ add(cover,"div","INDUSTRA AI · INDUSTRIAL INTELLIGENCE",
+  "text-uppercase fw-bold mb-3");
+
+ add(cover,"h3",r.title);
+
+ add(cover,"p",
+  `${r.id} · ${r.facility} · ${r.audience}`
+ );
+
+ add(cover,"p",
+  `Reporting label: ${r.reporting_from} to ${r.reporting_to}`
+ );
+
+ add(cover,"p",
+  `Generated: ${r.generated_at} · Synthetic demonstration`
+ );
+
+ root.append(cover);
+
+ root.append(section("Executive Summary",[
+  `This demonstration report covers ${m.asset_count} asset(s) with an average synthetic condition score of ${m.average_health}/100.`,
+  `${m.high_risk_assets} asset(s) are classified High or Critical. The associated illustrative maintenance cost exposure is ${currency(m.estimated_maintenance_cost_inr)}.`,
+  "All observations originate from fixed demonstration fixtures. The selected reporting dates do not filter historical records."
+ ]));
+
+ const active=new Set(r.modules);
+
+ if(active.has("assetHealth")){
+  root.append(section("Asset Health Intelligence",[
+   `Average condition score: ${m.average_health}/100.`,
+   `High or Critical priority assets: ${m.high_risk_assets}.`,
+   "Condition scores are illustrative and should not be interpreted as validated equipment diagnostics."
+  ]));
+ }
+
+ if(active.has("maintenance")){
+  const urgent=r.assets.filter(a=>a.rul<=30);
+
+  root.append(section("Predictive Maintenance",[
+   `${urgent.length} asset(s) have synthetic remaining-life estimates of 30 days or less.`,
+   "These RUL examples are not outputs from a trained predictive maintenance model.",
+   "Review manufacturer guidance, inspections and validated condition-monitoring results before scheduling maintenance."
+  ]));
+ }
+
+ if(active.has("safety")){
+  root.append(section("Safety Intelligence",[
+   `${m.critical_assets} asset(s) have a Critical priority classification.`,
+   "Risk priority is not a substitute for a formal hazard assessment, permit-to-work process or safety engineering decision."
+  ]));
+ }
+
+ if(active.has("incidents")){
+  root.append(section("Incident Analysis",[
+   `${m.synthetic_incident_count} fictional incident record(s) are associated with the selected assets.`,
+   "Incident counts are static fixture totals, not verified events from the requested reporting period."
+  ]));
+ }
+
+ if(active.has("inspection")){
+  root.append(section("Inspection Intelligence",[
+   `${m.synthetic_inspection_count} fictional inspection records are associated with the selected assets.`,
+   "Inspection completeness, findings and compliance cannot be established from these fixture counts alone."
+  ]));
+ }
+
+ if(active.has("cost")){
+  root.append(section("Cost Intelligence",[
+   `Total illustrative maintenance cost exposure: ${currency(m.estimated_maintenance_cost_inr)}.`,
+   "The amount is a sum of synthetic asset allowances, not a financial forecast, committed expenditure or verified accounting value."
+  ]));
+ }
+
+ const insightSection=element("div",undefined,"report-section");
+ add(insightSection,"h3","Key Findings & Review Actions");
+
+ r.insights.forEach((text,index)=>{
+  add(insightSection,"p",`${index+1}. ${text}`);
+ });
+
+ root.append(insightSection);
+
+ const tableSection=element("div",undefined,"report-section");
+ add(tableSection,"h3","Asset-Level Summary");
+
+ const wrapper=element("div",undefined,"table-responsive");
+ const table=element("table",undefined,"table");
+
+ const thead=element("thead");
+ const headingRow=element("tr");
+
+ ["Asset","Health","Priority","RUL","Cost"].forEach(label=>{
+  add(headingRow,"th",label);
+ });
+
+ thead.append(headingRow);
+
+ const tbody=element("tbody");
+
+ r.assets.forEach(a=>{
+  const row=element("tr");
+
+  [
+   a.id,
+   a.health+"/100",
+   a.priority,
+   a.rul+" days",
+   currency(a.maintenanceCost)
+  ].forEach(value=>{
+   add(row,"td",value);
+  });
+
+  tbody.append(row);
+ });
+
+ table.append(thead,tbody);
+ wrapper.append(table);
+ tableSection.append(wrapper);
+ root.append(tableSection);
+
+ root.append(section("Methodology & Limitations",[
+  "Source: static synthetic asset fixtures embedded in this HTML page.",
+  "Method: arithmetic aggregation, threshold-based categorization and fixed report templates.",
+  "No LLM inference, live database query, historical filtering, predictive model, external source verification or automatic report publication was performed.",
+  "This report requires validation by qualified personnel before operational, financial or safety use."
+ ]));
+
+ if(r.review){
+  root.append(section("Human Review Record",[
+   `Decision: ${r.review.decision}`,
+   `Reviewer: ${r.review.reviewer}`,
+   `Comment: ${r.review.comment}`,
+   `Reviewed: ${r.review.timestamp}`,
+   "This is a local demonstration review, not a formal authorization."
+  ]));
+ }
+
+ $("reportStatus").textContent=
+  r.review?r.review.decision:"Generated · Pending Review";
+
+ $("reportStatus").className="badge-soft "+(
+  !r.review?"b-warning":
+  r.review.decision==="Approve Demo Report"?
+  "b-success":
+  r.review.decision==="Reject Report"?
+  "b-danger":"b-warning"
+ );
+}
+
+function renderKpis(){
+ $("reportsKpi").textContent=history.length;
+
+ if(!currentReport){
+  ["assetsKpi","riskKpi","costKpi"].forEach(id=>{
+   $(id).textContent="—";
+  });
+  return;
+ }
+
+ const m=currentReport.metrics;
+
+ $("assetsKpi").textContent=m.asset_count;
+ $("riskKpi").textContent=m.high_risk_assets;
+ $("costKpi").textContent=
+  currency(m.estimated_maintenance_cost_inr);
+}
+
+function renderCharts(){
+ if(healthChart){
+  healthChart.destroy();
+  healthChart=null;
+ }
+
+ if(riskChart){
+  riskChart.destroy();
+  riskChart=null;
+ }
+
+ if(!currentReport||typeof Chart==="undefined")return;
+
+ const list=currentReport.assets;
+
+ healthChart=new Chart($("healthChart"),{
+  type:"bar",
+  data:{
+   labels:list.map(a=>a.id),
+   datasets:[{
+    label:"Condition Score",
+    data:list.map(a=>a.health),
+    backgroundColor:"#6855eb",
+    borderRadius:7
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   plugins:{legend:{display:false}},
+   scales:{
+    x:{grid:{display:false}},
+    y:{min:0,max:100,grid:{color:"#eef0f7"}}
+   }
+  }
+ });
+
+ const labels=["Critical","High","Medium","Low"];
+
+ riskChart=new Chart($("riskChart"),{
+  type:"doughnut",
+  data:{
+   labels,
+   datasets:[{
+    data:labels.map(label=>
+     list.filter(a=>a.priority===label).length
+    ),
+    backgroundColor:[
+     "#eb6174","#f2a53a","#438df5","#16b88a"
+    ],
+    borderWidth:0
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   cutout:"67%",
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{boxWidth:10,font:{size:10}}
+    }
+   }
+  }
+ });
+}
+
+function renderTrace(){
+ const root=$("agentTrace");
+ root.replaceChildren();
+
+ if(!currentReport){
+  add(root,"p","Generate a report to view the execution trace.",
+   "text-secondary");
+  return;
+ }
+
+ const steps=[
+  ["Load Synthetic Fixtures",
+   "Read the local demonstration asset records."],
+  ["Apply Scope",
+   "Selected facility and asset identifiers."],
+  ["Aggregate Indicators",
+   "Calculated arithmetic asset, risk and cost summaries."],
+  ["Assemble Report",
+   "Rendered selected sections using deterministic templates."],
+  ["Await Human Review",
+   "No real report distribution or approval was performed."]
+ ];
+
+ steps.forEach(([title,description])=>{
+  const row=element("div",undefined,"trace-item");
+
+  const icon=element("div",undefined,"trace-icon");
+  icon.append(element("i",undefined,"bi bi-check2-circle"));
+
+  const body=element("div");
+  add(body,"strong",title);
+  add(body,"p",description);
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderHistory(){
+ const root=$("historyTable");
+ root.replaceChildren();
+
+ if(!history.length){
+  const row=element("tr");
+  const cell=element(
+   "td","No reports generated yet.",
+   "text-center text-secondary py-4"
+  );
+  cell.colSpan=7;
+  row.append(cell);
+  root.append(row);
+  return;
+ }
+
+ history.forEach(r=>{
+  const row=element("tr");
+
+  const idCell=element("td");
+  add(idCell,"div",r.id,"table-title");
+  add(idCell,"div",r.title,"table-sub");
+
+  const type=element("td",r.type);
+  const facility=element("td",r.facility);
+  const count=element("td",String(r.metrics.asset_count));
+
+  const review=element("td");
+  review.append(badge(
+   r.review?.decision||"Pending Review",
+   r.review?.decision==="Approve Demo Report"?
+   "b-success":
+   r.review?.decision==="Reject Report"?
+   "b-danger":"b-warning"
+  ));
+
+  const timestamp=element("td",r.generated_at);
+
+  const action=element("td");
+  const button=element("button","View","small-action");
+
+  button.type="button";
+  button.addEventListener("click",()=>{
+   currentReport=r;
+   renderAll();
+   $("printReport").scrollIntoView({
+    behavior:"smooth",block:"start"
+   });
+  });
+
+  action.append(button);
+
+  row.append(
+   idCell,type,facility,count,
+   review,timestamp,action
+  );
+
+  root.append(row);
+ });
+}
+
+function renderReview(){
+ const active=Boolean(currentReport);
+
+ $("reviewButton").disabled=
+  !active||Boolean(currentReport?.review);
+
+ $("approvalStatus").textContent=
+  !active?"Awaiting Report":
+  currentReport.review?.decision||"Pending Review";
+
+ $("approvalStatus").className="badge-soft "+(
+  !active?"b-neutral":
+  currentReport.review?.decision==="Approve Demo Report"?
+  "b-success":
+  currentReport.review?.decision==="Reject Report"?
+  "b-danger":"b-warning"
+ );
+}
+
+function renderJson(){
+ $("outputJson").textContent=JSON.stringify({
+  current_report:currentReport,
+  report_count:history.length,
+  simulation:true,
+  backend_connected:false,
+  live_data_used:false,
+  report_distributed:false
+ },null,2);
+}
+
+function renderAll(){
+ renderKpis();
+ renderReport();
+ renderCharts();
+ renderTrace();
+ renderHistory();
+ renderReview();
+ renderJson();
+}
+
+function recordReview(){
+ if(!currentReport){
+  notify("Generate a report before reviewing");
+  return;
+ }
+
+ if(currentReport.review){
+  notify("This report has already been reviewed");
+  return;
+ }
+
+ const reviewer=$("reviewerName").value.trim();
+ const comment=$("reviewComment").value.trim();
+
+ if(!reviewer||!comment){
+  notify("Enter reviewer name and review rationale");
+  return;
+ }
+
+ currentReport.review={
+  reviewer,
+  decision:$("reviewDecision").value,
+  comment,
+  timestamp:now(),
+  simulated:true
+ };
+
+ renderAll();
+ notify("Local report review recorded");
+}
+
+function csvCell(value){
+ const text=String(value??"");
+ const safe=/^\s*[=+\-@]/.test(text)?"'"+text:text;
+ return '"'+safe.replaceAll('"','""')+'"';
+}
+
+function download(content,filename,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ if(!currentReport){
+  notify("Generate a report before exporting");
+  return;
+ }
+
+ const rows=[
+  [
+   "Asset ID","Name","Plant","Health",
+   "Risk","RUL Days","Priority",
+   "Maintenance Cost INR","Incidents","Inspections"
+  ],
+  ...currentReport.assets.map(a=>[
+   a.id,a.name,a.plant,a.health,
+   a.risk,a.rul,a.priority,
+   a.maintenanceCost,a.incidents,a.inspections
+  ])
+ ];
+
+ download(
+  rows.map(row=>row.map(csvCell).join(",")).join("\r\n"),
+  "industrial-report-assets.csv",
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Report asset CSV exported");
+}
+
+function exportJson(){
+ if(!currentReport){
+  notify("Generate a report before exporting");
+  return;
+ }
+
+ download(
+  JSON.stringify({
+   report:currentReport,
+   simulation:true
+  },null,2),
+  currentReport.id.toLowerCase()+".json",
+  "application/json"
+ );
+
+ notify("Industrial report JSON exported");
+}
+
+async function copyJson(){
+ try{
+  await navigator.clipboard.writeText(
+   $("outputJson").textContent
+  );
+  notify("Report JSON copied");
+ }catch{
+  notify("Clipboard unavailable; select JSON manually");
+ }
+}
+
+function printReport(){
+ if(!currentReport){
+  notify("Generate a report before printing");
+  return;
+ }
+
+ window.print();
+}
+
+function reset(){
+ history=[];
+ currentReport=null;
+ nextReportId=1;
+ selectedModules=new Set(modules.map(m=>m.id));
+
+ $("reportType").selectedIndex=0;
+ $("facility").value="All";
+ $("reportAsset").value="All";
+ $("reportAudience").selectedIndex=0;
+ $("reportTitle").value="";
+ $("reviewerName").value="";
+ $("reviewComment").value="";
+ $("reviewDecision").selectedIndex=0;
+
+ populateAssets();
+ renderModules();
+ renderAll();
+
+ $("reportStatus").textContent="Not Generated";
+ $("reportStatus").className="badge-soft b-warning";
+
+ notify("Report workspace reset");
+}
+
+function initDates(){
+ const today=new Date();
+
+ function dateString(date){
+  const y=date.getFullYear();
+  const m=String(date.getMonth()+1).padStart(2,"0");
+  const d=String(date.getDate()).padStart(2,"0");
+  return `${y}-${m}-${d}`;
+ }
+
+ const earlier=new Date(today);
+ earlier.setDate(today.getDate()-30);
+
+ $("dateFrom").value=dateString(earlier);
+ $("dateTo").value=dateString(today);
+}
+
+function initNavigation(){
+ const sidebar=$("sidebar");
+ const shade=$("shade");
+
+ function close(){
+  sidebar.classList.remove("open");
+  shade.classList.remove("show");
+ }
+
+ $("menuButton").addEventListener("click",()=>{
+  sidebar.classList.add("open");
+  shade.classList.add("show");
+ });
+
+ shade.addEventListener("click",close);
+
+ document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")close();
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ initNavigation();
+ initDates();
+ populateAssets();
+ renderModules();
+ renderAll();
+
+ $("facility").addEventListener("change",populateAssets);
+
+ $("generateButton").addEventListener("click",generateReport);
+ $("reviewButton").addEventListener("click",recordReview);
+ $("exportCsvButton").addEventListener("click",exportCsv);
+ $("exportJsonButton").addEventListener("click",exportJson);
+ $("copyButton").addEventListener("click",copyJson);
+ $("printButton").addEventListener("click",printReport);
+ $("resetButton").addEventListener("click",reset);
+});
+</script>
+
+</body>
+</html>

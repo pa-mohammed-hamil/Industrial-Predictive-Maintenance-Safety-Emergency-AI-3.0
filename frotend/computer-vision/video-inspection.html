@@ -1,0 +1,1375 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Video Inspection | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / computer-vision</p><h1 id="page-title">Video Inspection</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Video Inspection workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Video Inspection | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5{font-family:"Manrope",sans-serif;letter-spacing:-.5px}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+button:disabled{opacity:.5;cursor:not-allowed}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:white;z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto;
+ scrollbar-width:thin;scrollbar-color:#42496b transparent;
+}
+.brand{display:flex;align-items:center;gap:11px;padding:26px 22px;border-bottom:1px solid #ffffff12}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);font-size:22px;
+}
+.brand strong{font:800 18px "Manrope",sans-serif;color:white}
+.brand small{display:block;color:#8994bd;font-size:8px;letter-spacing:1.7px;margin-top:4px}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;font-size:9px;
+ font-weight:800;letter-spacing:1.7px;text-transform:uppercase;
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;margin:3px 12px;
+ padding:12px 13px;border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700;transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{background:linear-gradient(95deg,#6855eb,#5145b4);color:white}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12;
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;justify-content:space-between;
+ align-items:center;gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;display:grid;place-items:center;
+ color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{padding:28px 32px 45px;max-width:1650px;margin:auto}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;padding:30px;color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);margin-bottom:25px;
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;border-radius:50%;
+ border:1px solid #ffffff25;right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#ddd6ff}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{color:#e6e0ff;font-size:12px;line-height:1.9;max-width:760px;margin:0}
+.hero-tag{
+ display:inline-flex;align-items:center;gap:7px;background:#ffffff20;
+ border:1px solid #ffffff25;border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:20px;
+}
+.stat-card,.panel{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105;
+}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:16px;
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 26px "Manrope",sans-serif;margin-top:6px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel{padding:23px;height:100%}
+.panel-heading{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-bottom:21px;
+}
+.panel-heading h3{font-size:15px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:11px;margin-top:5px}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);color:white;border:0;
+ border-radius:10px;padding:11px 17px;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;padding:10px 14px;
+ background:white;color:#69738e;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;border-radius:8px;
+ padding:7px 10px;font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffecef;color:#d64b62}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.section-label{display:block;font-size:10px;color:#59637f;font-weight:800;margin-bottom:9px}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:43px;font-size:12px;padding:10px 12px;color:var(--text);
+}
+.form-control:focus,.form-select:focus{border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12}
+.upload-zone{
+ border:2px dashed #c9c4f6;border-radius:15px;background:#faf9ff;
+ padding:25px;display:flex;align-items:center;gap:18px;
+ cursor:pointer;transition:.2s;
+}
+.upload-zone:hover,.upload-zone.dragging{background:#f1efff;border-color:var(--purple)}
+.upload-icon{
+ width:58px;height:58px;border-radius:15px;display:grid;place-items:center;
+ background:#ebe7ff;color:var(--purple);font-size:27px;flex-shrink:0;
+}
+.video-stage{
+ position:relative;background:#0d1225;border-radius:15px;
+ overflow:hidden;min-height:270px;display:flex;
+ align-items:center;justify-content:center;
+}
+.video-stage video{
+ display:block;width:100%;max-height:500px;background:#0d1225;
+}
+.video-empty{text-align:center;color:#9ba7cc;padding:45px}
+.video-empty i{font-size:43px;color:#a89aff;display:block;margin-bottom:14px}
+.video-overlay-label{
+ position:absolute;top:12px;left:12px;z-index:2;
+ background:#10152ddd;color:white;border-radius:8px;
+ padding:8px 11px;font-size:10px;font-weight:800;pointer-events:none;
+}
+.timeline{
+ width:100%;accent-color:var(--purple);cursor:pointer;
+}
+.timeline-wrap{position:relative;margin:12px 0 4px}
+.marker-track{position:absolute;inset:auto 0 -7px;height:8px;pointer-events:none}
+.marker-dot{
+ position:absolute;top:0;width:7px;height:7px;border-radius:50%;
+ background:var(--red);transform:translateX(-50%);
+}
+.video-time{font-size:11px;color:#8992aa;font-weight:700}
+.control-row{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.control-button{
+ width:39px;height:39px;border-radius:10px;border:1px solid var(--border);
+ background:white;color:#59637f;display:grid;place-items:center;font-size:16px;
+}
+.control-button:hover{color:var(--purple);background:#f5f3ff}
+.frame-card{
+ display:flex;gap:12px;padding:12px;border:1px solid var(--border);
+ border-radius:12px;margin-bottom:10px;align-items:center;
+}
+.frame-preview{
+ width:88px;height:58px;border-radius:8px;object-fit:cover;
+ background:#10152d;flex-shrink:0;
+}
+.frame-info{flex:1;min-width:0}
+.frame-title{font-size:11px;font-weight:800}
+.frame-meta{font-size:10px;color:var(--muted);margin-top:5px}
+.info-row{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:12px;padding:12px 0;border-bottom:1px solid #f0f1f7;
+}
+.info-row span{color:var(--muted);font-size:11px}
+.info-row strong{font-size:11px;text-align:right;overflow-wrap:anywhere}
+.chart-container{height:260px;position:relative}
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;font-size:10px;font-weight:800;padding:13px;
+ background:#f9faff;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.table tbody td{padding:14px 13px;vertical-align:middle;border-color:#f0f1f7}
+.empty-state{text-align:center;padding:30px 15px;color:var(--muted);font-size:11px}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;color:#986b2d;
+ border-radius:12px;padding:15px 17px;font-size:11px;
+ line-height:1.8;display:flex;align-items:flex-start;gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1150px){
+ :root{--sidebar:225px}
+ .content{padding:25px 22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%);transition:transform .25s;width:260px}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{display:block;position:fixed;inset:0;background:#10152d88;z-index:999}
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:18px 14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:17px}
+ .mobile-hide{display:none}
+ .upload-zone{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+ <a class="side-link" href="notifications.html"><i class="bi bi-bell"></i> Notifications</a>
+
+ <div class="nav-section">Vision Intelligence</div>
+ <a class="side-link" href="live-camera.html"><i class="bi bi-camera-video"></i> Live Camera</a>
+ <a class="side-link active" href="video-inspection.html"><i class="bi bi-film"></i> Video Inspection</a>
+ <a class="side-link" href="image-inspection.html"><i class="bi bi-image"></i> Image Inspection</a>
+ <a class="side-link" href="surface-inspection.html"><i class="bi bi-layers"></i> Surface Inspection</a>
+ <a class="side-link" href="corrosion-detection.html"><i class="bi bi-search"></i> Corrosion Detection</a>
+ <a class="side-link" href="crack-detection.html"><i class="bi bi-intersect"></i> Crack Detection</a>
+ <a class="side-link" href="defect-detection.html"><i class="bi bi-bounding-box-circles"></i> Defect Detection</a>
+ <a class="side-link" href="motion-detection.html"><i class="bi bi-bounding-box"></i> Motion Detection</a>
+ <a class="side-link" href="detection-results.html"><i class="bi bi-clipboard-data"></i> Detection Results</a>
+ <a class="side-link" href="inspection-history.html"><i class="bi bi-clock-history"></i> Inspection History</a>
+
+ <div class="nav-section">Safety Intelligence</div>
+ <a class="side-link" href="p-p-e-detection.html"><i class="bi bi-shield-check"></i> PPE Detection</a>
+ <a class="side-link" href="smoke-detection.html"><i class="bi bi-cloud-haze2"></i> Smoke Detection</a>
+ <a class="side-link" href="fire-detection.html"><i class="bi bi-fire"></i> Fire Detection</a>
+ <a class="side-link" href="overheating-detection.html"><i class="bi bi-thermometer-high"></i> Overheating Detection</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/inspection-agent.html"><i class="bi bi-clipboard-check"></i> Inspection Agent</a>
+ <a class="side-link" href="agents/safety-agent.html"><i class="bi bi-shield-check"></i> Safety Agent</a>
+ <a class="side-link" href="agents/supervisor-agent.html"><i class="bi bi-diagram-3"></i> Supervisor Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Local Video Inspection
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">
+    Vision Intelligence / <strong>Video Inspection</strong>
+   </div>
+   <div class="fw-bold mt-1" style="font-size:13px">
+    Industrial Video Inspection
+   </div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="status-badge info mobile-hide">
+   <i class="bi bi-laptop"></i> Local Inspection
+  </span>
+  <a href="notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">Industrial Vision / Video Intelligence</div>
+ <h1><i class="bi bi-film me-2"></i> Video Inspection Intelligence</h1>
+ <p>
+  Review equipment footage, navigate frames, record timestamped
+  inspection findings, capture visual evidence, and generate
+  structured inspection reports.
+ </p>
+ <div class="hero-tag">
+  <i class="bi bi-info-circle"></i>
+  Manual inspection — no automated video analysis
+ </div>
+</section>
+
+<div class="row g-3 mb-4">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+    <i class="bi bi-camera-reels"></i>
+   </div>
+   <div class="stat-label">Loaded Video</div>
+   <div class="stat-value" id="videoKpi">0</div>
+   <div class="stat-note">Current local session</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eaf2ff;color:#438df5">
+    <i class="bi bi-bookmark-check"></i>
+   </div>
+   <div class="stat-label">Recorded Findings</div>
+   <div class="stat-value" id="findingsKpi">0</div>
+   <div class="stat-note">Inspector-created markers</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#ffecef;color:#ed6175">
+    <i class="bi bi-exclamation-triangle"></i>
+   </div>
+   <div class="stat-label">High-Severity Findings</div>
+   <div class="stat-value" id="highKpi">0</div>
+   <div class="stat-note">Manual severity assessment</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e8f9f1;color:#18b58c">
+    <i class="bi bi-image"></i>
+   </div>
+   <div class="stat-label">Frame Snapshots</div>
+   <div class="stat-value" id="snapshotsKpi">0</div>
+   <div class="stat-note">Captured locally</div>
+  </div>
+ </div>
+</div>
+
+<div class="row g-4 mb-4">
+ <div class="col-xl-8">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Video Inspection Player</h3>
+     <div class="panel-subtitle">Upload and inspect industrial footage</div>
+    </div>
+    <span id="playerBadge" class="status-badge">No Video</span>
+   </div>
+
+   <input type="file" id="videoInput" hidden accept="video/*">
+
+   <div class="upload-zone mb-3" id="uploadZone" role="button" tabindex="0">
+    <div class="upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+    <div class="flex-grow-1">
+     <div class="fw-bold">Upload Industrial Inspection Video</div>
+     <div class="text-secondary mt-2" style="font-size:11px">
+      MP4, WebM, or other browser-supported video · Maximum 250 MB
+     </div>
+    </div>
+    <button class="btn-purple" id="browseButton">
+     <i class="bi bi-upload"></i> Browse Video
+    </button>
+   </div>
+
+   <div class="video-stage">
+    <span class="video-overlay-label">LOCAL VIDEO INSPECTION</span>
+    <div class="video-empty" id="videoEmpty">
+     <i class="bi bi-camera-video-off"></i>
+     No inspection video loaded
+    </div>
+    <video id="videoPlayer" class="hidden" playsinline preload="metadata"></video>
+   </div>
+
+   <div class="timeline-wrap">
+    <input type="range" class="timeline" id="timeline"
+     min="0" max="1000" value="0" disabled aria-label="Video timeline">
+    <div class="marker-track" id="markerTrack"></div>
+   </div>
+
+   <div class="d-flex justify-content-between mb-3">
+    <span class="video-time" id="currentTime">00:00</span>
+    <span class="video-time" id="duration">00:00</span>
+   </div>
+
+   <div class="control-row">
+    <button class="control-button" id="playButton" disabled title="Play or pause">
+     <i class="bi bi-play-fill" id="playIcon"></i>
+    </button>
+    <button class="control-button" id="backButton" disabled title="Back 5 seconds">
+     <i class="bi bi-skip-backward"></i>
+    </button>
+    <button class="control-button" id="forwardButton" disabled title="Forward 5 seconds">
+     <i class="bi bi-skip-forward"></i>
+    </button>
+    <button class="control-button" id="prevFrame" disabled title="Previous approximate frame">
+     <i class="bi bi-chevron-bar-left"></i>
+    </button>
+    <button class="control-button" id="nextFrame" disabled title="Next approximate frame">
+     <i class="bi bi-chevron-bar-right"></i>
+    </button>
+    <select class="form-select" id="playbackRate" style="width:110px;min-height:39px">
+     <option value=".25">0.25×</option>
+     <option value=".5">0.5×</option>
+     <option value="1" selected>1×</option>
+     <option value="1.5">1.5×</option>
+     <option value="2">2×</option>
+    </select>
+    <button class="btn-outline-custom" id="captureButton" disabled>
+     <i class="bi bi-camera"></i> Capture Frame
+    </button>
+    <button class="btn-outline-custom" id="replaceButton">
+     <i class="bi bi-arrow-repeat"></i> Replace
+    </button>
+   </div>
+
+   <div class="row g-3 mt-3">
+    <div class="col-md-6">
+     <label class="section-label" for="assetId">Equipment / Asset ID</label>
+     <input class="form-control" id="assetId" maxlength="80"
+      placeholder="e.g. CONVEYOR-104">
+    </div>
+    <div class="col-md-6">
+     <label class="section-label" for="inspector">Inspector</label>
+     <input class="form-control" id="inspector" maxlength="100"
+      placeholder="Inspector name">
+    </div>
+    <div class="col-md-6">
+     <label class="section-label" for="inspectionArea">Inspection Area</label>
+     <input class="form-control" id="inspectionArea" maxlength="120"
+      placeholder="e.g. Production Line A">
+    </div>
+    <div class="col-md-6">
+     <label class="section-label" for="inspectionType">Inspection Type</label>
+     <select class="form-select" id="inspectionType">
+      <option>Equipment Condition</option>
+      <option>Surface Defects</option>
+      <option>Maintenance Inspection</option>
+      <option>Safety Observation</option>
+      <option>Production Quality</option>
+      <option>General Visual Inspection</option>
+     </select>
+    </div>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-4">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Record Video Finding</h3>
+     <div class="panel-subtitle">
+      Attach a manual observation to the current timestamp
+     </div>
+    </div>
+   </div>
+
+   <label class="section-label" for="findingType">Finding Category</label>
+   <select id="findingType" class="form-select mb-3">
+    <option>Surface Defect</option>
+    <option>Corrosion</option>
+    <option>Crack</option>
+    <option>Mechanical Wear</option>
+    <option>Fluid Leak</option>
+    <option>Abnormal Motion</option>
+    <option>Safety Observation</option>
+    <option>Other</option>
+   </select>
+
+   <label class="section-label" for="severity">Severity</label>
+   <select id="severity" class="form-select mb-3">
+    <option>Low</option>
+    <option>Medium</option>
+    <option>High</option>
+   </select>
+
+   <label class="section-label" for="findingDescription">Description</label>
+   <textarea id="findingDescription" class="form-control mb-3"
+    rows="4" maxlength="1000"
+    placeholder="Describe what you observed at this point in the video..."></textarea>
+
+   <button class="btn-purple w-100" id="addFinding" disabled>
+    <i class="bi bi-bookmark-plus"></i> Add Timestamped Finding
+   </button>
+
+   <div class="mt-4">
+    <div class="panel-heading mb-3">
+     <div>
+      <h3>Video Information</h3>
+      <div class="panel-subtitle">Browser-readable media metadata</div>
+     </div>
+    </div>
+    <div class="info-row"><span>File</span><strong id="fileName">—</strong></div>
+    <div class="info-row"><span>Duration</span><strong id="fileDuration">—</strong></div>
+    <div class="info-row"><span>Resolution</span><strong id="resolution">—</strong></div>
+    <div class="info-row"><span>Size</span><strong id="fileSize">—</strong></div>
+    <div class="info-row"><span>Processing</span><strong>Local Browser</strong></div>
+    <div class="info-row"><span>AI Inference</span><strong>Not Connected</strong></div>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="row g-4 mb-4">
+ <div class="col-lg-7">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Inspection Timeline & Findings</h3>
+     <div class="panel-subtitle">
+      Click a timestamp to jump to the recorded observation
+     </div>
+    </div>
+    <span class="status-badge info" id="findingCount">0 Findings</span>
+   </div>
+   <div id="findingsList">
+    <div class="empty-state">No findings recorded yet.</div>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-lg-5">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Captured Frames</h3>
+     <div class="panel-subtitle">
+      Local snapshots from the video player
+     </div>
+    </div>
+   </div>
+   <div id="snapshotList">
+    <div class="empty-state">No snapshots captured yet.</div>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="row g-4 mb-4">
+ <div class="col-lg-6">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Finding Category Analytics</h3>
+     <div class="panel-subtitle">Distribution of manual observations</div>
+    </div>
+   </div>
+   <div class="chart-container">
+    <canvas id="categoryChart"></canvas>
+   </div>
+  </section>
+ </div>
+ <div class="col-lg-6">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Severity Analytics</h3>
+     <div class="panel-subtitle">Inspector-assigned severity distribution</div>
+    </div>
+   </div>
+   <div class="chart-container">
+    <canvas id="severityChart"></canvas>
+   </div>
+  </section>
+ </div>
+</div>
+
+<section class="panel mb-4">
+ <div class="panel-heading">
+  <div>
+   <h3>Inspection Records</h3>
+   <div class="panel-subtitle">
+    Timestamped findings for the currently loaded video
+   </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-outline-custom" id="exportCsv">
+    <i class="bi bi-filetype-csv"></i> Export CSV
+   </button>
+   <button class="btn-purple" id="exportJson">
+    <i class="bi bi-download"></i> Export JSON
+   </button>
+   <button class="btn-outline-custom" id="clearFindings">
+    <i class="bi bi-trash"></i> Clear Findings
+   </button>
+  </div>
+ </div>
+ <div class="table-responsive">
+  <table class="table align-middle mb-0">
+   <thead>
+    <tr>
+     <th>Timestamp</th>
+     <th>Category</th>
+     <th>Severity</th>
+     <th>Description</th>
+     <th>Action</th>
+    </tr>
+   </thead>
+   <tbody id="recordsTable"></tbody>
+  </table>
+ </div>
+</section>
+
+<div class="notice">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Safety and technical limitation:</strong>
+  All findings are manually entered by the inspector.
+  This page does not run object detection, video segmentation,
+  abnormal-behavior detection, PPE recognition, or automated
+  equipment fault identification. Frame stepping uses an
+  approximate 30 FPS interval rather than codec-accurate
+  frame indexing. Uploaded videos remain local to the browser.
+  Qualified personnel must validate safety-critical findings.
+ </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const video=$("videoPlayer");
+
+let videoUrl=null;
+let currentFile=null;
+let findings=[];
+let snapshots=[];
+let categoryChart=null;
+let severityChart=null;
+let nextId=1;
+
+const severityColors={
+ Low:"#18b58c",
+ Medium:"#f4a443",
+ High:"#ed6175"
+};
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+function formatTime(seconds){
+ if(!Number.isFinite(seconds))return "00:00";
+ const total=Math.floor(Math.max(0,seconds));
+ const hours=Math.floor(total/3600);
+ const minutes=Math.floor((total%3600)/60);
+ const secs=total%60;
+ const pad=n=>String(n).padStart(2,"0");
+
+ return hours?
+  `${pad(hours)}:${pad(minutes)}:${pad(secs)}`:
+  `${pad(minutes)}:${pad(secs)}`;
+}
+
+function readableSize(bytes){
+ if(!Number.isFinite(bytes))return "—";
+ return (bytes/1024/1024).toFixed(2)+" MB";
+}
+
+function isReady(){
+ return video.readyState>=1 &&
+  Number.isFinite(video.duration) &&
+  video.duration>0;
+}
+
+function setControls(enabled){
+ [
+  "playButton","backButton","forwardButton",
+  "prevFrame","nextFrame","captureButton",
+  "addFinding","timeline"
+ ].forEach(id=>$(id).disabled=!enabled);
+}
+
+/* VIDEO LOADING */
+
+function clearVideo(){
+ video.pause();
+ video.removeAttribute("src");
+ video.load();
+
+ if(videoUrl)URL.revokeObjectURL(videoUrl);
+ videoUrl=null;
+ currentFile=null;
+
+ findings=[];
+ snapshots=[];
+
+ $("videoPlayer").classList.add("hidden");
+ $("videoEmpty").classList.remove("hidden");
+ $("fileName").textContent="—";
+ $("fileDuration").textContent="—";
+ $("resolution").textContent="—";
+ $("fileSize").textContent="—";
+ $("playerBadge").textContent="No Video";
+ $("playerBadge").className="status-badge";
+ $("currentTime").textContent="00:00";
+ $("duration").textContent="00:00";
+ $("timeline").value=0;
+ $("playIcon").className="bi bi-play-fill";
+
+ setControls(false);
+ renderAll();
+}
+
+function loadVideo(file){
+ if(!file)return;
+
+ if(!file.type.startsWith("video/")){
+  notify("Please select a video file.");
+  return;
+ }
+
+ if(file.size>250*1024*1024){
+  notify("Maximum supported file size is 250 MB.");
+  return;
+ }
+
+ clearVideo();
+
+ currentFile=file;
+ videoUrl=URL.createObjectURL(file);
+ video.src=videoUrl;
+ video.load();
+
+ $("fileName").textContent=file.name;
+ $("fileSize").textContent=readableSize(file.size);
+ $("playerBadge").className="status-badge info";
+ $("playerBadge").textContent="Loading Video";
+
+ $("videoEmpty").classList.add("hidden");
+ $("videoPlayer").classList.remove("hidden");
+
+ notify("Local video selected. Loading metadata.");
+}
+
+$("browseButton").addEventListener("click",event=>{
+ event.stopPropagation();
+ $("videoInput").click();
+});
+
+$("uploadZone").addEventListener("click",()=>{
+ $("videoInput").click();
+});
+
+$("uploadZone").addEventListener("keydown",event=>{
+ if(event.key==="Enter"||event.key===" "){
+  event.preventDefault();
+  $("videoInput").click();
+ }
+});
+
+$("replaceButton").addEventListener("click",()=>{
+ $("videoInput").click();
+});
+
+$("videoInput").addEventListener("change",event=>{
+ loadVideo(event.target.files[0]);
+ event.target.value="";
+});
+
+$("uploadZone").addEventListener("dragover",event=>{
+ event.preventDefault();
+ $("uploadZone").classList.add("dragging");
+});
+
+$("uploadZone").addEventListener("dragleave",()=>{
+ $("uploadZone").classList.remove("dragging");
+});
+
+$("uploadZone").addEventListener("drop",event=>{
+ event.preventDefault();
+ $("uploadZone").classList.remove("dragging");
+ loadVideo(event.dataTransfer.files[0]);
+});
+
+video.addEventListener("loadedmetadata",()=>{
+ if(!isReady()){
+  notify("This video does not provide a usable duration.");
+  return;
+ }
+
+ $("duration").textContent=formatTime(video.duration);
+ $("fileDuration").textContent=formatTime(video.duration);
+ $("resolution").textContent=
+  video.videoWidth+" × "+video.videoHeight;
+
+ $("playerBadge").className="status-badge success";
+ $("playerBadge").textContent="Ready";
+
+ setControls(true);
+ updateTimeline();
+});
+
+video.addEventListener("error",()=>{
+ setControls(false);
+ $("playerBadge").className="status-badge danger";
+ $("playerBadge").textContent="Playback Error";
+ notify("This video format or codec may not be supported by your browser.");
+});
+
+/* PLAYBACK */
+
+function updateTimeline(){
+ if(!isReady())return;
+
+ $("currentTime").textContent=formatTime(video.currentTime);
+ $("timeline").value=Math.round(
+  video.currentTime/video.duration*1000
+ );
+
+ renderMarkers();
+}
+
+video.addEventListener("timeupdate",updateTimeline);
+video.addEventListener("seeked",updateTimeline);
+
+video.addEventListener("play",()=>{
+ $("playIcon").className="bi bi-pause-fill";
+});
+
+video.addEventListener("pause",()=>{
+ $("playIcon").className="bi bi-play-fill";
+});
+
+$("playButton").addEventListener("click",async()=>{
+ if(!isReady())return;
+
+ if(video.paused){
+  try{
+   await video.play();
+  }catch{
+   notify("Playback could not start.");
+  }
+ }else{
+  video.pause();
+ }
+});
+
+$("backButton").addEventListener("click",()=>{
+ if(isReady())video.currentTime=Math.max(0,video.currentTime-5);
+});
+
+$("forwardButton").addEventListener("click",()=>{
+ if(isReady())video.currentTime=Math.min(
+  video.duration,video.currentTime+5
+ );
+});
+
+$("prevFrame").addEventListener("click",()=>{
+ if(!isReady())return;
+ video.pause();
+ video.currentTime=Math.max(0,video.currentTime-1/30);
+});
+
+$("nextFrame").addEventListener("click",()=>{
+ if(!isReady())return;
+ video.pause();
+ video.currentTime=Math.min(video.duration,video.currentTime+1/30);
+});
+
+$("timeline").addEventListener("input",event=>{
+ if(!isReady())return;
+ video.currentTime=Number(event.target.value)/1000*video.duration;
+});
+
+$("playbackRate").addEventListener("change",()=>{
+ video.playbackRate=Number($("playbackRate").value);
+});
+
+/* MANUAL FINDINGS */
+
+$("addFinding").addEventListener("click",()=>{
+ if(!isReady())return;
+
+ const description=$("findingDescription").value.trim();
+
+ if(!description){
+  notify("Enter a description of the observed finding.");
+  return;
+ }
+
+ findings.push({
+  id:nextId++,
+  timestamp:Number(video.currentTime.toFixed(3)),
+  type:$("findingType").value,
+  severity:$("severity").value,
+  description,
+  createdAt:new Date().toISOString(),
+  source:"human-inspector"
+ });
+
+ findings.sort((a,b)=>a.timestamp-b.timestamp);
+ $("findingDescription").value="";
+
+ renderAll();
+ notify("Manual finding recorded at "+formatTime(video.currentTime)+".");
+});
+
+function jumpTo(seconds){
+ if(!isReady())return;
+ video.pause();
+ video.currentTime=Math.max(0,Math.min(video.duration,seconds));
+}
+
+function renderMarkers(){
+ const track=$("markerTrack");
+ track.replaceChildren();
+
+ if(!isReady())return;
+
+ findings.forEach(finding=>{
+  const marker=document.createElement("span");
+  marker.className="marker-dot";
+  marker.style.left=(finding.timestamp/video.duration*100)+"%";
+  marker.style.background=severityColors[finding.severity];
+  track.append(marker);
+ });
+}
+
+function renderFindings(){
+ const container=$("findingsList");
+ container.replaceChildren();
+
+ $("findingCount").textContent=findings.length+" Findings";
+
+ if(!findings.length){
+  const empty=document.createElement("div");
+  empty.className="empty-state";
+  empty.textContent="No findings recorded yet.";
+  container.append(empty);
+  return;
+ }
+
+ findings.forEach(finding=>{
+  const row=document.createElement("div");
+  row.className="frame-card";
+
+  const jump=document.createElement("button");
+  jump.className="btn-outline-custom";
+  jump.textContent=formatTime(finding.timestamp);
+  jump.addEventListener("click",()=>jumpTo(finding.timestamp));
+
+  const info=document.createElement("div");
+  info.className="frame-info";
+
+  const title=document.createElement("div");
+  title.className="frame-title";
+  title.textContent=finding.type;
+
+  const meta=document.createElement("div");
+  meta.className="frame-meta";
+  meta.textContent=finding.description;
+
+  info.append(title,meta);
+
+  const badge=document.createElement("span");
+  badge.className="status-badge";
+  badge.textContent=finding.severity;
+  badge.style.color=severityColors[finding.severity];
+
+  const remove=document.createElement("button");
+  remove.className="btn-outline-custom";
+  remove.setAttribute("aria-label","Remove finding");
+  remove.innerHTML='<i class="bi bi-trash"></i>';
+  remove.addEventListener("click",()=>{
+   findings=findings.filter(f=>f.id!==finding.id);
+   renderAll();
+  });
+
+  row.append(jump,info,badge,remove);
+  container.append(row);
+ });
+}
+
+/* FRAME CAPTURE */
+
+$("captureButton").addEventListener("click",()=>{
+ if(!isReady()||video.readyState<2){
+  notify("Wait until a video frame is available.");
+  return;
+ }
+
+ try{
+  const canvas=document.createElement("canvas");
+  const maxWidth=960;
+  const scale=Math.min(1,maxWidth/video.videoWidth);
+
+  canvas.width=Math.round(video.videoWidth*scale);
+  canvas.height=Math.round(video.videoHeight*scale);
+
+  const ctx=canvas.getContext("2d");
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+
+  const dataUrl=canvas.toDataURL("image/jpeg",.82);
+
+  snapshots.push({
+   id:nextId++,
+   timestamp:Number(video.currentTime.toFixed(3)),
+   image:dataUrl
+  });
+
+  renderAll();
+  notify("Video frame captured locally.");
+ }catch{
+  notify("Unable to capture this frame.");
+ }
+});
+
+function renderSnapshots(){
+ const container=$("snapshotList");
+ container.replaceChildren();
+
+ if(!snapshots.length){
+  const empty=document.createElement("div");
+  empty.className="empty-state";
+  empty.textContent="No snapshots captured yet.";
+  container.append(empty);
+  return;
+ }
+
+ snapshots.forEach(snapshot=>{
+  const row=document.createElement("div");
+  row.className="frame-card";
+
+  const img=document.createElement("img");
+  img.className="frame-preview";
+  img.src=snapshot.image;
+  img.alt="Captured video frame";
+
+  const info=document.createElement("div");
+  info.className="frame-info";
+
+  const title=document.createElement("div");
+  title.className="frame-title";
+  title.textContent="Frame at "+formatTime(snapshot.timestamp);
+
+  const meta=document.createElement("div");
+  meta.className="frame-meta";
+  meta.textContent="Locally captured JPEG";
+
+  info.append(title,meta);
+
+  const download=document.createElement("button");
+  download.className="btn-outline-custom";
+  download.setAttribute("aria-label","Download frame");
+  download.innerHTML='<i class="bi bi-download"></i>';
+  download.addEventListener("click",()=>{
+   const anchor=document.createElement("a");
+   anchor.href=snapshot.image;
+   anchor.download="industra-frame-"+snapshot.id+".jpg";
+   anchor.click();
+  });
+
+  const remove=document.createElement("button");
+  remove.className="btn-outline-custom";
+  remove.setAttribute("aria-label","Remove snapshot");
+  remove.innerHTML='<i class="bi bi-trash"></i>';
+  remove.addEventListener("click",()=>{
+   snapshots=snapshots.filter(s=>s.id!==snapshot.id);
+   renderAll();
+  });
+
+  row.append(img,info,download,remove);
+  container.append(row);
+ });
+}
+
+/* RECORD TABLE */
+
+function renderRecords(){
+ const tbody=$("recordsTable");
+ tbody.replaceChildren();
+
+ if(!findings.length){
+  const tr=document.createElement("tr");
+  const td=document.createElement("td");
+  td.colSpan=5;
+  td.className="empty-state";
+  td.textContent="No inspection records yet.";
+  tr.append(td);
+  tbody.append(tr);
+  return;
+ }
+
+ findings.forEach(finding=>{
+  const tr=document.createElement("tr");
+
+  [
+   formatTime(finding.timestamp),
+   finding.type,
+   finding.severity,
+   finding.description
+  ].forEach(value=>{
+   const td=document.createElement("td");
+   td.textContent=value;
+   tr.append(td);
+  });
+
+  const td=document.createElement("td");
+  const button=document.createElement("button");
+  button.className="btn-outline-custom";
+  button.textContent="Jump";
+  button.addEventListener("click",()=>jumpTo(finding.timestamp));
+  td.append(button);
+  tr.append(td);
+
+  tbody.append(tr);
+ });
+}
+
+/* ANALYTICS */
+
+function initializeCharts(){
+ if(typeof Chart==="undefined")return;
+
+ categoryChart=new Chart($("categoryChart"),{
+  type:"bar",
+  data:{
+   labels:[
+    "Surface Defect","Corrosion","Crack","Mechanical Wear",
+    "Fluid Leak","Abnormal Motion","Safety Observation","Other"
+   ],
+   datasets:[{
+    label:"Findings",
+    data:Array(8).fill(0),
+    backgroundColor:"#6855eb",
+    borderRadius:6,
+    maxBarThickness:38
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   plugins:{legend:{display:false}},
+   scales:{
+    x:{grid:{display:false},ticks:{maxRotation:50,minRotation:30}},
+    y:{beginAtZero:true,ticks:{precision:0}}
+   }
+  }
+ });
+
+ severityChart=new Chart($("severityChart"),{
+  type:"doughnut",
+  data:{
+   labels:["Low","Medium","High"],
+   datasets:[{
+    data:[0,0,0],
+    backgroundColor:["#18b58c","#f4a443","#ed6175"],
+    borderWidth:0
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   cutout:"68%",
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{usePointStyle:true,padding:20}
+    }
+   }
+  }
+ });
+}
+
+function renderCharts(){
+ if(categoryChart){
+  categoryChart.data.datasets[0].data=
+   categoryChart.data.labels.map(label=>
+    findings.filter(f=>f.type===label).length
+   );
+  categoryChart.update();
+ }
+
+ if(severityChart){
+  severityChart.data.datasets[0].data=
+   ["Low","Medium","High"].map(level=>
+    findings.filter(f=>f.severity===level).length
+   );
+  severityChart.update();
+ }
+}
+
+function renderKpis(){
+ $("videoKpi").textContent=currentFile?1:0;
+ $("findingsKpi").textContent=findings.length;
+ $("highKpi").textContent=findings.filter(
+  f=>f.severity==="High"
+ ).length;
+ $("snapshotsKpi").textContent=snapshots.length;
+}
+
+function renderAll(){
+ renderKpis();
+ renderMarkers();
+ renderFindings();
+ renderSnapshots();
+ renderRecords();
+ renderCharts();
+}
+
+/* EXPORT */
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportJson").addEventListener("click",()=>{
+ const report={
+  application:"INDUSTRA AI",
+  module:"Video Inspection",
+  generatedAt:new Date().toISOString(),
+  method:"manual-video-review",
+  aiInferencePerformed:false,
+  videoFileIncluded:false,
+  snapshotsIncluded:false,
+  video:currentFile?{
+   filename:currentFile.name,
+   sizeBytes:currentFile.size,
+   durationSeconds:isReady()?video.duration:null,
+   width:video.videoWidth,
+   height:video.videoHeight
+  }:null,
+  inspection:{
+   assetId:$("assetId").value.trim(),
+   inspector:$("inspector").value.trim(),
+   area:$("inspectionArea").value.trim(),
+   type:$("inspectionType").value
+  },
+  findings,
+  snapshots:snapshots.map(s=>({
+   id:s.id,
+   timestamp:s.timestamp,
+   imageIncluded:false
+  }))
+ };
+
+ downloadFile(
+  "industra-video-inspection.json",
+  JSON.stringify(report,null,2),
+  "application/json"
+ );
+
+ notify("Video inspection JSON exported.");
+});
+
+$("exportCsv").addEventListener("click",()=>{
+ const columns=[
+  "timestamp","type","severity","description",
+  "createdAt","source"
+ ];
+
+ const escapeCsv=value=>
+  '"'+String(value??"").replace(/"/g,'""')+'"';
+
+ const csv=[
+  columns.join(","),
+  ...findings.map(f=>
+   columns.map(key=>escapeCsv(f[key])).join(",")
+  )
+ ].join("\r\n");
+
+ downloadFile(
+  "industra-video-findings.csv",
+  csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Video findings CSV exported.");
+});
+
+$("clearFindings").addEventListener("click",()=>{
+ if(!findings.length)return;
+
+ if(!confirm("Clear all manual findings for this video?"))return;
+
+ findings=[];
+ renderAll();
+ notify("Inspection findings cleared.");
+});
+
+window.addEventListener("pagehide",()=>{
+ video.pause();
+ if(videoUrl)URL.revokeObjectURL(videoUrl);
+});
+
+/* INITIALIZATION */
+
+setControls(false);
+initializeCharts();
+renderAll();
+
+</script>
+</body>
+</html>

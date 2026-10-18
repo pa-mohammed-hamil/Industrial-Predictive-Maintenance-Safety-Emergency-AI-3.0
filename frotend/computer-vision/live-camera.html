@@ -1,0 +1,1472 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Live Camera | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / computer-vision</p><h1 id="page-title">Live Camera</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Live Camera workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Live Camera | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5{
+ font-family:Manrope,sans-serif;
+ letter-spacing:-.5px;
+}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+.sidebar{
+ position:fixed;
+ inset:0 auto 0 0;
+ width:var(--sidebar);
+ background:var(--navy);
+ color:white;
+ z-index:1000;
+ display:flex;
+ flex-direction:column;
+ overflow-y:auto;
+ scrollbar-width:thin;
+ scrollbar-color:#42496b transparent;
+}
+.brand{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ padding:26px 22px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;
+ height:43px;
+ border-radius:13px;
+ display:grid;
+ place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);
+ font-size:22px;
+}
+.brand strong{
+ font:800 18px Manrope,sans-serif;
+ color:white;
+}
+.brand small{
+ display:block;
+ color:#8994bd;
+ font-size:8px;
+ letter-spacing:1.7px;
+ margin-top:4px;
+}
+.nav-section{
+ padding:23px 20px 8px;
+ color:#687399;
+ font-size:9px;
+ font-weight:800;
+ letter-spacing:1.7px;
+ text-transform:uppercase;
+}
+.side-link{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ margin:3px 12px;
+ padding:12px 13px;
+ border-radius:10px;
+ color:#a4aecf;
+ font-size:11px;
+ font-weight:700;
+ transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+ color:white;
+}
+.sidebar-footer{
+ margin-top:auto;
+ padding:20px;
+ color:#7884ac;
+ font-size:10px;
+ border-top:1px solid #ffffff12;
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;
+ background:white;
+ border-bottom:1px solid var(--border);
+ padding:0 32px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;
+ border:1px solid var(--border);
+ border-radius:11px;background:white;
+ display:grid;place-items:center;
+ color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{
+ padding:28px 32px 45px;
+ max-width:1650px;margin:auto;
+}
+.hero{
+ position:relative;overflow:hidden;
+ border-radius:19px;padding:30px;color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:25px;
+}
+.hero:after{
+ content:"";position:absolute;
+ width:330px;height:330px;border-radius:50%;
+ border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;
+ text-transform:uppercase;letter-spacing:2px;
+ color:#ddd6ff;
+}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;line-height:1.9;
+ max-width:720px;margin:0;
+}
+.hero-tag{
+ display:inline-flex;gap:7px;align-items:center;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:20px;
+}
+.stat-card,.panel{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;
+ box-shadow:0 5px 23px #18204105;
+}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;
+ display:grid;place-items:center;
+ border-radius:12px;font-size:19px;
+ margin-bottom:16px;
+}
+.stat-label{
+ font-size:11px;color:var(--muted);font-weight:700;
+}
+.stat-value{
+ font:800 26px Manrope,sans-serif;margin-top:6px;
+}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel{padding:23px;height:100%}
+.panel-heading{
+ display:flex;justify-content:space-between;
+ align-items:center;flex-wrap:wrap;
+ gap:10px;margin-bottom:21px;
+}
+.panel-heading h3{font-size:15px;font-weight:800;margin:0}
+.panel-subtitle{
+ color:var(--muted);font-size:11px;margin-top:5px;
+}
+.section-label{
+ display:block;font-size:10px;
+ color:#59637f;font-weight:800;margin-bottom:9px;
+}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;min-height:43px;
+ font-size:12px;padding:10px 12px;color:var(--text);
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;
+ padding:11px 17px;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);
+ border-radius:10px;padding:10px 14px;
+ background:white;color:#69738e;
+ font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{
+ background:#f5f3ff;color:var(--purple);
+}
+.btn-danger-custom{
+ background:#ed6175;color:white;
+ border:0;border-radius:10px;
+ padding:11px 17px;font-size:11px;
+ font-weight:800;
+}
+button:disabled{opacity:.5;cursor:not-allowed}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffecef;color:#d64b62}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.camera-stage{
+ position:relative;overflow:hidden;
+ background:#10152d;border-radius:15px;
+ aspect-ratio:16/9;min-height:270px;
+ display:flex;align-items:center;
+ justify-content:center;
+}
+.camera-stage video{
+ width:100%;height:100%;
+ object-fit:contain;position:absolute;inset:0;
+}
+.camera-placeholder{
+ text-align:center;color:#a7b1d0;
+ padding:30px;z-index:1;
+}
+.camera-placeholder i{
+ display:block;font-size:54px;
+ color:#8170ef;margin-bottom:15px;
+}
+.camera-overlay{
+ position:absolute;inset:0;z-index:2;
+ pointer-events:none;
+ display:none;
+}
+.camera-overlay.visible{display:block}
+.camera-label{
+ position:absolute;top:15px;left:15px;
+ padding:8px 12px;border-radius:8px;
+ background:#10152dcc;color:white;
+ font-size:10px;font-weight:800;
+}
+.camera-time{
+ position:absolute;top:15px;right:15px;
+ padding:8px 12px;border-radius:8px;
+ background:#10152dcc;color:white;
+ font-size:10px;font-weight:800;
+ font-variant-numeric:tabular-nums;
+}
+.camera-frame{
+ position:absolute;inset:12%;
+ border:1px solid #ffffff55;
+ border-radius:9px;
+}
+.camera-frame:before,.camera-frame:after{
+ content:"";position:absolute;
+ width:22px;height:22px;
+ border:3px solid #8e7cff;
+}
+.camera-frame:before{
+ top:-2px;left:-2px;
+ border-right:0;border-bottom:0;
+}
+.camera-frame:after{
+ bottom:-2px;right:-2px;
+ border-left:0;border-top:0;
+}
+.camera-controls{
+ display:flex;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-top:17px;
+}
+.info-item{
+ display:flex;align-items:center;
+ justify-content:space-between;
+ gap:12px;padding:13px 0;
+ border-bottom:1px solid #f0f1f7;
+}
+.info-item:last-child{border-bottom:0}
+.info-item span{font-size:11px;color:var(--muted)}
+.info-item strong{
+ font-size:11px;text-align:right;
+ overflow-wrap:anywhere;
+}
+.snapshot-grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(155px,1fr));
+ gap:14px;
+}
+.snapshot-card{
+ border:1px solid var(--border);
+ border-radius:12px;overflow:hidden;
+ background:#fbfcff;
+}
+.snapshot-card img{
+ width:100%;aspect-ratio:4/3;
+ object-fit:cover;
+}
+.snapshot-card-body{padding:12px}
+.snapshot-title{
+ font-size:11px;font-weight:800;
+ overflow:hidden;text-overflow:ellipsis;
+ white-space:nowrap;
+}
+.snapshot-meta{
+ font-size:10px;color:var(--muted);
+ margin-top:6px;
+}
+.activity-item{
+ display:flex;gap:12px;
+ padding:13px 0;
+ border-bottom:1px solid #f0f1f7;
+}
+.activity-item:last-child{border-bottom:0}
+.activity-icon{
+ width:34px;height:34px;flex-shrink:0;
+ border-radius:10px;
+ background:#eeeaff;color:#6855eb;
+ display:grid;place-items:center;
+}
+.activity-title{font-size:11px;font-weight:800}
+.activity-time{
+ font-size:10px;color:var(--muted);
+ margin-top:5px;
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;
+ padding:15px 17px;font-size:11px;
+ line-height:1.8;display:flex;
+ align-items:flex-start;gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.empty-state{
+ text-align:center;color:var(--muted);
+ padding:35px 15px;font-size:11px;
+}
+.empty-state i{
+ display:block;font-size:32px;
+ color:#bcb3fa;margin-bottom:12px;
+}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1150px){
+ :root{--sidebar:225px}
+ .content{padding:25px 22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{
+  transform:translateX(-100%);
+  transition:transform .25s;
+  width:260px;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:18px 14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:17px}
+ .mobile-hide{display:none}
+ .camera-stage{min-height:220px}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html">
+  <i class="bi bi-grid"></i> Dashboard
+ </a>
+ <a class="side-link" href="command-center.html">
+  <i class="bi bi-broadcast"></i> Command Center
+ </a>
+ <a class="side-link" href="analytics.html">
+  <i class="bi bi-graph-up-arrow"></i> Analytics
+ </a>
+ <a class="side-link" href="reports.html">
+  <i class="bi bi-file-earmark-bar-graph"></i> Reports
+ </a>
+
+ <div class="nav-section">Visual Intelligence</div>
+ <a class="side-link active" href="live-camera.html">
+  <i class="bi bi-camera-video"></i> Live Camera
+ </a>
+ <a class="side-link" href="image-inspection.html">
+  <i class="bi bi-image"></i> Image Inspection
+ </a>
+ <a class="side-link" href="inspection-history.html">
+  <i class="bi bi-clock-history"></i> Inspection History
+ </a>
+ <a class="side-link" href="detection-results.html">
+  <i class="bi bi-clipboard-data"></i> Detection Results
+ </a>
+ <a class="side-link" href="fire-detection.html">
+  <i class="bi bi-fire"></i> Fire Detection
+ </a>
+ <a class="side-link" href="corrosion-detection.html">
+  <i class="bi bi-search-heart"></i> Corrosion Detection
+ </a>
+ <a class="side-link" href="crack-detection.html">
+  <i class="bi bi-intersect"></i> Crack Detection
+ </a>
+ <a class="side-link" href="defect-detection.html">
+  <i class="bi bi-bounding-box-circles"></i> Defect Detection
+ </a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/inspection-agent.html">
+  <i class="bi bi-clipboard-check"></i> Inspection Agent
+ </a>
+ <a class="side-link" href="agents/safety-agent.html">
+  <i class="bi bi-shield-check"></i> Safety Agent
+ </a>
+ <a class="side-link" href="agents/supervisor-agent.html">
+  <i class="bi bi-diagram-3"></i> Supervisor Agent
+ </a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2"
+   style="color:#18b58c;font-size:7px"></i>
+  Browser Camera Mode
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+ <header class="topbar">
+  <div class="d-flex align-items-center gap-3">
+   <button class="top-icon mobile-menu"
+    id="menuButton" aria-label="Open navigation">
+    <i class="bi bi-list"></i>
+   </button>
+   <div>
+    <div class="breadcrumb-text">
+     Visual Intelligence / <strong>Live Camera</strong>
+    </div>
+    <div class="fw-bold mt-1" style="font-size:13px">
+     Camera Monitoring & Inspection Studio
+    </div>
+   </div>
+  </div>
+
+  <div class="top-actions">
+   <span class="status-badge info mobile-hide">
+    <i class="bi bi-webcam"></i> Device Camera
+   </span>
+   <a href="notifications.html" class="top-icon"
+    aria-label="Notifications">
+    <i class="bi bi-bell"></i>
+   </a>
+   <div class="avatar">AI</div>
+  </div>
+ </header>
+
+ <main class="content">
+
+  <section class="hero">
+   <div class="hero-label">
+    Industrial Vision / Camera Workspace
+   </div>
+   <h1>
+    <i class="bi bi-camera-video me-2"></i>
+    Live Camera Monitoring
+   </h1>
+   <p>
+    Connect your device camera, preview live video,
+    capture equipment inspection snapshots,
+    document manual observations, and export
+    structured camera-session reports.
+   </p>
+   <div class="hero-tag">
+    <i class="bi bi-shield-check"></i>
+    Local camera preview — no automatic AI detection
+   </div>
+  </section>
+
+  <!-- KPI -->
+  <div class="row g-3 mb-4">
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#eeeaff;color:#6855eb">
+      <i class="bi bi-camera-video"></i>
+     </div>
+     <div class="stat-label">Camera Status</div>
+     <div class="stat-value" id="cameraKpi"
+      style="font-size:19px">Offline</div>
+     <div class="stat-note">Local device connection</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#e8f9f1;color:#18b58c">
+      <i class="bi bi-images"></i>
+     </div>
+     <div class="stat-label">Snapshots</div>
+     <div class="stat-value" id="snapshotKpi">0</div>
+     <div class="stat-note">Captured this session</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#fff4e6;color:#f4a443">
+      <i class="bi bi-clipboard-check"></i>
+     </div>
+     <div class="stat-label">Manual Observations</div>
+     <div class="stat-value" id="observationKpi">0</div>
+     <div class="stat-note">User-recorded entries</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#eaf2ff;color:#438df5">
+      <i class="bi bi-camera"></i>
+     </div>
+     <div class="stat-label">Video Resolution</div>
+     <div class="stat-value" id="resolutionKpi"
+      style="font-size:19px">—</div>
+     <div class="stat-note">Actual camera stream</div>
+    </div>
+   </div>
+
+  </div>
+
+  <!-- CAMERA WORKSPACE -->
+  <div class="row g-4 mb-4">
+
+   <div class="col-xl-8">
+    <section class="panel">
+
+     <div class="panel-heading">
+      <div>
+       <h3>Live Camera Feed</h3>
+       <div class="panel-subtitle">
+        Browser-based video capture and manual inspection
+       </div>
+      </div>
+      <span id="cameraBadge" class="status-badge">
+       <i class="bi bi-circle-fill"></i> Offline
+      </span>
+     </div>
+
+     <div class="camera-stage" id="cameraStage">
+
+      <video id="cameraVideo"
+       autoplay muted playsinline></video>
+
+      <div class="camera-placeholder" id="cameraPlaceholder">
+       <i class="bi bi-camera-video-off"></i>
+       <strong>Camera Not Connected</strong>
+       <div class="mt-2">
+        Select a camera and click Start Camera.
+       </div>
+      </div>
+
+      <div class="camera-overlay" id="cameraOverlay">
+       <div class="camera-label">
+        <i class="bi bi-record-circle me-1"
+         style="color:#ed6175"></i>
+        LIVE PREVIEW
+       </div>
+       <div class="camera-time" id="cameraClock">--:--:--</div>
+       <div class="camera-frame"></div>
+      </div>
+
+     </div>
+
+     <div class="camera-controls">
+      <button id="startCamera" class="btn-purple">
+       <i class="bi bi-play-fill"></i> Start Camera
+      </button>
+
+      <button id="stopCamera" class="btn-danger-custom" disabled>
+       <i class="bi bi-stop-fill"></i> Stop Camera
+      </button>
+
+      <button id="captureSnapshot" class="btn-outline-custom" disabled>
+       <i class="bi bi-camera"></i> Capture Snapshot
+      </button>
+
+      <button id="switchCamera" class="btn-outline-custom">
+       <i class="bi bi-arrow-repeat"></i> Switch Camera
+      </button>
+     </div>
+
+     <div class="row g-3 mt-2">
+      <div class="col-md-6">
+       <label for="cameraSelect" class="section-label">
+        Camera Device
+       </label>
+       <select id="cameraSelect" class="form-select">
+        <option value="">Default Camera</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label for="resolutionSelect" class="section-label">
+        Preferred Resolution
+       </label>
+       <select id="resolutionSelect" class="form-select">
+        <option value="1280x720">HD — 1280 × 720</option>
+        <option value="1920x1080">Full HD — 1920 × 1080</option>
+        <option value="640x480">SD — 640 × 480</option>
+       </select>
+      </div>
+     </div>
+
+    </section>
+   </div>
+
+   <!-- CAMERA INFO -->
+   <div class="col-xl-4">
+    <section class="panel">
+
+     <div class="panel-heading">
+      <div>
+       <h3>Camera Information</h3>
+       <div class="panel-subtitle">
+        Live device and stream metadata
+       </div>
+      </div>
+     </div>
+
+     <div class="info-item">
+      <span>Connection</span>
+      <strong id="infoConnection">Disconnected</strong>
+     </div>
+
+     <div class="info-item">
+      <span>Camera Name</span>
+      <strong id="infoDevice">—</strong>
+     </div>
+
+     <div class="info-item">
+      <span>Resolution</span>
+      <strong id="infoResolution">—</strong>
+     </div>
+
+     <div class="info-item">
+      <span>Track Frame Rate</span>
+      <strong id="infoFps">—</strong>
+     </div>
+
+     <div class="info-item">
+      <span>Permission</span>
+      <strong id="infoPermission">Not requested</strong>
+     </div>
+
+     <div class="info-item">
+      <span>Session Started</span>
+      <strong id="infoStarted">—</strong>
+     </div>
+
+     <div class="info-item">
+      <span>Capture Mode</span>
+      <strong>Manual Snapshots</strong>
+     </div>
+
+     <div class="info-item">
+      <span>AI Inference</span>
+      <strong style="color:#ed6175">Not Connected</strong>
+     </div>
+
+     <div class="notice mt-4">
+      <i class="bi bi-info-circle"></i>
+      <div>
+       The camera feed remains local to this page.
+       No video is uploaded by this frontend.
+       Snapshots exist in browser memory until the page closes.
+      </div>
+     </div>
+
+    </section>
+   </div>
+
+  </div>
+
+  <!-- MANUAL OBSERVATIONS -->
+  <div class="row g-4 mb-4">
+
+   <div class="col-lg-5">
+    <section class="panel">
+
+     <div class="panel-heading">
+      <div>
+       <h3>Manual Inspection Observation</h3>
+       <div class="panel-subtitle">
+        Document what you observe in the camera feed
+       </div>
+      </div>
+     </div>
+
+     <form id="observationForm">
+
+      <label for="assetSelect" class="section-label">
+       Equipment / Asset
+      </label>
+      <select id="assetSelect" class="form-select mb-3">
+       <option value="AST-001 — Centrifugal Pump">
+        AST-001 — Centrifugal Pump
+       </option>
+       <option value="AST-002 — Air Compressor">
+        AST-002 — Air Compressor
+       </option>
+       <option value="AST-003 — Industrial Gearbox">
+        AST-003 — Industrial Gearbox
+       </option>
+       <option value="AST-004 — Conveyor Motor">
+        AST-004 — Conveyor Motor
+       </option>
+       <option value="AST-005 — Storage Tank">
+        AST-005 — Storage Tank
+       </option>
+      </select>
+
+      <label for="observationType" class="section-label">
+       Observation Category
+      </label>
+      <select id="observationType" class="form-select mb-3">
+       <option value="General Inspection">General Inspection</option>
+       <option value="Corrosion">Corrosion</option>
+       <option value="Crack">Crack</option>
+       <option value="Surface Defect">Surface Defect</option>
+       <option value="Equipment Condition">Equipment Condition</option>
+       <option value="Safety Concern">Safety Concern</option>
+      </select>
+
+      <label for="observationSeverity" class="section-label">
+       Manually Assigned Severity
+      </label>
+      <select id="observationSeverity" class="form-select mb-3">
+       <option value="Low">Low</option>
+       <option value="Medium">Medium</option>
+       <option value="High">High</option>
+      </select>
+
+      <label for="observationNotes" class="section-label">
+       Observation Notes
+      </label>
+      <textarea id="observationNotes" class="form-control mb-3"
+       rows="4" required maxlength="1000"
+       placeholder="Describe visible conditions and observations..."></textarea>
+
+      <button type="submit" class="btn-purple w-100">
+       <i class="bi bi-plus-circle"></i>
+       Add Manual Observation
+      </button>
+
+     </form>
+
+    </section>
+   </div>
+
+   <div class="col-lg-7">
+    <section class="panel">
+
+     <div class="panel-heading">
+      <div>
+       <h3>Session Activity</h3>
+       <div class="panel-subtitle">
+        Camera actions and manually recorded observations
+       </div>
+      </div>
+      <button id="clearActivity" class="btn-outline-custom">
+       <i class="bi bi-trash"></i> Clear
+      </button>
+     </div>
+
+     <div id="activityList"></div>
+
+    </section>
+   </div>
+
+  </div>
+
+  <!-- SNAPSHOTS -->
+  <section class="panel mb-4">
+
+   <div class="panel-heading">
+    <div>
+     <h3>Captured Inspection Snapshots</h3>
+     <div class="panel-subtitle">
+      Review and download captured images
+     </div>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+     <button id="exportReport" class="btn-purple">
+      <i class="bi bi-download"></i> Export Session JSON
+     </button>
+     <button id="clearSnapshots" class="btn-outline-custom">
+      <i class="bi bi-trash"></i> Clear Snapshots
+     </button>
+    </div>
+   </div>
+
+   <div class="snapshot-grid" id="snapshotGrid"></div>
+
+  </section>
+
+  <div class="notice">
+   <i class="bi bi-shield-exclamation"></i>
+   <div>
+    <strong>Safety and privacy limitation:</strong>
+    This browser camera is for manual visual inspection only.
+    It does not provide validated fire, smoke, PPE, equipment-failure,
+    or emergency detection. Do not use this interface as an industrial
+    alarm system. Obtain permission before recording people or workplaces.
+   </div>
+  </div>
+
+ </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ INDUSTRA AI — LIVE CAMERA
+
+ Uses browser getUserMedia().
+ No video upload.
+ No AI detection.
+ No backend integration.
+*/
+
+const $=id=>document.getElementById(id);
+
+let stream=null;
+let snapshots=[];
+let observations=[];
+let activity=[];
+let cameraStartedAt=null;
+let facingMode="environment";
+let clockTimer=null;
+let cameraRequestId=0;
+
+const MAX_SNAPSHOTS=20;
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function closeSidebar(){
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+}
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",closeSidebar);
+
+function addActivity(title,details=""){
+ activity.unshift({
+  title,
+  details,
+  time:new Date().toISOString()
+ });
+
+ if(activity.length>50)activity.length=50;
+
+ renderActivity();
+}
+
+function renderActivity(){
+ const container=$("activityList");
+ container.replaceChildren();
+
+ if(!activity.length){
+  const empty=document.createElement("div");
+  empty.className="empty-state";
+  empty.innerHTML=
+   '<i class="bi bi-clock-history"></i>No session activity yet.';
+  container.append(empty);
+  return;
+ }
+
+ activity.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="activity-item";
+
+  const icon=document.createElement("div");
+  icon.className="activity-icon";
+  icon.innerHTML='<i class="bi bi-activity"></i>';
+
+  const info=document.createElement("div");
+
+  const title=document.createElement("div");
+  title.className="activity-title";
+  title.textContent=item.title;
+
+  const details=document.createElement("div");
+  details.className="activity-time";
+  details.textContent=item.details;
+
+  const time=document.createElement("div");
+  time.className="activity-time";
+  time.textContent=new Date(item.time).toLocaleString();
+
+  info.append(title,details,time);
+  row.append(icon,info);
+  container.append(row);
+ });
+}
+
+function updateKpis(){
+ $("snapshotKpi").textContent=snapshots.length;
+ $("observationKpi").textContent=observations.length;
+ $("cameraKpi").textContent=stream?"Online":"Offline";
+}
+
+function setCameraState(active){
+ $("startCamera").disabled=active;
+ $("stopCamera").disabled=!active;
+ $("captureSnapshot").disabled=!active;
+
+ $("cameraPlaceholder").classList.toggle("hidden",active);
+ $("cameraOverlay").classList.toggle("visible",active);
+
+ $("cameraBadge").className=
+  "status-badge "+(active?"success":"");
+
+ $("cameraBadge").textContent=active?"● Camera Live":"● Offline";
+
+ $("infoConnection").textContent=
+  active?"Connected":"Disconnected";
+
+ updateKpis();
+}
+
+async function listCameras(){
+ if(!navigator.mediaDevices?.enumerateDevices)return;
+
+ try{
+  const devices=await navigator.mediaDevices.enumerateDevices();
+  const cameras=devices.filter(x=>x.kind==="videoinput");
+
+  const select=$("cameraSelect");
+  const current=select.value;
+  select.replaceChildren();
+
+  const defaultOption=document.createElement("option");
+  defaultOption.value="";
+  defaultOption.textContent="Default Camera";
+  select.append(defaultOption);
+
+  cameras.forEach((camera,index)=>{
+   const option=document.createElement("option");
+   option.value=camera.deviceId;
+   option.textContent=camera.label||
+    "Camera "+(index+1);
+   select.append(option);
+  });
+
+  if([...select.options].some(x=>x.value===current)){
+   select.value=current;
+  }
+ }catch(error){
+  console.warn("Camera enumeration unavailable:",error);
+ }
+}
+
+function stopStreamTracks(){
+ if(stream){
+  stream.getTracks().forEach(track=>track.stop());
+  stream=null;
+ }
+
+ $("cameraVideo").pause();
+ $("cameraVideo").srcObject=null;
+}
+
+function stopCamera(log=true){
+ cameraRequestId++;
+ stopStreamTracks();
+
+ if(clockTimer){
+  clearInterval(clockTimer);
+  clockTimer=null;
+ }
+
+ cameraStartedAt=null;
+
+ $("infoDevice").textContent="—";
+ $("infoResolution").textContent="—";
+ $("infoFps").textContent="—";
+ $("infoStarted").textContent="—";
+ $("resolutionKpi").textContent="—";
+
+ setCameraState(false);
+
+ if(log)addActivity("Camera stopped","Video stream disconnected.");
+}
+
+async function startCamera(){
+ if(!navigator.mediaDevices?.getUserMedia){
+  notify("Camera API unavailable. Use HTTPS or localhost.");
+  return;
+ }
+
+ const requestId=++cameraRequestId;
+
+ stopStreamTracks();
+ setCameraState(false);
+
+ $("startCamera").disabled=true;
+ $("infoConnection").textContent="Connecting...";
+
+ const [width,height]=$("resolutionSelect").value
+  .split("x").map(Number);
+
+ const selectedDevice=$("cameraSelect").value;
+
+ const constraints={
+  audio:false,
+  video:{
+   width:{ideal:width},
+   height:{ideal:height},
+   ...(selectedDevice?
+    {deviceId:{ideal:selectedDevice}}:
+    {facingMode:{ideal:facingMode}})
+  }
+ };
+
+ try{
+  const newStream=await navigator.mediaDevices.getUserMedia(
+   constraints
+  );
+
+  if(requestId!==cameraRequestId){
+   newStream.getTracks().forEach(track=>track.stop());
+   return;
+  }
+
+  stream=newStream;
+
+  const video=$("cameraVideo");
+  video.srcObject=stream;
+  await video.play();
+
+  if(requestId!==cameraRequestId){
+   newStream.getTracks().forEach(track=>track.stop());
+   return;
+  }
+
+  const track=stream.getVideoTracks()[0];
+  const settings=track.getSettings();
+
+  cameraStartedAt=new Date();
+
+  $("infoDevice").textContent=
+   track.label||"Device Camera";
+
+  $("infoResolution").textContent=
+   (settings.width||video.videoWidth)+" × "+
+   (settings.height||video.videoHeight);
+
+  $("resolutionKpi").textContent=
+   (settings.width||video.videoWidth)+"p";
+
+  $("infoFps").textContent=settings.frameRate?
+   settings.frameRate.toFixed(1)+" FPS":
+   "Not reported";
+
+  $("infoPermission").textContent="Granted";
+
+  $("infoStarted").textContent=
+   cameraStartedAt.toLocaleTimeString();
+
+  setCameraState(true);
+  updateClock();
+
+  if(clockTimer)clearInterval(clockTimer);
+  clockTimer=setInterval(updateClock,1000);
+
+  track.addEventListener("ended",()=>{
+   if(stream===newStream)stopCamera();
+  });
+
+  await listCameras();
+
+  addActivity(
+   "Camera connected",
+   $("infoDevice").textContent
+  );
+
+  notify("Camera started successfully.");
+
+ }catch(error){
+  if(requestId!==cameraRequestId)return;
+
+  stopStreamTracks();
+  setCameraState(false);
+
+  $("infoPermission").textContent=
+   error.name==="NotAllowedError"?
+   "Denied":"Unavailable";
+
+  $("infoConnection").textContent="Failed";
+
+  notify(
+   error.name==="NotAllowedError"?
+   "Camera permission denied. Allow access in browser settings.":
+   "Unable to start camera: "+error.message
+  );
+ }finally{
+  if(requestId===cameraRequestId&&!stream){
+   $("startCamera").disabled=false;
+  }
+ }
+}
+
+function updateClock(){
+ $("cameraClock").textContent=
+  new Date().toLocaleTimeString();
+}
+
+$("startCamera").addEventListener("click",startCamera);
+
+$("stopCamera").addEventListener("click",()=>{
+ stopCamera();
+ notify("Camera stopped.");
+});
+
+$("switchCamera").addEventListener("click",async()=>{
+ facingMode=facingMode==="environment"?"user":"environment";
+ $("cameraSelect").value="";
+
+ if(stream){
+  await startCamera();
+ }else{
+  notify("Camera preference changed. Start camera to apply.");
+ }
+});
+
+$("cameraSelect").addEventListener("change",()=>{
+ if(stream)startCamera();
+});
+
+$("resolutionSelect").addEventListener("change",()=>{
+ if(stream)startCamera();
+});
+
+/* SNAPSHOT CAPTURE */
+
+$("captureSnapshot").addEventListener("click",()=>{
+ if(!stream){
+  notify("Start the camera before capturing.");
+  return;
+ }
+
+ if(snapshots.length>=MAX_SNAPSHOTS){
+  notify("Maximum of 20 snapshots per session.");
+  return;
+ }
+
+ const video=$("cameraVideo");
+
+ if(!video.videoWidth||!video.videoHeight){
+  notify("Camera video is not ready.");
+  return;
+ }
+
+ const canvas=document.createElement("canvas");
+ canvas.width=video.videoWidth;
+ canvas.height=video.videoHeight;
+
+ const context=canvas.getContext("2d");
+ context.drawImage(video,0,0);
+
+ const dataUrl=canvas.toDataURL("image/jpeg",.85);
+
+ const snapshot={
+  id:Date.now()+"-"+Math.random().toString(36).slice(2,7),
+  time:new Date().toISOString(),
+  asset:$("assetSelect").value,
+  width:canvas.width,
+  height:canvas.height,
+  dataUrl
+ };
+
+ snapshots.unshift(snapshot);
+
+ renderSnapshots();
+ updateKpis();
+
+ addActivity(
+  "Snapshot captured",
+  snapshot.asset+" · "+snapshot.width+"×"+snapshot.height
+ );
+
+ notify("Inspection snapshot captured.");
+});
+
+function downloadDataUrl(dataUrl,filename){
+ const anchor=document.createElement("a");
+ anchor.href=dataUrl;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+}
+
+function renderSnapshots(){
+ const container=$("snapshotGrid");
+ container.replaceChildren();
+
+ if(!snapshots.length){
+  const empty=document.createElement("div");
+  empty.className="empty-state";
+  empty.style.gridColumn="1/-1";
+  empty.innerHTML=
+   '<i class="bi bi-images"></i>No snapshots captured yet.';
+  container.append(empty);
+  return;
+ }
+
+ snapshots.forEach((snapshot,index)=>{
+  const card=document.createElement("div");
+  card.className="snapshot-card";
+
+  const image=document.createElement("img");
+  image.src=snapshot.dataUrl;
+  image.alt="Captured camera snapshot";
+
+  const body=document.createElement("div");
+  body.className="snapshot-card-body";
+
+  const title=document.createElement("div");
+  title.className="snapshot-title";
+  title.textContent="Snapshot "+(snapshots.length-index);
+
+  const meta=document.createElement("div");
+  meta.className="snapshot-meta";
+  meta.textContent=new Date(snapshot.time).toLocaleString();
+
+  const download=document.createElement("button");
+  download.className="btn-outline-custom w-100 mt-3";
+  download.innerHTML=
+   '<i class="bi bi-download"></i> Download';
+
+  download.addEventListener("click",()=>{
+   downloadDataUrl(
+    snapshot.dataUrl,
+    "industra-snapshot-"+snapshot.id+".jpg"
+   );
+  });
+
+  body.append(title,meta,download);
+  card.append(image,body);
+  container.append(card);
+ });
+}
+
+$("clearSnapshots").addEventListener("click",()=>{
+ if(!snapshots.length)return;
+
+ if(!confirm("Clear all captured snapshots?"))return;
+
+ snapshots=[];
+ renderSnapshots();
+ updateKpis();
+ addActivity("Snapshots cleared","All session snapshots removed.");
+});
+
+/* MANUAL OBSERVATIONS */
+
+$("observationForm").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ const notes=$("observationNotes").value.trim();
+
+ if(!notes){
+  notify("Enter observation notes.");
+  return;
+ }
+
+ const observation={
+  id:Date.now(),
+  time:new Date().toISOString(),
+  asset:$("assetSelect").value,
+  type:$("observationType").value,
+  severity:$("observationSeverity").value,
+  notes,
+  source:"manual"
+ };
+
+ observations.unshift(observation);
+
+ addActivity(
+  "Manual observation added",
+  observation.type+" · "+observation.severity+
+  " · "+observation.asset
+ );
+
+ $("observationNotes").value="";
+ updateKpis();
+
+ notify("Manual observation recorded.");
+});
+
+$("clearActivity").addEventListener("click",()=>{
+ activity=[];
+ renderActivity();
+ notify("Activity display cleared.");
+});
+
+/* REPORT EXPORT */
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportReport").addEventListener("click",()=>{
+ const report={
+  application:"INDUSTRA AI",
+  module:"Live Camera",
+  generatedAt:new Date().toISOString(),
+  mode:"browser-camera-manual-inspection",
+  aiInferencePerformed:false,
+  videoUploaded:false,
+  snapshotsIncludedAsImages:false,
+  camera:{
+   name:$("infoDevice").textContent,
+   resolution:$("infoResolution").textContent,
+   frameRate:$("infoFps").textContent
+  },
+  snapshotMetadata:snapshots.map(snapshot=>({
+   id:snapshot.id,
+   time:snapshot.time,
+   asset:snapshot.asset,
+   width:snapshot.width,
+   height:snapshot.height
+  })),
+  observations,
+  activity
+ };
+
+ downloadFile(
+  "industra-camera-session.json",
+  JSON.stringify(report,null,2),
+  "application/json"
+ );
+
+ notify("Camera session report exported.");
+});
+
+/* CLEANUP */
+
+window.addEventListener("pagehide",()=>{
+ stopCamera(false);
+});
+
+document.addEventListener("visibilitychange",()=>{
+ if(document.hidden&&stream){
+  stopCamera(false);
+ }
+});
+
+/* INITIALIZE */
+
+setCameraState(false);
+renderSnapshots();
+renderActivity();
+listCameras();
+</script>
+
+</body>
+</html>

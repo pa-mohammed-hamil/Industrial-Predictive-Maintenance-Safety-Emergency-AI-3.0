@@ -1,0 +1,1133 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Component Health | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / assets</p><h1 id="page-title">Component Health</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Component Health workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Component Health | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px Arial,Helvetica,sans-serif
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{background:var(--purple);color:white}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;
+ box-shadow:0 5px 20px #10152d05
+}
+.grid{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px
+}
+.grid-2{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px
+}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.45fr) minmax(300px,.8fr);
+ gap:17px
+}
+.flex{
+ display:flex;align-items:center;
+ justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;color:#69738e;
+ border-radius:9px;padding:10px 13px;font-size:11px;font-weight:700
+}
+.btn.primary{background:var(--purple);border-color:var(--purple);color:white}
+.btn.danger{background:#ffedf0;border-color:#ffedf0;color:#d84b63}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{
+ display:block;color:#69738e;font-size:11px;
+ font-weight:700;margin-bottom:7px
+}
+.badge{
+ display:inline-block;padding:7px 10px;
+ border-radius:8px;font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px
+}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);
+ text-align:left;padding:13px;white-space:nowrap
+}
+td{padding:13px;border-bottom:1px solid #eef0f6;white-space:nowrap}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);
+ font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);
+ border-radius:11px;padding:14px;margin-bottom:12px
+}
+.record p{font-size:11px;color:#69738e;line-height:1.8}
+.chart{width:100%;height:300px;display:block}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric{
+ padding:14px;background:#f8f9fd;
+ border:1px solid var(--border);border-radius:11px
+}
+.metric strong{display:block;font-size:20px;margin-top:9px}
+.progress{
+ height:9px;border-radius:10px;
+ background:#edf0f7;overflow:hidden;margin-top:9px
+}
+.progress span{
+ display:block;height:100%;
+ background:var(--purple);border-radius:10px
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:11px;
+ padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;
+ background:var(--navy);color:white;
+ padding:13px 17px;border-radius:10px;
+ display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}.mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.metric-grid{grid-template-columns:1fr}
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ #toast,.notice{display:none!important}
+ .main{margin:0}.content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+ <div class="nav-title">ASSET MANAGEMENT</div>
+ <a class="nav-link" href="asset-management.html">◆ Asset Management</a>
+ <a class="nav-link" href="asset-details.html">▦ Asset Details</a>
+ <a class="nav-link" href="asset-health.html">◇ Asset Health</a>
+ <a class="nav-link active" href="component-health.html">◉ Component Health</a>
+ <a class="nav-link" href="asset-comparison.html">◆ Asset Comparison</a>
+ <a class="nav-link" href="asset-inspection.html">▦ Asset Inspection</a>
+ <a class="nav-link" href="asset-lifecycle.html">◇ Asset Lifecycle</a>
+ <div class="nav-title">PREDICTIVE MAINTENANCE</div>
+ <a class="nav-link" href="predictive-maintenance.html">◉ Predictive Maintenance</a>
+ <a class="nav-link" href="r-u-l-prediction.html">◆ RUL Prediction</a>
+ <a class="nav-link" href="anomaly-detection.html">▦ Anomaly Detection</a>
+ <a class="nav-link" href="work-orders.html">◇ Work Orders</a>
+ <div class="nav-title">MONITORING</div>
+ <a class="nav-link" href="live-telemetry.html">◉ Live Telemetry</a>
+ <a class="nav-link" href="vibration-monitoring.html">◆ Vibration Monitoring</a>
+ <a class="nav-link" href="temperature-monitoring.html">▦ Temperature Monitoring</a>
+ <a class="nav-link" href="sensor-anomalies.html">◇ Sensor Anomalies</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Asset Management / Component Reliability</div>
+   <strong>Industrial Component Health Intelligence</strong>
+  </div>
+ </div>
+ <span class="badge purple">SIMULATED COMPONENT DATA</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / COMPONENT CONDITION MONITORING
+ </div>
+ <h1>Component Health & Predictive Reliability Intelligence</h1>
+ <p>
+  Evaluate industrial bearings, motors, gearboxes, pumps,
+  valves and mechanical components using condition scores,
+  sensor signals, failure-risk indicators, estimated remaining
+  useful life and maintenance priorities.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Component Health Overview</h3>
+  <div class="muted" id="summaryText">Loading component health records...</div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="refreshBtn">Refresh Monitoring</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Monitored Components</div>
+  <div class="stat-value" id="totalKpi">0</div>
+  <div class="stat-note">Components matching active filters</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Average Component Health</div>
+  <div class="stat-value" id="healthKpi">0%</div>
+  <div class="stat-note">Mean synthetic condition score</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Critical Components</div>
+  <div class="stat-value" id="criticalKpi">0</div>
+  <div class="stat-note">Health score below 65</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">High-Priority Components</div>
+  <div class="stat-value" id="priorityKpi">0</div>
+  <div class="stat-note">Critical condition or elevated risk</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Component Monitoring Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="assetFilter">Parent Equipment</label>
+   <select class="input" id="assetFilter">
+    <option value="all">All Equipment</option>
+   </select>
+  </div>
+  <div>
+   <label for="conditionFilter">Condition</label>
+   <select class="input" id="conditionFilter">
+    <option value="all">All Conditions</option>
+    <option value="Healthy">Healthy</option>
+    <option value="Warning">Warning</option>
+    <option value="Critical">Critical</option>
+   </select>
+  </div>
+  <div>
+   <label for="sortFilter">Sort Components</label>
+   <select class="input" id="sortFilter">
+    <option value="health">Lowest Health First</option>
+    <option value="risk">Highest Failure Risk</option>
+    <option value="rul">Shortest RUL</option>
+    <option value="temperature">Highest Temperature</option>
+    <option value="vibration">Highest Vibration</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Component Condition Monitoring</h3>
+    <p class="muted">
+     Equipment components, health scores, sensor readings and reliability
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 components</span>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Component</th>
+      <th>Parent Asset</th>
+      <th>Plant</th>
+      <th>Health</th>
+      <th>Condition</th>
+      <th>RUL</th>
+      <th>Failure Risk</th>
+      <th>Temperature</th>
+      <th>Vibration</th>
+      <th>Priority</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="componentTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Component Health Inspector</h3>
+   <span class="badge purple">COMPONENT PROFILE</span>
+  </div>
+  <div id="componentDetails"></div>
+
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Component Health</span>
+    <strong id="componentHealth">0%</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Remaining Useful Life</span>
+    <strong id="componentRul">0 mo</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Failure Probability</span>
+    <strong id="componentRisk">0%</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Maintenance Priority</span>
+    <strong id="componentPriority">--</strong>
+   </div>
+  </div>
+
+  <div class="actions" style="margin-top:18px">
+   <a class="btn primary" id="assetDetailsLink" href="asset-details.html">
+    Open Parent Asset
+   </a>
+   <a class="btn" href="asset-inspection.html">
+    Asset Inspection
+   </a>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Component Health Comparison</h3>
+   <span class="badge purple">CONDITION SCORES</span>
+  </div>
+  <p class="muted">Health score comparison for monitored components</p>
+  <svg class="chart" id="healthChart" viewBox="0 0 640 300"
+   role="img" aria-label="Component health comparison"></svg>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Selected Component Health Trend</h3>
+   <span class="badge blue">SYNTHETIC HISTORY</span>
+  </div>
+  <p class="muted">Illustrative health deterioration and fluctuations</p>
+  <svg class="chart" id="trendChart" viewBox="0 0 640 300"
+   role="img" aria-label="Component health trend"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Component Sensor Condition</h3>
+  <p class="muted">Current demo readings compared with illustrative thresholds</p>
+  <div id="sensorAssessment"></div>
+ </div>
+
+ <div class="panel">
+  <h3>Component Maintenance Recommendations</h3>
+  <p class="muted">Condition and reliability-based guidance</p>
+  <div id="recommendations"></div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Component Health by Plant</h3>
+  <div id="plantSummary"></div>
+ </div>
+
+ <div class="panel">
+  <h3>Critical Component Intelligence</h3>
+  <div id="criticalInsights"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Engineering and safety notice:</strong>
+ Component health scores, RUL estimates, failure probabilities,
+ sensor readings and trend histories are synthetic.
+ Refresh Monitoring changes simulated sensor values only.
+ Component-specific temperature and vibration limits must be
+ established from manufacturer documentation, operating
+ conditions and engineering analysis. These example thresholds
+ and rule-based recommendations are not suitable for real
+ equipment shutdown or maintenance decisions without validation.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+
+const BASE_COMPONENTS=[
+ {
+  id:"CMPNT-001",name:"Drive Motor Bearing",
+  assetId:"MTR-001",asset:"Main Drive Motor",plant:"Plant A",
+  type:"Bearing",health:72,rul:36,risk:.31,
+  temperature:76,vibration:4.5
+ },
+ {
+  id:"CMPNT-002",name:"Motor Winding",
+  assetId:"MTR-001",asset:"Main Drive Motor",plant:"Plant A",
+  type:"Electrical Winding",health:81,rul:58,risk:.19,
+  temperature:68,vibration:2.1
+ },
+ {
+  id:"CMPNT-003",name:"Compressor Bearing",
+  assetId:"CMP-001",asset:"Air Compressor",plant:"Plant A",
+  type:"Bearing",health:78,rul:44,risk:.27,
+  temperature:71,vibration:3.8
+ },
+ {
+  id:"CMPNT-004",name:"Cooling Fan Rotor",
+  assetId:"FAN-001",asset:"Cooling Fan",plant:"Plant A",
+  type:"Rotor",health:92,rul:86,risk:.10,
+  temperature:48,vibration:2.0
+ },
+ {
+  id:"CMPNT-005",name:"Generator Alternator",
+  assetId:"GEN-001",asset:"Power Generator",plant:"Plant B",
+  type:"Alternator",health:54,rul:22,risk:.42,
+  temperature:92,vibration:6.4
+ },
+ {
+  id:"CMPNT-006",name:"Generator Fuel Injector",
+  assetId:"GEN-001",asset:"Power Generator",plant:"Plant B",
+  type:"Fuel Injector",health:61,rul:29,risk:.38,
+  temperature:88,vibration:5.6
+ },
+ {
+  id:"CMPNT-007",name:"Cooling Pump Impeller",
+  assetId:"PMP-001",asset:"Cooling Pump",plant:"Plant B",
+  type:"Impeller",health:86,rul:71,risk:.17,
+  temperature:59,vibration:2.7
+ },
+ {
+  id:"CMPNT-008",name:"Industrial Gear Set",
+  assetId:"GBX-001",asset:"Industrial Gearbox",plant:"Plant B",
+  type:"Gear Set",health:57,rul:25,risk:.40,
+  temperature:85,vibration:6.1
+ },
+ {
+  id:"CMPNT-009",name:"Hydraulic Control Valve",
+  assetId:"HYD-001",asset:"Hydraulic Power Unit",plant:"Plant C",
+  type:"Hydraulic Valve",health:74,rul:46,risk:.29,
+  temperature:72,vibration:3.5
+ },
+ {
+  id:"CMPNT-010",name:"Process Pump Mechanical Seal",
+  assetId:"PMP-002",asset:"Process Pump",plant:"Plant C",
+  type:"Mechanical Seal",health:63,rul:33,risk:.35,
+  temperature:81,vibration:5.2
+ },
+ {
+  id:"CMPNT-011",name:"Conveyor Drive Bearing",
+  assetId:"CNV-001",asset:"Conveyor Drive",plant:"Plant C",
+  type:"Bearing",health:88,rul:75,risk:.14,
+  temperature:55,vibration:2.4
+ }
+];
+
+let components=BASE_COMPONENTS.map(x=>({...x}));
+let selectedId="CMPNT-005";
+let refreshCount=0;
+let toastTimer;
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+ Object.entries(attrs).forEach(([key,value])=>{
+  node.setAttribute(key,value);
+ });
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(el("span","",label),el("strong","",value));
+ return row;
+}
+
+function classification(score){
+ if(score<65)return "Critical";
+ if(score<80)return "Warning";
+ return "Healthy";
+}
+
+function priority(c){
+ if(c.health<65||c.risk>.35)return "High";
+ if(c.health<80||c.risk>.25)return "Medium";
+ return "Low";
+}
+
+function filtered(){
+ return components.filter(c=>
+  ($("plantFilter").value==="all"||
+   c.plant===$("plantFilter").value)&&
+  ($("assetFilter").value==="all"||
+   c.assetId===$("assetFilter").value)&&
+  ($("conditionFilter").value==="all"||
+   classification(c.health)===$("conditionFilter").value)
+ );
+}
+
+function sorted(){
+ const list=[...filtered()];
+ const sort=$("sortFilter").value;
+
+ if(sort==="risk")return list.sort((a,b)=>b.risk-a.risk);
+ if(sort==="rul")return list.sort((a,b)=>a.rul-b.rul);
+ if(sort==="temperature"){
+  return list.sort((a,b)=>b.temperature-a.temperature);
+ }
+ if(sort==="vibration"){
+  return list.sort((a,b)=>b.vibration-a.vibration);
+ }
+ return list.sort((a,b)=>a.health-b.health);
+}
+
+function selected(){
+ const list=filtered();
+ return list.find(c=>c.id===selectedId)||list[0]||null;
+}
+
+function populateAssets(){
+ const select=$("assetFilter");
+ const current=select.value||"all";
+ select.replaceChildren();
+
+ const all=el("option","","All Equipment");
+ all.value="all";
+ select.append(all);
+
+ const plant=$("plantFilter").value;
+ const unique=new Map();
+
+ components.forEach(c=>{
+  if(plant==="all"||c.plant===plant){
+   unique.set(c.assetId,c.asset);
+  }
+ });
+
+ unique.forEach((name,id)=>{
+  const option=el("option","",name+" · "+id);
+  option.value=id;
+  select.append(option);
+ });
+
+ select.value=unique.has(current)||current==="all"?current:"all";
+}
+
+function renderKpis(){
+ const list=filtered();
+ const average=list.length?
+  list.reduce((s,c)=>s+c.health,0)/list.length:0;
+
+ $("totalKpi").textContent=list.length;
+ $("healthKpi").textContent=average.toFixed(1)+"%";
+ $("criticalKpi").textContent=list.filter(
+  c=>classification(c.health)==="Critical"
+ ).length;
+ $("priorityKpi").textContent=list.filter(
+  c=>priority(c)==="High"
+ ).length;
+
+ $("summaryText").textContent=
+  list.length+" components · "+
+  $("plantFilter").value+" · "+
+  $("conditionFilter").value+" conditions";
+}
+
+function renderTable(){
+ const body=$("componentTable");
+ body.replaceChildren();
+
+ const list=sorted();
+ $("visibleCount").textContent=list.length+" components";
+
+ list.forEach(c=>{
+  const row=el("tr");
+
+  [
+   c.name+" · "+c.id,
+   c.asset+" · "+c.assetId,
+   c.plant,
+   c.health+"%"
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const condition=classification(c.health);
+  const conditionCell=el("td");
+
+  conditionCell.append(el(
+   "span",
+   "badge "+(condition==="Healthy"?"green":
+    condition==="Warning"?"orange":"red"),
+   condition
+  ));
+
+  row.append(conditionCell);
+
+  [
+   c.rul+" months",
+   (c.risk*100).toFixed(1)+"%",
+   c.temperature.toFixed(1)+" °C",
+   c.vibration.toFixed(2)+" mm/s"
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const priorityCell=el("td");
+  priorityCell.append(el(
+   "span",
+   "badge "+(priority(c)==="High"?"red":
+    priority(c)==="Medium"?"orange":"green"),
+   priority(c)
+  ));
+  row.append(priorityCell);
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+
+  button.onclick=()=>{
+   selectedId=c.id;
+   renderInspector();
+   renderTrend();
+   renderSensorAssessment();
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","No components match the selected filters.");
+  cell.colSpan=11;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const c=selected();
+ const box=$("componentDetails");
+ box.replaceChildren();
+
+ if(!c){
+  box.append(el("p","muted","No component selected."));
+  [
+   "componentHealth","componentRul",
+   "componentRisk","componentPriority"
+  ].forEach(id=>$(id).textContent="--");
+  $("assetDetailsLink").href="asset-details.html";
+  return;
+ }
+
+ [
+  ["Component Name",c.name],
+  ["Component ID",c.id],
+  ["Component Type",c.type],
+  ["Parent Equipment",c.asset],
+  ["Parent Asset ID",c.assetId],
+  ["Plant",c.plant],
+  ["Health Classification",classification(c.health)],
+  ["Health Score",c.health+"%"],
+  ["Remaining Useful Life",c.rul+" months"],
+  ["Annual Failure Probability",(c.risk*100).toFixed(1)+"%"],
+  ["Temperature",c.temperature.toFixed(1)+" °C"],
+  ["Vibration",c.vibration.toFixed(2)+" mm/s"],
+  ["Maintenance Priority",priority(c)]
+ ].forEach(([label,value])=>box.append(detail(label,value)));
+
+ $("componentHealth").textContent=c.health+"%";
+ $("componentRul").textContent=c.rul+" mo";
+ $("componentRisk").textContent=(c.risk*100).toFixed(1)+"%";
+ $("componentPriority").textContent=priority(c);
+
+ $("assetDetailsLink").href=
+  "asset-details.html?id="+encodeURIComponent(c.assetId);
+}
+
+function drawHealthChart(){
+ const svg=$("healthChart");
+ svg.replaceChildren();
+
+ const list=sorted();
+ if(!list.length){
+  svg.append(svgEl("text",{
+   x:220,y:150,fill:"#8992aa","font-size":"13"
+  },"No matching components"));
+  return;
+ }
+
+ const left=55,right=615,top=25,bottom=245;
+ const width=(right-left)/list.length;
+ const barWidth=Math.min(35,width*.65);
+
+ for(let i=0;i<=4;i++){
+  const y=bottom-(bottom-top)*i/4;
+  svg.append(svgEl("line",{
+   x1:left,y1:y,x2:right,y2:y,stroke:"#e9ebf4"
+  }));
+  svg.append(svgEl("text",{
+   x:12,y:y+4,fill:"#8992aa","font-size":"10"
+  },i*25));
+ }
+
+ list.forEach((c,i)=>{
+  const height=c.health/100*(bottom-top);
+  const x=left+i*width+(width-barWidth)/2;
+  const condition=classification(c.health);
+  const color=condition==="Critical"?"#ed6175":
+   condition==="Warning"?"#f4a443":"#18b58c";
+
+  svg.append(svgEl("rect",{
+   x,y:bottom-height,width:barWidth,height,
+   rx:4,fill:color
+  }));
+
+  svg.append(svgEl("text",{
+   x:x+barWidth/2,y:267,
+   fill:"#8992aa","font-size":"9",
+   "text-anchor":"middle"
+  },c.id.replace("CMPNT-","C")));
+
+  svg.append(svgEl("title",{},c.name+" — "+c.health+"%"));
+ });
+}
+
+function renderTrend(){
+ const svg=$("trendChart");
+ svg.replaceChildren();
+
+ const c=selected();
+ if(!c)return;
+
+ const days=30;
+ const values=[];
+
+ for(let i=0;i<days;i++){
+  const age=days-1-i;
+  const drift=Math.min(7,age*.13);
+  const wave=Math.sin(i*.48+c.health*.1)*1.7;
+  values.push(Math.max(0,Math.min(100,c.health+drift+wave)));
+ }
+
+ const left=50,right=615,top=25,bottom=245;
+ const x=i=>left+(right-left)*i/(days-1);
+ const y=value=>bottom-value/100*(bottom-top);
+
+ [0,25,50,65,80,100].forEach(value=>{
+  const yy=y(value);
+  svg.append(svgEl("line",{
+   x1:left,y1:yy,x2:right,y2:yy,
+   stroke:"#e9ebf4",
+   "stroke-dasharray":value===65||value===80?"5 4":"none"
+  }));
+  svg.append(svgEl("text",{
+   x:8,y:yy+4,fill:"#8992aa","font-size":"10"
+  },value));
+ });
+
+ svg.append(svgEl("polyline",{
+  points:values.map((v,i)=>x(i)+","+y(v)).join(" "),
+  fill:"none",stroke:"#6855eb","stroke-width":"3",
+  "stroke-linejoin":"round"
+ }));
+
+ svg.append(svgEl("circle",{
+  cx:x(days-1),cy:y(values[days-1]),r:5,
+  fill:"#6855eb",stroke:"white","stroke-width":2
+ }));
+
+ svg.append(svgEl("text",{
+  x:left,y:268,fill:"#8992aa","font-size":"10"
+ },"29 days ago"));
+
+ svg.append(svgEl("text",{
+  x:right-30,y:268,fill:"#8992aa","font-size":"10"
+ },"Today"));
+}
+
+function renderSensorAssessment(){
+ const c=selected();
+ const box=$("sensorAssessment");
+ box.replaceChildren();
+ if(!c)return;
+
+ const sensors=[
+  ["Temperature",c.temperature,85,"°C"],
+  ["Vibration",c.vibration,5.5,"mm/s"]
+ ];
+
+ sensors.forEach(([name,value,limit,unit])=>{
+  const ratio=value/limit;
+  const card=el("div","record");
+  const header=el("div","flex");
+
+  header.append(
+   el("strong","",name),
+   el("span",
+    "badge "+(ratio>=1?"red":ratio>=.85?"orange":"green"),
+    value.toFixed(2)+" "+unit)
+  );
+
+  const progress=el("div","progress");
+  const bar=el("span");
+
+  bar.style.width=Math.min(100,ratio*100)+"%";
+  bar.style.background=ratio>=1?"#ed6175":
+   ratio>=.85?"#f4a443":"#18b58c";
+
+  progress.append(bar);
+  card.append(header,progress);
+  card.append(el(
+   "p","muted",
+   "Illustrative upper threshold: "+limit+" "+unit
+  ));
+  box.append(card);
+ });
+}
+
+function renderRecommendations(){
+ const box=$("recommendations");
+ box.replaceChildren();
+
+ const c=selected();
+ if(!c)return;
+
+ const recommendations=[
+  [
+   "Component Inspection",
+   priority(c)==="High"?
+    "Prioritize a qualified engineering inspection and verify the indicated condition.":
+    "Continue scheduled condition monitoring and maintenance checks."
+  ],
+  [
+   "Vibration Diagnostics",
+   "Inspect vibration signatures, alignment, imbalance, bearing condition and mechanical looseness as applicable."
+  ],
+  [
+   "Temperature Assessment",
+   "Review temperature against equipment-specific operating limits and duty cycle."
+  ],
+  [
+   "Replacement Planning",
+   "Compare the validated remaining useful life, spare-part availability, repair cost and replacement lead time."
+  ]
+ ];
+
+ recommendations.forEach(([title,text])=>{
+  const card=el("div","record");
+  card.append(el("h4","",title),el("p","",text));
+  box.append(card);
+ });
+}
+
+function renderPlants(){
+ const box=$("plantSummary");
+ box.replaceChildren();
+
+ ["Plant A","Plant B","Plant C"].forEach(plant=>{
+  const list=filtered().filter(c=>c.plant===plant);
+  if(!list.length)return;
+
+  const average=list.reduce((s,c)=>s+c.health,0)/list.length;
+  const critical=list.filter(c=>c.health<65).length;
+
+  const card=el("div","record");
+  card.append(el("h4","",plant));
+  card.append(detail("Components",list.length));
+  card.append(detail("Average Health",average.toFixed(1)+"%"));
+  card.append(detail("Critical Components",critical));
+
+  const progress=el("div","progress");
+  const bar=el("span");
+  bar.style.width=average+"%";
+  bar.style.background=average<65?"#ed6175":
+   average<80?"#f4a443":"#18b58c";
+
+  progress.append(bar);
+  card.append(progress);
+  box.append(card);
+ });
+
+ if(!box.children.length){
+  box.append(el("p","muted","No matching plant data."));
+ }
+}
+
+function renderCriticalInsights(){
+ const box=$("criticalInsights");
+ box.replaceChildren();
+
+ const list=filtered();
+ const critical=list.filter(c=>c.health<65);
+ const highRisk=list.filter(c=>c.risk>.35);
+ const shortest=[...list].sort((a,b)=>a.rul-b.rul)[0];
+
+ const items=[
+  [
+   "Critical Components",
+   critical.length+" components have condition scores below 65."
+  ],
+  [
+   "High Failure Exposure",
+   highRisk.length+" components exceed 35% modeled annual failure probability."
+  ],
+  [
+   "Shortest Remaining Life",
+   shortest?
+    shortest.name+" has the shortest estimated RUL at "+
+    shortest.rul+" months.":"No matching components."
+  ],
+  [
+   "Maintenance Strategy",
+   "Prioritize verified component condition and operational criticality before scheduling maintenance or replacement."
+  ]
+ ];
+
+ items.forEach(([title,text])=>{
+  const card=el("div","record");
+  card.append(el("h4","",title),el("p","",text));
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawHealthChart();
+ renderTrend();
+ renderSensorAssessment();
+ renderRecommendations();
+ renderPlants();
+ renderCriticalInsights();
+}
+
+function refreshMonitoring(){
+ refreshCount++;
+
+ components=components.map((c,i)=>{
+  const base=BASE_COMPONENTS[i];
+  const wave=Math.sin(refreshCount+i*1.8);
+
+  return{
+   ...c,
+   temperature:Math.max(0,base.temperature+wave*1.2),
+   vibration:Math.max(0,base.vibration+wave*.18)
+  };
+ });
+
+ render();
+ notify("Simulated component sensor readings refreshed.");
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+ a.href=url;a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "component_id","component_name","parent_asset_id",
+  "parent_asset","plant","component_type",
+  "health_score","classification","rul_months",
+  "annual_failure_probability","temperature_c",
+  "vibration_mm_s","maintenance_priority"
+ ]];
+
+ filtered().forEach(c=>{
+  rows.push([
+   c.id,c.name,c.assetId,c.asset,c.plant,c.type,
+   c.health,classification(c.health),c.rul,
+   c.risk.toFixed(4),c.temperature.toFixed(2),
+   c.vibration.toFixed(3),priority(c)
+  ]);
+ });
+
+ const csv=rows.map(row=>row.map(value=>
+  '"'+String(value).replaceAll('"','""')+'"'
+ ).join(",")).join("\r\n");
+
+ download(
+  "industra-component-health.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+ notify("Component health CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-component-health.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   components:filtered().map(c=>({
+    ...c,
+    classification:classification(c.health),
+    priority:priority(c)
+   }))
+  },null,2),
+  "application/json"
+ );
+ notify("Component health JSON exported.");
+}
+
+$("refreshBtn").onclick=refreshMonitoring;
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ components=BASE_COMPONENTS.map(c=>({...c}));
+ selectedId="CMPNT-005";
+ refreshCount=0;
+
+ $("plantFilter").value="all";
+ $("assetFilter").value="all";
+ $("conditionFilter").value="all";
+ $("sortFilter").value="health";
+
+ populateAssets();
+ render();
+ notify("Component health dashboard reset.");
+};
+
+$("plantFilter").addEventListener("change",()=>{
+ populateAssets();
+ render();
+});
+
+["assetFilter","conditionFilter","sortFilter"].forEach(id=>{
+ $(id).addEventListener("change",render);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+const requestedId=new URLSearchParams(
+ window.location.search
+).get("id");
+
+if(requestedId&&components.some(c=>c.id===requestedId)){
+ selectedId=requestedId;
+}
+
+populateAssets();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1673 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chat History | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / copilot</p><h1 id="page-title">Chat History</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Chat History workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Chat History | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple-light:#eeeaff;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5{
+ font-family:"Manrope",sans-serif;letter-spacing:-.5px;
+}
+a{text-decoration:none}
+button,input,select{font:inherit}
+button:disabled{opacity:.5;cursor:not-allowed}
+
+.sidebar{
+ position:fixed;inset:0 auto 0 0;
+ width:var(--sidebar);background:var(--navy);
+ color:white;z-index:1000;display:flex;
+ flex-direction:column;overflow-y:auto;
+ scrollbar-width:thin;
+ scrollbar-color:#42496b transparent;
+}
+.brand{
+ display:flex;align-items:center;gap:11px;
+ padding:26px 22px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);
+ font-size:22px;
+}
+.brand strong{
+ font:800 18px "Manrope",sans-serif;color:white;
+}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px;
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;
+ letter-spacing:1.7px;text-transform:uppercase;
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;
+ margin:3px 12px;padding:12px 13px;
+ border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700;
+ transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{
+ background:#ffffff0b;color:white;
+}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+ color:white;
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12;
+}
+
+.main{
+ margin-left:var(--sidebar);min-height:100vh;
+}
+.topbar{
+ height:76px;background:white;
+ border-bottom:1px solid var(--border);
+ padding:0 32px;
+ display:flex;justify-content:space-between;
+ align-items:center;gap:15px;
+}
+.breadcrumb-text{
+ font-size:11px;color:#9299ad;
+}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{
+ display:flex;align-items:center;gap:12px;
+}
+.top-icon{
+ width:37px;height:37px;
+ border:1px solid var(--border);
+ border-radius:11px;background:white;
+ display:grid;place-items:center;
+ color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{
+ padding:28px 32px 45px;
+ max-width:1650px;margin:auto;
+}
+
+.hero{
+ position:relative;overflow:hidden;
+ border-radius:19px;padding:30px;
+ color:white;
+ background:linear-gradient(
+  115deg,#5443d4,#7a62f1 70%,#9985ff
+ );
+ margin-bottom:25px;
+}
+.hero:after{
+ content:"";position:absolute;
+ width:330px;height:330px;border-radius:50%;
+ border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:
+  0 0 0 50px #ffffff08,
+  0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;
+ text-transform:uppercase;letter-spacing:2px;
+ color:#ddd6ff;
+}
+.hero h1{
+ font-size:26px;font-weight:800;
+ margin:12px 0;
+}
+.hero p{
+ color:#e6e0ff;font-size:12px;
+ line-height:1.9;max-width:760px;margin:0;
+}
+.hero-tag{
+ display:inline-flex;align-items:center;
+ gap:7px;background:#ffffff20;
+ border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;
+ margin-top:20px;
+}
+
+.stat-card,.panel{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:16px;
+ box-shadow:0 5px 23px #18204105;
+}
+.stat-card{
+ padding:20px;height:100%;
+}
+.stat-icon{
+ width:42px;height:42px;
+ display:grid;place-items:center;
+ border-radius:12px;font-size:19px;
+ margin-bottom:16px;
+}
+.stat-label{
+ font-size:11px;color:var(--muted);
+ font-weight:700;
+}
+.stat-value{
+ font:800 26px "Manrope",sans-serif;
+ margin-top:6px;
+}
+.stat-note{
+ color:#a0a8ba;font-size:10px;
+ margin-top:6px;
+}
+
+.panel{padding:23px}
+.panel-heading{
+ display:flex;justify-content:space-between;
+ align-items:center;flex-wrap:wrap;
+ gap:10px;margin-bottom:20px;
+}
+.panel-heading h3{
+ font-size:15px;font-weight:800;margin:0;
+}
+.panel-subtitle{
+ color:var(--muted);font-size:11px;
+ margin-top:5px;
+}
+
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;
+ padding:11px 17px;font-size:11px;
+ font-weight:800;display:inline-flex;
+ align-items:center;justify-content:center;
+ gap:8px;
+}
+.btn-purple:hover{
+ color:white;filter:brightness(.97);
+}
+.btn-outline-custom{
+ border:1px solid var(--border);
+ border-radius:10px;padding:10px 14px;
+ background:white;color:#69738e;
+ font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{
+ background:#f5f3ff;color:var(--purple);
+}
+.btn-danger-custom{
+ border:1px solid #ffd9df;
+ border-radius:10px;padding:10px 14px;
+ background:#fff1f3;color:#d64b62;
+ font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ gap:8px;
+}
+.btn-danger-custom:hover{background:#ffe6eb}
+
+.status-badge{
+ display:inline-flex;align-items:center;
+ gap:6px;border-radius:8px;
+ padding:7px 10px;font-size:10px;
+ font-weight:800;background:#f1f2f8;
+ color:#77819a;
+}
+.status-badge.success{
+ background:#e7f8f1;color:#119d72;
+}
+.status-badge.warning{
+ background:#fff4e6;color:#d68a22;
+}
+.status-badge.info{
+ background:#eaf2ff;color:#438df5;
+}
+.status-badge.purple{
+ background:#f0edff;color:#6855eb;
+}
+.form-select,.form-control{
+ border:1px solid var(--border);
+ border-radius:10px;min-height:42px;
+ font-size:11px;padding:10px 12px;
+}
+.form-select:focus,.form-control:focus{
+ border-color:#b4a8ff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+.search-box{
+ position:relative;
+}
+.search-box i{
+ position:absolute;left:14px;top:50%;
+ transform:translateY(-50%);
+ color:#9ba4b8;font-size:15px;
+}
+.search-box input{
+ padding-left:40px;
+}
+
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;font-size:10px;
+ font-weight:800;padding:14px 12px;
+ background:#f9faff;
+ border-bottom:1px solid var(--border);
+ white-space:nowrap;
+}
+.table tbody td{
+ padding:15px 12px;vertical-align:middle;
+ border-color:#f0f1f7;
+}
+.table tbody tr:hover{
+ background:#fcfbff;
+}
+.chat-title-cell{
+ display:flex;align-items:center;gap:11px;
+ min-width:200px;
+}
+.chat-icon{
+ width:38px;height:38px;flex-shrink:0;
+ border-radius:11px;background:#eeeaff;
+ color:#6855eb;display:grid;
+ place-items:center;font-size:17px;
+}
+.chat-title{
+ font-weight:800;font-size:11px;
+ color:var(--text);
+ max-width:280px;overflow:hidden;
+ text-overflow:ellipsis;white-space:nowrap;
+}
+.chat-preview{
+ color:#9aa3b8;font-size:10px;
+ margin-top:5px;max-width:280px;
+ overflow:hidden;text-overflow:ellipsis;
+ white-space:nowrap;
+}
+.icon-button{
+ width:32px;height:32px;border:0;
+ background:transparent;border-radius:8px;
+ color:#8992aa;font-size:15px;
+}
+.icon-button:hover{
+ background:#f1efff;color:#6855eb;
+}
+.icon-button.favorite{
+ color:#e5a331;
+}
+.icon-button.danger:hover{
+ background:#fff1f3;color:#ed6175;
+}
+.empty-state{
+ text-align:center;padding:55px 20px;
+ color:var(--muted);
+}
+.empty-state i{
+ display:block;font-size:43px;
+ color:#c2c5e0;margin-bottom:15px;
+}
+.empty-state h4{
+ font-size:15px;font-weight:800;
+ color:var(--text);
+}
+.empty-state p{
+ font-size:11px;line-height:1.8;
+ max-width:390px;margin:10px auto 18px;
+}
+.pagination-bar{
+ display:flex;justify-content:space-between;
+ align-items:center;gap:15px;
+ padding-top:19px;flex-wrap:wrap;
+}
+.page-info{
+ color:var(--muted);font-size:11px;
+}
+.preview-message{
+ display:flex;gap:11px;margin-bottom:19px;
+ align-items:flex-start;
+}
+.preview-avatar{
+ width:33px;height:33px;flex-shrink:0;
+ border-radius:10px;background:#eeeaff;
+ display:grid;place-items:center;
+ color:var(--purple);
+}
+.preview-avatar.user{
+ background:#eaf2ff;color:var(--blue);
+}
+.preview-body{flex:1;min-width:0}
+.preview-meta{
+ font-size:10px;color:var(--muted);
+ font-weight:800;margin-bottom:7px;
+}
+.preview-bubble{
+ padding:13px 15px;
+ background:#f7f8fc;border:1px solid var(--border);
+ border-radius:12px;
+ font-size:12px;line-height:1.8;
+ white-space:pre-wrap;overflow-wrap:anywhere;
+}
+.preview-bubble.user{
+ background:#f0edff;
+ border-color:#e4deff;
+}
+.preview-modal-content{
+ max-height:55vh;overflow-y:auto;
+}
+.notice{
+ background:#fff8eb;
+ border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;
+ padding:15px 17px;font-size:11px;
+ line-height:1.8;display:flex;
+ align-items:flex-start;gap:11px;
+}
+.notice i{
+ font-size:18px;flex-shrink:0;
+}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+
+@media(max-width:1150px){
+ :root{--sidebar:225px}
+ .content{padding:25px 22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{
+  transform:translateX(-100%);
+  transition:transform .25s;
+  width:260px;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:18px 14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:16px}
+ .mobile-hide{display:none}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>
+    INDUSTRA <span style="color:#a89aff">AI</span>
+   </strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html">
+  <i class="bi bi-grid"></i> Dashboard
+ </a>
+ <a class="side-link" href="command-center.html">
+  <i class="bi bi-broadcast"></i> Command Center
+ </a>
+ <a class="side-link" href="analytics.html">
+  <i class="bi bi-graph-up-arrow"></i> Analytics
+ </a>
+ <a class="side-link" href="reports.html">
+  <i class="bi bi-file-earmark-bar-graph"></i> Reports
+ </a>
+ <a class="side-link" href="notifications.html">
+  <i class="bi bi-bell"></i> Notifications
+ </a>
+
+ <div class="nav-section">AI Intelligence</div>
+ <a class="side-link" href="a-i-copilot.html">
+  <i class="bi bi-stars"></i> AI Copilot
+ </a>
+ <a class="side-link active" href="chat-history.html">
+  <i class="bi bi-clock-history"></i> Chat History
+ </a>
+ <a class="side-link" href="vision-dashboard.html">
+  <i class="bi bi-eye"></i> Vision Dashboard
+ </a>
+ <a class="side-link" href="equipment-condition.html">
+  <i class="bi bi-cpu"></i> Equipment Condition
+ </a>
+
+ <div class="nav-section">Vision Intelligence</div>
+ <a class="side-link" href="live-camera.html">
+  <i class="bi bi-camera-video"></i> Live Camera
+ </a>
+ <a class="side-link" href="image-inspection.html">
+  <i class="bi bi-image"></i> Image Inspection
+ </a>
+ <a class="side-link" href="video-inspection.html">
+  <i class="bi bi-film"></i> Video Inspection
+ </a>
+ <a class="side-link" href="inspection-history.html">
+  <i class="bi bi-clipboard-data"></i> Inspection History
+ </a>
+ <a class="side-link" href="detection-results.html">
+  <i class="bi bi-bounding-box-circles"></i> Detection Results
+ </a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/agent-dashboard.html">
+  <i class="bi bi-diagram-3"></i> Agent Dashboard
+ </a>
+ <a class="side-link" href="agents/maintenance-agent.html">
+  <i class="bi bi-tools"></i> Maintenance Agent
+ </a>
+ <a class="side-link" href="agents/safety-agent.html">
+  <i class="bi bi-shield-check"></i> Safety Agent
+ </a>
+ <a class="side-link" href="agents/supervisor-agent.html">
+  <i class="bi bi-diagram-3"></i> Supervisor Agent
+ </a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2"
+   style="color:#18b58c;font-size:7px"></i>
+  Local Conversation Workspace
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop"
+ class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu"
+   id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+
+  <div>
+   <div class="breadcrumb-text">
+    AI Intelligence /
+    <strong>Chat History</strong>
+   </div>
+   <div class="fw-bold mt-1"
+    style="font-size:13px">
+    Conversation Management Center
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="status-badge info mobile-hide">
+   <i class="bi bi-database"></i>
+   Browser Storage
+  </span>
+
+  <a href="notifications.html"
+   class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">
+  INDUSTRA AI / AI Conversation Intelligence
+ </div>
+
+ <h1>
+  <i class="bi bi-clock-history me-2"></i>
+  Chat History & Conversation Management
+ </h1>
+
+ <p>
+  Search, review, organize, export, and manage
+  conversations from your industrial AI Copilot.
+  Access maintenance discussions, equipment diagnostics,
+  inspection guidance, and technical research history.
+ </p>
+
+ <div class="hero-tag">
+  <i class="bi bi-hdd-stack"></i>
+  Local browser conversation storage
+ </div>
+</section>
+
+<div class="d-flex justify-content-between
+ align-items-center flex-wrap gap-3 mb-4">
+
+ <div>
+  <h5 class="fw-bold mb-1">
+   Conversation Overview
+  </h5>
+  <div class="text-secondary"
+   style="font-size:11px">
+   Manage saved industrial AI conversations
+  </div>
+ </div>
+
+ <div class="d-flex flex-wrap gap-2">
+  <a href="a-i-copilot.html" class="btn-purple">
+   <i class="bi bi-plus-lg"></i>
+   New AI Conversation
+  </a>
+
+  <button class="btn-outline-custom"
+   id="exportAllButton">
+   <i class="bi bi-download"></i>
+   Export All
+  </button>
+
+  <button class="btn-outline-custom"
+   id="importButton">
+   <i class="bi bi-upload"></i>
+   Import
+  </button>
+
+  <input type="file" id="importInput"
+   accept=".json,application/json" hidden>
+ </div>
+</div>
+
+<!-- KPI CARDS -->
+
+<div class="row g-3 mb-4">
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon"
+    style="background:#eeeaff;color:#6855eb">
+    <i class="bi bi-chat-left-text"></i>
+   </div>
+   <div class="stat-label">
+    Total Conversations
+   </div>
+   <div class="stat-value" id="totalKpi">0</div>
+   <div class="stat-note">
+    Stored in this browser
+   </div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon"
+    style="background:#eaf2ff;color:#438df5">
+    <i class="bi bi-chat-dots"></i>
+   </div>
+   <div class="stat-label">
+    Total Messages
+   </div>
+   <div class="stat-value" id="messagesKpi">0</div>
+   <div class="stat-note">
+    User and assistant messages
+   </div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon"
+    style="background:#fff4e6;color:#f4a443">
+    <i class="bi bi-star"></i>
+   </div>
+   <div class="stat-label">
+    Favorite Conversations
+   </div>
+   <div class="stat-value" id="favoritesKpi">0</div>
+   <div class="stat-note">
+    Locally marked favorites
+   </div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon"
+    style="background:#e7f8f1;color:#18b58c">
+    <i class="bi bi-calendar-check"></i>
+   </div>
+   <div class="stat-label">
+    Conversations This Week
+   </div>
+   <div class="stat-value" id="weekKpi">0</div>
+   <div class="stat-note">
+    Based on creation dates
+   </div>
+  </div>
+ </div>
+
+</div>
+
+<!-- HISTORY TABLE -->
+
+<section class="panel">
+
+ <div class="panel-heading">
+  <div>
+   <h3>Saved Conversations</h3>
+   <div class="panel-subtitle">
+    Search and manage AI Copilot sessions
+   </div>
+  </div>
+
+  <span class="status-badge purple"
+   id="resultsBadge">
+   0 Results
+  </span>
+ </div>
+
+ <div class="row g-3 mb-4">
+
+  <div class="col-lg-5">
+   <div class="search-box">
+    <i class="bi bi-search"></i>
+    <input type="search"
+     class="form-control"
+     id="searchInput"
+     placeholder="Search titles and messages...">
+   </div>
+  </div>
+
+  <div class="col-6 col-lg-2">
+   <select class="form-select" id="filterSelect">
+    <option value="all">All Conversations</option>
+    <option value="favorites">Favorites</option>
+    <option value="recent">Last 7 Days</option>
+    <option value="with-messages">With Messages</option>
+   </select>
+  </div>
+
+  <div class="col-6 col-lg-2">
+   <select class="form-select" id="sortSelect">
+    <option value="newest">Newest First</option>
+    <option value="oldest">Oldest First</option>
+    <option value="title">Title A–Z</option>
+    <option value="messages">Most Messages</option>
+   </select>
+  </div>
+
+  <div class="col-lg-3">
+   <div class="d-flex gap-2">
+    <button class="btn-outline-custom flex-fill"
+     id="resetFilters">
+     <i class="bi bi-arrow-counterclockwise"></i>
+     Reset
+    </button>
+
+    <button class="btn-outline-custom flex-fill"
+     id="exportCsvButton">
+     <i class="bi bi-filetype-csv"></i>
+     CSV
+    </button>
+   </div>
+  </div>
+
+ </div>
+
+ <div id="bulkToolbar"
+  class="d-flex flex-wrap align-items-center
+  justify-content-between gap-3 mb-3 hidden">
+
+  <span class="status-badge purple"
+   id="selectedCount">
+   0 Selected
+  </span>
+
+  <div class="d-flex gap-2 flex-wrap">
+   <button class="btn-outline-custom"
+    id="exportSelectedButton">
+    <i class="bi bi-download"></i>
+    Export Selected
+   </button>
+
+   <button class="btn-danger-custom"
+    id="deleteSelectedButton">
+    <i class="bi bi-trash"></i>
+    Delete Selected
+   </button>
+  </div>
+ </div>
+
+ <div class="table-responsive">
+  <table class="table align-middle mb-0">
+   <thead>
+    <tr>
+     <th>
+      <input type="checkbox"
+       class="form-check-input"
+       id="selectAll">
+     </th>
+     <th>Conversation</th>
+     <th>Created</th>
+     <th>Messages</th>
+     <th>Favorite</th>
+     <th>Actions</th>
+    </tr>
+   </thead>
+
+   <tbody id="historyTable"></tbody>
+  </table>
+ </div>
+
+ <div id="emptyState" class="empty-state hidden">
+  <i class="bi bi-chat-square-text"></i>
+  <h4>No conversations found</h4>
+  <p>
+   Start a conversation with your industrial AI Copilot,
+   or adjust your search and filters.
+  </p>
+  <a href="a-i-copilot.html" class="btn-purple">
+   <i class="bi bi-stars"></i>
+   Open AI Copilot
+  </a>
+ </div>
+
+ <div class="pagination-bar">
+  <div class="page-info" id="paginationInfo">
+   Showing 0 conversations
+  </div>
+
+  <div class="d-flex gap-2">
+   <button class="btn-outline-custom"
+    id="previousPage">
+    <i class="bi bi-chevron-left"></i>
+    Previous
+   </button>
+
+   <button class="btn-outline-custom"
+    id="nextPage">
+    Next
+    <i class="bi bi-chevron-right"></i>
+   </button>
+  </div>
+ </div>
+
+</section>
+
+<div class="notice mt-4">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Data privacy and storage:</strong>
+  This page uses browser localStorage, not a secured
+  enterprise database. Conversation data is accessible
+  to scripts running on the same origin and may be lost
+  when browser storage is cleared. Do not store sensitive
+  industrial documents, credentials, or confidential
+  operational data here. Production deployment requires
+  authenticated server-side storage, access controls,
+  retention policies, and audit logging.
+ </div>
+</div>
+
+</main>
+</div>
+
+<!-- PREVIEW MODAL -->
+
+<div class="modal fade" id="previewModal"
+ tabindex="-1" aria-hidden="true">
+ <div class="modal-dialog modal-lg modal-dialog-centered
+ modal-dialog-scrollable">
+  <div class="modal-content border-0"
+   style="border-radius:17px">
+
+   <div class="modal-header">
+    <div>
+     <h5 class="modal-title fw-bold"
+      id="previewTitle">
+      Conversation Preview
+     </h5>
+     <small class="text-secondary"
+      id="previewSubtitle"></small>
+    </div>
+
+    <button class="btn-close"
+     data-bs-dismiss="modal"
+     aria-label="Close"></button>
+   </div>
+
+   <div class="modal-body">
+    <div id="previewContent"
+     class="preview-modal-content"></div>
+   </div>
+
+   <div class="modal-footer">
+    <button class="btn-outline-custom"
+     data-bs-dismiss="modal">
+     Close
+    </button>
+
+    <button class="btn-purple"
+     id="previewExportButton">
+     <i class="bi bi-download"></i>
+     Export Conversation
+    </button>
+   </div>
+
+  </div>
+ </div>
+</div>
+
+<!-- RENAME MODAL -->
+
+<div class="modal fade" id="renameModal"
+ tabindex="-1" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content border-0"
+   style="border-radius:17px">
+
+   <form id="renameForm">
+    <div class="modal-header">
+     <h5 class="modal-title fw-bold">
+      Rename Conversation
+     </h5>
+     <button type="button" class="btn-close"
+      data-bs-dismiss="modal"
+      aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+     <label class="form-label fw-bold">
+      Conversation Title
+     </label>
+     <input class="form-control"
+      id="renameInput"
+      maxlength="80" required>
+    </div>
+
+    <div class="modal-footer">
+     <button type="button"
+      class="btn-outline-custom"
+      data-bs-dismiss="modal">
+      Cancel
+     </button>
+
+     <button type="submit"
+      class="btn-purple">
+      <i class="bi bi-check-lg"></i>
+      Save Changes
+     </button>
+    </div>
+   </form>
+
+  </div>
+ </div>
+</div>
+
+<div class="toast-container position-fixed
+ bottom-0 end-0 p-3">
+
+ <div id="appToast" class="toast"
+  role="status" aria-live="polite">
+
+  <div class="toast-header">
+   <i class="bi bi-info-circle
+    text-primary me-2"></i>
+   <strong class="me-auto">
+    INDUSTRA AI
+   </strong>
+   <button class="btn-close"
+    data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+
+  <div class="toast-body"
+   id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+
+const CHAT_KEY="industra-copilot-chats-v1";
+const FAVORITES_KEY="industra-copilot-favorites-v1";
+const PAGE_SIZE=8;
+const MAX_IMPORT_BYTES=2*1024*1024;
+const MAX_CHATS=30;
+
+let chats=[];
+let favorites=new Set();
+let selected=new Set();
+let page=1;
+let previewId=null;
+let renameId=null;
+
+const previewModal=new bootstrap.Modal($("previewModal"));
+const renameModal=new bootstrap.Modal($("renameModal"));
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance(
+  $("appToast")
+ ).show();
+}
+
+function safeJsonParse(text,fallback){
+ try{return JSON.parse(text)}
+ catch{return fallback}
+}
+
+function normalizeChat(chat){
+ if(!chat||typeof chat!=="object")return null;
+ if(typeof chat.id!=="string"||!chat.id.trim())return null;
+ if(!Array.isArray(chat.messages))return null;
+
+ const messages=chat.messages
+  .filter(message=>
+   message &&
+   ["user","assistant"].includes(message.role) &&
+   typeof message.content==="string"
+  )
+  .slice(-100)
+  .map(message=>({
+   role:message.role,
+   content:message.content.slice(0,12000),
+   createdAt:message.createdAt||null,
+   demo:Boolean(message.demo)
+  }));
+
+ return {
+  id:chat.id.slice(0,150),
+  title:String(chat.title||"Untitled Conversation").slice(0,80),
+  createdAt:chat.createdAt||new Date().toISOString(),
+  messages
+ };
+}
+
+function loadData(){
+ const stored=safeJsonParse(
+  localStorage.getItem(CHAT_KEY)||"[]",[]
+ );
+
+ chats=Array.isArray(stored)?
+  stored.map(normalizeChat).filter(Boolean).slice(0,MAX_CHATS):
+  [];
+
+ const storedFavorites=safeJsonParse(
+  localStorage.getItem(FAVORITES_KEY)||"[]",[]
+ );
+
+ favorites=new Set(
+  Array.isArray(storedFavorites)?
+   storedFavorites.filter(id=>typeof id==="string"):[]
+ );
+
+ favorites=new Set(
+  [...favorites].filter(id=>chats.some(chat=>chat.id===id))
+ );
+}
+
+function saveData(){
+ try{
+  localStorage.setItem(CHAT_KEY,JSON.stringify(chats));
+  localStorage.setItem(
+   FAVORITES_KEY,JSON.stringify([...favorites])
+  );
+  return true;
+ }catch{
+  notify("Browser storage limit reached. Export your data.");
+  return false;
+ }
+}
+
+function dateValue(value){
+ const time=new Date(value).getTime();
+ return Number.isFinite(time)?time:0;
+}
+
+function formatDate(value){
+ const time=dateValue(value);
+ if(!time)return "Unknown";
+
+ return new Date(time).toLocaleDateString(undefined,{
+  year:"numeric",month:"short",day:"numeric"
+ });
+}
+
+function isThisWeek(value){
+ const time=dateValue(value);
+ return time>0 &&
+  time>=Date.now()-7*24*60*60*1000 &&
+  time<=Date.now();
+}
+
+function getFiltered(){
+ const query=$("searchInput").value.trim().toLowerCase();
+ const filter=$("filterSelect").value;
+ const sort=$("sortSelect").value;
+
+ let records=chats.filter(chat=>{
+  const searchable=[
+   chat.title,
+   ...chat.messages.map(message=>message.content)
+  ].join(" ").toLowerCase();
+
+  if(query&&!searchable.includes(query))return false;
+
+  if(filter==="favorites"&&!favorites.has(chat.id)){
+   return false;
+  }
+
+  if(filter==="recent"&&!isThisWeek(chat.createdAt)){
+   return false;
+  }
+
+  if(filter==="with-messages"&&!chat.messages.length){
+   return false;
+  }
+
+  return true;
+ });
+
+ records.sort((a,b)=>{
+  if(sort==="oldest"){
+   return dateValue(a.createdAt)-dateValue(b.createdAt);
+  }
+  if(sort==="title"){
+   return a.title.localeCompare(b.title);
+  }
+  if(sort==="messages"){
+   return b.messages.length-a.messages.length;
+  }
+  return dateValue(b.createdAt)-dateValue(a.createdAt);
+ });
+
+ return records;
+}
+
+function updateKpis(){
+ $("totalKpi").textContent=chats.length;
+ $("messagesKpi").textContent=chats.reduce(
+  (sum,chat)=>sum+chat.messages.length,0
+ );
+ $("favoritesKpi").textContent=
+  [...favorites].filter(id=>
+   chats.some(chat=>chat.id===id)
+  ).length;
+ $("weekKpi").textContent=
+  chats.filter(chat=>isThisWeek(chat.createdAt)).length;
+}
+
+function makeButton(icon,title,handler,extraClass=""){
+ const button=document.createElement("button");
+ button.type="button";
+ button.className="icon-button "+extraClass;
+ button.title=title;
+ button.setAttribute("aria-label",title);
+
+ const i=document.createElement("i");
+ i.className="bi "+icon;
+ button.append(i);
+ button.addEventListener("click",handler);
+
+ return button;
+}
+
+function renderTable(){
+ updateKpis();
+
+ const filtered=getFiltered();
+ const maxPage=Math.max(
+  1,Math.ceil(filtered.length/PAGE_SIZE)
+ );
+
+ page=Math.min(page,maxPage);
+
+ const start=(page-1)*PAGE_SIZE;
+ const current=filtered.slice(start,start+PAGE_SIZE);
+
+ const tbody=$("historyTable");
+ tbody.replaceChildren();
+
+ $("resultsBadge").textContent=
+  filtered.length+" Results";
+
+ $("emptyState").classList.toggle(
+  "hidden",filtered.length!==0
+ );
+
+ current.forEach(chat=>{
+  const tr=document.createElement("tr");
+
+  const checkboxCell=document.createElement("td");
+  const checkbox=document.createElement("input");
+  checkbox.type="checkbox";
+  checkbox.className="form-check-input";
+  checkbox.checked=selected.has(chat.id);
+
+  checkbox.addEventListener("change",()=>{
+   if(checkbox.checked)selected.add(chat.id);
+   else selected.delete(chat.id);
+
+   updateBulkToolbar();
+   updateSelectAll(current);
+  });
+
+  checkboxCell.append(checkbox);
+
+  const titleCell=document.createElement("td");
+  const titleWrapper=document.createElement("div");
+  titleWrapper.className="chat-title-cell";
+
+  const icon=document.createElement("div");
+  icon.className="chat-icon";
+  icon.innerHTML='<i class="bi bi-chat-left-text"></i>';
+
+  const titleContent=document.createElement("div");
+  titleContent.style.minWidth="0";
+
+  const title=document.createElement("div");
+  title.className="chat-title";
+  title.textContent=chat.title;
+
+  const preview=document.createElement("div");
+  preview.className="chat-preview";
+  preview.textContent=
+   chat.messages[0]?.content||"Empty conversation";
+
+  titleContent.append(title,preview);
+  titleWrapper.append(icon,titleContent);
+  titleCell.append(titleWrapper);
+
+  const dateCell=document.createElement("td");
+  dateCell.textContent=formatDate(chat.createdAt);
+
+  const messageCell=document.createElement("td");
+  const messageBadge=document.createElement("span");
+  messageBadge.className="status-badge info";
+  messageBadge.textContent=chat.messages.length+" Messages";
+  messageCell.append(messageBadge);
+
+  const favoriteCell=document.createElement("td");
+  const isFavorite=favorites.has(chat.id);
+
+  favoriteCell.append(
+   makeButton(
+    isFavorite?"bi-star-fill":"bi-star",
+    isFavorite?"Remove favorite":"Add favorite",
+    ()=>toggleFavorite(chat.id),
+    isFavorite?"favorite":""
+   )
+  );
+
+  const actionCell=document.createElement("td");
+  const actionGroup=document.createElement("div");
+  actionGroup.className="d-flex gap-1";
+
+  actionGroup.append(
+   makeButton("bi-eye","Preview",()=>openPreview(chat.id)),
+   makeButton("bi-pencil","Rename",()=>openRename(chat.id)),
+   makeButton("bi-download","Export",()=>exportOne(chat.id)),
+   makeButton(
+    "bi-trash","Delete",()=>deleteOne(chat.id),"danger"
+   )
+  );
+
+  actionCell.append(actionGroup);
+
+  tr.append(
+   checkboxCell,titleCell,dateCell,
+   messageCell,favoriteCell,actionCell
+  );
+
+  tbody.append(tr);
+ });
+
+ const from=filtered.length?start+1:0;
+ const to=Math.min(start+PAGE_SIZE,filtered.length);
+
+ $("paginationInfo").textContent=
+  `Showing ${from}–${to} of ${filtered.length} conversations`;
+
+ $("previousPage").disabled=page<=1;
+ $("nextPage").disabled=page>=maxPage;
+
+ updateSelectAll(current);
+ updateBulkToolbar();
+}
+
+function updateSelectAll(current){
+ const box=$("selectAll");
+
+ box.checked=
+  current.length>0 &&
+  current.every(chat=>selected.has(chat.id));
+
+ box.indeterminate=
+  current.some(chat=>selected.has(chat.id)) &&
+  !box.checked;
+}
+
+function updateBulkToolbar(){
+ $("bulkToolbar").classList.toggle(
+  "hidden",selected.size===0
+ );
+ $("selectedCount").textContent=
+  selected.size+" Selected";
+}
+
+function toggleFavorite(id){
+ if(favorites.has(id))favorites.delete(id);
+ else favorites.add(id);
+
+ saveData();
+ renderTable();
+}
+
+function openPreview(id){
+ const chat=chats.find(item=>item.id===id);
+ if(!chat)return;
+
+ previewId=id;
+ $("previewTitle").textContent=chat.title;
+ $("previewSubtitle").textContent=
+  formatDate(chat.createdAt)+" · "+
+  chat.messages.length+" messages";
+
+ const container=$("previewContent");
+ container.replaceChildren();
+
+ if(!chat.messages.length){
+  const empty=document.createElement("p");
+  empty.className="text-secondary";
+  empty.textContent="This conversation has no messages.";
+  container.append(empty);
+ }
+
+ chat.messages.forEach(message=>{
+  const wrapper=document.createElement("div");
+  wrapper.className="preview-message";
+
+  const avatar=document.createElement("div");
+  avatar.className="preview-avatar "+
+   (message.role==="user"?"user":"");
+
+  const icon=document.createElement("i");
+  icon.className=message.role==="user"?
+   "bi bi-person-fill":"bi bi-stars";
+
+  avatar.append(icon);
+
+  const body=document.createElement("div");
+  body.className="preview-body";
+
+  const meta=document.createElement("div");
+  meta.className="preview-meta";
+  meta.textContent=message.role==="user"?
+   "You":"INDUSTRA AI Copilot";
+
+  const bubble=document.createElement("div");
+  bubble.className="preview-bubble "+
+   (message.role==="user"?"user":"");
+
+  // Plain text prevents imported messages from injecting HTML.
+  bubble.textContent=message.content;
+
+  body.append(meta,bubble);
+  wrapper.append(avatar,body);
+  container.append(wrapper);
+ });
+
+ previewModal.show();
+}
+
+function openRename(id){
+ const chat=chats.find(item=>item.id===id);
+ if(!chat)return;
+
+ renameId=id;
+ $("renameInput").value=chat.title;
+ renameModal.show();
+}
+
+$("renameForm").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ const title=$("renameInput").value.trim();
+ if(!title)return;
+
+ const chat=chats.find(item=>item.id===renameId);
+ if(!chat)return;
+
+ chat.title=title.slice(0,80);
+ saveData();
+ renderTable();
+ renameModal.hide();
+
+ notify("Conversation renamed.");
+});
+
+function deleteOne(id){
+ const chat=chats.find(item=>item.id===id);
+ if(!chat)return;
+
+ if(!confirm(`Delete "${chat.title}"?`))return;
+
+ chats=chats.filter(item=>item.id!==id);
+ favorites.delete(id);
+ selected.delete(id);
+
+ saveData();
+ renderTable();
+ notify("Conversation deleted.");
+}
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportRecords(records,filename){
+ const payload={
+  application:"INDUSTRA AI",
+  module:"Chat History",
+  exportedAt:new Date().toISOString(),
+  conversations:records
+ };
+
+ downloadFile(
+  filename,
+  JSON.stringify(payload,null,2),
+  "application/json"
+ );
+}
+
+function exportOne(id){
+ const chat=chats.find(item=>item.id===id);
+ if(!chat)return;
+
+ exportRecords(
+  [chat],
+  "industra-conversation-"+chat.id.slice(0,20)+".json"
+ );
+
+ notify("Conversation exported.");
+}
+
+$("previewExportButton").addEventListener("click",()=>{
+ if(previewId)exportOne(previewId);
+});
+
+$("exportAllButton").addEventListener("click",()=>{
+ exportRecords(
+  chats,
+  "industra-chat-history.json"
+ );
+ notify("All conversations exported.");
+});
+
+$("exportSelectedButton").addEventListener("click",()=>{
+ const records=chats.filter(chat=>selected.has(chat.id));
+
+ if(!records.length)return;
+
+ exportRecords(
+  records,
+  "industra-selected-conversations.json"
+ );
+
+ notify("Selected conversations exported.");
+});
+
+$("deleteSelectedButton").addEventListener("click",()=>{
+ if(!selected.size)return;
+
+ if(!confirm(
+  `Delete ${selected.size} selected conversations?`
+ ))return;
+
+ chats=chats.filter(chat=>!selected.has(chat.id));
+
+ for(const id of selected){
+  favorites.delete(id);
+ }
+
+ selected.clear();
+ saveData();
+ renderTable();
+
+ notify("Selected conversations deleted.");
+});
+
+$("exportCsvButton").addEventListener("click",()=>{
+ const records=getFiltered();
+
+ const headers=[
+  "id","title","createdAt",
+  "messageCount","favorite","lastMessage"
+ ];
+
+ const escapeCsv=value=>
+  '"'+String(value??"").replace(/"/g,'""')+'"';
+
+ const rows=records.map(chat=>[
+  chat.id,
+  chat.title,
+  chat.createdAt,
+  chat.messages.length,
+  favorites.has(chat.id),
+  chat.messages.at(-1)?.content||""
+ ]);
+
+ const csv=[
+  headers.join(","),
+  ...rows.map(row=>row.map(escapeCsv).join(","))
+ ].join("\r\n");
+
+ downloadFile(
+  "industra-chat-history.csv",
+  csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Filtered conversation summary exported.");
+});
+
+$("importButton").addEventListener("click",()=>{
+ $("importInput").click();
+});
+
+$("importInput").addEventListener("change",async event=>{
+ const file=event.target.files[0];
+ event.target.value="";
+ if(!file)return;
+
+ if(file.size>MAX_IMPORT_BYTES){
+  notify("Import file exceeds the 2 MB limit.");
+  return;
+ }
+
+ try{
+  const parsed=JSON.parse(await file.text());
+
+  let records;
+
+  if(Array.isArray(parsed)){
+   records=parsed;
+  }else if(Array.isArray(parsed.conversations)){
+   records=parsed.conversations;
+  }else if(
+   parsed.conversation &&
+   typeof parsed.conversation==="object"
+  ){
+   records=[parsed.conversation];
+  }else{
+   throw new Error("Unsupported JSON format.");
+  }
+
+  const normalized=records
+   .map(normalizeChat)
+   .filter(Boolean);
+
+  if(!normalized.length){
+   throw new Error("No valid conversations found.");
+  }
+
+  const existing=new Set(chats.map(chat=>chat.id));
+  let imported=0;
+
+  for(const chat of normalized){
+   if(existing.has(chat.id))continue;
+   if(chats.length>=MAX_CHATS)break;
+
+   chats.push(chat);
+   existing.add(chat.id);
+   imported++;
+  }
+
+  chats.sort(
+   (a,b)=>dateValue(b.createdAt)-dateValue(a.createdAt)
+  );
+
+  saveData();
+  page=1;
+  renderTable();
+
+  notify(imported+" conversations imported.");
+
+ }catch(error){
+  notify("Import failed: "+error.message);
+ }
+});
+
+$("selectAll").addEventListener("change",event=>{
+ const filtered=getFiltered();
+ const start=(page-1)*PAGE_SIZE;
+ const current=filtered.slice(start,start+PAGE_SIZE);
+
+ current.forEach(chat=>{
+  if(event.target.checked)selected.add(chat.id);
+  else selected.delete(chat.id);
+ });
+
+ renderTable();
+});
+
+$("previousPage").addEventListener("click",()=>{
+ if(page>1){
+  page--;
+  renderTable();
+ }
+});
+
+$("nextPage").addEventListener("click",()=>{
+ const maxPage=Math.ceil(
+  getFiltered().length/PAGE_SIZE
+ );
+
+ if(page<maxPage){
+  page++;
+  renderTable();
+ }
+});
+
+["searchInput","filterSelect","sortSelect"].forEach(id=>{
+ $(id).addEventListener(
+  id==="searchInput"?"input":"change",
+  ()=>{
+   page=1;
+   renderTable();
+  }
+ );
+});
+
+$("resetFilters").addEventListener("click",()=>{
+ $("searchInput").value="";
+ $("filterSelect").value="all";
+ $("sortSelect").value="newest";
+ page=1;
+ renderTable();
+});
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+// Refresh when another page or tab changes chat storage.
+window.addEventListener("storage",event=>{
+ if(
+  event.key===CHAT_KEY ||
+  event.key===FAVORITES_KEY
+ ){
+  loadData();
+  selected.clear();
+  renderTable();
+ }
+});
+
+loadData();
+renderTable();
+</script>
+
+</body>
+</html>

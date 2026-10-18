@@ -1,0 +1,1501 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fire Detection | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / computer-vision</p><h1 id="page-title">Fire Detection</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Fire Detection workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fire Detection | INDUSTRA AI</title>
+<meta name="theme-color" content="#10152d">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5;--sidebar:258px;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5{
+ font-family:Manrope,sans-serif;letter-spacing:-.5px;
+}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+button:focus-visible,a:focus-visible,
+input:focus-visible,select:focus-visible{
+ outline:3px solid #b4a7ff!important;outline-offset:2px;
+}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:white;z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto;
+ scrollbar-width:thin;scrollbar-color:#42496b transparent;
+}
+.brand{
+ display:flex;align-items:center;gap:11px;
+ padding:26px 22px;border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);
+ font-size:22px;
+}
+.brand strong{font:800 18px Manrope,sans-serif;color:white}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px;
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;letter-spacing:1.7px;
+ text-transform:uppercase;
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;
+ margin:3px 12px;padding:12px 13px;
+ border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700;transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+ color:white;
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12;
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;justify-content:space-between;
+ align-items:center;gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;
+ display:grid;place-items:center;color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{
+ padding:28px 32px 45px;max-width:1650px;margin:auto;
+}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;
+ padding:30px;color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:25px;
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ border-radius:50%;border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;text-transform:uppercase;
+ letter-spacing:2px;color:#ddd6ff;
+}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;line-height:1.9;
+ max-width:720px;margin:0;
+}
+.hero-tag{
+ display:inline-flex;gap:7px;align-items:center;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:20px;
+}
+.stat-card,.panel{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105;
+}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:16px;
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 26px Manrope,sans-serif;margin-top:6px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel{padding:23px;height:100%}
+.panel-heading{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-bottom:21px;
+}
+.panel-heading h3{font-size:15px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:11px;margin-top:5px}
+.section-label{
+ font-size:10px;color:#59637f;
+ font-weight:800;margin-bottom:9px;
+}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:43px;font-size:12px;
+ padding:10px 12px;color:var(--text);
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;
+ padding:11px 17px;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 14px;background:white;color:#69738e;
+ font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{
+ background:#f5f3ff;color:var(--purple);
+}
+.btn-outline-custom:disabled,.btn-purple:disabled{
+ opacity:.5;cursor:not-allowed;
+}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffecef;color:#d64b62}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.camera-stage{
+ min-height:310px;border-radius:14px;
+ background:linear-gradient(135deg,#171d37,#252b4a);
+ display:flex;align-items:center;justify-content:center;
+ position:relative;overflow:hidden;
+}
+.camera-stage img{
+ display:block;max-width:100%;
+ max-height:460px;object-fit:contain;
+}
+.camera-placeholder{
+ text-align:center;color:#a4afd0;padding:35px;
+ font-size:12px;line-height:1.9;
+}
+.camera-placeholder i{
+ display:block;font-size:46px;color:#8d7dfa;margin-bottom:15px;
+}
+.camera-overlay{
+ position:absolute;left:15px;top:15px;
+ background:#10152dcc;border:1px solid #ffffff25;
+ color:white;border-radius:9px;
+ padding:8px 12px;font-size:10px;font-weight:800;
+}
+.camera-bottom{
+ position:absolute;left:15px;bottom:15px;
+ background:#10152dcc;color:#d7ddf2;
+ border-radius:9px;padding:8px 12px;
+ font-size:10px;
+}
+.dropzone{
+ border:2px dashed #d7d2fa;
+ background:#faf9ff;border-radius:13px;
+ padding:24px;text-align:center;cursor:pointer;
+ transition:.2s;
+}
+.dropzone:hover,.dropzone.dragover{
+ border-color:var(--purple);background:#f0edff;
+}
+.dropzone i{font-size:27px;color:var(--purple)}
+.dropzone p{
+ font-size:11px;color:var(--muted);
+ margin:8px 0 0;
+}
+.risk-ring{
+ width:155px;height:155px;border-radius:50%;
+ display:grid;place-items:center;
+ background:conic-gradient(#18b58c 0deg,#18b58c 60deg,#edf0f7 60deg);
+ margin:10px auto 18px;
+}
+.risk-ring-inner{
+ width:125px;height:125px;background:white;
+ border-radius:50%;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;
+}
+.risk-ring-inner strong{
+ font:800 33px Manrope,sans-serif;
+}
+.risk-ring-inner span{
+ font-size:10px;color:var(--muted);
+}
+.metric-row{
+ display:flex;align-items:center;justify-content:space-between;
+ padding:13px 0;border-bottom:1px solid #f0f1f7;
+ gap:12px;
+}
+.metric-row:last-child{border-bottom:0}
+.metric-label{font-size:11px;color:#77819a;font-weight:700}
+.metric-value{font:800 15px Manrope,sans-serif}
+.metric-progress{
+ height:7px;background:#edf0f7;
+ border-radius:20px;overflow:hidden;margin-top:8px;
+}
+.metric-progress div{
+ height:100%;border-radius:20px;transition:width .3s;
+}
+.recommendation{
+ display:flex;gap:10px;align-items:flex-start;
+ padding:13px;border-radius:11px;
+ background:#f8f9fd;margin-bottom:9px;
+ font-size:11px;line-height:1.7;
+}
+.recommendation i{
+ color:var(--purple);font-size:15px;
+}
+.chart-container{height:245px;position:relative}
+.table{font-size:11px;margin-bottom:0;white-space:nowrap}
+.table thead th{
+ color:#8c95ac;font-size:9px;text-transform:uppercase;
+ letter-spacing:.7px;border-bottom:1px solid var(--border);
+ padding:14px 12px;
+}
+.table tbody td{
+ padding:15px 12px;vertical-align:middle;
+ border-color:#f0f1f6;
+}
+.table tbody tr:hover{background:#fafaff}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;
+ padding:15px 17px;font-size:11px;line-height:1.8;
+ display:flex;align-items:flex-start;gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1150px){
+ :root{--sidebar:225px}
+ .content{padding:25px 22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{
+  transform:translateX(-100%);
+  transition:transform .25s;width:260px;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:18px 14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:17px}
+ .mobile-hide{display:none}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html">
+  <i class="bi bi-grid"></i> Dashboard
+ </a>
+ <a class="side-link" href="command-center.html">
+  <i class="bi bi-broadcast"></i> Command Center
+ </a>
+ <a class="side-link" href="analytics.html">
+  <i class="bi bi-graph-up-arrow"></i> Analytics
+ </a>
+ <a class="side-link" href="reports.html">
+  <i class="bi bi-file-earmark-bar-graph"></i> Reports
+ </a>
+ <a class="side-link" href="notifications.html">
+  <i class="bi bi-bell"></i> Notifications
+ </a>
+
+ <div class="nav-section">Safety Intelligence</div>
+ <a class="side-link active" href="fire-detection.html">
+  <i class="bi bi-fire"></i> Fire Detection
+ </a>
+ <a class="side-link" href="smoke-detection.html">
+  <i class="bi bi-cloud-haze2"></i> Smoke Detection
+ </a>
+ <a class="side-link" href="ppe-detection.html">
+  <i class="bi bi-person-check"></i> PPE Detection
+ </a>
+ <a class="side-link" href="emergency-response.html">
+  <i class="bi bi-exclamation-octagon"></i> Emergency Response
+ </a>
+
+ <div class="nav-section">Vision Intelligence</div>
+ <a class="side-link" href="corrosion-detection.html">
+  <i class="bi bi-search-heart"></i> Corrosion Detection
+ </a>
+ <a class="side-link" href="crack-detection.html">
+  <i class="bi bi-intersect"></i> Crack Detection
+ </a>
+ <a class="side-link" href="defect-detection.html">
+  <i class="bi bi-bounding-box-circles"></i> Defect Detection
+ </a>
+ <a class="side-link" href="detection-results.html">
+  <i class="bi bi-clipboard-data"></i> Detection Results
+ </a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/safety-agent.html">
+  <i class="bi bi-shield-check"></i> Safety Agent
+ </a>
+ <a class="side-link" href="agents/emergency-response-agent.html">
+  <i class="bi bi-lightning-charge"></i> Emergency Response Agent
+ </a>
+ <a class="side-link" href="agents/incident-agent.html">
+  <i class="bi bi-clipboard-pulse"></i> Incident Agent
+ </a>
+ <a class="side-link" href="agents/supervisor-agent.html">
+  <i class="bi bi-diagram-3"></i> Supervisor Agent
+ </a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2"
+   style="color:#18b58c;font-size:7px"></i>
+  Fire Safety Demo Mode
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+
+ <header class="topbar">
+  <div class="d-flex align-items-center gap-3">
+   <button class="top-icon mobile-menu"
+    id="menuButton" aria-label="Open navigation">
+    <i class="bi bi-list"></i>
+   </button>
+   <div>
+    <div class="breadcrumb-text">
+     Safety Intelligence /
+     <strong>Fire Detection</strong>
+    </div>
+    <div class="fw-bold mt-1" style="font-size:13px">
+     Fire Safety Monitoring Center
+    </div>
+   </div>
+  </div>
+
+  <div class="top-actions">
+   <span class="status-badge info mobile-hide">
+    <i class="bi bi-broadcast"></i> Simulation
+   </span>
+   <a href="notifications.html" class="top-icon"
+    aria-label="Notifications">
+    <i class="bi bi-bell"></i>
+   </a>
+   <div class="avatar">AI</div>
+  </div>
+ </header>
+
+ <main class="content">
+
+  <section class="hero">
+   <div class="hero-label">
+    Industrial Safety / Fire Intelligence
+   </div>
+   <h1>
+    <i class="bi bi-fire me-2"></i>
+    Fire Detection & Safety Monitoring
+   </h1>
+   <p>
+    Explore illustrative fire-risk scenarios,
+    monitor simulated temperature and smoke indicators,
+    review camera inspection images, and document
+    safety observations through a unified dashboard.
+   </p>
+   <div class="hero-tag">
+    <i class="bi bi-info-circle"></i>
+    Simulation only — not an operational fire alarm
+   </div>
+  </section>
+
+  <!-- KPI CARDS -->
+  <div class="row g-3 mb-4">
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#eeeaff;color:#6855eb">
+      <i class="bi bi-camera-video"></i>
+     </div>
+     <div class="stat-label">Demo Camera Zones</div>
+     <div class="stat-value" id="cameraCount">0</div>
+     <div class="stat-note">Configured sample locations</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#ffecef;color:#ed6175">
+      <i class="bi bi-fire"></i>
+     </div>
+     <div class="stat-label">High-Risk Scenarios</div>
+     <div class="stat-value" id="highRiskCount">0</div>
+     <div class="stat-note">Current demo scenario state</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#fff4e6;color:#f4a443">
+      <i class="bi bi-exclamation-triangle"></i>
+     </div>
+     <div class="stat-label">Unreviewed Events</div>
+     <div class="stat-value" id="pendingCount">0</div>
+     <div class="stat-note">Session demonstration events</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#e8f9f1;color:#18b58c">
+      <i class="bi bi-clipboard-check"></i>
+     </div>
+     <div class="stat-label">Reviewed Events</div>
+     <div class="stat-value" id="reviewedCount">0</div>
+     <div class="stat-note">Browser-only review state</div>
+    </div>
+   </div>
+
+  </div>
+
+  <!-- CAMERA AND ASSESSMENT -->
+  <div class="row g-4 mb-4">
+
+   <div class="col-xl-8">
+    <section class="panel">
+
+     <div class="panel-heading">
+      <div>
+       <h3>Fire Monitoring Workspace</h3>
+       <div class="panel-subtitle">
+        Select a sample zone and explore safety scenarios
+       </div>
+      </div>
+      <span class="status-badge info">
+       <i class="bi bi-camera-video"></i>
+       No Live Camera
+      </span>
+     </div>
+
+     <div class="row g-3 mb-4">
+      <div class="col-md-7">
+       <label for="cameraSelect" class="section-label">
+        Camera / Monitoring Zone
+       </label>
+       <select id="cameraSelect" class="form-select"></select>
+      </div>
+
+      <div class="col-md-5">
+       <label for="scenarioSelect" class="section-label">
+        Simulation Scenario
+       </label>
+       <select id="scenarioSelect" class="form-select">
+        <option value="normal">Normal Conditions</option>
+        <option value="elevated">Elevated Temperature</option>
+        <option value="smoke">Illustrative Smoke Event</option>
+        <option value="fire">Illustrative Fire Event</option>
+       </select>
+      </div>
+     </div>
+
+     <div class="camera-stage" id="cameraStage">
+
+      <div id="cameraPlaceholder" class="camera-placeholder">
+       <i class="bi bi-camera-video-off"></i>
+       <strong>Camera Preview Unavailable</strong>
+       <div>
+        No physical camera is connected.<br>
+        Upload a local image for manual viewing.
+       </div>
+      </div>
+
+      <img id="previewImage" class="hidden"
+       alt="Uploaded industrial inspection image">
+
+      <div class="camera-overlay">
+       <i class="bi bi-circle-fill me-1"
+        style="font-size:7px;color:#f4a443"></i>
+       OFFLINE / DEMO
+      </div>
+
+      <div class="camera-bottom" id="cameraCaption">
+       No image analysis is performed
+      </div>
+
+     </div>
+
+     <input id="imageInput" type="file"
+      accept="image/jpeg,image/png,image/webp"
+      class="d-none">
+
+     <div class="dropzone mt-3" id="dropzone"
+      role="button" tabindex="0"
+      aria-label="Upload camera inspection image">
+      <i class="bi bi-cloud-arrow-up"></i>
+      <div class="fw-bold mt-2">Upload Inspection Image</div>
+      <p>
+       JPG, PNG or WebP · Maximum 10 MB<br>
+       Preview only — no automatic fire recognition
+      </p>
+     </div>
+
+     <div class="d-flex gap-2 flex-wrap mt-3">
+      <button id="generateButton" class="btn-purple">
+       <i class="bi bi-arrow-repeat"></i>
+       Generate Scenario Sample
+      </button>
+      <button id="removeImage" class="btn-outline-custom">
+       <i class="bi bi-trash"></i>
+       Remove Image
+      </button>
+      <button id="exportReport" class="btn-outline-custom">
+       <i class="bi bi-download"></i>
+       Export Report
+      </button>
+     </div>
+
+    </section>
+   </div>
+
+   <div class="col-xl-4">
+    <section class="panel text-center">
+
+     <div class="panel-heading text-start">
+      <div>
+       <h3>Illustrative Fire Risk Index</h3>
+       <div class="panel-subtitle">
+        Scenario-based demonstration
+       </div>
+      </div>
+     </div>
+
+     <div class="risk-ring" id="riskRing">
+      <div class="risk-ring-inner">
+       <strong id="riskScore">0</strong>
+       <span>Demo Index / 100</span>
+      </div>
+     </div>
+
+     <span id="riskStatus" class="status-badge success">
+      Normal Scenario
+     </span>
+
+     <div class="mt-4 text-start">
+      <div class="metric-row">
+       <span class="metric-label">Simulated Temperature</span>
+       <span class="metric-value" id="temperatureValue">—</span>
+      </div>
+      <div class="metric-row">
+       <span class="metric-label">Simulated Smoke Index</span>
+       <span class="metric-value" id="smokeValue">—</span>
+      </div>
+      <div class="metric-row">
+       <span class="metric-label">Scenario</span>
+       <span class="metric-value" id="scenarioValue"
+        style="font-size:12px">—</span>
+      </div>
+      <div class="metric-row">
+       <span class="metric-label">Detection Model</span>
+       <span class="status-badge">Not Connected</span>
+      </div>
+     </div>
+
+     <p style="font-size:11px;color:#8992aa;line-height:1.8;margin-top:20px">
+      This index is calculated from synthetic scenario inputs.
+      It is not a real probability of fire or AI confidence score.
+     </p>
+
+    </section>
+   </div>
+
+  </div>
+
+  <!-- SENSOR DATA AND RECOMMENDATIONS -->
+  <div class="row g-4 mb-4">
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Simulated Safety Indicators</h3>
+       <div class="panel-subtitle">
+        Example temperature and smoke readings
+       </div>
+      </div>
+     </div>
+     <div id="sensorMetrics"></div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Safety Assessment</h3>
+       <div class="panel-subtitle">
+        Scenario interpretation and suggested review steps
+       </div>
+      </div>
+     </div>
+
+     <p id="assessmentSummary"
+      style="font-size:12px;color:#747e98;line-height:1.9"></p>
+
+     <div class="section-label mt-4 mb-3">
+      Recommended Follow-up
+     </div>
+
+     <div id="recommendations"></div>
+    </section>
+   </div>
+
+  </div>
+
+  <!-- CHARTS -->
+  <div class="row g-4 mb-4">
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Temperature Trend</h3>
+       <div class="panel-subtitle">
+        Synthetic scenario measurements (°C)
+       </div>
+      </div>
+     </div>
+     <div class="chart-container">
+      <canvas id="temperatureChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Smoke Indicator Trend</h3>
+       <div class="panel-subtitle">
+        Arbitrary demonstration units
+       </div>
+      </div>
+     </div>
+     <div class="chart-container">
+      <canvas id="smokeChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+  </div>
+
+  <!-- EVENTS -->
+  <section class="panel mb-4">
+
+   <div class="panel-heading">
+    <div>
+     <h3>Fire Safety Scenario History</h3>
+     <div class="panel-subtitle">
+      Browser-generated demonstration events
+     </div>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+     <button id="exportCsv" class="btn-outline-custom">
+      <i class="bi bi-filetype-csv"></i> Export CSV
+     </button>
+     <button id="clearHistory" class="btn-outline-custom">
+      <i class="bi bi-trash"></i> Clear History
+     </button>
+    </div>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table align-middle">
+     <thead>
+      <tr>
+       <th>Event ID</th>
+       <th>Camera Zone</th>
+       <th>Scenario</th>
+       <th>Temperature</th>
+       <th>Smoke Index</th>
+       <th>Risk</th>
+       <th>Review</th>
+       <th>Action</th>
+      </tr>
+     </thead>
+     <tbody id="historyBody"></tbody>
+    </table>
+   </div>
+
+  </section>
+
+  <!-- NOTES -->
+  <section class="panel mb-4">
+   <div class="panel-heading">
+    <div>
+     <h3>Safety Inspection Notes</h3>
+     <div class="panel-subtitle">
+      Document observations for the selected demonstration zone
+     </div>
+    </div>
+   </div>
+
+   <label for="inspectionNotes" class="section-label">
+    Inspector Notes
+   </label>
+   <textarea id="inspectionNotes" class="form-control"
+    rows="4" maxlength="1000"
+    placeholder="Record observations, inspection context or follow-up actions..."></textarea>
+
+   <div class="d-flex gap-2 flex-wrap mt-3">
+    <button id="saveNotes" class="btn-purple">
+     <i class="bi bi-check2-circle"></i>
+     Save Session Note
+    </button>
+    <button id="clearNotes" class="btn-outline-custom">
+     <i class="bi bi-trash"></i>
+     Clear Note
+    </button>
+   </div>
+
+   <p style="font-size:10px;color:#8992aa;margin-top:12px;margin-bottom:0">
+    Notes remain only in this browser page until it is reloaded.
+   </p>
+  </section>
+
+  <div class="notice">
+   <i class="bi bi-shield-exclamation"></i>
+   <div>
+    <strong>Critical safety limitation:</strong>
+    This page is not a certified fire detection system,
+    smoke alarm, emergency notification service or industrial
+    safety controller. It must not replace fire alarms,
+    emergency response plans, trained personnel or
+    applicable fire safety systems.
+    All readings and events are synthetic.
+   </div>
+  </div>
+
+ </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button type="button" class="btn-close"
+    data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ INDUSTRA AI — FIRE DETECTION DEMO
+
+ - Synthetic camera zones
+ - Image preview only
+ - Synthetic temperature and smoke values
+ - Scenario-based illustrative risk index
+ - Session event history
+ - Manual review and export
+
+ No real fire detection, AI inference or alarms.
+*/
+
+const $=id=>document.getElementById(id);
+
+const zones=[
+ {id:"CAM-001",name:"Warehouse A",location:"Plant A / Storage"},
+ {id:"CAM-002",name:"Electrical Room",location:"Plant A / Utilities"},
+ {id:"CAM-003",name:"Production Line",location:"Plant B / Manufacturing"},
+ {id:"CAM-004",name:"Boiler Area",location:"Plant B / Thermal"},
+ {id:"CAM-005",name:"Chemical Storage",location:"Plant C / Storage"},
+ {id:"CAM-006",name:"Maintenance Bay",location:"Plant C / Workshop"}
+];
+
+const scenarios={
+ normal:{
+  label:"Normal Conditions",
+  temperature:34,
+  smoke:8
+ },
+ elevated:{
+  label:"Elevated Temperature",
+  temperature:69,
+  smoke:22
+ },
+ smoke:{
+  label:"Illustrative Smoke Event",
+  temperature:56,
+  smoke:78
+ },
+ fire:{
+  label:"Illustrative Fire Event",
+  temperature:118,
+  smoke:92
+ }
+};
+
+let currentZone=zones[0].id;
+let currentScenario="normal";
+let currentReading=null;
+let events=[];
+let notes={};
+let previewUrl=null;
+let temperatureChart=null;
+let smokeChart=null;
+let sampleHistory=[];
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function closeSidebar(){
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+}
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",closeSidebar);
+
+function randomOffset(amount){
+ return (Math.random()-.5)*amount*2;
+}
+
+function createReading(){
+ const config=scenarios[currentScenario];
+
+ return {
+  temperature:Math.max(
+   0,Number((config.temperature+randomOffset(3)).toFixed(1))
+  ),
+  smoke:Math.max(
+   0,Math.min(100,
+    Number((config.smoke+randomOffset(5)).toFixed(1))
+   )
+  )
+ };
+}
+
+function getRiskIndex(reading){
+ // Arbitrary demonstration formula.
+ return Math.min(100,Math.round(
+  reading.temperature*.42+reading.smoke*.58
+ ));
+}
+
+function getRiskLevel(index){
+ if(index>=65)return "High";
+ if(index>=35)return "Elevated";
+ return "Low";
+}
+
+function getRiskColor(level){
+ return level==="High"?"#ed6175":
+  level==="Elevated"?"#f4a443":"#18b58c";
+}
+
+function getBadgeClass(level){
+ return level==="High"?"danger":
+  level==="Elevated"?"warning":"success";
+}
+
+function renderAssessment(){
+ const reading=currentReading;
+ const index=getRiskIndex(reading);
+ const level=getRiskLevel(index);
+
+ $("riskScore").textContent=index;
+ $("riskStatus").textContent=level+" Demo Risk";
+ $("riskStatus").className=
+  "status-badge "+getBadgeClass(level);
+
+ $("temperatureValue").textContent=
+  reading.temperature.toFixed(1)+" °C";
+
+ $("smokeValue").textContent=
+  reading.smoke.toFixed(1)+" / 100";
+
+ $("scenarioValue").textContent=
+  scenarios[currentScenario].label;
+
+ const degrees=index/100*360;
+ const color=getRiskColor(level);
+
+ $("riskRing").style.background=
+  "conic-gradient("+color+" 0deg,"+
+  color+" "+degrees+"deg,#edf0f7 "+degrees+"deg)";
+
+ const summary=
+  "The selected demonstration scenario is "+
+  scenarios[currentScenario].label.toLowerCase()+
+  ". Synthetic temperature is "+
+  reading.temperature.toFixed(1)+" °C and the synthetic smoke "+
+  "indicator is "+reading.smoke.toFixed(1)+
+  "/100. No image or sensor data has been analyzed.";
+
+ $("assessmentSummary").textContent=summary;
+
+ const actions=[
+  "Document the simulated scenario and monitoring zone.",
+  "Review the applicable site fire safety procedures.",
+  "Ensure actual detection and alarm systems are independently maintained."
+ ];
+
+ if(level==="High"){
+  actions.push(
+   "In a real suspected fire, activate the established emergency response process immediately."
+  );
+  actions.push(
+   "Do not rely on this dashboard to confirm or dismiss a fire."
+  );
+ }else if(level==="Elevated"){
+  actions.push(
+   "For real abnormal readings, request authorized verification using approved instrumentation."
+  );
+ }else{
+  actions.push(
+   "Continue approved inspection and fire protection maintenance schedules."
+  );
+ }
+
+ const container=$("recommendations");
+ container.replaceChildren();
+
+ actions.forEach(message=>{
+  const row=document.createElement("div");
+  row.className="recommendation";
+
+  const icon=document.createElement("i");
+  icon.className="bi bi-check2-circle";
+
+  const text=document.createElement("span");
+  text.textContent=message;
+
+  row.append(icon,text);
+  container.append(row);
+ });
+}
+
+function renderMetrics(){
+ const container=$("sensorMetrics");
+ container.replaceChildren();
+
+ const metrics=[
+  {
+   label:"Temperature",
+   value:currentReading.temperature,
+   unit:"°C",
+   max:150,
+   color:"#ed6175"
+  },
+  {
+   label:"Smoke Indicator",
+   value:currentReading.smoke,
+   unit:"/100",
+   max:100,
+   color:"#6855eb"
+  }
+ ];
+
+ metrics.forEach(metric=>{
+  const row=document.createElement("div");
+  row.className="metric-row";
+
+  const left=document.createElement("div");
+  left.className="flex-grow-1";
+
+  const header=document.createElement("div");
+  header.className="d-flex justify-content-between gap-2";
+
+  const label=document.createElement("span");
+  label.className="metric-label";
+  label.textContent=metric.label;
+
+  const value=document.createElement("span");
+  value.className="metric-value";
+  value.textContent=
+   metric.value.toFixed(1)+" "+metric.unit;
+
+  header.append(label,value);
+
+  const progress=document.createElement("div");
+  progress.className="metric-progress";
+
+  const fill=document.createElement("div");
+  fill.style.width=
+   Math.min(100,metric.value/metric.max*100)+"%";
+  fill.style.background=metric.color;
+
+  progress.append(fill);
+  left.append(header,progress);
+  row.append(left);
+  container.append(row);
+ });
+}
+
+function updateStats(){
+ $("cameraCount").textContent=zones.length;
+
+ $("highRiskCount").textContent=
+  events.filter(x=>x.level==="High").length;
+
+ $("pendingCount").textContent=
+  events.filter(x=>!x.reviewed).length;
+
+ $("reviewedCount").textContent=
+  events.filter(x=>x.reviewed).length;
+}
+
+function renderHistory(){
+ const tbody=$("historyBody");
+ tbody.replaceChildren();
+
+ if(!events.length){
+  const row=document.createElement("tr");
+  const cell=document.createElement("td");
+  cell.colSpan=8;
+  cell.style.textAlign="center";
+  cell.style.padding="35px";
+  cell.style.color="#8992aa";
+  cell.textContent="No scenario events generated yet.";
+  row.append(cell);
+  tbody.append(row);
+  return;
+ }
+
+ events.forEach(event=>{
+  const row=document.createElement("tr");
+
+  const values=[
+   event.id,
+   event.zone,
+   event.scenario,
+   event.temperature.toFixed(1)+" °C",
+   event.smoke.toFixed(1)+"/100"
+  ];
+
+  values.forEach(value=>{
+   const cell=document.createElement("td");
+   cell.textContent=value;
+   row.append(cell);
+  });
+
+  const riskCell=document.createElement("td");
+  const riskBadge=document.createElement("span");
+  riskBadge.className=
+   "status-badge "+getBadgeClass(event.level);
+  riskBadge.textContent=event.level;
+  riskCell.append(riskBadge);
+  row.append(riskCell);
+
+  const reviewCell=document.createElement("td");
+  const reviewBadge=document.createElement("span");
+  reviewBadge.className=
+   "status-badge "+(event.reviewed?"success":"warning");
+  reviewBadge.textContent=
+   event.reviewed?"Reviewed":"Pending";
+  reviewCell.append(reviewBadge);
+  row.append(reviewCell);
+
+  const actionCell=document.createElement("td");
+  const button=document.createElement("button");
+  button.className="btn-outline-custom";
+  button.textContent=event.reviewed?"Reviewed":"Mark Reviewed";
+  button.disabled=event.reviewed;
+
+  button.addEventListener("click",()=>{
+   event.reviewed=true;
+   renderHistory();
+   updateStats();
+   notify("Demo event marked reviewed.");
+  });
+
+  actionCell.append(button);
+  row.append(actionCell);
+  tbody.append(row);
+ });
+}
+
+function renderCharts(){
+ if(typeof Chart==="undefined")return;
+
+ const labels=sampleHistory.map((_,index)=>"T"+(index+1));
+
+ if(temperatureChart)temperatureChart.destroy();
+
+ temperatureChart=new Chart($("temperatureChart"),{
+  type:"line",
+  data:{
+   labels,
+   datasets:[{
+    label:"Temperature (°C)",
+    data:sampleHistory.map(x=>x.temperature),
+    borderColor:"#ed6175",
+    backgroundColor:"#ed617520",
+    tension:.35,
+    fill:true,
+    pointRadius:3
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   scales:{
+    y:{beginAtZero:true,grid:{color:"#f0f1f7"}},
+    x:{grid:{display:false}}
+   },
+   plugins:{legend:{display:false}}
+  }
+ });
+
+ if(smokeChart)smokeChart.destroy();
+
+ smokeChart=new Chart($("smokeChart"),{
+  type:"line",
+  data:{
+   labels,
+   datasets:[{
+    label:"Smoke Indicator",
+    data:sampleHistory.map(x=>x.smoke),
+    borderColor:"#6855eb",
+    backgroundColor:"#6855eb20",
+    tension:.35,
+    fill:true,
+    pointRadius:3
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   scales:{
+    y:{beginAtZero:true,max:100,grid:{color:"#f0f1f7"}},
+    x:{grid:{display:false}}
+   },
+   plugins:{legend:{display:false}}
+  }
+ });
+}
+
+function renderAll(){
+ renderAssessment();
+ renderMetrics();
+ renderHistory();
+ updateStats();
+ renderCharts();
+ $("inspectionNotes").value=notes[currentZone]||"";
+}
+
+function generateSample(recordEvent=true){
+ currentReading=createReading();
+
+ sampleHistory.push({...currentReading});
+
+ if(sampleHistory.length>20){
+  sampleHistory.shift();
+ }
+
+ if(recordEvent){
+  const zone=zones.find(x=>x.id===currentZone);
+  const index=getRiskIndex(currentReading);
+
+  events.unshift({
+   id:"FIRE-"+String(events.length+1).padStart(4,"0"),
+   timestamp:new Date().toISOString(),
+   zone:zone.name,
+   cameraId:zone.id,
+   scenario:scenarios[currentScenario].label,
+   temperature:currentReading.temperature,
+   smoke:currentReading.smoke,
+   index,
+   level:getRiskLevel(index),
+   reviewed:false,
+   mode:"synthetic-demo"
+  });
+ }
+
+ renderAll();
+}
+
+function initialize(){
+ zones.forEach(zone=>{
+  const option=document.createElement("option");
+  option.value=zone.id;
+  option.textContent=zone.id+" — "+zone.name;
+  $("cameraSelect").append(option);
+ });
+
+ currentReading=createReading();
+
+ for(let i=0;i<12;i++){
+  sampleHistory.push(createReading());
+ }
+
+ renderAll();
+}
+
+$("cameraSelect").addEventListener("change",event=>{
+ currentZone=event.target.value;
+ $("inspectionNotes").value=notes[currentZone]||"";
+ $("cameraCaption").textContent=
+  "Selected zone: "+
+  zones.find(x=>x.id===currentZone).name+
+  " · No live feed";
+});
+
+$("scenarioSelect").addEventListener("change",event=>{
+ currentScenario=event.target.value;
+ generateSample();
+ notify("Illustrative scenario updated.");
+});
+
+$("generateButton").addEventListener("click",()=>{
+ generateSample();
+ notify("Synthetic fire safety sample generated.");
+});
+
+/* IMAGE PREVIEW — NO DETECTION */
+
+function removeImage(){
+ if(previewUrl){
+  URL.revokeObjectURL(previewUrl);
+  previewUrl=null;
+ }
+
+ $("imageInput").value="";
+ $("previewImage").removeAttribute("src");
+ $("previewImage").classList.add("hidden");
+ $("cameraPlaceholder").classList.remove("hidden");
+ $("cameraCaption").textContent=
+  "No image analysis is performed";
+}
+
+function acceptImage(file){
+ if(!file)return;
+
+ if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+  notify("Select a JPG, PNG or WebP image.");
+  return;
+ }
+
+ if(file.size>10*1024*1024){
+  notify("Maximum image size is 10 MB.");
+  return;
+ }
+
+ if(previewUrl)URL.revokeObjectURL(previewUrl);
+
+ previewUrl=URL.createObjectURL(file);
+ $("previewImage").src=previewUrl;
+ $("previewImage").classList.remove("hidden");
+ $("cameraPlaceholder").classList.add("hidden");
+
+ $("cameraCaption").textContent=
+  "Local image preview only · No fire detection";
+
+ notify("Image loaded for manual viewing.");
+}
+
+$("dropzone").addEventListener("click",()=>{
+ $("imageInput").click();
+});
+
+$("dropzone").addEventListener("keydown",event=>{
+ if(event.key==="Enter"||event.key===" "){
+  event.preventDefault();
+  $("imageInput").click();
+ }
+});
+
+$("dropzone").addEventListener("dragover",event=>{
+ event.preventDefault();
+ $("dropzone").classList.add("dragover");
+});
+
+$("dropzone").addEventListener("dragleave",()=>{
+ $("dropzone").classList.remove("dragover");
+});
+
+$("dropzone").addEventListener("drop",event=>{
+ event.preventDefault();
+ $("dropzone").classList.remove("dragover");
+ acceptImage(event.dataTransfer.files[0]);
+});
+
+$("imageInput").addEventListener("change",event=>{
+ acceptImage(event.target.files[0]);
+});
+
+$("removeImage").addEventListener("click",removeImage);
+
+/* EXPORT */
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportReport").addEventListener("click",()=>{
+ const zone=zones.find(x=>x.id===currentZone);
+
+ const report={
+  mode:"synthetic-fire-safety-demo",
+  generatedAt:new Date().toISOString(),
+  cameraZone:zone,
+  scenario:scenarios[currentScenario].label,
+  readings:currentReading,
+  illustrativeRiskIndex:getRiskIndex(currentReading),
+  illustrativeRiskLevel:
+   getRiskLevel(getRiskIndex(currentReading)),
+  inspectionNotes:notes[currentZone]||"",
+  imageAnalyzed:false,
+  realFireDetected:false,
+  liveSensorsConnected:false,
+  certifiedAlarmSystem:false
+ };
+
+ downloadFile(
+  "fire-safety-"+currentZone+".json",
+  JSON.stringify(report,null,2),
+  "application/json"
+ );
+
+ notify("Demo fire safety report exported.");
+});
+
+function csvEscape(value){
+ return '"'+String(value??"").replace(/"/g,'""')+'"';
+}
+
+$("exportCsv").addEventListener("click",()=>{
+ const fields=[
+  "id","timestamp","zone","cameraId",
+  "scenario","temperature","smoke",
+  "index","level","reviewed","mode"
+ ];
+
+ const csv=[
+  fields.join(","),
+  ...events.map(event=>
+   fields.map(field=>csvEscape(event[field])).join(",")
+  )
+ ].join("\r\n");
+
+ downloadFile(
+  "fire-safety-events.csv",
+  csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Demo event history exported.");
+});
+
+$("clearHistory").addEventListener("click",()=>{
+ if(!events.length)return;
+ if(!confirm("Clear all demo fire safety events?"))return;
+
+ events=[];
+ renderHistory();
+ updateStats();
+ notify("Demo event history cleared.");
+});
+
+/* SESSION NOTES */
+
+$("saveNotes").addEventListener("click",()=>{
+ notes[currentZone]=$("inspectionNotes").value.trim();
+ notify("Inspection note saved for this browser session.");
+});
+
+$("clearNotes").addEventListener("click",()=>{
+ notes[currentZone]="";
+ $("inspectionNotes").value="";
+ notify("Inspection note cleared.");
+});
+
+window.addEventListener("beforeunload",()=>{
+ if(previewUrl)URL.revokeObjectURL(previewUrl);
+});
+
+initialize();
+</script>
+
+</body>
+</html>

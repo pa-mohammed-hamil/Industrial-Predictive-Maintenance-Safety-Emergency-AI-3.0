@@ -1,0 +1,1272 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Energy Cost | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / cost-intelligence</p><h1 id="page-title">Energy Cost</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Energy Cost workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Energy Cost Intelligence | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --bg:#f5f6fb;
+ --white:#fff;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px Arial,Helvetica,sans-serif
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{background:var(--purple);color:white}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;
+ box-shadow:0 5px 20px #10152d05
+}
+.grid{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px
+}
+.grid-2{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px
+}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);
+ gap:17px
+}
+.flex{
+ display:flex;align-items:center;
+ justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;
+ color:#69738e;border-radius:9px;padding:10px 13px;
+ font-size:11px;font-weight:700
+}
+.btn.primary{
+ background:var(--purple);border-color:var(--purple);color:white
+}
+.btn.danger{
+ background:#ffedf0;border-color:#ffedf0;color:#d84b63
+}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{
+ display:block;color:#69738e;font-size:11px;
+ font-weight:700;margin-bottom:7px
+}
+.badge{
+ display:inline-block;padding:7px 10px;
+ border-radius:8px;font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px
+}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);
+ text-align:left;padding:13px;white-space:nowrap
+}
+td{
+ padding:13px;border-bottom:1px solid #eef0f6;white-space:nowrap
+}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);
+ font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);border-radius:11px;
+ padding:14px;margin-bottom:12px
+}
+.record p{font-size:11px;color:#69738e;line-height:1.8}
+.chart{width:100%;height:290px;display:block}
+.metric-grid{
+ display:grid;grid-template-columns:1fr 1fr;gap:12px
+}
+.metric{
+ padding:14px;background:#f8f9fd;
+ border:1px solid var(--border);border-radius:11px
+}
+.metric strong{display:block;font-size:20px;margin-top:9px}
+.progress{
+ height:10px;background:#eef0f8;
+ border-radius:10px;overflow:hidden;margin-top:9px
+}
+.progress-fill{
+ height:100%;background:var(--purple);border-radius:10px
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:11px;
+ padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;
+ background:var(--navy);color:white;
+ padding:13px 17px;border-radius:10px;display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.metric-grid{grid-template-columns:1fr}
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ #toast,.notice{display:none!important}
+ .main{margin:0}.content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◆ Cost Intelligence</a>
+ <a class="nav-link" href="cost-analytics.html">▦ Cost Analytics</a>
+ <a class="nav-link" href="cost-forecasting.html">◇ Cost Forecasting</a>
+ <a class="nav-link" href="avoided-cost.html">◉ Avoided Cost</a>
+ <a class="nav-link" href="cost-reports.html">◆ Cost Reports</a>
+ <a class="nav-link" href="downtime-cost.html">▦ Downtime Cost</a>
+ <a class="nav-link" href="emergency-cost.html">◇ Emergency Cost</a>
+ <a class="nav-link active" href="energy-cost.html">◉ Energy Cost</a>
+ <a class="nav-link" href="repair-cost.html">◆ Repair Cost</a>
+ <a class="nav-link" href="replacement-cost.html">▦ Replacement Cost</a>
+ <a class="nav-link" href="roi-analysis.html">◇ ROI Analysis</a>
+
+ <div class="nav-title">ENERGY OPERATIONS</div>
+ <a class="nav-link" href="energy-monitoring.html">◉ Energy Monitoring</a>
+ <a class="nav-link" href="production-efficiency.html">◆ Production Efficiency</a>
+ <a class="nav-link" href="asset-management.html">▦ Asset Management</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Cost Intelligence / Energy Economics</div>
+   <strong>Industrial Energy Cost Intelligence</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC ENERGY DATA</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / ENERGY FINANCIAL INTELLIGENCE
+ </div>
+ <h1>Industrial Energy Cost Intelligence</h1>
+ <p>
+  Analyze equipment electricity consumption, peak and off-peak
+  charges, plant energy expenditure, energy intensity,
+  monthly consumption trends, abnormal usage and potential
+  savings from efficiency improvements.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Energy Cost Overview</h3>
+  <div class="muted" id="summaryText">
+   Calculating industrial electricity costs...
+  </div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="calculateBtn">Recalculate</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Total Energy Cost</div>
+  <div class="stat-value" id="costKpi">₹0</div>
+  <div class="stat-note">Selected-period variable electricity cost</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Total Energy Consumption</div>
+  <div class="stat-value" id="energyKpi">0 kWh</div>
+  <div class="stat-note">Modeled equipment electricity usage</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Average Effective Tariff</div>
+  <div class="stat-value" id="tariffKpi">₹0</div>
+  <div class="stat-note">Weighted energy cost per kWh</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Potential Energy Savings</div>
+  <div class="stat-value" id="savingsKpi">₹0</div>
+  <div class="stat-note">Illustrative efficiency scenario</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Energy Cost Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="equipmentFilter">Equipment</label>
+   <select class="input" id="equipmentFilter">
+    <option value="all">All Equipment</option>
+   </select>
+  </div>
+  <div>
+   <label for="periodFilter">Analysis Period</label>
+   <select class="input" id="periodFilter">
+    <option value="1">1 Month</option>
+    <option value="3">3 Months</option>
+    <option value="6">6 Months</option>
+    <option value="12" selected>12 Months</option>
+   </select>
+  </div>
+  <div>
+   <label for="statusFilter">Energy Efficiency Status</label>
+   <select class="input" id="statusFilter">
+    <option value="all">All Equipment</option>
+    <option value="Efficient">Efficient</option>
+    <option value="Moderate">Moderate</option>
+    <option value="Inefficient">Inefficient</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Equipment Energy Cost Analysis</h3>
+    <p class="muted">
+     Electricity consumption, tariff cost and efficiency by asset
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 assets</span>
+  </div>
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Equipment</th>
+      <th>Plant</th>
+      <th>Efficiency</th>
+      <th>Energy (kWh)</th>
+      <th>Peak Cost</th>
+      <th>Off-Peak Cost</th>
+      <th>Total Cost</th>
+      <th>Potential Savings</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="equipmentTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Energy Cost Inspector</h3>
+   <span class="badge purple">ASSET ENERGY PROFILE</span>
+  </div>
+  <div id="equipmentDetails"></div>
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Consumption</span>
+    <strong id="assetEnergy">0 kWh</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Electricity Cost</span>
+    <strong id="assetCost">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Effective Tariff</span>
+    <strong id="assetTariff">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Potential Savings</span>
+    <strong id="assetSavings">₹0</strong>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Monthly Energy Cost Trend</h3>
+   <span class="badge purple">MONTHLY ANALYTICS</span>
+  </div>
+  <p class="muted">Illustrative monthly electricity cost over the selected period</p>
+  <svg class="chart" id="trendChart"
+   viewBox="0 0 640 290"
+   role="img" aria-label="Monthly energy cost trend"></svg>
+ </div>
+ <div class="panel">
+  <div class="flex">
+   <h3>Equipment Energy Cost Comparison</h3>
+   <span class="badge blue">ASSET COMPARISON</span>
+  </div>
+  <p class="muted">Electricity expenditure by industrial equipment</p>
+  <svg class="chart" id="equipmentChart"
+   viewBox="0 0 640 290"
+   role="img" aria-label="Equipment energy cost comparison"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Energy Cost Scenario Simulator</h3>
+
+  <div style="margin-bottom:15px">
+   <label for="peakTariff">Peak Electricity Tariff (₹/kWh)</label>
+   <input class="input" id="peakTariff"
+    type="number" min="0" max="50" step=".1" value="11.5">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="offPeakTariff">Off-Peak Tariff (₹/kWh)</label>
+   <input class="input" id="offPeakTariff"
+    type="number" min="0" max="50" step=".1" value="6.5">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="consumptionMultiplier">Consumption Multiplier</label>
+   <input class="input" id="consumptionMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="peakShare">Peak Consumption Share (%)</label>
+   <input class="input" id="peakShare"
+    type="number" min="0" max="100" step="1" value="40">
+  </div>
+
+  <div style="margin-bottom:15px">
+   <label for="efficiencyInput">Potential Consumption Reduction (%)</label>
+   <input class="input" id="efficiencyInput"
+    type="number" min="0" max="80" step="1" value="15">
+  </div>
+
+  <button class="btn primary" id="applyScenarioBtn">
+   Apply Energy Scenario
+  </button>
+  <p class="muted">
+   Savings assume a proportional reduction in peak and off-peak
+   consumption. Fixed charges and demand charges are excluded.
+  </p>
+ </div>
+
+ <div class="panel">
+  <h3>Energy Financial Summary</h3>
+  <p class="muted">Consumption, tariff exposure and savings economics</p>
+  <div id="economicsSummary"></div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Plant Energy Cost Performance</h3>
+  <p class="muted">Electricity consumption and cost by industrial plant</p>
+  <div id="plantSummary"></div>
+ </div>
+
+ <div class="panel">
+  <h3>Energy Efficiency & Cost Insights</h3>
+  <p class="muted">Automated findings from the active synthetic scenario</p>
+  <div id="insightList"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Energy modeling notice:</strong>
+ All equipment consumption, utilization, production and efficiency
+ data are synthetic. Electricity costs represent illustrative
+ variable energy charges only. Real utility bills may also include
+ maximum-demand charges, fixed charges, taxes, fuel adjustments,
+ power-factor penalties and other tariff components. Efficiency
+ savings are hypothetical, not measured reductions.
+ Equipment-level efficiency labels are illustrative and do not
+ establish regulatory or engineering performance ratings.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const STORAGE_KEY="industra-energy-cost-v1";
+
+const ASSETS=[
+ {
+  id:"MTR-001",name:"Main Drive Motor",plant:"Plant A",
+  ratedKw:90,loadFactor:.78,hoursPerMonth:420,
+  efficiency:.91,baselineEfficiency:.94,
+  monthlyProduction:4200
+ },
+ {
+  id:"CMP-001",name:"Air Compressor",plant:"Plant A",
+  ratedKw:75,loadFactor:.84,hoursPerMonth:500,
+  efficiency:.82,baselineEfficiency:.92,
+  monthlyProduction:3600
+ },
+ {
+  id:"FAN-001",name:"Cooling Fan",plant:"Plant A",
+  ratedKw:22,loadFactor:.70,hoursPerMonth:460,
+  efficiency:.94,baselineEfficiency:.95,
+  monthlyProduction:2400
+ },
+ {
+  id:"GEN-001",name:"Auxiliary Electric Generator System",plant:"Plant B",
+  ratedKw:110,loadFactor:.72,hoursPerMonth:330,
+  efficiency:.86,baselineEfficiency:.93,
+  monthlyProduction:2900
+ },
+ {
+  id:"PMP-001",name:"Cooling Pump",plant:"Plant B",
+  ratedKw:45,loadFactor:.76,hoursPerMonth:480,
+  efficiency:.88,baselineEfficiency:.94,
+  monthlyProduction:3200
+ },
+ {
+  id:"GBX-001",name:"Gearbox Drive Motor",plant:"Plant B",
+  ratedKw:65,loadFactor:.82,hoursPerMonth:440,
+  efficiency:.80,baselineEfficiency:.93,
+  monthlyProduction:3700
+ },
+ {
+  id:"HYD-001",name:"Hydraulic Power Unit",plant:"Plant C",
+  ratedKw:55,loadFactor:.74,hoursPerMonth:450,
+  efficiency:.85,baselineEfficiency:.93,
+  monthlyProduction:3100
+ },
+ {
+  id:"PMP-002",name:"Process Pump",plant:"Plant C",
+  ratedKw:80,loadFactor:.86,hoursPerMonth:490,
+  efficiency:.81,baselineEfficiency:.94,
+  monthlyProduction:4100
+ },
+ {
+  id:"CNV-001",name:"Conveyor Drive",plant:"Plant C",
+  ratedKw:30,loadFactor:.68,hoursPerMonth:430,
+  efficiency:.95,baselineEfficiency:.95,
+  monthlyProduction:2700
+ }
+];
+
+const DEFAULTS={
+ peakTariff:11.5,
+ offPeakTariff:6.5,
+ consumptionMultiplier:1,
+ peakShare:40,
+ efficiencyReduction:15
+};
+
+let scenario={...DEFAULTS};
+let results=[];
+let selectedId=ASSETS[0].id;
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(value){
+ return currency.format(value);
+}
+
+function compactMoney(value){
+ const sign=value<0?"-":"";
+ const n=Math.abs(value);
+ if(n>=10000000)return sign+"₹"+(n/10000000).toFixed(2)+"Cr";
+ if(n>=100000)return sign+"₹"+(n/100000).toFixed(2)+"L";
+ if(n>=1000)return sign+"₹"+(n/1000).toFixed(1)+"K";
+ return money(value);
+}
+
+function num(value){
+ return new Intl.NumberFormat("en-IN",{
+  maximumFractionDigits:1
+ }).format(value);
+}
+
+function percent(value){
+ return value.toFixed(1)+"%";
+}
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function sum(items,key){
+ return items.reduce((total,item)=>total+item[key],0);
+}
+
+function efficiencyStatus(asset){
+ if(asset.efficiency>=.93)return "Efficient";
+ if(asset.efficiency>=.86)return "Moderate";
+ return "Inefficient";
+}
+
+function calculateAsset(asset){
+ const months=Number($("periodFilter").value);
+
+ // ratedKw is modeled as useful power at full load.
+ // Electrical input adjusts for modeled efficiency.
+ const monthlyEnergy=
+  asset.ratedKw*
+  asset.loadFactor*
+  asset.hoursPerMonth/
+  asset.efficiency*
+  scenario.consumptionMultiplier;
+
+ const totalEnergy=monthlyEnergy*months;
+
+ const peakEnergy=totalEnergy*scenario.peakShare/100;
+ const offPeakEnergy=totalEnergy-peakEnergy;
+
+ const peakCost=peakEnergy*scenario.peakTariff;
+ const offPeakCost=offPeakEnergy*scenario.offPeakTariff;
+ const totalCost=peakCost+offPeakCost;
+
+ const savedEnergy=
+  totalEnergy*scenario.efficiencyReduction/100;
+
+ const savings=
+  totalCost*scenario.efficiencyReduction/100;
+
+ const production=asset.monthlyProduction*months;
+
+ const energyIntensity=production>0?
+  totalEnergy/production:0;
+
+ return{
+  ...asset,
+  months,
+  efficiencyStatus:efficiencyStatus(asset),
+  monthlyEnergy,
+  totalEnergy,
+  peakEnergy,
+  offPeakEnergy,
+  peakCost,
+  offPeakCost,
+  totalCost,
+  savedEnergy,
+  savings,
+  residualCost:totalCost-savings,
+  effectiveTariff:totalEnergy>0?
+   totalCost/totalEnergy:0,
+  production,
+  energyIntensity
+ };
+}
+
+function calculateAll(){
+ results=ASSETS.map(calculateAsset);
+ render();
+}
+
+function filtered(){
+ const plant=$("plantFilter").value;
+ const equipment=$("equipmentFilter").value;
+ const status=$("statusFilter").value;
+
+ return results.filter(item=>
+  (plant==="all"||item.plant===plant)&&
+  (equipment==="all"||item.id===equipment)&&
+  (status==="all"||item.efficiencyStatus===status)
+ );
+}
+
+function selected(){
+ return filtered().find(item=>item.id===selectedId)||
+  filtered()[0]||null;
+}
+
+function populateEquipment(){
+ const select=$("equipmentFilter");
+ select.replaceChildren();
+
+ const all=el("option","","All Equipment");
+ all.value="all";
+ select.append(all);
+
+ ASSETS.forEach(asset=>{
+  const option=el("option","",asset.name+" · "+asset.id);
+  option.value=asset.id;
+  select.append(option);
+ });
+}
+
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(el("span","",label),el("strong","",value));
+ return row;
+}
+
+function statusBadge(status){
+ const cls=status==="Efficient"?"green":
+  status==="Moderate"?"orange":"red";
+ return el("span","badge "+cls,status);
+}
+
+function renderKpis(){
+ const list=filtered();
+ const energy=sum(list,"totalEnergy");
+ const cost=sum(list,"totalCost");
+
+ $("costKpi").textContent=compactMoney(cost);
+ $("energyKpi").textContent=num(energy)+" kWh";
+ $("tariffKpi").textContent=
+  energy>0?"₹"+(cost/energy).toFixed(2)+"/kWh":"₹0";
+ $("savingsKpi").textContent=
+  compactMoney(sum(list,"savings"));
+
+ $("summaryText").textContent=
+  $("periodFilter").value+"-month energy analysis · "+
+  list.length+" equipment assets · "+
+  scenario.efficiencyReduction+
+  "% hypothetical energy reduction";
+}
+
+function renderTable(){
+ const body=$("equipmentTable");
+ body.replaceChildren();
+ const list=filtered();
+
+ $("visibleCount").textContent=list.length+" assets";
+
+ list.forEach(item=>{
+  const row=el("tr");
+
+  [
+   item.name+" · "+item.id,
+   item.plant
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const statusCell=el("td");
+  statusCell.append(statusBadge(item.efficiencyStatus));
+  row.append(statusCell);
+
+  [
+   num(item.totalEnergy),
+   money(item.peakCost),
+   money(item.offPeakCost),
+   money(item.totalCost),
+   money(item.savings)
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+
+  button.onclick=()=>{
+   selectedId=item.id;
+   renderInspector();
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","No equipment matches the filters.");
+  cell.colSpan=9;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const item=selected();
+ const box=$("equipmentDetails");
+ box.replaceChildren();
+
+ if(!item){
+  box.append(el("p","muted","No equipment selected."));
+  [
+   "assetEnergy","assetCost","assetTariff","assetSavings"
+  ].forEach(id=>$(id).textContent="--");
+  return;
+ }
+
+ [
+  ["Equipment",item.name],
+  ["Equipment ID",item.id],
+  ["Plant",item.plant],
+  ["Rated Useful Power",item.ratedKw+" kW"],
+  ["Load Factor",percent(item.loadFactor*100)],
+  ["Operating Hours / Month",num(item.hoursPerMonth)],
+  ["Modeled Efficiency",percent(item.efficiency*100)],
+  ["Efficiency Status",item.efficiencyStatus],
+  ["Peak Consumption",num(item.peakEnergy)+" kWh"],
+  ["Off-Peak Consumption",num(item.offPeakEnergy)+" kWh"],
+  ["Peak Energy Cost",money(item.peakCost)],
+  ["Off-Peak Energy Cost",money(item.offPeakCost)],
+  ["Energy Intensity",item.energyIntensity.toFixed(2)+" kWh/unit"],
+  ["Potential Saved Energy",num(item.savedEnergy)+" kWh"],
+  ["Residual Scenario Cost",money(item.residualCost)]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+
+ $("assetEnergy").textContent=
+  num(item.totalEnergy)+" kWh";
+
+ $("assetCost").textContent=
+  compactMoney(item.totalCost);
+
+ $("assetTariff").textContent=
+  "₹"+item.effectiveTariff.toFixed(2);
+
+ $("assetSavings").textContent=
+  compactMoney(item.savings);
+}
+
+function drawTrendChart(){
+ const svg=$("trendChart");
+ svg.replaceChildren();
+
+ const list=filtered();
+ const months=Number($("periodFilter").value);
+
+ const monthlyBase=
+  sum(list,"totalCost")/months;
+
+ const values=Array.from({length:months},(_,i)=>{
+  const seasonal=1+.08*Math.sin(i*Math.PI/3);
+  return monthlyBase*seasonal;
+ });
+
+ // Normalize the illustrative seasonal profile so that
+ // the chart's monthly values sum to the KPI total.
+ const rawTotal=values.reduce((a,b)=>a+b,0);
+ const targetTotal=sum(list,"totalCost");
+
+ const data=values.map(value=>
+  rawTotal>0?value*targetTotal/rawTotal:0
+ );
+
+ const left=55,right=615,top=25,bottom=235;
+ const max=Math.max(...data,1)*1.15;
+
+ for(let i=0;i<=4;i++){
+  const y=bottom-(bottom-top)*i/4;
+
+  svg.append(svgEl("line",{
+   x1:left,y1:y,x2:right,y2:y,stroke:"#e9ebf4"
+  }));
+
+  svg.append(svgEl("text",{
+   x:5,y:y+4,fill:"#8992aa","font-size":"10"
+  },compactMoney(max*i/4)));
+ }
+
+ const x=index=>left+(right-left)*
+  (months===1?.5:index/(months-1));
+
+ const y=value=>bottom-value/max*(bottom-top);
+
+ const points=data.map((value,index)=>
+  x(index)+","+y(value)
+ ).join(" ");
+
+ svg.append(svgEl("polyline",{
+  points,fill:"none",stroke:"#6855eb",
+  "stroke-width":"3","stroke-linejoin":"round"
+ }));
+
+ data.forEach((value,index)=>{
+  svg.append(svgEl("circle",{
+   cx:x(index),cy:y(value),r:4,fill:"#6855eb"
+  }));
+
+  svg.append(svgEl("text",{
+   x:x(index)-10,y:257,
+   fill:"#8992aa","font-size":"10"
+  },"M"+(index+1)));
+ });
+}
+
+function drawEquipmentChart(){
+ const svg=$("equipmentChart");
+ svg.replaceChildren();
+
+ const list=filtered();
+ const grouped=ASSETS.map(asset=>({
+  id:asset.id,
+  value:sum(
+   list.filter(item=>item.id===asset.id),
+   "totalCost"
+  )
+ }));
+
+ const max=Math.max(...grouped.map(item=>item.value),1);
+
+ grouped.forEach((item,index)=>{
+  const y=10+index*29;
+  const width=item.value/max*330;
+
+  svg.append(svgEl("text",{
+   x:8,y:y+15,fill:"#69738e","font-size":"11"
+  },item.id));
+
+  svg.append(svgEl("rect",{
+   x:110,y,width,height:18,rx:4,fill:"#6855eb"
+  }));
+
+  svg.append(svgEl("text",{
+   x:120+width,y:y+14,
+   fill:"#202640","font-size":"11"
+  },compactMoney(item.value)));
+ });
+}
+
+function renderEconomics(){
+ const box=$("economicsSummary");
+ box.replaceChildren();
+
+ const list=filtered();
+ const energy=sum(list,"totalEnergy");
+ const cost=sum(list,"totalCost");
+
+ [
+  ["Assets Evaluated",String(list.length)],
+  ["Total Consumption",num(energy)+" kWh"],
+  ["Peak Consumption",num(sum(list,"peakEnergy"))+" kWh"],
+  ["Off-Peak Consumption",num(sum(list,"offPeakEnergy"))+" kWh"],
+  ["Peak Electricity Cost",money(sum(list,"peakCost"))],
+  ["Off-Peak Electricity Cost",money(sum(list,"offPeakCost"))],
+  ["Total Energy Cost",money(cost)],
+  ["Weighted Tariff",energy?
+   "₹"+(cost/energy).toFixed(2)+"/kWh":"₹0/kWh"],
+  ["Potential Saved Energy",num(sum(list,"savedEnergy"))+" kWh"],
+  ["Potential Energy Savings",money(sum(list,"savings"))],
+  ["Residual Scenario Cost",money(sum(list,"residualCost"))]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+}
+
+function renderPlants(){
+ const box=$("plantSummary");
+ box.replaceChildren();
+
+ ["Plant A","Plant B","Plant C"].forEach(plant=>{
+  const list=filtered().filter(item=>item.plant===plant);
+
+  const card=el("div","record");
+
+  card.append(
+   el("h4","",plant),
+   el("p","",
+    list.length+" assets · "+
+    num(sum(list,"totalEnergy"))+" kWh · "+
+    compactMoney(sum(list,"totalCost"))+" energy cost · "+
+    compactMoney(sum(list,"savings"))+" potential savings")
+  );
+
+  box.append(card);
+ });
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const list=filtered();
+
+ const highest=[...list].sort(
+  (a,b)=>b.totalCost-a.totalCost
+ )[0];
+
+ const inefficient=list.filter(
+  item=>item.efficiencyStatus==="Inefficient"
+ ).length;
+
+ const energy=sum(list,"totalEnergy");
+ const peak=sum(list,"peakEnergy");
+
+ const insights=[
+  [
+   "Highest Energy Cost",
+   highest?
+    highest.name+" has the highest modeled electricity expense at "+
+    money(highest.totalCost)+".":
+    "No equipment matches the selected filters."
+  ],
+  [
+   "Energy Efficiency",
+   inefficient+" assets are classified as inefficient under the illustrative efficiency thresholds."
+  ],
+  [
+   "Peak Electricity Exposure",
+   "Peak-period consumption accounts for "+
+   (energy?percent(peak/energy*100):"0.0%")+
+   " of total modeled energy use."
+  ],
+  [
+   "Potential Energy Savings",
+   "A "+scenario.efficiencyReduction+
+   "% consumption reduction produces modeled savings of "+
+   money(sum(list,"savings"))+"."
+  ],
+  [
+   "Engineering Recommendation",
+   "Validate metered kWh, equipment load profiles, tariff schedules and production output before prioritizing energy efficiency investments."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+
+  card.append(
+   el("h4","",title),
+   el("p","",description)
+  );
+
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawTrendChart();
+ drawEquipmentChart();
+ renderEconomics();
+ renderPlants();
+ renderInsights();
+}
+
+function validateScenario(){
+ const peakTariff=Number($("peakTariff").value);
+ const offPeakTariff=Number($("offPeakTariff").value);
+ const consumptionMultiplier=
+  Number($("consumptionMultiplier").value);
+ const peakShare=Number($("peakShare").value);
+ const efficiencyReduction=Number($("efficiencyInput").value);
+
+ const valid=(value,min,max)=>
+  Number.isFinite(value)&&value>=min&&value<=max;
+
+ if(
+  !valid(peakTariff,0,50)||
+  !valid(offPeakTariff,0,50)||
+  !valid(consumptionMultiplier,.25,3)||
+  !valid(peakShare,0,100)||
+  !valid(efficiencyReduction,0,80)
+ ){
+  notify("Enter valid energy scenario assumptions.");
+  return false;
+ }
+
+ scenario={
+  peakTariff,
+  offPeakTariff,
+  consumptionMultiplier,
+  peakShare,
+  efficiencyReduction
+ };
+
+ return true;
+}
+
+function syncInputs(){
+ $("peakTariff").value=scenario.peakTariff;
+ $("offPeakTariff").value=scenario.offPeakTariff;
+ $("consumptionMultiplier").value=scenario.consumptionMultiplier;
+ $("peakShare").value=scenario.peakShare;
+ $("efficiencyInput").value=scenario.efficiencyReduction;
+}
+
+function saveScenario(){
+ try{
+  localStorage.setItem(
+   STORAGE_KEY,
+   JSON.stringify(scenario)
+  );
+ }catch{
+  notify("Browser storage unavailable.");
+ }
+}
+
+function loadScenario(){
+ try{
+  const saved=JSON.parse(
+   localStorage.getItem(STORAGE_KEY)
+  );
+
+  const valid=(value,min,max)=>
+   typeof value==="number"&&
+   Number.isFinite(value)&&value>=min&&value<=max;
+
+  if(saved&&
+   valid(saved.peakTariff,0,50)&&
+   valid(saved.offPeakTariff,0,50)&&
+   valid(saved.consumptionMultiplier,.25,3)&&
+   valid(saved.peakShare,0,100)&&
+   valid(saved.efficiencyReduction,0,80)
+  ){
+   scenario={...saved};
+  }
+ }catch{}
+
+ syncInputs();
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(
+  new Blob([content],{type})
+ );
+
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "equipment_id","equipment_name","plant",
+  "efficiency_status","period_months",
+  "consumption_kwh","peak_consumption_kwh",
+  "offpeak_consumption_kwh","peak_cost_inr",
+  "offpeak_cost_inr","total_cost_inr",
+  "effective_tariff_inr_per_kwh",
+  "energy_intensity_kwh_per_unit",
+  "potential_saved_energy_kwh",
+  "potential_savings_inr"
+ ]];
+
+ filtered().forEach(item=>{
+  rows.push([
+   item.id,item.name,item.plant,item.efficiencyStatus,
+   item.months,item.totalEnergy.toFixed(2),
+   item.peakEnergy.toFixed(2),
+   item.offPeakEnergy.toFixed(2),
+   item.peakCost.toFixed(2),
+   item.offPeakCost.toFixed(2),
+   item.totalCost.toFixed(2),
+   item.effectiveTariff.toFixed(4),
+   item.energyIntensity.toFixed(4),
+   item.savedEnergy.toFixed(2),
+   item.savings.toFixed(2)
+  ]);
+ });
+
+ const csv=rows.map(row=>
+  row.map(value=>
+   '"'+String(value).replaceAll('"','""')+'"'
+  ).join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-energy-cost.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Energy cost CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-energy-cost.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   scenario,
+   analysisMonths:Number($("periodFilter").value),
+   filters:{
+    plant:$("plantFilter").value,
+    equipment:$("equipmentFilter").value,
+    efficiencyStatus:$("statusFilter").value
+   },
+   results:filtered()
+  },null,2),
+  "application/json"
+ );
+
+ notify("Energy cost JSON exported.");
+}
+
+$("calculateBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculateAll();
+ notify("Energy cost scenario recalculated.");
+};
+
+$("applyScenarioBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculateAll();
+ notify("Energy cost assumptions applied.");
+};
+
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ if(!confirm("Reset energy cost scenario?"))return;
+
+ scenario={...DEFAULTS};
+ selectedId=ASSETS[0].id;
+
+ $("plantFilter").value="all";
+ $("equipmentFilter").value="all";
+ $("periodFilter").value="12";
+ $("statusFilter").value="all";
+
+ syncInputs();
+ saveScenario();
+ calculateAll();
+
+ notify("Energy cost scenario reset.");
+};
+
+[
+ "plantFilter",
+ "equipmentFilter",
+ "periodFilter",
+ "statusFilter"
+].forEach(id=>{
+ $(id).addEventListener("change",calculateAll);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+populateEquipment();
+loadScenario();
+calculateAll();
+</script>
+
+</body>
+</html>

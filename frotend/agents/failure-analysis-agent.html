@@ -1,0 +1,1886 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Failure Analysis Agent | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / agents</p><h1 id="page-title">Failure Analysis Agent</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Failure Analysis Agent workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Failure Analysis Agent | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple2:#8b7af9;
+ --green:#16b88a;
+ --orange:#f2a53a;
+ --red:#eb6174;
+ --blue:#438df5;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8b93aa;
+ --border:#e9ebf3;
+ --sidebar:258px
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif
+}
+h1,h2,h3,h4,h5,h6{
+ font-family:Manrope,sans-serif;
+ letter-spacing:-.6px
+}
+a{text-decoration:none}
+button:focus-visible,a:focus-visible,
+input:focus-visible,select:focus-visible{
+ outline:3px solid #a99cff!important;
+ outline-offset:2px
+}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;
+ width:var(--sidebar);background:var(--navy);
+ color:#aab1ce;z-index:1050;
+ display:flex;flex-direction:column;
+ transition:transform .25s
+}
+.brand{
+ height:83px;padding:21px 23px;
+ display:flex;align-items:center;gap:12px;
+ border-bottom:1px solid #ffffff12
+}
+.brand-mark{
+ width:43px;height:43px;border-radius:14px;
+ background:linear-gradient(135deg,#9c83ff,#5a48e4);
+ color:white;display:grid;place-items:center;
+ font-size:22px
+}
+.brand strong{color:white;font-size:17px}
+.brand small{
+ display:block;font-size:9px;letter-spacing:2px;
+ color:#7883b0
+}
+.sidebar-body{
+ overflow-y:auto;flex:1;padding:16px 12px
+}
+.sidebar-label{
+ color:#687397;text-transform:uppercase;
+ font-size:9px;font-weight:800;letter-spacing:2px;
+ padding:20px 15px 9px
+}
+.side-link{
+ display:flex;align-items:center;gap:13px;
+ padding:11px 14px;margin:3px 0;
+ color:#9da8ca;border-radius:11px;
+ font-size:12px;font-weight:600;transition:.2s
+}
+.side-link i{
+ font-size:17px;width:21px;text-align:center
+}
+.side-link:hover{
+ background:#ffffff10;color:white
+}
+.side-link.active{
+ background:linear-gradient(90deg,#6b59e8,#5346ba);
+ color:white
+}
+.sidebar-foot{
+ padding:18px;border-top:1px solid #ffffff12
+}
+.sidebar-status{
+ border-radius:13px;padding:13px;
+ background:#ffffff09;border:1px solid #ffffff12
+}
+.status-dot{
+ display:inline-block;width:8px;height:8px;
+ border-radius:50%;background:#2cdaa2;
+ margin-right:7px
+}
+.app{
+ margin-left:var(--sidebar);
+ min-height:100vh
+}
+.topbar{
+ background:white;min-height:76px;
+ display:flex;align-items:center;
+ justify-content:space-between;gap:15px;
+ padding:15px 30px;
+ border-bottom:1px solid var(--border);
+ position:sticky;top:0;z-index:100
+}
+.topbar-title{
+ font-size:15px;font-weight:800
+}
+.topbar-sub{
+ color:var(--muted);font-size:11px;margin-top:3px
+}
+.top-actions{
+ display:flex;align-items:center;gap:12px
+}
+.top-icon{
+ height:39px;width:39px;
+ display:grid;place-items:center;
+ border-radius:12px;border:1px solid var(--border);
+ background:#fafaff;color:#555e7b;font-size:16px
+}
+.top-icon:hover{
+ background:#eeecff;color:var(--purple)
+}
+.avatar{
+ height:39px;width:39px;border-radius:13px;
+ display:grid;place-items:center;
+ color:white;font-weight:800;
+ background:linear-gradient(135deg,#7e6bf4,#a18dff)
+}
+.content{
+ padding:29px;max-width:1850px;margin:auto
+}
+.eyebrow{
+ text-transform:uppercase;letter-spacing:2px;
+ font-size:10px;font-weight:800;
+ color:var(--purple)
+}
+.page-title{
+ font-size:29px;font-weight:800;
+ margin:9px 0 6px
+}
+.page-description{
+ color:var(--muted);line-height:1.7
+}
+.btn-premium,.btn-soft{
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;
+ border-radius:11px;padding:11px 16px;
+ font-size:12px;font-weight:700;transition:.2s
+}
+.btn-premium{
+ background:var(--purple);color:white;
+ border:1px solid var(--purple)
+}
+.btn-premium:hover{
+ background:#5542d5;color:white
+}
+.btn-soft{
+ background:white;color:#5e6680;
+ border:1px solid var(--border)
+}
+.btn-soft:hover{
+ background:#f1efff;color:var(--purple)
+}
+.surface{
+ background:white;border:1px solid var(--border);
+ border-radius:18px;
+ box-shadow:0 8px 30px #24305b08
+}
+.hero{
+ position:relative;overflow:hidden;
+ background:linear-gradient(115deg,#6651e9,#8e74f4 65%,#a894ff);
+ color:white;border-radius:22px;
+ padding:31px 33px;
+ box-shadow:0 15px 35px #7564ea28
+}
+.hero:after{
+ content:"";position:absolute;
+ width:330px;height:330px;
+ right:-60px;top:-145px;
+ border:1px solid #ffffff45;
+ border-radius:50%;
+ box-shadow:0 0 0 45px #ffffff0b,
+            0 0 0 95px #ffffff09;
+ pointer-events:none
+}
+.hero h2{
+ font-size:25px;font-weight:800
+}
+.hero p{
+ max-width:700px;color:#eeeaff;line-height:1.8
+}
+.hero-chip{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff23;border:1px solid #ffffff30;
+ padding:8px 12px;border-radius:9px;
+ font-size:10px;font-weight:700
+}
+.metric{
+ padding:21px;height:100%
+}
+.metric-top{
+ display:flex;justify-content:space-between;
+ align-items:center
+}
+.metric-label{
+ color:#8a92a8;font-size:11px;font-weight:700
+}
+.metric-icon{
+ width:44px;height:44px;border-radius:14px;
+ display:grid;place-items:center;font-size:20px
+}
+.metric-value{
+ font:800 27px Manrope,sans-serif;
+ margin:14px 0 6px
+}
+.metric-foot{
+ font-size:10px;color:#9aa1b3
+}
+.section-title{
+ font-size:17px;font-weight:800
+}
+.section-sub{
+ font-size:11px;color:var(--muted)
+}
+.badge-soft{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:6px 10px;border-radius:8px;
+ font-size:10px;font-weight:800
+}
+.b-success{
+ background:#e5f8f0;color:#13a776
+}
+.b-warning{
+ background:#fff4e2;color:#d58c20
+}
+.b-danger{
+ background:#ffebee;color:#df4d64
+}
+.b-info{
+ background:#eaf2ff;color:#438df5
+}
+.b-neutral{
+ background:#f0f1f6;color:#788098
+}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;padding:11px 12px;
+ font-size:12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#a69aff;
+ box-shadow:0 0 0 3px #6855eb12
+}
+.form-label{
+ font-size:11px;font-weight:800;color:#5b6480
+}
+.chart-wrap{
+ height:285px;position:relative
+}
+.health-ring{
+ width:148px;height:148px;border-radius:50%;
+ margin:auto;display:grid;place-items:center;
+ background:conic-gradient(
+  var(--purple) 0deg,
+  var(--purple) var(--ring-angle,270deg),
+  #edeafc var(--ring-angle,270deg),
+  #edeafc 360deg
+ );
+}
+.health-inner{
+ width:119px;height:119px;border-radius:50%;
+ background:white;display:flex;
+ flex-direction:column;align-items:center;
+ justify-content:center
+}
+.health-number{
+ font:800 34px Manrope,sans-serif
+}
+.health-caption{
+ font-size:10px;color:var(--muted)
+}
+.sensor-tile{
+ padding:15px;border:1px solid var(--border);
+ border-radius:12px;background:#fafbff;
+ height:100%
+}
+.sensor-label{
+ font-size:10px;color:var(--muted)
+}
+.sensor-value{
+ font:800 20px Manrope,sans-serif;
+ margin-top:8px
+}
+.sensor-unit{
+ font-size:10px;color:#9ba3b6
+}
+.failure-card{
+ border:1px solid var(--border);
+ border-radius:13px;padding:16px;
+ margin-bottom:11px
+}
+.failure-card:last-child{margin-bottom:0}
+.failure-head{
+ display:flex;justify-content:space-between;
+ align-items:center;gap:10px
+}
+.failure-name{
+ font-size:12px;font-weight:800
+}
+.failure-desc{
+ color:var(--muted);font-size:10px;
+ line-height:1.7;margin:7px 0 11px
+}
+.progress{
+ background:#edf0f7;border-radius:10px
+}
+.progress-bar{
+ border-radius:10px
+}
+.recommendation{
+ display:flex;gap:13px;padding:15px;
+ border:1px solid var(--border);
+ border-radius:13px;margin-bottom:11px
+}
+.recommendation:last-child{margin-bottom:0}
+.recommendation-icon{
+ width:40px;height:40px;flex-shrink:0;
+ border-radius:12px;display:grid;
+ place-items:center;font-size:19px
+}
+.recommendation strong{font-size:11px}
+.recommendation p{
+ font-size:10px;color:var(--muted);
+ line-height:1.7;margin:6px 0
+}
+.trace-item{
+ display:flex;gap:13px;
+ padding:15px 0;border-bottom:1px solid var(--border)
+}
+.trace-item:last-child{border-bottom:0}
+.trace-icon{
+ width:36px;height:36px;flex-shrink:0;
+ display:grid;place-items:center;
+ border-radius:11px;background:#eeebff;
+ color:var(--purple);font-size:17px
+}
+.trace-item strong{font-size:11px}
+.trace-item p{
+ font-size:10px;color:var(--muted);
+ line-height:1.7;margin:5px 0 0
+}
+.table thead th{
+ background:#fafbfe;color:#9099ae;
+ font-size:10px;text-transform:uppercase;
+ letter-spacing:.7px;padding:15px 18px;
+ white-space:nowrap;
+ border-bottom:1px solid var(--border)
+}
+.table tbody td{
+ padding:15px 18px;font-size:11px;
+ color:#66708a;vertical-align:middle;
+ border-color:#f0f1f7
+}
+.table-title{
+ font-weight:800;color:#252c48
+}
+.table-sub{
+ font-size:9px;color:#9ca4b8;margin-top:5px
+}
+.small-action{
+ border:1px solid var(--border);
+ background:white;border-radius:8px;
+ padding:7px 10px;color:#66718d;
+ font-size:10px;font-weight:700
+}
+.small-action:hover{
+ background:#eeebff;color:var(--purple)
+}
+.report-code{
+ background:#141a31;color:#dce6ff;
+ border-radius:13px;padding:18px;
+ font:11px/1.8 monospace;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+ max-height:340px;overflow:auto
+}
+.footer{
+ padding:23px 30px;
+ border-top:1px solid var(--border);
+ color:#9aa2b5;font-size:10px;
+ display:flex;justify-content:space-between;gap:12px
+}
+.mobile-shade{display:none}
+@media(max-width:1199px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .app{margin-left:0}
+ .mobile-shade.show{
+  display:block;position:fixed;inset:0;
+  background:#0008;z-index:1040
+ }
+}
+@media(max-width:575px){
+ .content{padding:17px}
+ .topbar{padding:13px 17px}
+ .page-title{font-size:23px}
+ .hero{padding:23px}
+ .hero h2{font-size:20px}
+ .metric-value{font-size:23px}
+ .footer{flex-direction:column;padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-shade" id="shade"></div>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div class="brand-mark">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a997ff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <nav class="sidebar-body" aria-label="Main navigation">
+
+  <div class="sidebar-label">Main Menu</div>
+
+  <a class="side-link" href="../index.html">
+   <i class="bi bi-house-door"></i>Home
+  </a>
+  <a class="side-link" href="../dashboard.html">
+   <i class="bi bi-grid-1x2"></i>Dashboard
+  </a>
+  <a class="side-link" href="../command-center.html">
+   <i class="bi bi-broadcast"></i>Command Center
+  </a>
+  <a class="side-link" href="../analytics.html">
+   <i class="bi bi-bar-chart-line"></i>Analytics Studio
+  </a>
+  <a class="side-link" href="../reports.html">
+   <i class="bi bi-file-earmark-bar-graph"></i>Reports
+  </a>
+  <a class="side-link" href="../notifications.html">
+   <i class="bi bi-bell"></i>Notifications
+  </a>
+
+  <div class="sidebar-label">Operations</div>
+
+  <a class="side-link" href="../assets/assets.html">
+   <i class="bi bi-cpu"></i>Asset Intelligence
+  </a>
+  <a class="side-link" href="../assets/asset-health.html">
+   <i class="bi bi-heart-pulse"></i>Asset Health
+  </a>
+  <a class="side-link" href="../telemetry/live-telemetry.html">
+   <i class="bi bi-activity"></i>Live Telemetry
+  </a>
+  <a class="side-link" href="../predictive-maintenance/maintenance-dashboard.html">
+   <i class="bi bi-tools"></i>Predictive Maintenance
+  </a>
+  <a class="side-link" href="../maintenance/work-orders.html">
+   <i class="bi bi-clipboard-check"></i>Work Orders
+  </a>
+
+  <div class="sidebar-label">Risk & Intelligence</div>
+
+  <a class="side-link" href="../safety/safety-dashboard.html">
+   <i class="bi bi-shield-check"></i>Safety Intelligence
+  </a>
+  <a class="side-link" href="../emergency/emergency-dashboard.html">
+   <i class="bi bi-exclamation-triangle"></i>Emergency Response
+  </a>
+  <a class="side-link" href="../cost-intelligence/cost-dashboard.html">
+   <i class="bi bi-currency-rupee"></i>Cost Intelligence
+  </a>
+  <a class="side-link" href="../copilot/ai-copilot.html">
+   <i class="bi bi-stars"></i>AI Copilot
+  </a>
+
+  <a class="side-link" href="agent-dashboard.html">
+   <i class="bi bi-diagram-3"></i>AI Agents
+  </a>
+  <a class="side-link" href="asset-health-agent.html">
+   <i class="bi bi-heart-pulse"></i>Asset Health Agent
+  </a>
+  <a class="side-link" href="cost-agent.html">
+   <i class="bi bi-currency-rupee"></i>Cost Agent
+  </a>
+  <a class="side-link" href="emergency-response-agent.html">
+   <i class="bi bi-exclamation-octagon"></i>Emergency Response Agent
+  </a>
+  <a class="side-link active" href="failure-analysis-agent.html" aria-current="page">
+   <i class="bi bi-search-heart"></i>Failure Analysis Agent
+  </a>
+  <a class="side-link" href="agent-workflows.html">
+   <i class="bi bi-bezier2"></i>Agent Workflows
+  </a>
+  <a class="side-link" href="agent-executions.html">
+   <i class="bi bi-play-circle"></i>Agent Executions
+  </a>
+  <a class="side-link" href="agent-tool-calls.html">
+   <i class="bi bi-wrench-adjustable"></i>Agent Tool Calls
+  </a>
+  <a class="side-link" href="agent-evaluation.html">
+   <i class="bi bi-clipboard-data"></i>Agent Evaluation
+  </a>
+
+  <div class="sidebar-label">Administration</div>
+
+  <a class="side-link" href="../observability/observability-dashboard.html">
+   <i class="bi bi-speedometer2"></i>Observability
+  </a>
+  <a class="side-link" href="../security/security-dashboard.html">
+   <i class="bi bi-lock"></i>Security
+  </a>
+  <a class="side-link" href="../settings/settings.html">
+   <i class="bi bi-gear"></i>Settings
+  </a>
+
+ </nav>
+
+ <div class="sidebar-foot">
+  <div class="sidebar-status">
+   <div class="fw-bold text-white small">
+    <span class="status-dot"></span>Failure Analysis Agent
+   </div>
+   <div class="mt-2" style="font-size:10px">
+    Diagnostic simulation · Demo mode
+   </div>
+  </div>
+ </div>
+</aside>
+
+<div class="app">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon d-xl-none" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="topbar-title">Failure Analysis Intelligence Agent</div>
+   <div class="topbar-sub">
+    Workspace / AI Agents / Failure Analysis
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="d-none d-md-inline text-secondary small">
+   Illustrative diagnostics
+  </span>
+  <button class="top-icon" id="resetButton" aria-label="Reset simulation">
+   <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <a href="../notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <a href="../settings/profile.html" class="avatar" aria-label="Profile">
+   AI
+  </a>
+ </div>
+</header>
+
+<main class="content">
+
+ <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div>
+   <div class="eyebrow">
+    Predictive Maintenance & Root Cause Intelligence
+   </div>
+   <h1 class="page-title">
+    Failure Analysis Agent
+    <span style="color:var(--purple)">✦</span>
+   </h1>
+   <div class="page-description">
+    Explore equipment failure modes, diagnostic indicators,
+    probable causes and maintenance decision support.
+   </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-soft" id="csvButton">
+    <i class="bi bi-filetype-csv"></i> Export CSV
+   </button>
+   <button class="btn-soft" id="jsonButton">
+    <i class="bi bi-download"></i> Export JSON
+   </button>
+   <button class="btn-premium" id="analyzeButton">
+    <i class="bi bi-stars"></i> Run Failure Analysis
+   </button>
+  </div>
+ </div>
+
+ <section class="hero mb-4">
+  <div class="position-relative" style="z-index:1">
+   <div class="text-uppercase fw-bold mb-3"
+    style="font-size:10px;letter-spacing:2px">
+    <i class="bi bi-cpu me-1"></i>
+    Intelligent Equipment Failure Investigation
+   </div>
+
+   <h2>
+    Understand failure patterns.<br>
+    Investigate root causes.
+   </h2>
+
+   <p class="mt-3 mb-4">
+    Analyze synthetic vibration, temperature, pressure,
+    current and operating-hour data to explore failure
+    indicators, component degradation, remaining useful
+    life and possible maintenance actions.
+   </p>
+
+   <div class="d-flex flex-wrap gap-2">
+    <span class="hero-chip">
+     <i class="bi bi-search"></i> Root Cause Analysis
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-activity"></i> Anomaly Indicators
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-hourglass-split"></i> RUL Estimates
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-diagram-3"></i> Failure Modes
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-person-check"></i> Human Review
+    </span>
+   </div>
+  </div>
+ </section>
+
+ <section class="surface p-3 mb-4">
+  <div class="row g-3 align-items-end">
+   <div class="col-md-5">
+    <label class="form-label" for="assetSelect">
+     Industrial Asset
+    </label>
+    <select class="form-select" id="assetSelect"></select>
+   </div>
+   <div class="col-md-3">
+    <label class="form-label" for="analysisMode">
+     Analysis Mode
+    </label>
+    <select class="form-select" id="analysisMode">
+     <option value="comprehensive">Comprehensive</option>
+     <option value="mechanical">Mechanical</option>
+     <option value="thermal">Thermal</option>
+     <option value="electrical">Electrical</option>
+    </select>
+   </div>
+   <div class="col-md-2">
+    <label class="form-label">Asset Condition</label>
+    <div class="pt-2" id="conditionBadge"></div>
+   </div>
+   <div class="col-md-2">
+    <button class="btn-soft w-100" id="defaultsButton">
+     <i class="bi bi-arrow-repeat"></i> Load Defaults
+    </button>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Asset Health Score</span>
+     <span class="metric-icon"
+      style="background:#eeebff;color:var(--purple)">
+      <i class="bi bi-heart-pulse"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="healthKpi">—</div>
+    <div class="metric-foot">Synthetic condition indicator</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Failure Risk Index</span>
+     <span class="metric-icon"
+      style="background:#ffebee;color:var(--red)">
+      <i class="bi bi-exclamation-triangle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="riskKpi">—</div>
+    <div class="metric-foot">Rule-based demo score, not probability</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Illustrative RUL</span>
+     <span class="metric-icon"
+      style="background:#eaf2ff;color:var(--blue)">
+      <i class="bi bi-hourglass-split"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="rulKpi">—</div>
+    <div class="metric-foot">Scenario estimate, not validated prediction</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Flagged Failure Modes</span>
+     <span class="metric-icon"
+      style="background:#fff4e2;color:var(--orange)">
+      <i class="bi bi-diagram-3"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="modesKpi">—</div>
+    <div class="metric-foot">Heuristic diagnostic indicators</div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-4">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Asset Condition Assessment</h2>
+    <p class="section-sub mb-4">
+     Illustrative equipment health visualization
+    </p>
+
+    <div class="health-ring" id="healthRing">
+     <div class="health-inner">
+      <div class="health-number" id="healthRingValue">—</div>
+      <div class="health-caption">Health Index</div>
+     </div>
+    </div>
+
+    <div class="text-center mt-3">
+     <span id="healthStatus" class="badge-soft b-neutral">—</span>
+    </div>
+
+    <div class="mt-4" id="healthDetails"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-8">
+   <div class="surface p-4 h-100">
+    <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h2 class="section-title mb-1">Equipment Telemetry</h2>
+      <p class="section-sub mb-0">
+       Editable synthetic measurements
+      </p>
+     </div>
+     <span class="badge-soft b-info">DEMO INPUTS</span>
+    </div>
+
+    <div class="row g-3" id="sensorInputs"></div>
+
+    <div class="p-3 rounded-3 mt-4"
+     style="background:#f3f0ff;color:#6251d3;font-size:11px;line-height:1.7">
+     <i class="bi bi-info-circle me-1"></i>
+     The readings are fictional. Changing them updates
+     a deterministic diagnostic demonstration and does
+     not analyze live industrial equipment.
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Equipment Condition Trends</h2>
+    <p class="section-sub mb-3">
+     Synthetic vibration and temperature history
+    </p>
+    <div class="chart-wrap" style="height:320px">
+     <canvas id="trendChart"
+      aria-label="Synthetic equipment condition trends"></canvas>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Failure Mode Indicators</h2>
+    <p class="section-sub mb-3">
+     Rule-based indicators, not calibrated probabilities
+    </p>
+    <div id="failureModes"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Root Cause Investigation</h2>
+    <p class="section-sub mb-3">
+     Potential contributing factors for engineering review
+    </p>
+    <div id="rootCauses"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Maintenance Recommendations</h2>
+    <p class="section-sub mb-3">
+     Non-executable recommendations requiring human review
+    </p>
+    <div id="recommendations"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h2 class="section-title mb-1">Failure Analysis Execution Trace</h2>
+      <p class="section-sub mb-0">
+       Explainable simulated diagnostic steps
+      </p>
+     </div>
+     <span id="executionBadge" class="badge-soft b-neutral">
+      NOT RUN
+     </span>
+    </div>
+    <div id="traceList"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Failure Risk Profile</h2>
+    <p class="section-sub mb-3">
+     Relative synthetic failure-mode indicator scores
+    </p>
+    <div class="chart-wrap" style="height:320px">
+     <canvas id="riskChart"
+      aria-label="Failure mode risk profile"></canvas>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="surface mb-4">
+  <div class="p-4 pb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+   <div>
+    <h2 class="section-title mb-1">Equipment Failure Analysis Register</h2>
+    <p class="section-sub mb-0">
+     Illustrative fleet-wide diagnostic comparison
+    </p>
+   </div>
+   <input type="search" class="form-control"
+    id="assetSearch" placeholder="Search equipment..."
+    aria-label="Search equipment"
+    style="max-width:270px">
+  </div>
+
+  <div class="table-responsive">
+   <table class="table mb-0">
+    <thead>
+     <tr>
+      <th>Asset</th>
+      <th>Plant</th>
+      <th>Health</th>
+      <th>Risk Index</th>
+      <th>Illustrative RUL</th>
+      <th>Condition</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="assetTable"></tbody>
+   </table>
+  </div>
+ </section>
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">Structured Failure Analysis Output</h2>
+    <p class="section-sub mb-0">
+     Transparent rule-based diagnostic results
+    </p>
+   </div>
+   <button class="btn-soft" id="copyButton">
+    <i class="bi bi-copy"></i> Copy JSON
+   </button>
+  </div>
+  <pre class="report-code mb-0" id="outputJson"></pre>
+ </section>
+
+</main>
+
+<footer class="footer">
+ <span>© 2026 INDUSTRA AI · Failure Analysis Agent</span>
+ <span>Illustrative diagnostics · Engineering validation required</span>
+</footer>
+
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3"
+ style="z-index:1200">
+ <div class="toast border-0 shadow" id="appToast"
+  role="status" aria-live="polite">
+  <div class="toast-body d-flex align-items-center gap-2">
+   <i class="bi bi-info-circle text-primary"></i>
+   <span id="toastMessage"></span>
+  </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ FAILURE ANALYSIS AGENT — DEMONSTRATION
+
+ All asset data and measurements are synthetic.
+
+ Risk index:
+ Weighted normalized deviations from illustrative
+ sensor reference values. This is NOT a calibrated
+ failure probability.
+
+ Health index:
+ 100 minus a portion of the synthetic risk index.
+
+ RUL:
+ A demonstration formula based on risk and operating
+ hours. NOT a validated prognostic prediction.
+
+ Failure-mode indicators:
+ Deterministic heuristic scores, not ML inference.
+
+ Suggested future FastAPI endpoints:
+ GET  /api/v1/assets
+ GET  /api/v1/assets/{asset_id}/telemetry
+ POST /api/v1/agents/failure-analysis/execute
+ GET  /api/v1/agents/executions/{execution_id}
+
+ No real model or equipment is connected.
+*/
+
+const $=id=>document.getElementById(id);
+
+const assets=[
+ {
+  id:"MOTOR-12",
+  name:"Main Drive Motor",
+  plant:"Plant A",
+  sensors:{
+   vibration:3.1,temperature:68,
+   pressure:5.4,current:42,
+   hours:12400
+  }
+ },
+ {
+  id:"PUMP-12",
+  name:"Hydraulic Transfer Pump",
+  plant:"Plant A",
+  sensors:{
+   vibration:6.8,temperature:87,
+   pressure:3.2,current:54,
+   hours:18200
+  }
+ },
+ {
+  id:"FURNACE-02",
+  name:"Industrial Furnace",
+  plant:"Plant B",
+  sensors:{
+   vibration:2.2,temperature:79,
+   pressure:5.7,current:38,
+   hours:9700
+  }
+ },
+ {
+  id:"HYD-08",
+  name:"Hydraulic Power Unit",
+  plant:"Plant B",
+  sensors:{
+   vibration:8.2,temperature:102,
+   pressure:2.7,current:68,
+   hours:22400
+  }
+ },
+ {
+  id:"COMP-06",
+  name:"Air Compressor",
+  plant:"Plant C",
+  sensors:{
+   vibration:3.7,temperature:72,
+   pressure:5.0,current:46,
+   hours:11300
+  }
+ }
+];
+
+const sensorFields=[
+ {key:"vibration",label:"Vibration",unit:"mm/s",step:".1"},
+ {key:"temperature",label:"Temperature",unit:"°C",step:".1"},
+ {key:"pressure",label:"Pressure",unit:"bar",step:".1"},
+ {key:"current",label:"Motor Current",unit:"A",step:".1"},
+ {key:"hours",label:"Operating Hours",unit:"hours",step:"1"}
+];
+
+let selectedAssetId="MOTOR-12";
+let sensors={};
+let result=null;
+let analysisComplete=false;
+let trendChart=null;
+let riskChart=null;
+
+function clamp(value,min,max){
+ return Math.max(min,Math.min(max,value));
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance(
+  $("appToast"),{delay:3000}
+ ).show();
+}
+
+function element(tag,text,className){
+ const e=document.createElement(tag);
+ if(className)e.className=className;
+ if(text!==undefined)e.textContent=text;
+ return e;
+}
+
+function add(parent,tag,text,className){
+ const e=element(tag,text,className);
+ parent.append(e);
+ return e;
+}
+
+function asset(){
+ return assets.find(a=>a.id===selectedAssetId);
+}
+
+function calculate(s){
+ const vibrationRisk=clamp((s.vibration-2)/7*100,0,100);
+ const thermalRisk=clamp((s.temperature-55)/65*100,0,100);
+ const pressureRisk=clamp(Math.abs(s.pressure-5.5)/3.5*100,0,100);
+ const electricalRisk=clamp((s.current-35)/45*100,0,100);
+ const ageRisk=clamp(s.hours/30000*100,0,100);
+
+ const risk=clamp(
+  vibrationRisk*.30+
+  thermalRisk*.25+
+  pressureRisk*.15+
+  electricalRisk*.20+
+  ageRisk*.10,
+  0,100
+ );
+
+ const health=clamp(Math.round(100-risk*.85),0,100);
+
+ const rul=Math.max(
+  30,
+  Math.round(1500-risk*11-s.hours*.012)
+ );
+
+ const modes=[
+  {
+   name:"Bearing Wear",
+   score:clamp(vibrationRisk*.75+ageRisk*.25,0,100),
+   description:"Vibration and cumulative operating hours are elevated."
+  },
+  {
+   name:"Thermal Degradation",
+   score:clamp(thermalRisk*.85+electricalRisk*.15,0,100),
+   description:"Temperature and electrical load suggest possible heat stress."
+  },
+  {
+   name:"Hydraulic / Pressure Fault",
+   score:clamp(pressureRisk*.85+vibrationRisk*.15,0,100),
+   description:"Pressure deviation and vibration may warrant investigation."
+  },
+  {
+   name:"Electrical Overload",
+   score:clamp(electricalRisk*.85+thermalRisk*.15,0,100),
+   description:"Current and temperature are indicators for electrical review."
+  },
+  {
+   name:"Age-Related Degradation",
+   score:clamp(ageRisk*.8+vibrationRisk*.2,0,100),
+   description:"Accumulated operating hours may contribute to degradation."
+  }
+ ];
+
+ return {
+  health,risk,rul,modes,
+  vibrationRisk,thermalRisk,pressureRisk,
+  electricalRisk,ageRisk
+ };
+}
+
+function condition(health){
+ if(health>=80)return "Healthy";
+ if(health>=60)return "Warning";
+ return "Critical";
+}
+
+function conditionClass(health){
+ return health>=80?"b-success":
+  health>=60?"b-warning":"b-danger";
+}
+
+function renderSelector(){
+ const root=$("assetSelect");
+ root.replaceChildren();
+
+ assets.forEach(a=>{
+  const option=document.createElement("option");
+  option.value=a.id;
+  option.textContent=a.id+" — "+a.name;
+  root.append(option);
+ });
+
+ root.value=selectedAssetId;
+}
+
+function renderInputs(){
+ const root=$("sensorInputs");
+ root.replaceChildren();
+
+ sensorFields.forEach(field=>{
+  const col=element("div",undefined,"col-sm-6");
+
+  const label=element("label",field.label,"form-label");
+  label.htmlFor="sensor-"+field.key;
+
+  const input=element("input",undefined,"form-control");
+  input.type="number";
+  input.id="sensor-"+field.key;
+  input.min="0";
+  input.step=field.step;
+  input.value=sensors[field.key];
+
+  input.addEventListener("input",()=>{
+   const value=Number(input.value);
+
+   if(input.value.trim()===""||
+      !Number.isFinite(value)||value<0){
+    input.classList.add("is-invalid");
+    return;
+   }
+
+   input.classList.remove("is-invalid");
+   sensors[field.key]=value;
+   analysisComplete=false;
+   update();
+  });
+
+  const hint=element("div",field.unit,"section-sub mt-1");
+
+  col.append(label,input,hint);
+  root.append(col);
+ });
+}
+
+function loadDefaults(){
+ sensors={...asset().sensors};
+ analysisComplete=false;
+ renderInputs();
+ update();
+ notify("Synthetic telemetry defaults loaded");
+}
+
+function update(){
+ result=calculate(sensors);
+
+ renderKpis();
+ renderHealth();
+ renderFailureModes();
+ renderRootCauses();
+ renderRecommendations();
+ renderTrendChart();
+ renderRiskChart();
+ renderTrace();
+ renderTable();
+ renderJson();
+}
+
+function renderKpis(){
+ $("healthKpi").textContent=result.health+"/100";
+ $("riskKpi").textContent=result.risk.toFixed(1)+"/100";
+ $("rulKpi").textContent=result.rul+" h";
+
+ $("modesKpi").textContent=
+  result.modes.filter(m=>m.score>=45).length;
+
+ const badge=$("conditionBadge");
+ badge.replaceChildren();
+
+ badge.append(
+  element(
+   "span",condition(result.health),
+   "badge-soft "+conditionClass(result.health)
+  )
+ );
+}
+
+function renderHealth(){
+ $("healthRing").style.setProperty(
+  "--ring-angle",
+  result.health*3.6+"deg"
+ );
+
+ $("healthRingValue").textContent=result.health;
+
+ $("healthStatus").className=
+  "badge-soft "+conditionClass(result.health);
+
+ $("healthStatus").textContent=condition(result.health);
+
+ const root=$("healthDetails");
+ root.replaceChildren();
+
+ const rows=[
+  ["Risk index",result.risk.toFixed(1)+"/100"],
+  ["Operating hours",sensors.hours.toLocaleString("en-IN")],
+  ["Illustrative RUL",result.rul+" hours"],
+  ["Assessment type","Heuristic simulation"]
+ ];
+
+ rows.forEach(([label,value])=>{
+  const row=element(
+   "div",undefined,
+   "d-flex justify-content-between gap-2 py-3 border-bottom"
+  );
+
+  add(row,"span",label,"section-sub");
+  add(row,"strong",value);
+
+  root.append(row);
+ });
+}
+
+function renderFailureModes(){
+ const root=$("failureModes");
+ root.replaceChildren();
+
+ const mode=$("analysisMode").value;
+
+ let modes=result.modes;
+
+ if(mode==="mechanical"){
+  modes=modes.filter(m=>
+   ["Bearing Wear","Age-Related Degradation"].includes(m.name)
+  );
+ }
+ if(mode==="thermal"){
+  modes=modes.filter(m=>m.name==="Thermal Degradation");
+ }
+ if(mode==="electrical"){
+  modes=modes.filter(m=>m.name==="Electrical Overload");
+ }
+
+ modes.forEach(m=>{
+  const card=element("div",undefined,"failure-card");
+
+  const head=element("div",undefined,"failure-head");
+  add(head,"span",m.name,"failure-name");
+
+  const level=m.score>=70?"High":
+   m.score>=40?"Elevated":"Low";
+
+  head.append(
+   element(
+    "span",level,
+    "badge-soft "+
+    (m.score>=70?"b-danger":m.score>=40?"b-warning":"b-success")
+   )
+  );
+
+  add(card,"p",m.description,"failure-desc");
+
+  const progress=element("div",undefined,"progress");
+  progress.style.height="8px";
+
+  const bar=element("div",undefined,"progress-bar");
+  bar.style.width=m.score.toFixed(1)+"%";
+  bar.style.background=
+   m.score>=70?"#eb6174":
+   m.score>=40?"#f2a53a":"#6855eb";
+
+  progress.append(bar);
+
+  const foot=element(
+   "div",undefined,
+   "d-flex justify-content-between mt-2"
+  );
+
+  add(foot,"span","Relative indicator score","section-sub");
+  add(foot,"strong",m.score.toFixed(1)+"/100");
+
+  card.prepend(head);
+  card.append(progress,foot);
+  root.append(card);
+ });
+}
+
+function causes(){
+ return [...result.modes]
+  .sort((a,b)=>b.score-a.score)
+  .slice(0,3);
+}
+
+function renderRootCauses(){
+ const root=$("rootCauses");
+ root.replaceChildren();
+
+ causes().forEach((m,index)=>{
+  const row=element("div",undefined,"recommendation");
+
+  const icon=element("div",undefined,"recommendation-icon");
+  icon.style.background="#eeebff";
+  icon.style.color="#6855eb";
+  icon.append(element("i",undefined,"bi bi-search"));
+
+  const body=element("div");
+  add(body,"strong",(index+1)+". "+m.name);
+  add(body,"p",m.description);
+  add(
+   body,"div",
+   "Heuristic indicator: "+m.score.toFixed(1)+"/100",
+   "section-sub"
+  );
+
+  row.append(icon,body);
+  root.append(row);
+ });
+
+ const note=element(
+  "div",
+  "These are candidate contributing factors, not confirmed root causes. "+
+  "Physical inspection, history and engineering validation are required.",
+  "section-sub mt-3"
+ );
+
+ root.append(note);
+}
+
+function recommendations(){
+ const items=[];
+
+ if(result.vibrationRisk>=40){
+  items.push({
+   icon:"bi-activity",
+   title:"Review vibration and bearing condition",
+   detail:"Compare measurements with equipment-specific limits and maintenance history."
+  });
+ }
+
+ if(result.thermalRisk>=40){
+  items.push({
+   icon:"bi-thermometer-high",
+   title:"Investigate thermal loading",
+   detail:"Review cooling, lubrication and operating conditions using approved procedures."
+  });
+ }
+
+ if(result.pressureRisk>=40){
+  items.push({
+   icon:"bi-speedometer2",
+   title:"Review pressure behavior",
+   detail:"Check pressure trends, instrument calibration and hydraulic documentation."
+  });
+ }
+
+ if(result.electricalRisk>=40){
+  items.push({
+   icon:"bi-lightning-charge",
+   title:"Evaluate electrical load",
+   detail:"Request qualified electrical review of current, protection and thermal history."
+  });
+ }
+
+ if(items.length===0){
+  items.push({
+   icon:"bi-check-circle",
+   title:"Continue condition monitoring",
+   detail:"The demo indicators are relatively low; maintain normal verified inspection routines."
+  });
+ }
+
+ items.push({
+  icon:"bi-person-check",
+  title:"Require engineering review",
+  detail:"Do not initiate maintenance or safety actions solely from this simulated analysis."
+ });
+
+ return items;
+}
+
+function renderRecommendations(){
+ const root=$("recommendations");
+ root.replaceChildren();
+
+ recommendations().forEach(item=>{
+  const row=element("div",undefined,"recommendation");
+
+  const icon=element("div",undefined,"recommendation-icon");
+  icon.style.background="#eaf2ff";
+  icon.style.color="#438df5";
+  icon.append(element("i",undefined,"bi "+item.icon));
+
+  const body=element("div");
+  add(body,"strong",item.title);
+  add(body,"p",item.detail);
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function syntheticSeries(base,amplitude,phase){
+ return Array.from({length:12},(_,index)=>
+  Number((
+   base+
+   Math.sin(index*.75+phase)*amplitude+
+   (index-6)*amplitude*.04
+  ).toFixed(2))
+ );
+}
+
+function renderTrendChart(){
+ if(typeof Chart==="undefined")return;
+
+ const labels=Array.from(
+  {length:12},(_,i)=>"T-"+(11-i)
+ );
+
+ const vibration=syntheticSeries(
+  sensors.vibration,.45,1
+ );
+
+ const temperature=syntheticSeries(
+  sensors.temperature,4,2
+ );
+
+ if(trendChart){
+  trendChart.data.labels=labels;
+  trendChart.data.datasets[0].data=vibration;
+  trendChart.data.datasets[1].data=temperature;
+  trendChart.update();
+  return;
+ }
+
+ trendChart=new Chart($("trendChart"),{
+  type:"line",
+  data:{
+   labels,
+   datasets:[
+    {
+     label:"Vibration (mm/s)",
+     data:vibration,
+     borderColor:"#6855eb",
+     backgroundColor:"#6855eb",
+     yAxisID:"vibration",
+     tension:.35,pointRadius:3,borderWidth:3
+    },
+    {
+     label:"Temperature (°C)",
+     data:temperature,
+     borderColor:"#eb6174",
+     backgroundColor:"#eb6174",
+     yAxisID:"temperature",
+     tension:.35,pointRadius:3,borderWidth:3
+    }
+   ]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   plugins:{
+    legend:{
+     position:"top",
+     labels:{boxWidth:10,font:{size:10}}
+    }
+   },
+   scales:{
+    vibration:{
+     position:"left",
+     beginAtZero:true,
+     grid:{color:"#eef0f7"},
+     ticks:{color:"#8992aa"}
+    },
+    temperature:{
+     position:"right",
+     grid:{drawOnChartArea:false},
+     ticks:{color:"#8992aa"}
+    },
+    x:{
+     grid:{display:false},
+     ticks:{color:"#8992aa"}
+    }
+   }
+  }
+ });
+}
+
+function renderRiskChart(){
+ if(typeof Chart==="undefined")return;
+
+ const labels=result.modes.map(m=>m.name);
+ const data=result.modes.map(m=>m.score);
+
+ if(riskChart){
+  riskChart.data.labels=labels;
+  riskChart.data.datasets[0].data=data;
+  riskChart.update();
+  return;
+ }
+
+ riskChart=new Chart($("riskChart"),{
+  type:"bar",
+  data:{
+   labels,
+   datasets:[{
+    label:"Indicator Score",
+    data,
+    backgroundColor:[
+     "#6855eb","#eb6174",
+     "#438df5","#f2a53a","#16b88a"
+    ],
+    borderRadius:7,
+    barThickness:19
+   }]
+  },
+  options:{
+   indexAxis:"y",
+   responsive:true,
+   maintainAspectRatio:false,
+   plugins:{
+    legend:{display:false}
+   },
+   scales:{
+    x:{
+     min:0,max:100,
+     grid:{color:"#eef0f7"},
+     ticks:{color:"#8992aa"}
+    },
+    y:{
+     grid:{display:false},
+     ticks:{color:"#8992aa",font:{size:10}}
+    }
+   }
+  }
+ });
+}
+
+function traceSteps(){
+ return [
+  {
+   icon:"bi-database",
+   title:"1. Synthetic telemetry loaded",
+   detail:"Loaded the current illustrative readings for "+selectedAssetId+"."
+  },
+  {
+   icon:"bi-activity",
+   title:"2. Sensor deviations evaluated",
+   detail:"Calculated normalized vibration, temperature, pressure and current deviations."
+  },
+  {
+   icon:"bi-calculator",
+   title:"3. Risk index calculated",
+   detail:"Weighted heuristic risk index: "+result.risk.toFixed(1)+"/100."
+  },
+  {
+   icon:"bi-diagram-3",
+   title:"4. Failure modes ranked",
+   detail:"Ranked candidate failure indicators using deterministic rules."
+  },
+  {
+   icon:"bi-hourglass-split",
+   title:"5. Illustrative RUL estimated",
+   detail:"Demo formula produced "+result.rul+" operating hours. "+
+    "This is not a calibrated remaining-life prediction."
+  },
+  {
+   icon:"bi-person-check",
+   title:"6. Engineering validation required",
+   detail:"No equipment commands or maintenance work orders were executed."
+  }
+ ];
+}
+
+function renderTrace(){
+ const root=$("traceList");
+ root.replaceChildren();
+
+ if(!analysisComplete){
+  add(
+   root,"p",
+   "Run Failure Analysis to generate the diagnostic execution trace.",
+   "text-secondary"
+  );
+
+  $("executionBadge").className="badge-soft b-neutral";
+  $("executionBadge").textContent="NOT RUN";
+  return;
+ }
+
+ $("executionBadge").className="badge-soft b-success";
+ $("executionBadge").textContent="DEMO ANALYSIS COMPLETE";
+
+ traceSteps().forEach(step=>{
+  const row=element("div",undefined,"trace-item");
+
+  const icon=element("div",undefined,"trace-icon");
+  icon.append(element("i",undefined,"bi "+step.icon));
+
+  const body=element("div");
+  add(body,"strong",step.title);
+  add(body,"p",step.detail);
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderTable(){
+ const query=$("assetSearch").value
+  .trim().toLowerCase();
+
+ const root=$("assetTable");
+ root.replaceChildren();
+
+ const filtered=assets.filter(a=>
+  `${a.id} ${a.name} ${a.plant}`
+   .toLowerCase().includes(query)
+ );
+
+ if(filtered.length===0){
+  const row=element("tr");
+  const cell=element(
+   "td","No matching equipment found.",
+   "text-center py-5 text-secondary"
+  );
+  cell.colSpan=7;
+  row.append(cell);
+  root.append(row);
+  return;
+ }
+
+ filtered.forEach(a=>{
+  const r=calculate(a.sensors);
+  const row=element("tr");
+
+  const name=element("td");
+  add(name,"div",a.name,"table-title");
+  add(name,"div",a.id,"table-sub");
+
+  const plant=element("td",a.plant);
+  const health=element("td",r.health+"/100");
+  const risk=element("td",r.risk.toFixed(1)+"/100");
+  const rul=element("td",r.rul+" h");
+
+  const status=element("td");
+  status.append(
+   element(
+    "span",condition(r.health),
+    "badge-soft "+conditionClass(r.health)
+   )
+  );
+
+  const action=element("td");
+  const button=element(
+   "button","Analyze","small-action"
+  );
+
+  button.type="button";
+  button.addEventListener("click",()=>{
+   selectedAssetId=a.id;
+   $("assetSelect").value=a.id;
+   loadDefaults();
+   window.scrollTo({
+    top:0,behavior:"smooth"
+   });
+  });
+
+  action.append(button);
+
+  row.append(
+   name,plant,health,risk,rul,status,action
+  );
+
+  root.append(row);
+ });
+}
+
+function outputData(){
+ return {
+  mode:"demo",
+  agent:"failure_analysis_agent",
+  asset_id:selectedAssetId,
+  analysis_mode:$("analysisMode").value,
+  assessment_status:analysisComplete
+   ?"simulated_complete":"not_run",
+  synthetic_telemetry:{...sensors},
+  results:{
+   health_index:result.health,
+   failure_risk_index:result.risk,
+   failure_risk_is_probability:false,
+   illustrative_rul_hours:result.rul,
+   failure_modes:result.modes.map(m=>({
+    name:m.name,
+    indicator_score:Number(m.score.toFixed(2)),
+    description:m.description
+   })),
+   candidate_causes:causes().map(m=>m.name)
+  },
+  methodology:{
+   type:"deterministic_heuristic",
+   calibrated_failure_probability:false,
+   validated_rul_model:false,
+   sensor_data_real:false
+  },
+  human_engineering_review_required:true,
+  actual_ai_model_executed:false,
+  equipment_controlled:false
+ };
+}
+
+function renderJson(){
+ $("outputJson").textContent=
+  JSON.stringify(outputData(),null,2);
+}
+
+function analyze(){
+ analysisComplete=true;
+ renderTrace();
+ renderJson();
+ notify("Simulated failure analysis completed");
+}
+
+function download(content,filename,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const link=document.createElement("a");
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportJson(){
+ download(
+  JSON.stringify(outputData(),null,2),
+  "failure-analysis-"+selectedAssetId+".json",
+  "application/json"
+ );
+ notify("Failure analysis JSON exported");
+}
+
+function csvCell(value){
+ const str=String(value);
+ const safe=/^\s*[=+\-@]/.test(str)
+  ?"'"+str:str;
+ return '"'+safe.replaceAll('"','""')+'"';
+}
+
+function exportCsv(){
+ const rows=[
+  ["Failure Mode","Indicator Score","Description"],
+  ...result.modes.map(m=>[
+   m.name,m.score.toFixed(2),m.description
+  ])
+ ];
+
+ const csv=rows.map(row=>
+  row.map(csvCell).join(",")
+ ).join("\r\n");
+
+ download(
+  csv,
+  "failure-modes-"+selectedAssetId+".csv",
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Failure mode CSV exported");
+}
+
+async function copyJson(){
+ try{
+  await navigator.clipboard.writeText(
+   $("outputJson").textContent
+  );
+  notify("Failure analysis JSON copied");
+ }catch{
+  notify("Clipboard unavailable; select the JSON manually");
+ }
+}
+
+function reset(){
+ selectedAssetId="MOTOR-12";
+ $("assetSelect").value=selectedAssetId;
+ $("analysisMode").value="comprehensive";
+ $("assetSearch").value="";
+ loadDefaults();
+ notify("Failure analysis demo reset");
+}
+
+function initNavigation(){
+ const sidebar=$("sidebar");
+ const shade=$("shade");
+
+ function close(){
+  sidebar.classList.remove("open");
+  shade.classList.remove("show");
+ }
+
+ $("menuButton").addEventListener("click",()=>{
+  sidebar.classList.add("open");
+  shade.classList.add("show");
+ });
+
+ shade.addEventListener("click",close);
+
+ document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")close();
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ initNavigation();
+ renderSelector();
+
+ sensors={...asset().sensors};
+ renderInputs();
+ update();
+
+ $("assetSelect").addEventListener("change",event=>{
+  selectedAssetId=event.target.value;
+  loadDefaults();
+ });
+
+ $("analysisMode").addEventListener("change",()=>{
+  analysisComplete=false;
+  update();
+ });
+
+ $("defaultsButton").addEventListener("click",loadDefaults);
+ $("assetSearch").addEventListener("input",renderTable);
+ $("analyzeButton").addEventListener("click",analyze);
+ $("jsonButton").addEventListener("click",exportJson);
+ $("csvButton").addEventListener("click",exportCsv);
+ $("copyButton").addEventListener("click",copyJson);
+ $("resetButton").addEventListener("click",reset);
+});
+</script>
+
+</body>
+</html>

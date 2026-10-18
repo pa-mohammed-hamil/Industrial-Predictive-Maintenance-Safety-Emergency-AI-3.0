@@ -1,0 +1,1906 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inspection History | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / computer-vision</p><h1 id="page-title">Inspection History</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Inspection History workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Inspection History | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple-light:#eeeaff;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5{
+ font-family:Manrope,sans-serif;
+ letter-spacing:-.5px;
+}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible{
+ outline:3px solid #b4a7ff!important;
+ outline-offset:2px;
+}
+
+/* SIDEBAR */
+.sidebar{
+ position:fixed;
+ inset:0 auto 0 0;
+ width:var(--sidebar);
+ background:var(--navy);
+ color:white;
+ z-index:1000;
+ display:flex;
+ flex-direction:column;
+ overflow-y:auto;
+ scrollbar-width:thin;
+ scrollbar-color:#42496b transparent;
+}
+.brand{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ padding:26px 22px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;
+ height:43px;
+ border-radius:13px;
+ display:grid;
+ place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);
+ font-size:22px;
+}
+.brand strong{
+ font:800 18px Manrope,sans-serif;
+ color:white;
+}
+.brand small{
+ display:block;
+ color:#8994bd;
+ font-size:8px;
+ letter-spacing:1.7px;
+ margin-top:4px;
+}
+.nav-section{
+ padding:23px 20px 8px;
+ color:#687399;
+ font-size:9px;
+ font-weight:800;
+ letter-spacing:1.7px;
+ text-transform:uppercase;
+}
+.side-link{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ margin:3px 12px;
+ padding:12px 13px;
+ border-radius:10px;
+ color:#a4aecf;
+ font-size:11px;
+ font-weight:700;
+ transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{
+ background:#ffffff0b;
+ color:white;
+}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+ color:white;
+}
+.sidebar-footer{
+ margin-top:auto;
+ padding:20px;
+ color:#7884ac;
+ font-size:10px;
+ border-top:1px solid #ffffff12;
+}
+
+/* MAIN LAYOUT */
+.main{
+ margin-left:var(--sidebar);
+ min-height:100vh;
+}
+.topbar{
+ height:76px;
+ background:white;
+ border-bottom:1px solid var(--border);
+ padding:0 32px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:15px;
+}
+.breadcrumb-text{
+ font-size:11px;
+ color:#9299ad;
+}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{
+ display:flex;
+ align-items:center;
+ gap:12px;
+}
+.top-icon{
+ width:37px;
+ height:37px;
+ border:1px solid var(--border);
+ border-radius:11px;
+ background:white;
+ display:grid;
+ place-items:center;
+ color:#68718e;
+ font-size:16px;
+}
+.avatar{
+ width:37px;
+ height:37px;
+ border-radius:11px;
+ display:grid;
+ place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;
+ font-weight:800;
+}
+.mobile-menu{display:none}
+.content{
+ padding:28px 32px 45px;
+ max-width:1650px;
+ margin:auto;
+}
+
+/* HERO */
+.hero{
+ position:relative;
+ overflow:hidden;
+ border-radius:19px;
+ padding:30px;
+ color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:25px;
+}
+.hero:after{
+ content:"";
+ position:absolute;
+ width:330px;
+ height:330px;
+ border-radius:50%;
+ border:1px solid #ffffff25;
+ right:-85px;
+ top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{
+ position:relative;
+ z-index:1;
+}
+.hero-label{
+ font-size:10px;
+ font-weight:800;
+ text-transform:uppercase;
+ letter-spacing:2px;
+ color:#ddd6ff;
+}
+.hero h1{
+ font-size:26px;
+ font-weight:800;
+ margin:12px 0;
+}
+.hero p{
+ color:#e6e0ff;
+ font-size:12px;
+ line-height:1.9;
+ max-width:720px;
+ margin:0;
+}
+.hero-tag{
+ display:inline-flex;
+ gap:7px;
+ align-items:center;
+ background:#ffffff20;
+ border:1px solid #ffffff25;
+ border-radius:9px;
+ padding:8px 11px;
+ font-size:10px;
+ font-weight:700;
+ margin-top:20px;
+}
+
+/* CARDS */
+.stat-card,.panel{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:16px;
+ box-shadow:0 5px 23px #18204105;
+}
+.stat-card{
+ padding:20px;
+ height:100%;
+}
+.stat-icon{
+ width:42px;
+ height:42px;
+ display:grid;
+ place-items:center;
+ border-radius:12px;
+ font-size:19px;
+ margin-bottom:16px;
+}
+.stat-label{
+ font-size:11px;
+ color:var(--muted);
+ font-weight:700;
+}
+.stat-value{
+ font:800 26px Manrope,sans-serif;
+ margin-top:6px;
+}
+.stat-note{
+ color:#a0a8ba;
+ font-size:10px;
+ margin-top:6px;
+}
+.panel{
+ padding:23px;
+ height:100%;
+}
+.panel-heading{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:10px;
+ margin-bottom:21px;
+}
+.panel-heading h3{
+ font-size:15px;
+ font-weight:800;
+ margin:0;
+}
+.panel-subtitle{
+ color:var(--muted);
+ font-size:11px;
+ margin-top:5px;
+}
+
+/* FORMS */
+.section-label{
+ display:block;
+ font-size:10px;
+ color:#59637f;
+ font-weight:800;
+ margin-bottom:9px;
+}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;
+ min-height:43px;
+ font-size:12px;
+ padding:10px 12px;
+ color:var(--text);
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+.search-field{
+ position:relative;
+}
+.search-field i{
+ position:absolute;
+ top:50%;
+ left:14px;
+ transform:translateY(-50%);
+ color:#9aa3b9;
+ font-size:15px;
+}
+.search-field input{padding-left:39px}
+
+/* BUTTONS */
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;
+ border:0;
+ border-radius:10px;
+ padding:11px 17px;
+ font-size:11px;
+ font-weight:800;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+}
+.btn-purple:hover{
+ color:white;
+ filter:brightness(.97);
+}
+.btn-outline-custom{
+ border:1px solid var(--border);
+ border-radius:10px;
+ padding:10px 14px;
+ background:white;
+ color:#69738e;
+ font-size:11px;
+ font-weight:800;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+}
+.btn-outline-custom:hover{
+ background:#f5f3ff;
+ color:var(--purple);
+}
+.btn-outline-custom:disabled{
+ opacity:.45;
+ cursor:not-allowed;
+}
+
+/* BADGES */
+.status-badge{
+ display:inline-flex;
+ align-items:center;
+ gap:6px;
+ border-radius:8px;
+ padding:7px 10px;
+ font-size:10px;
+ font-weight:800;
+ background:#f1f2f8;
+ color:#77819a;
+}
+.status-badge.success{
+ background:#e7f8f1;
+ color:#119d72;
+}
+.status-badge.warning{
+ background:#fff4e6;
+ color:#d68a22;
+}
+.status-badge.danger{
+ background:#ffecef;
+ color:#d64b62;
+}
+.status-badge.info{
+ background:#eaf2ff;
+ color:#438df5;
+}
+.status-badge.purple{
+ background:#eeeaff;
+ color:#6855eb;
+}
+
+/* TABLE */
+.table{
+ font-size:11px;
+ margin-bottom:0;
+ white-space:nowrap;
+}
+.table thead th{
+ color:#8c95ac;
+ font-size:9px;
+ text-transform:uppercase;
+ letter-spacing:.7px;
+ border-bottom:1px solid var(--border);
+ padding:14px 12px;
+}
+.table tbody td{
+ padding:15px 12px;
+ vertical-align:middle;
+ border-color:#f0f1f6;
+}
+.table tbody tr:hover{background:#fafaff}
+.asset-cell{
+ display:flex;
+ align-items:center;
+ gap:10px;
+}
+.asset-icon{
+ width:35px;
+ height:35px;
+ display:grid;
+ place-items:center;
+ background:#eeeaff;
+ color:#6855eb;
+ border-radius:10px;
+ font-size:15px;
+ flex-shrink:0;
+}
+.asset-name{
+ font-weight:800;
+ color:#27304d;
+}
+.asset-sub{
+ font-size:10px;
+ color:#a0a8ba;
+ margin-top:3px;
+}
+.empty-state{
+ text-align:center;
+ padding:48px 15px;
+ color:var(--muted);
+}
+.empty-state i{
+ display:block;
+ font-size:36px;
+ color:#c2b9ff;
+ margin-bottom:12px;
+}
+.pagination-info{
+ color:var(--muted);
+ font-size:11px;
+}
+.chart-container{
+ height:240px;
+ position:relative;
+}
+.detail-row{
+ display:flex;
+ justify-content:space-between;
+ gap:12px;
+ padding:12px 0;
+ border-bottom:1px solid #f0f1f7;
+}
+.detail-row:last-child{border-bottom:0}
+.detail-key{
+ color:#8992aa;
+ font-size:11px;
+}
+.detail-value{
+ font-weight:800;
+ font-size:11px;
+ text-align:right;
+ overflow-wrap:anywhere;
+}
+.finding-box{
+ padding:13px;
+ background:#f8f9fd;
+ border:1px solid var(--border);
+ border-radius:11px;
+ margin-bottom:9px;
+}
+.notice{
+ background:#fff8eb;
+ border:1px solid #ffe8c3;
+ color:#986b2d;
+ border-radius:12px;
+ padding:15px 17px;
+ font-size:11px;
+ line-height:1.8;
+ display:flex;
+ align-items:flex-start;
+ gap:11px;
+}
+.notice i{
+ font-size:18px;
+ flex-shrink:0;
+}
+.modal-content{
+ border:0;
+ border-radius:18px;
+ box-shadow:0 20px 60px #10152d25;
+}
+.modal-header,.modal-footer{
+ border-color:var(--border);
+ padding:20px 24px;
+}
+.modal-body{padding:24px}
+.modal-title{
+ font-size:17px;
+ font-weight:800;
+}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+
+/* RESPONSIVE */
+@media(max-width:1150px){
+ :root{--sidebar:225px}
+ .content{padding:25px 22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{
+  transform:translateX(-100%);
+  transition:transform .25s;
+  width:260px;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;
+  position:fixed;
+  inset:0;
+  background:#10152d88;
+  z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:18px 14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:17px}
+ .mobile-hide{display:none}
+ .modal-body{padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html">
+  <i class="bi bi-grid"></i> Dashboard
+ </a>
+ <a class="side-link" href="command-center.html">
+  <i class="bi bi-broadcast"></i> Command Center
+ </a>
+ <a class="side-link" href="analytics.html">
+  <i class="bi bi-graph-up-arrow"></i> Analytics
+ </a>
+ <a class="side-link" href="reports.html">
+  <i class="bi bi-file-earmark-bar-graph"></i> Reports
+ </a>
+ <a class="side-link" href="notifications.html">
+  <i class="bi bi-bell"></i> Notifications
+ </a>
+
+ <div class="nav-section">Inspection Intelligence</div>
+ <a class="side-link" href="image-inspection.html">
+  <i class="bi bi-image"></i> Image Inspection
+ </a>
+ <a class="side-link active" href="inspection-history.html">
+  <i class="bi bi-clock-history"></i> Inspection History
+ </a>
+ <a class="side-link" href="detection-results.html">
+  <i class="bi bi-clipboard-data"></i> Detection Results
+ </a>
+ <a class="side-link" href="equipment-condition.html">
+  <i class="bi bi-speedometer2"></i> Equipment Condition
+ </a>
+
+ <div class="nav-section">Vision Intelligence</div>
+ <a class="side-link" href="corrosion-detection.html">
+  <i class="bi bi-search-heart"></i> Corrosion Detection
+ </a>
+ <a class="side-link" href="crack-detection.html">
+  <i class="bi bi-intersect"></i> Crack Detection
+ </a>
+ <a class="side-link" href="defect-detection.html">
+  <i class="bi bi-bounding-box-circles"></i> Defect Detection
+ </a>
+ <a class="side-link" href="fire-detection.html">
+  <i class="bi bi-fire"></i> Fire Detection
+ </a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/inspection-agent.html">
+  <i class="bi bi-clipboard-check"></i> Inspection Agent
+ </a>
+ <a class="side-link" href="agents/asset-health-agent.html">
+  <i class="bi bi-heart-pulse"></i> Asset Health Agent
+ </a>
+ <a class="side-link" href="agents/report-agent.html">
+  <i class="bi bi-file-earmark-text"></i> Report Agent
+ </a>
+ <a class="side-link" href="agents/supervisor-agent.html">
+  <i class="bi bi-diagram-3"></i> Supervisor Agent
+ </a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2"
+   style="color:#18b58c;font-size:7px"></i>
+  Local Inspection Records
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<!-- MAIN -->
+<div class="main">
+
+ <header class="topbar">
+  <div class="d-flex align-items-center gap-3">
+   <button class="top-icon mobile-menu"
+    id="menuButton" aria-label="Open navigation">
+    <i class="bi bi-list"></i>
+   </button>
+   <div>
+    <div class="breadcrumb-text">
+     Inspection Intelligence /
+     <strong>Inspection History</strong>
+    </div>
+    <div class="fw-bold mt-1" style="font-size:13px">
+     Inspection Records & Audit Center
+    </div>
+   </div>
+  </div>
+
+  <div class="top-actions">
+   <span class="status-badge info mobile-hide">
+    <i class="bi bi-database"></i> Browser Data
+   </span>
+   <a href="notifications.html" class="top-icon"
+    aria-label="Notifications">
+    <i class="bi bi-bell"></i>
+   </a>
+   <div class="avatar">AI</div>
+  </div>
+ </header>
+
+ <main class="content">
+
+  <!-- HERO -->
+  <section class="hero">
+   <div class="hero-label">
+    Industrial Inspection / Record Intelligence
+   </div>
+   <h1>
+    <i class="bi bi-clock-history me-2"></i>
+    Inspection History & Audit Center
+   </h1>
+   <p>
+    Explore historical inspection records, filter findings,
+    review equipment condition assessments, document inspection
+    outcomes, and export structured reports for further analysis.
+   </p>
+   <div class="hero-tag">
+    <i class="bi bi-info-circle"></i>
+    Sample and browser-stored records — no live backend
+   </div>
+  </section>
+
+  <!-- KPI -->
+  <div class="row g-3 mb-4">
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#eeeaff;color:#6855eb">
+      <i class="bi bi-clipboard-data"></i>
+     </div>
+     <div class="stat-label">Total Inspections</div>
+     <div class="stat-value" id="totalCount">0</div>
+     <div class="stat-note">All available records</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#ffecef;color:#ed6175">
+      <i class="bi bi-exclamation-triangle"></i>
+     </div>
+     <div class="stat-label">High Severity</div>
+     <div class="stat-value" id="highCount">0</div>
+     <div class="stat-note">Manually classified records</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#fff4e6;color:#f4a443">
+      <i class="bi bi-hourglass-split"></i>
+     </div>
+     <div class="stat-label">Pending Review</div>
+     <div class="stat-value" id="pendingCount">0</div>
+     <div class="stat-note">Awaiting local review</div>
+    </div>
+   </div>
+
+   <div class="col-6 col-xl-3">
+    <div class="stat-card">
+     <div class="stat-icon"
+      style="background:#e8f9f1;color:#18b58c">
+      <i class="bi bi-check-circle"></i>
+     </div>
+     <div class="stat-label">Reviewed Records</div>
+     <div class="stat-value" id="reviewedCount">0</div>
+     <div class="stat-note">Local review status</div>
+    </div>
+   </div>
+
+  </div>
+
+  <!-- FILTERS -->
+  <section class="panel mb-4">
+
+   <div class="panel-heading">
+    <div>
+     <h3>Search & Filter Inspections</h3>
+     <div class="panel-subtitle">
+      Narrow results by asset, type, severity, status or date
+     </div>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+     <button id="addInspectionButton" class="btn-purple">
+      <i class="bi bi-plus-lg"></i>
+      New Inspection
+     </button>
+     <button id="importButton" class="btn-outline-custom">
+      <i class="bi bi-upload"></i>
+      Import JSON
+     </button>
+    </div>
+   </div>
+
+   <div class="row g-3">
+
+    <div class="col-lg-4 col-md-6">
+     <label class="section-label" for="searchInput">Search Records</label>
+     <div class="search-field">
+      <i class="bi bi-search"></i>
+      <input id="searchInput" class="form-control"
+       placeholder="Inspection ID, asset, inspector...">
+     </div>
+    </div>
+
+    <div class="col-lg-2 col-md-6">
+     <label class="section-label" for="typeFilter">Inspection Type</label>
+     <select id="typeFilter" class="form-select">
+      <option value="">All Types</option>
+      <option value="Visual">Visual</option>
+      <option value="Corrosion">Corrosion</option>
+      <option value="Crack">Crack</option>
+      <option value="Defect">Defect</option>
+      <option value="Fire Safety">Fire Safety</option>
+      <option value="Equipment Condition">Equipment Condition</option>
+     </select>
+    </div>
+
+    <div class="col-lg-2 col-md-6">
+     <label class="section-label" for="severityFilter">Severity</label>
+     <select id="severityFilter" class="form-select">
+      <option value="">All Severities</option>
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+      <option value="High">High</option>
+     </select>
+    </div>
+
+    <div class="col-lg-2 col-md-6">
+     <label class="section-label" for="statusFilter">Review Status</label>
+     <select id="statusFilter" class="form-select">
+      <option value="">All Statuses</option>
+      <option value="Pending">Pending</option>
+      <option value="Reviewed">Reviewed</option>
+     </select>
+    </div>
+
+    <div class="col-lg-2 col-md-6">
+     <label class="section-label" for="dateFilter">Inspection Date</label>
+     <input type="date" id="dateFilter" class="form-control">
+    </div>
+
+   </div>
+
+   <div class="d-flex gap-2 flex-wrap mt-3">
+    <button id="resetFilters" class="btn-outline-custom">
+     <i class="bi bi-arrow-counterclockwise"></i>
+     Reset Filters
+    </button>
+    <button id="exportCsv" class="btn-outline-custom">
+     <i class="bi bi-filetype-csv"></i>
+     Export CSV
+    </button>
+    <button id="exportJson" class="btn-outline-custom">
+     <i class="bi bi-filetype-json"></i>
+     Export JSON
+    </button>
+   </div>
+
+   <input type="file" id="importInput"
+    accept=".json,application/json" class="d-none">
+
+  </section>
+
+  <!-- CHARTS -->
+  <div class="row g-4 mb-4">
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Inspection Type Distribution</h3>
+       <div class="panel-subtitle">
+        All stored inspection records
+       </div>
+      </div>
+     </div>
+     <div class="chart-container">
+      <canvas id="typeChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Severity Distribution</h3>
+       <div class="panel-subtitle">
+        Manual inspection classifications
+       </div>
+      </div>
+     </div>
+     <div class="chart-container">
+      <canvas id="severityChart"></canvas>
+     </div>
+    </section>
+   </div>
+
+  </div>
+
+  <!-- RECORDS -->
+  <section class="panel mb-4">
+
+   <div class="panel-heading">
+    <div>
+     <h3>Inspection Records</h3>
+     <div class="panel-subtitle" id="resultsSummary">
+      Browse inspection history
+     </div>
+    </div>
+
+    <span class="status-badge purple">
+     <i class="bi bi-funnel"></i>
+     Filterable Records
+    </span>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table align-middle">
+     <thead>
+      <tr>
+       <th>Inspection ID</th>
+       <th>Asset / Equipment</th>
+       <th>Type</th>
+       <th>Date</th>
+       <th>Inspector</th>
+       <th>Findings</th>
+       <th>Severity</th>
+       <th>Review</th>
+       <th>Action</th>
+      </tr>
+     </thead>
+     <tbody id="recordsBody"></tbody>
+    </table>
+   </div>
+
+   <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+    <div class="pagination-info" id="paginationInfo"></div>
+
+    <div class="d-flex gap-2">
+     <button id="prevPage" class="btn-outline-custom">
+      <i class="bi bi-chevron-left"></i> Previous
+     </button>
+     <button id="nextPage" class="btn-outline-custom">
+      Next <i class="bi bi-chevron-right"></i>
+     </button>
+    </div>
+   </div>
+
+  </section>
+
+  <div class="notice">
+   <i class="bi bi-shield-exclamation"></i>
+   <div>
+    <strong>Record and audit limitation:</strong>
+    This frontend stores records locally in your browser.
+    Sample records are fictional. Browser storage is not
+    a tamper-resistant audit trail, certified inspection record
+    repository, or substitute for an authenticated backend.
+    Real industrial inspection records require access controls,
+    traceability, validated assessments and appropriate retention policies.
+   </div>
+  </div>
+
+ </main>
+</div>
+
+<!-- DETAILS MODAL -->
+<div class="modal fade" id="detailsModal" tabindex="-1"
+ aria-labelledby="detailsTitle" aria-hidden="true">
+ <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-content">
+
+   <div class="modal-header">
+    <h5 class="modal-title" id="detailsTitle">Inspection Details</h5>
+    <button class="btn-close" data-bs-dismiss="modal"
+     aria-label="Close"></button>
+   </div>
+
+   <div class="modal-body">
+    <div id="detailsContent"></div>
+   </div>
+
+   <div class="modal-footer">
+    <button class="btn-outline-custom" data-bs-dismiss="modal">
+     Close
+    </button>
+    <button id="reviewRecordButton" class="btn-purple">
+     <i class="bi bi-check2-circle"></i>
+     Mark Reviewed
+    </button>
+   </div>
+
+  </div>
+ </div>
+</div>
+
+<!-- ADD RECORD MODAL -->
+<div class="modal fade" id="addModal" tabindex="-1"
+ aria-labelledby="addTitle" aria-hidden="true">
+ <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-content">
+
+   <form id="addForm">
+    <div class="modal-header">
+     <h5 class="modal-title" id="addTitle">
+      Add Manual Inspection Record
+     </h5>
+     <button type="button" class="btn-close"
+      data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+     <div class="row g-3">
+
+      <div class="col-md-6">
+       <label for="newAsset" class="section-label">Asset Name *</label>
+       <input id="newAsset" class="form-control" required maxlength="100"
+        placeholder="e.g. Centrifugal Pump">
+      </div>
+
+      <div class="col-md-6">
+       <label for="newAssetId" class="section-label">Asset ID *</label>
+       <input id="newAssetId" class="form-control" required maxlength="50"
+        placeholder="e.g. AST-001">
+      </div>
+
+      <div class="col-md-6">
+       <label for="newType" class="section-label">Inspection Type *</label>
+       <select id="newType" class="form-select" required>
+        <option value="Visual">Visual</option>
+        <option value="Corrosion">Corrosion</option>
+        <option value="Crack">Crack</option>
+        <option value="Defect">Defect</option>
+        <option value="Fire Safety">Fire Safety</option>
+        <option value="Equipment Condition">Equipment Condition</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label for="newSeverity" class="section-label">Severity *</label>
+       <select id="newSeverity" class="form-select" required>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label for="newInspector" class="section-label">Inspector *</label>
+       <input id="newInspector" class="form-control"
+        required maxlength="100" placeholder="Inspector name">
+      </div>
+
+      <div class="col-md-6">
+       <label for="newDate" class="section-label">Inspection Date *</label>
+       <input id="newDate" type="date" class="form-control" required>
+      </div>
+
+      <div class="col-md-6">
+       <label for="newFindings" class="section-label">Finding Count</label>
+       <input id="newFindings" type="number" class="form-control"
+        min="0" max="10000" value="0">
+      </div>
+
+      <div class="col-md-6">
+       <label for="newStatus" class="section-label">Review Status</label>
+       <select id="newStatus" class="form-select">
+        <option value="Pending">Pending</option>
+        <option value="Reviewed">Reviewed</option>
+       </select>
+      </div>
+
+      <div class="col-12">
+       <label for="newNotes" class="section-label">Inspection Notes</label>
+       <textarea id="newNotes" class="form-control"
+        rows="4" maxlength="2000"
+        placeholder="Describe findings and inspection observations..."></textarea>
+      </div>
+
+     </div>
+    </div>
+
+    <div class="modal-footer">
+     <button type="button" class="btn-outline-custom"
+      data-bs-dismiss="modal">Cancel</button>
+     <button type="submit" class="btn-purple">
+      <i class="bi bi-check2-circle"></i>
+      Save Inspection
+     </button>
+    </div>
+   </form>
+
+  </div>
+ </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button type="button" class="btn-close"
+    data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ INDUSTRA AI — INSPECTION HISTORY
+
+ Features:
+ - Sample records
+ - Manual inspection entry
+ - Search and filtering
+ - Pagination
+ - Review state
+ - CSV / JSON export
+ - JSON import
+ - Local browser persistence
+
+ No authenticated backend or AI inference.
+*/
+
+const $=id=>document.getElementById(id);
+const STORAGE_KEY="industra-inspection-history-v1";
+const PAGE_SIZE=8;
+
+const TYPES=[
+ "Visual","Corrosion","Crack",
+ "Defect","Fire Safety","Equipment Condition"
+];
+
+const SEVERITIES=["Low","Medium","High"];
+const STATUSES=["Pending","Reviewed"];
+
+const sampleRecords=[
+ {
+  id:"INSP-DEMO-001",
+  asset:"Centrifugal Pump",
+  assetId:"AST-001",
+  type:"Visual",
+  date:"2026-10-08",
+  inspector:"Demo Inspector A",
+  findings:2,
+  severity:"Low",
+  status:"Reviewed",
+  notes:"Illustrative surface inspection record.",
+  source:"sample"
+ },
+ {
+  id:"INSP-DEMO-002",
+  asset:"Storage Tank",
+  assetId:"AST-005",
+  type:"Corrosion",
+  date:"2026-10-07",
+  inspector:"Demo Inspector B",
+  findings:4,
+  severity:"High",
+  status:"Pending",
+  notes:"Illustrative corrosion findings for interface testing.",
+  source:"sample"
+ },
+ {
+  id:"INSP-DEMO-003",
+  asset:"Industrial Gearbox",
+  assetId:"AST-003",
+  type:"Crack",
+  date:"2026-10-06",
+  inspector:"Demo Inspector A",
+  findings:1,
+  severity:"Medium",
+  status:"Reviewed",
+  notes:"Fictional crack inspection entry.",
+  source:"sample"
+ },
+ {
+  id:"INSP-DEMO-004",
+  asset:"Conveyor Motor",
+  assetId:"AST-004",
+  type:"Equipment Condition",
+  date:"2026-10-05",
+  inspector:"Demo Inspector C",
+  findings:0,
+  severity:"Low",
+  status:"Reviewed",
+  notes:"Sample operating-condition review.",
+  source:"sample"
+ },
+ {
+  id:"INSP-DEMO-005",
+  asset:"Air Compressor",
+  assetId:"AST-002",
+  type:"Defect",
+  date:"2026-10-04",
+  inspector:"Demo Inspector B",
+  findings:3,
+  severity:"High",
+  status:"Pending",
+  notes:"Fictional surface defect record.",
+  source:"sample"
+ },
+ {
+  id:"INSP-DEMO-006",
+  asset:"Electrical Room",
+  assetId:"ZONE-002",
+  type:"Fire Safety",
+  date:"2026-10-03",
+  inspector:"Demo Inspector C",
+  findings:1,
+  severity:"Medium",
+  status:"Pending",
+  notes:"Sample fire safety inspection record.",
+  source:"sample"
+ },
+ {
+  id:"INSP-DEMO-007",
+  asset:"Pipeline Section",
+  assetId:"AST-006",
+  type:"Corrosion",
+  date:"2026-10-02",
+  inspector:"Demo Inspector A",
+  findings:2,
+  severity:"Medium",
+  status:"Reviewed",
+  notes:"Illustrative pipeline inspection.",
+  source:"sample"
+ },
+ {
+  id:"INSP-DEMO-008",
+  asset:"Cooling Fan",
+  assetId:"AST-007",
+  type:"Visual",
+  date:"2026-10-01",
+  inspector:"Demo Inspector B",
+  findings:0,
+  severity:"Low",
+  status:"Reviewed",
+  notes:"Sample visual inspection.",
+  source:"sample"
+ },
+ {
+  id:"INSP-DEMO-009",
+  asset:"Hydraulic Power Unit",
+  assetId:"AST-008",
+  type:"Equipment Condition",
+  date:"2026-09-30",
+  inspector:"Demo Inspector C",
+  findings:2,
+  severity:"High",
+  status:"Pending",
+  notes:"Fictional condition monitoring entry.",
+  source:"sample"
+ },
+ {
+  id:"INSP-DEMO-010",
+  asset:"Production Conveyor",
+  assetId:"AST-009",
+  type:"Defect",
+  date:"2026-09-29",
+  inspector:"Demo Inspector A",
+  findings:1,
+  severity:"Low",
+  status:"Reviewed",
+  notes:"Sample mechanical defect inspection.",
+  source:"sample"
+ }
+];
+
+let records=[];
+let page=1;
+let selectedRecordId=null;
+let typeChart=null;
+let severityChart=null;
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function closeSidebar(){
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+}
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",closeSidebar);
+
+function isValidDate(value){
+ if(typeof value!=="string")return false;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+
+ const date=new Date(value+"T00:00:00Z");
+ return !Number.isNaN(date.getTime())&&
+  date.toISOString().slice(0,10)===value;
+}
+
+function normalizeRecord(item){
+ if(!item||typeof item!=="object")return null;
+
+ const id=String(item.id||"").trim();
+ const asset=String(item.asset||"").trim();
+ const assetId=String(item.assetId||"").trim();
+ const type=String(item.type||"").trim();
+ const date=String(item.date||"").trim();
+ const inspector=String(item.inspector||"").trim();
+ const severity=String(item.severity||"").trim();
+ const status=String(item.status||"").trim();
+ const findings=Number(item.findings);
+
+ if(!id||id.length>100)return null;
+ if(!asset||asset.length>150)return null;
+ if(!assetId||assetId.length>100)return null;
+ if(!TYPES.includes(type))return null;
+ if(!isValidDate(date))return null;
+ if(!inspector||inspector.length>150)return null;
+ if(!SEVERITIES.includes(severity))return null;
+ if(!STATUSES.includes(status))return null;
+ if(!Number.isInteger(findings)||findings<0||findings>10000){
+  return null;
+ }
+
+ return {
+  id,
+  asset,
+  assetId,
+  type,
+  date,
+  inspector,
+  findings,
+  severity,
+  status,
+  notes:String(item.notes||"").slice(0,2000),
+  source:String(item.source||"manual").slice(0,40)
+ };
+}
+
+function loadRecords(){
+ try{
+  const saved=localStorage.getItem(STORAGE_KEY);
+
+  if(saved!==null){
+   const parsed=JSON.parse(saved);
+
+   if(Array.isArray(parsed)){
+    records=parsed.map(normalizeRecord).filter(Boolean);
+    return;
+   }
+  }
+ }catch(error){
+  console.warn("Unable to load inspection records:",error);
+ }
+
+ records=sampleRecords.map(record=>({...record}));
+}
+
+function persist(){
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(records));
+  return true;
+ }catch(error){
+  notify("Browser storage unavailable. Changes may not persist.");
+  return false;
+ }
+}
+
+function getFilteredRecords(){
+ const query=$("searchInput").value.trim().toLowerCase();
+ const type=$("typeFilter").value;
+ const severity=$("severityFilter").value;
+ const status=$("statusFilter").value;
+ const date=$("dateFilter").value;
+
+ return records.filter(record=>{
+  const text=[
+   record.id,
+   record.asset,
+   record.assetId,
+   record.inspector,
+   record.notes
+  ].join(" ").toLowerCase();
+
+  return (!query||text.includes(query))&&
+   (!type||record.type===type)&&
+   (!severity||record.severity===severity)&&
+   (!status||record.status===status)&&
+   (!date||record.date===date);
+ }).sort((a,b)=>
+  b.date.localeCompare(a.date)||b.id.localeCompare(a.id)
+ );
+}
+
+function badgeClass(value){
+ if(value==="High")return "danger";
+ if(value==="Medium"||value==="Pending")return "warning";
+ if(value==="Low"||value==="Reviewed")return "success";
+ return "info";
+}
+
+function updateStats(){
+ $("totalCount").textContent=records.length;
+ $("highCount").textContent=
+  records.filter(x=>x.severity==="High").length;
+ $("pendingCount").textContent=
+  records.filter(x=>x.status==="Pending").length;
+ $("reviewedCount").textContent=
+  records.filter(x=>x.status==="Reviewed").length;
+}
+
+function createCell(textValue){
+ const cell=document.createElement("td");
+ cell.textContent=String(textValue);
+ return cell;
+}
+
+function renderTable(){
+ const filtered=getFilteredRecords();
+ const pages=Math.max(1,Math.ceil(filtered.length/PAGE_SIZE));
+ page=Math.min(Math.max(1,page),pages);
+
+ const start=(page-1)*PAGE_SIZE;
+ const visible=filtered.slice(start,start+PAGE_SIZE);
+
+ $("resultsSummary").textContent=
+  filtered.length+" matching record(s)";
+
+ $("paginationInfo").textContent=filtered.length?
+  "Showing "+(start+1)+"–"+
+  Math.min(start+PAGE_SIZE,filtered.length)+
+  " of "+filtered.length+" records":
+  "No matching records";
+
+ $("prevPage").disabled=page<=1;
+ $("nextPage").disabled=page>=pages;
+
+ const tbody=$("recordsBody");
+ tbody.replaceChildren();
+
+ if(!visible.length){
+  const row=document.createElement("tr");
+  const cell=document.createElement("td");
+  cell.colSpan=9;
+
+  const empty=document.createElement("div");
+  empty.className="empty-state";
+
+  const icon=document.createElement("i");
+  icon.className="bi bi-inbox";
+
+  const text=document.createElement("div");
+  text.textContent="No inspections match your filters.";
+
+  empty.append(icon,text);
+  cell.append(empty);
+  row.append(cell);
+  tbody.append(row);
+  return;
+ }
+
+ visible.forEach(record=>{
+  const row=document.createElement("tr");
+
+  const idCell=createCell(record.id);
+  idCell.style.fontWeight="800";
+  row.append(idCell);
+
+  const assetCell=document.createElement("td");
+  const wrapper=document.createElement("div");
+  wrapper.className="asset-cell";
+
+  const icon=document.createElement("div");
+  icon.className="asset-icon";
+  icon.innerHTML='<i class="bi bi-gear-wide-connected"></i>';
+
+  const info=document.createElement("div");
+
+  const name=document.createElement("div");
+  name.className="asset-name";
+  name.textContent=record.asset;
+
+  const sub=document.createElement("div");
+  sub.className="asset-sub";
+  sub.textContent=record.assetId;
+
+  info.append(name,sub);
+  wrapper.append(icon,info);
+  assetCell.append(wrapper);
+  row.append(assetCell);
+
+  row.append(
+   createCell(record.type),
+   createCell(record.date),
+   createCell(record.inspector),
+   createCell(record.findings)
+  );
+
+  const severityCell=document.createElement("td");
+  const severityBadge=document.createElement("span");
+  severityBadge.className=
+   "status-badge "+badgeClass(record.severity);
+  severityBadge.textContent=record.severity;
+  severityCell.append(severityBadge);
+  row.append(severityCell);
+
+  const statusCell=document.createElement("td");
+  const statusBadge=document.createElement("span");
+  statusBadge.className=
+   "status-badge "+badgeClass(record.status);
+  statusBadge.textContent=record.status;
+  statusCell.append(statusBadge);
+  row.append(statusCell);
+
+  const actionCell=document.createElement("td");
+  const button=document.createElement("button");
+  button.className="btn-outline-custom";
+  button.innerHTML='<i class="bi bi-eye"></i> View';
+
+  button.addEventListener("click",()=>openDetails(record.id));
+
+  actionCell.append(button);
+  row.append(actionCell);
+  tbody.append(row);
+ });
+}
+
+function renderCharts(){
+ if(typeof Chart==="undefined")return;
+
+ const typeCounts=TYPES.map(type=>
+  records.filter(record=>record.type===type).length
+ );
+
+ if(typeChart)typeChart.destroy();
+
+ typeChart=new Chart($("typeChart"),{
+  type:"doughnut",
+  data:{
+   labels:TYPES,
+   datasets:[{
+    data:typeCounts,
+    backgroundColor:[
+     "#6855eb","#f4a443","#ed6175",
+     "#438df5","#18b58c","#9483f9"
+    ],
+    borderWidth:0
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   cutout:"70%",
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{usePointStyle:true,padding:14,boxWidth:9}
+    }
+   }
+  }
+ });
+
+ const severityCounts=SEVERITIES.map(severity=>
+  records.filter(record=>record.severity===severity).length
+ );
+
+ if(severityChart)severityChart.destroy();
+
+ severityChart=new Chart($("severityChart"),{
+  type:"bar",
+  data:{
+   labels:SEVERITIES,
+   datasets:[{
+    data:severityCounts,
+    backgroundColor:["#18b58c","#f4a443","#ed6175"],
+    borderRadius:8,
+    maxBarThickness:65
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   scales:{
+    y:{
+     beginAtZero:true,
+     ticks:{precision:0},
+     grid:{color:"#f0f1f7"}
+    },
+    x:{grid:{display:false}}
+   },
+   plugins:{legend:{display:false}}
+  }
+ });
+}
+
+function renderAll(){
+ updateStats();
+ renderTable();
+ renderCharts();
+}
+
+function appendDetail(label,value){
+ const row=document.createElement("div");
+ row.className="detail-row";
+
+ const key=document.createElement("div");
+ key.className="detail-key";
+ key.textContent=label;
+
+ const val=document.createElement("div");
+ val.className="detail-value";
+ val.textContent=String(value);
+
+ row.append(key,val);
+ $("detailsContent").append(row);
+}
+
+function openDetails(id){
+ const record=records.find(x=>x.id===id);
+ if(!record)return;
+
+ selectedRecordId=id;
+ $("detailsContent").replaceChildren();
+
+ appendDetail("Inspection ID",record.id);
+ appendDetail("Asset",record.asset);
+ appendDetail("Asset ID",record.assetId);
+ appendDetail("Inspection Type",record.type);
+ appendDetail("Date",record.date);
+ appendDetail("Inspector",record.inspector);
+ appendDetail("Finding Count",record.findings);
+ appendDetail("Severity",record.severity);
+ appendDetail("Review Status",record.status);
+ appendDetail("Record Source",record.source);
+
+ const notesTitle=document.createElement("h6");
+ notesTitle.className="fw-bold mt-4 mb-3";
+ notesTitle.textContent="Inspection Notes";
+
+ const notes=document.createElement("div");
+ notes.className="finding-box";
+ notes.style.whiteSpace="pre-wrap";
+ notes.style.lineHeight="1.8";
+ notes.textContent=record.notes||"No inspection notes available.";
+
+ $("detailsContent").append(notesTitle,notes);
+
+ $("reviewRecordButton").disabled=
+  record.status==="Reviewed";
+
+ bootstrap.Modal.getOrCreateInstance($("detailsModal")).show();
+}
+
+$("reviewRecordButton").addEventListener("click",()=>{
+ const record=records.find(x=>x.id===selectedRecordId);
+ if(!record)return;
+
+ record.status="Reviewed";
+ persist();
+ renderAll();
+
+ bootstrap.Modal.getOrCreateInstance($("detailsModal")).hide();
+ notify("Inspection marked reviewed locally.");
+});
+
+function resetFilters(){
+ $("searchInput").value="";
+ $("typeFilter").value="";
+ $("severityFilter").value="";
+ $("statusFilter").value="";
+ $("dateFilter").value="";
+ page=1;
+ renderTable();
+}
+
+["searchInput","typeFilter","severityFilter",
+ "statusFilter","dateFilter"].forEach(id=>{
+ $(id).addEventListener(
+  id==="searchInput"?"input":"change",
+  ()=>{
+   page=1;
+   renderTable();
+  }
+ );
+});
+
+$("resetFilters").addEventListener("click",resetFilters);
+
+$("prevPage").addEventListener("click",()=>{
+ page=Math.max(1,page-1);
+ renderTable();
+});
+
+$("nextPage").addEventListener("click",()=>{
+ page++;
+ renderTable();
+});
+
+/* NEW INSPECTION */
+
+$("addInspectionButton").addEventListener("click",()=>{
+ $("addForm").reset();
+ $("newDate").value=new Date().toLocaleDateString("en-CA");
+ bootstrap.Modal.getOrCreateInstance($("addModal")).show();
+});
+
+$("addForm").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ const record=normalizeRecord({
+  id:"INSP-"+Date.now()+"-"+
+   Math.random().toString(36).slice(2,7).toUpperCase(),
+  asset:$("newAsset").value,
+  assetId:$("newAssetId").value,
+  type:$("newType").value,
+  date:$("newDate").value,
+  inspector:$("newInspector").value,
+  findings:$("newFindings").value,
+  severity:$("newSeverity").value,
+  status:$("newStatus").value,
+  notes:$("newNotes").value,
+  source:"manual"
+ });
+
+ if(!record){
+  notify("Check the inspection fields and try again.");
+  return;
+ }
+
+ records.unshift(record);
+ persist();
+ resetFilters();
+ renderAll();
+
+ bootstrap.Modal.getOrCreateInstance($("addModal")).hide();
+ notify("Manual inspection record added.");
+});
+
+/* EXPORT */
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function csvEscape(value){
+ return '"'+String(value??"").replace(/"/g,'""')+'"';
+}
+
+$("exportCsv").addEventListener("click",()=>{
+ const fields=[
+  "id","asset","assetId","type","date",
+  "inspector","findings","severity","status",
+  "notes","source"
+ ];
+
+ const rows=getFilteredRecords();
+
+ const csv=[
+  fields.join(","),
+  ...rows.map(record=>
+   fields.map(field=>csvEscape(record[field])).join(",")
+  )
+ ].join("\r\n");
+
+ downloadFile(
+  "inspection-history.csv",
+  csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Filtered inspection records exported to CSV.");
+});
+
+$("exportJson").addEventListener("click",()=>{
+ const data={
+  schema:"industra-inspection-history-v1",
+  generatedAt:new Date().toISOString(),
+  storage:"browser-local",
+  records:getFilteredRecords()
+ };
+
+ downloadFile(
+  "inspection-history.json",
+  JSON.stringify(data,null,2),
+  "application/json"
+ );
+
+ notify("Filtered inspection records exported to JSON.");
+});
+
+/* IMPORT JSON */
+
+$("importButton").addEventListener("click",()=>{
+ $("importInput").click();
+});
+
+function inferType(inspection,findings){
+ const text=String(inspection||"").toLowerCase();
+
+ if(text.includes("corrosion"))return "Corrosion";
+ if(text.includes("crack"))return "Crack";
+ if(text.includes("defect"))return "Defect";
+ if(text.includes("fire"))return "Fire Safety";
+ if(text.includes("condition"))return "Equipment Condition";
+
+ const types=Array.isArray(findings)?
+  findings.map(x=>String(x.type||"").toLowerCase()):[];
+
+ if(types.includes("corrosion"))return "Corrosion";
+ if(types.includes("crack"))return "Crack";
+ if(types.includes("defect"))return "Defect";
+
+ return "Visual";
+}
+
+function inferSeverity(findings){
+ if(!Array.isArray(findings))return "Low";
+
+ const levels=findings.map(x=>x.severity);
+
+ if(levels.includes("High"))return "High";
+ if(levels.includes("Medium"))return "Medium";
+ return "Low";
+}
+
+function importImageInspection(data){
+ if(!Array.isArray(data.images))return [];
+
+ const today=new Date().toLocaleDateString("en-CA");
+
+ return data.images.map((image,index)=>{
+  const findings=Array.isArray(image.findings)?
+   image.findings:[];
+
+  return normalizeRecord({
+   id:"INSP-IMPORT-"+Date.now()+"-"+index,
+   asset:String(image.filename||"Imported Image").slice(0,150),
+   assetId:String(image.asset||"UNKNOWN").slice(0,100),
+   type:inferType(image.inspection,findings),
+   date:today,
+   inspector:"Imported Manual Inspection",
+   findings:findings.length,
+   severity:inferSeverity(findings),
+   status:image.reviewed?"Reviewed":"Pending",
+   notes:
+    "Imported image inspection metadata. "+
+    "Original image files and annotations are not included in this record.",
+   source:"image-inspection-import"
+  });
+ }).filter(Boolean);
+}
+
+$("importInput").addEventListener("change",async event=>{
+ const file=event.target.files[0];
+ event.target.value="";
+
+ if(!file)return;
+
+ if(file.size>2*1024*1024){
+  notify("JSON file must be 2 MB or smaller.");
+  return;
+ }
+
+ try{
+  const data=JSON.parse(await file.text());
+  let imported=[];
+
+  if(Array.isArray(data)){
+   imported=data.map(normalizeRecord).filter(Boolean);
+  }else if(Array.isArray(data.records)){
+   imported=data.records.map(normalizeRecord).filter(Boolean);
+  }else if(data.mode==="manual-image-inspection"){
+   imported=importImageInspection(data);
+  }else{
+   notify("Unsupported inspection JSON format.");
+   return;
+  }
+
+  const existingIds=new Set(records.map(x=>x.id));
+  let count=0;
+
+  imported.forEach(record=>{
+   if(existingIds.has(record.id))return;
+
+   records.push(record);
+   existingIds.add(record.id);
+   count++;
+  });
+
+  persist();
+  resetFilters();
+  renderAll();
+
+  notify(count+" inspection record(s) imported.");
+ }catch(error){
+  notify("Unable to read inspection JSON file.");
+ }
+});
+
+/* INITIALIZE */
+
+loadRecords();
+renderAll();
+</script>
+
+</body>
+</html>

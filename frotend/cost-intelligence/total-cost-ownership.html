@@ -1,0 +1,1037 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Total Cost Ownership | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / cost-intelligence</p><h1 id="page-title">Total Cost Ownership</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Total Cost Ownership workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spare Parts Cost | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px Arial,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{background:var(--purple);color:white}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);border-radius:15px;
+ padding:20px;box-shadow:0 5px 20px #10152d05
+}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.layout{
+ display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);
+ gap:17px
+}
+.flex{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;color:#69738e;
+ border-radius:9px;padding:10px 13px;font-size:11px;font-weight:700
+}
+.btn.primary{background:var(--purple);border-color:var(--purple);color:white}
+.btn.danger{background:#ffedf0;border-color:#ffedf0;color:#d84b63}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{display:block;color:#69738e;font-size:11px;font-weight:700;margin-bottom:7px}
+.badge{display:inline-block;padding:7px 10px;border-radius:8px;font-size:10px;font-weight:800}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.scenarios{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{background:#f8f9fd;color:var(--muted);text-align:left;padding:13px;white-space:nowrap}
+td{padding:13px;border-bottom:1px solid #eef0f6;white-space:nowrap}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{border:1px solid var(--border);border-radius:11px;padding:14px;margin-bottom:12px}
+.record p{font-size:11px;color:#69738e;line-height:1.8}
+.chart{width:100%;height:300px;display:block}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric{
+ padding:14px;background:#f8f9fd;border:1px solid var(--border);
+ border-radius:11px
+}
+.metric strong{display:block;font-size:20px;margin-top:9px}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;color:#986b2d;
+ border-radius:11px;padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;background:var(--navy);
+ color:white;padding:13px 17px;border-radius:10px;display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}.mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.scenarios,.metric-grid{grid-template-columns:1fr}
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,.scenario-panel,
+ #toast,.notice{display:none!important}
+ .main{margin:0}.content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◆ Cost Intelligence</a>
+ <a class="nav-link" href="cost-analytics.html">▦ Cost Analytics</a>
+ <a class="nav-link" href="cost-forecasting.html">◇ Cost Forecasting</a>
+ <a class="nav-link" href="future-cost-forecast.html">◉ Future Cost Forecast</a>
+ <a class="nav-link" href="expected-failure-cost.html">◆ Expected Failure Cost</a>
+ <a class="nav-link" href="avoided-cost.html">▦ Avoided Cost</a>
+ <a class="nav-link" href="downtime-cost.html">◇ Downtime Cost</a>
+ <a class="nav-link" href="emergency-cost.html">◉ Emergency Cost</a>
+ <a class="nav-link" href="energy-cost.html">◆ Energy Cost</a>
+ <a class="nav-link" href="labor-cost.html">▦ Labor Cost</a>
+ <a class="nav-link" href="production-loss.html">◇ Production Loss</a>
+ <a class="nav-link" href="repair-cost.html">◉ Repair Cost</a>
+ <a class="nav-link" href="repair-replacement.html">◆ Repair vs Replacement</a>
+ <a class="nav-link" href="replacement-cost.html">▦ Replacement Cost</a>
+ <a class="nav-link" href="scrap-cost.html">◇ Scrap Cost</a>
+ <a class="nav-link active" href="spare-parts-cost.html">◉ Spare Parts Cost</a>
+ <a class="nav-link" href="r-o-i-analysis.html">◆ ROI Analysis</a>
+ <div class="nav-title">MAINTENANCE</div>
+ <a class="nav-link" href="asset-management.html">▦ Asset Management</a>
+ <a class="nav-link" href="maintenance-schedule.html">◇ Maintenance Schedule</a>
+ <a class="nav-link" href="predictive-maintenance.html">◉ Predictive Maintenance</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Cost Intelligence / Maintenance Inventory Economics</div>
+   <strong>Spare Parts Cost & Procurement Intelligence</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC INVENTORY DATA</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / MAINTENANCE INVENTORY COST ENGINE
+ </div>
+ <h1>Spare Parts Cost Intelligence</h1>
+ <p>
+  Analyze maintenance spare-part consumption, inventory valuation,
+  replenishment expenditure, supplier lead times and carrying costs.
+  Identify critical stock shortages and estimate procurement
+  requirements using demand-based reorder planning.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Maintenance Spare Parts Financial Overview</h3>
+  <div class="muted" id="summaryText">Calculating spare parts costs...</div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="calculateBtn">Recalculate</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Current Inventory Value</div>
+  <div class="stat-value" id="inventoryKpi">₹0</div>
+  <div class="stat-note">On-hand stock at modeled unit cost</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Forecast Parts Consumption Cost</div>
+  <div class="stat-value" id="consumptionKpi">₹0</div>
+  <div class="stat-note">Demand over the selected horizon</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Immediate Replenishment Cost</div>
+  <div class="stat-value" id="reorderKpi">₹0</div>
+  <div class="stat-note">Suggested initial purchase order value</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Critical Stock Alerts</div>
+  <div class="stat-value" id="alertsKpi">0</div>
+  <div class="stat-note">Items at or below modeled reorder point</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Spare Parts Inventory Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="categoryFilter">Part Category</label>
+   <select class="input" id="categoryFilter">
+    <option value="all">All Categories</option>
+    <option>Mechanical</option>
+    <option>Electrical</option>
+    <option>Instrumentation</option>
+    <option>Hydraulic</option>
+   </select>
+  </div>
+  <div>
+   <label for="periodFilter">Forecast Horizon</label>
+   <select class="input" id="periodFilter">
+    <option value="1">1 Month</option>
+    <option value="3">3 Months</option>
+    <option value="6" selected>6 Months</option>
+    <option value="12">12 Months</option>
+   </select>
+  </div>
+  <div>
+   <label for="sortFilter">Sort By</label>
+   <select class="input" id="sortFilter">
+    <option value="consumption">Highest Consumption Cost</option>
+    <option value="inventory">Highest Inventory Value</option>
+    <option value="reorder">Highest Reorder Cost</option>
+    <option value="lead">Longest Supplier Lead Time</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Spare Parts Inventory & Cost Ranking</h3>
+    <p class="muted">Stock position, demand, procurement and inventory exposure</p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 parts</span>
+  </div>
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Spare Part</th>
+      <th>Plant</th>
+      <th>Category</th>
+      <th>On Hand</th>
+      <th>Monthly Demand</th>
+      <th>Lead Time</th>
+      <th>Reorder Point</th>
+      <th>Inventory Value</th>
+      <th>Forecast Consumption</th>
+      <th>Reorder Cost</th>
+      <th>Status</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="partsTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Spare Part Inspector</h3>
+   <span class="badge purple">INVENTORY PROFILE</span>
+  </div>
+  <div id="partDetails"></div>
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Inventory Value</span>
+    <strong id="partInventory">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Reorder Cost</span>
+    <strong id="partReorder">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Stock Coverage</span>
+    <strong id="partCoverage">0 days</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Stock Status</span>
+    <strong id="partStatus">--</strong>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Spare Parts Cost by Category</h3>
+   <span class="badge purple">CATEGORY ANALYTICS</span>
+  </div>
+  <p class="muted">Forecast consumption cost across maintenance categories</p>
+  <svg class="chart" id="categoryChart" viewBox="0 0 640 300"
+   role="img" aria-label="Spare parts cost by category"></svg>
+ </div>
+ <div class="panel">
+  <div class="flex">
+   <h3>Monthly Spare Parts Consumption Forecast</h3>
+   <span class="badge blue">DEMAND FORECAST</span>
+  </div>
+  <p class="muted">Deterministic demand-based monthly cost projection</p>
+  <svg class="chart" id="forecastChart" viewBox="0 0 640 300"
+   role="img" aria-label="Monthly spare parts cost forecast"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel scenario-panel">
+  <h3>Spare Parts Procurement Scenario Simulator</h3>
+  <div class="scenarios">
+   <div>
+    <label for="priceMultiplier">Purchase Price Multiplier</label>
+    <input class="input" id="priceMultiplier"
+     type="number" min=".25" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="demandMultiplier">Demand Multiplier</label>
+    <input class="input" id="demandMultiplier"
+     type="number" min=".25" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="leadMultiplier">Supplier Lead Time Multiplier</label>
+    <input class="input" id="leadMultiplier"
+     type="number" min=".25" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="safetyDays">Safety Stock Days</label>
+    <input class="input" id="safetyDays"
+     type="number" min="0" max="90" step="1" value="14">
+   </div>
+   <div>
+    <label for="carryingRate">Annual Inventory Carrying Rate (%)</label>
+    <input class="input" id="carryingRate"
+     type="number" min="0" max="60" step="1" value="18">
+   </div>
+   <div>
+    <label for="orderCoverage">Order-Up-To Coverage (Days)</label>
+    <input class="input" id="orderCoverage"
+     type="number" min="1" max="180" step="1" value="45">
+   </div>
+  </div>
+  <div class="actions" style="margin-top:17px">
+   <button class="btn primary" id="applyBtn">Apply Procurement Scenario</button>
+  </div>
+  <p class="muted">
+   The reorder quantity is calculated from target stock coverage
+   minus current stock. It assumes no open purchase orders,
+   reservations or supplier minimum order quantities.
+  </p>
+ </div>
+
+ <div class="panel">
+  <h3>Inventory Financial Summary</h3>
+  <p class="muted">Stock valuation, consumption, replenishment and holding costs</p>
+  <div id="financialSummary"></div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Plant Spare Parts Cost Summary</h3>
+  <p class="muted">Inventory and procurement exposure by plant</p>
+  <div id="plantSummary"></div>
+ </div>
+ <div class="panel">
+  <h3>Procurement & Inventory Intelligence Insights</h3>
+  <p class="muted">Rule-based inventory observations and cost recommendations</p>
+  <div id="insightList"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Inventory accounting notice:</strong>
+ All data are synthetic. Inventory value is a stock balance,
+ forecast consumption is a projected expense, and replenishment
+ is a purchase commitment; these figures should not be added
+ together as a single total operating cost. Carrying cost is
+ an estimated inventory holding expense and is not included
+ in forecast consumption. The reorder model uses a 30-day
+ planning month, constant daily demand and configurable safety
+ stock. It excludes open purchase orders, reserved stock,
+ minimum order quantities, obsolescence, supplier constraints,
+ taxes, freight, currency movements and actual lead-time
+ variability. Reconcile issued spare-part expenses with
+ repair-cost and maintenance-cost modules to prevent double counting.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const KEY="industra-spare-parts-cost-v1";
+
+const PARTS=[
+ {id:"SP-001",name:"Industrial Motor Bearing",plant:"Plant A",category:"Mechanical",
+  equipment:"MTR-001",supplier:"SKF",unitCost:8500,stock:18,monthlyDemand:12,leadDays:21},
+ {id:"SP-002",name:"Air Compressor Filter",plant:"Plant A",category:"Mechanical",
+  equipment:"CMP-001",supplier:"Atlas Copco",unitCost:4200,stock:35,monthlyDemand:20,leadDays:14},
+ {id:"SP-003",name:"Cooling Fan Motor",plant:"Plant A",category:"Electrical",
+  equipment:"FAN-001",supplier:"Siemens",unitCost:18500,stock:5,monthlyDemand:4,leadDays:30},
+ {id:"SP-004",name:"Generator Fuel Injector",plant:"Plant B",category:"Mechanical",
+  equipment:"GEN-001",supplier:"Bosch",unitCost:32500,stock:6,monthlyDemand:5,leadDays:35},
+ {id:"SP-005",name:"Pump Mechanical Seal",plant:"Plant B",category:"Mechanical",
+  equipment:"PMP-001",supplier:"Flowserve",unitCost:12500,stock:12,monthlyDemand:10,leadDays:18},
+ {id:"SP-006",name:"Industrial Gear Set",plant:"Plant B",category:"Mechanical",
+  equipment:"GBX-001",supplier:"SEW-EURODRIVE",unitCost:78000,stock:3,monthlyDemand:2,leadDays:45},
+ {id:"SP-007",name:"Hydraulic Control Valve",plant:"Plant C",category:"Hydraulic",
+  equipment:"HYD-001",supplier:"Bosch Rexroth",unitCost:28500,stock:7,monthlyDemand:6,leadDays:28},
+ {id:"SP-008",name:"Process Pump Impeller",plant:"Plant C",category:"Mechanical",
+  equipment:"PMP-002",supplier:"KSB",unitCost:36500,stock:8,monthlyDemand:7,leadDays:32},
+ {id:"SP-009",name:"Conveyor Proximity Sensor",plant:"Plant C",category:"Instrumentation",
+  equipment:"CNV-001",supplier:"SICK",unitCost:6500,stock:22,monthlyDemand:16,leadDays:17},
+ {id:"SP-010",name:"Temperature Sensor",plant:"Plant A",category:"Instrumentation",
+  equipment:"MTR-001",supplier:"Endress+Hauser",unitCost:7200,stock:15,monthlyDemand:10,leadDays:20},
+ {id:"SP-011",name:"Industrial Contactor",plant:"Plant B",category:"Electrical",
+  equipment:"GEN-001",supplier:"Schneider Electric",unitCost:11500,stock:9,monthlyDemand:8,leadDays:24},
+ {id:"SP-012",name:"Hydraulic Pressure Sensor",plant:"Plant C",category:"Instrumentation",
+  equipment:"HYD-001",supplier:"WIKA",unitCost:14500,stock:10,monthlyDemand:7,leadDays:26}
+];
+
+const DEFAULTS={
+ priceMultiplier:1,
+ demandMultiplier:1,
+ leadMultiplier:1,
+ safetyDays:14,
+ carryingRate:18,
+ orderCoverage:45
+};
+
+let scenario={...DEFAULTS};
+let results=[];
+let selectedId=PARTS[0].id;
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(n){return currency.format(n)}
+function compact(n){
+ const sign=n<0?"-":"";
+ const x=Math.abs(n);
+ if(x>=10000000)return sign+"₹"+(x/10000000).toFixed(2)+"Cr";
+ if(x>=100000)return sign+"₹"+(x/100000).toFixed(2)+"L";
+ if(x>=1000)return sign+"₹"+(x/1000).toFixed(1)+"K";
+ return money(n);
+}
+function num(n){
+ return new Intl.NumberFormat("en-IN",{
+  maximumFractionDigits:1
+ }).format(n);
+}
+function sum(items,key){
+ return items.reduce((a,b)=>a+(b[key]||0),0);
+}
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{$("toast").style.display="none"},2500);
+}
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(el("span","",label),el("strong","",value));
+ return row;
+}
+
+function calculatePart(part){
+ const months=Number($("periodFilter").value);
+ const unitCost=part.unitCost*scenario.priceMultiplier;
+ const monthlyDemand=part.monthlyDemand*scenario.demandMultiplier;
+ const dailyDemand=monthlyDemand/30;
+ const leadDays=part.leadDays*scenario.leadMultiplier;
+
+ const safetyStock=Math.ceil(dailyDemand*scenario.safetyDays);
+ const leadDemand=Math.ceil(dailyDemand*leadDays);
+ const reorderPoint=leadDemand+safetyStock;
+
+ const coverageDays=dailyDemand>0?part.stock/dailyDemand:Infinity;
+ const targetDays=Math.max(
+  scenario.orderCoverage,
+  leadDays+scenario.safetyDays
+ );
+ const targetStock=Math.ceil(dailyDemand*targetDays);
+ const reorderQuantity=Math.max(0,targetStock-part.stock);
+
+ const inventoryValue=part.stock*unitCost;
+ const forecastUnits=monthlyDemand*months;
+ const consumptionCost=forecastUnits*unitCost;
+ const reorderCost=reorderQuantity*unitCost;
+ const carryingCost=inventoryValue*scenario.carryingRate/100*months/12;
+
+ const status=part.stock<=reorderPoint?
+  (part.stock<leadDemand?"Critical":"Reorder"):"Healthy";
+
+ return{
+  ...part,months,unitCost,monthlyDemand,dailyDemand,
+  leadDays,safetyStock,leadDemand,reorderPoint,
+  coverageDays,targetDays,targetStock,reorderQuantity,
+  inventoryValue,forecastUnits,consumptionCost,
+  reorderCost,carryingCost,status
+ };
+}
+
+function calculateAll(){
+ results=PARTS.map(calculatePart);
+ render();
+}
+
+function filtered(){
+ const plant=$("plantFilter").value;
+ const category=$("categoryFilter").value;
+ return results.filter(item=>
+  (plant==="all"||item.plant===plant)&&
+  (category==="all"||item.category===category)
+ );
+}
+
+function selected(){
+ return filtered().find(x=>x.id===selectedId)||filtered()[0]||null;
+}
+
+function sortedList(){
+ const list=[...filtered()];
+ const sort=$("sortFilter").value;
+ const field={
+  consumption:"consumptionCost",
+  inventory:"inventoryValue",
+  reorder:"reorderCost",
+  lead:"leadDays"
+ }[sort]||"consumptionCost";
+ return list.sort((a,b)=>b[field]-a[field]);
+}
+
+function renderKpis(){
+ const list=filtered();
+ $("inventoryKpi").textContent=compact(sum(list,"inventoryValue"));
+ $("consumptionKpi").textContent=compact(sum(list,"consumptionCost"));
+ $("reorderKpi").textContent=compact(sum(list,"reorderCost"));
+ $("alertsKpi").textContent=list.filter(x=>x.status!=="Healthy").length;
+ $("summaryText").textContent=
+  $("periodFilter").value+"-month forecast · "+
+  list.length+" spare parts · "+
+  list.filter(x=>x.status!=="Healthy").length+" stock alerts";
+}
+
+function renderTable(){
+ const body=$("partsTable");
+ body.replaceChildren();
+ const list=sortedList();
+ $("visibleCount").textContent=list.length+" parts";
+
+ list.forEach(item=>{
+  const row=el("tr");
+  [
+   item.name+" · "+item.id,
+   item.plant,item.category,
+   num(item.stock),num(item.monthlyDemand),
+   num(item.leadDays)+" days",
+   num(item.reorderPoint),
+   money(item.inventoryValue),
+   money(item.consumptionCost),
+   money(item.reorderCost)
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const statusCell=el("td");
+  const cls=item.status==="Critical"?"red":
+   item.status==="Reorder"?"orange":"green";
+  statusCell.append(el("span","badge "+cls,item.status));
+  row.append(statusCell);
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+  button.onclick=()=>{
+   selectedId=item.id;
+   renderInspector();
+  };
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","No spare parts match the filters.");
+  cell.colSpan=12;row.append(cell);body.append(row);
+ }
+}
+
+function renderInspector(){
+ const item=selected();
+ const box=$("partDetails");
+ box.replaceChildren();
+
+ if(!item){
+  box.append(el("p","muted","No spare part selected."));
+  ["partInventory","partReorder","partCoverage","partStatus"]
+   .forEach(id=>$(id).textContent="--");
+  return;
+ }
+
+ [
+  ["Part Name",item.name],
+  ["Part ID",item.id],
+  ["Equipment",item.equipment],
+  ["Plant",item.plant],
+  ["Category",item.category],
+  ["Illustrative Supplier",item.supplier],
+  ["Unit Purchase Cost",money(item.unitCost)],
+  ["On-Hand Stock",num(item.stock)],
+  ["Monthly Demand",num(item.monthlyDemand)],
+  ["Supplier Lead Time",num(item.leadDays)+" days"],
+  ["Safety Stock",num(item.safetyStock)+" units"],
+  ["Lead-Time Demand",num(item.leadDemand)+" units"],
+  ["Reorder Point",num(item.reorderPoint)+" units"],
+  ["Order-Up-To Stock",num(item.targetStock)+" units"],
+  ["Suggested Order Quantity",num(item.reorderQuantity)+" units"],
+  ["Stock Coverage",num(item.coverageDays)+" days"],
+  ["Inventory Value",money(item.inventoryValue)],
+  ["Forecast Consumption",money(item.consumptionCost)],
+  ["Immediate Reorder Cost",money(item.reorderCost)],
+  ["Estimated Carrying Cost",money(item.carryingCost)],
+  ["Inventory Status",item.status]
+ ].forEach(([label,value])=>box.append(detail(label,value)));
+
+ $("partInventory").textContent=compact(item.inventoryValue);
+ $("partReorder").textContent=compact(item.reorderCost);
+ $("partCoverage").textContent=num(item.coverageDays)+" days";
+ $("partStatus").textContent=item.status;
+}
+
+function drawCategoryChart(){
+ const svg=$("categoryChart");
+ svg.replaceChildren();
+ const categories=["Mechanical","Electrical","Instrumentation","Hydraulic"];
+ const data=categories.map(name=>({
+  name,value:sum(filtered().filter(x=>x.category===name),"consumptionCost")
+ }));
+ const max=Math.max(...data.map(x=>x.value),1);
+ const colors=["#6855eb","#438df5","#18b58c","#f4a443"];
+
+ data.forEach((item,index)=>{
+  const y=25+index*62;
+  const width=item.value/max*320;
+  svg.append(svgEl("text",{
+   x:8,y:y+17,fill:"#69738e","font-size":"11"
+  },item.name));
+  svg.append(svgEl("rect",{
+   x:125,y,width,height:25,rx:5,fill:colors[index]
+  }));
+  svg.append(svgEl("text",{
+   x:135+width,y:y+17,fill:"#202640","font-size":"11"
+  },compact(item.value)));
+ });
+}
+
+function drawForecastChart(){
+ const svg=$("forecastChart");
+ svg.replaceChildren();
+
+ const months=Number($("periodFilter").value);
+ const monthlyCost=sum(filtered(),"consumptionCost")/months;
+ const values=Array.from({length:months},()=>monthlyCost);
+
+ const max=Math.max(...values,1)*1.15;
+ const left=55,right=615,top=25,bottom=245;
+
+ for(let i=0;i<=4;i++){
+  const y=bottom-(bottom-top)*i/4;
+  svg.append(svgEl("line",{
+   x1:left,y1:y,x2:right,y2:y,stroke:"#e9ebf4"
+  }));
+  svg.append(svgEl("text",{
+   x:4,y:y+4,fill:"#8992aa","font-size":"10"
+  },compact(max*i/4)));
+ }
+
+ const barSpace=(right-left)/months;
+ const barWidth=Math.min(48,barSpace*.65);
+
+ values.forEach((value,index)=>{
+  const height=value/max*(bottom-top);
+  const x=left+barSpace*index+(barSpace-barWidth)/2;
+  svg.append(svgEl("rect",{
+   x,y:bottom-height,width:barWidth,height,
+   rx:4,fill:"#6855eb"
+  }));
+  svg.append(svgEl("text",{
+   x:x+barWidth/2-9,y:267,
+   fill:"#8992aa","font-size":"10"
+  },"M"+(index+1)));
+ });
+}
+
+function renderFinancialSummary(){
+ const box=$("financialSummary");
+ box.replaceChildren();
+ const list=filtered();
+
+ [
+  ["Spare Part SKUs",String(list.length)],
+  ["Current Inventory Value",money(sum(list,"inventoryValue"))],
+  ["Forecast Demand Units",num(sum(list,"forecastUnits"))],
+  ["Forecast Consumption Expense",money(sum(list,"consumptionCost"))],
+  ["Immediate Reorder Units",num(sum(list,"reorderQuantity"))],
+  ["Immediate Replenishment Commitment",money(sum(list,"reorderCost"))],
+  ["Estimated Inventory Carrying Cost",money(sum(list,"carryingCost"))],
+  ["Critical Stock Items",String(list.filter(x=>x.status==="Critical").length)],
+  ["Reorder Alert Items",String(list.filter(x=>x.status==="Reorder").length)],
+  ["Healthy Stock Items",String(list.filter(x=>x.status==="Healthy").length)]
+ ].forEach(([label,value])=>box.append(detail(label,value)));
+}
+
+function renderPlants(){
+ const box=$("plantSummary");
+ box.replaceChildren();
+
+ ["Plant A","Plant B","Plant C"].forEach(plant=>{
+  const list=filtered().filter(x=>x.plant===plant);
+  const card=el("div","record");
+  card.append(
+   el("h4","",plant),
+   el("p","",
+    list.length+" SKUs · "+
+    compact(sum(list,"inventoryValue"))+" inventory · "+
+    compact(sum(list,"consumptionCost"))+" forecast consumption · "+
+    compact(sum(list,"reorderCost"))+" replenishment · "+
+    list.filter(x=>x.status!=="Healthy").length+" alerts"
+   )
+  );
+  box.append(card);
+ });
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+ const list=filtered();
+
+ const critical=list.filter(x=>x.status==="Critical");
+ const highest=[...list].sort(
+  (a,b)=>b.consumptionCost-a.consumptionCost
+ )[0];
+ const longest=[...list].sort((a,b)=>b.leadDays-a.leadDays)[0];
+
+ const insights=[
+  [
+   "Critical Inventory Exposure",
+   critical.length+" spare-part SKUs have stock below modeled lead-time demand."
+  ],
+  [
+   "Highest Consumption Cost",
+   highest?
+    highest.name+" has forecast consumption expenditure of "+
+    money(highest.consumptionCost)+".":"No matching spare parts."
+  ],
+  [
+   "Supplier Lead-Time Risk",
+   longest?
+    longest.name+" has the longest modeled supplier lead time at "+
+    num(longest.leadDays)+" days.":"No matching spare parts."
+  ],
+  [
+   "Replenishment Planning",
+   "The immediate modeled purchase commitment is "+
+   money(sum(list,"reorderCost"))+
+   ". Confirm open orders and minimum order quantities before procurement."
+  ],
+  [
+   "Inventory Holding Expense",
+   "Estimated holding cost is "+
+   money(sum(list,"carryingCost"))+
+   " for the selected forecast period."
+  ],
+  [
+   "Maintenance Integration",
+   "Connect parts issuance to work orders and asset IDs to reconcile maintenance material consumption without double counting."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+  card.append(el("h4","",title),el("p","",description));
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawCategoryChart();
+ drawForecastChart();
+ renderFinancialSummary();
+ renderPlants();
+ renderInsights();
+}
+
+function validateScenario(){
+ const fields=[
+  ["priceMultiplier",.25,3],
+  ["demandMultiplier",.25,3],
+  ["leadMultiplier",.25,3],
+  ["safetyDays",0,90],
+  ["carryingRate",0,60],
+  ["orderCoverage",1,180]
+ ];
+ const values={};
+
+ for(const [id,min,max] of fields){
+  const raw=$(id).value.trim();
+  const value=Number(raw);
+  if(raw===""||!Number.isFinite(value)||value<min||value>max){
+   notify("Enter valid spare parts scenario assumptions.");
+   return false;
+  }
+  values[id]=value;
+ }
+
+ scenario={
+  priceMultiplier:values.priceMultiplier,
+  demandMultiplier:values.demandMultiplier,
+  leadMultiplier:values.leadMultiplier,
+  safetyDays:values.safetyDays,
+  carryingRate:values.carryingRate,
+  orderCoverage:values.orderCoverage
+ };
+ return true;
+}
+
+function syncInputs(){
+ [
+  "priceMultiplier","demandMultiplier","leadMultiplier",
+  "safetyDays","carryingRate","orderCoverage"
+ ].forEach(id=>$(id).value=scenario[id]);
+}
+
+function saveScenario(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(scenario));
+ }catch{
+  notify("Browser storage unavailable.");
+ }
+}
+
+function loadScenario(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+  const ranges={
+   priceMultiplier:[.25,3],
+   demandMultiplier:[.25,3],
+   leadMultiplier:[.25,3],
+   safetyDays:[0,90],
+   carryingRate:[0,60],
+   orderCoverage:[1,180]
+  };
+
+  if(saved&&Object.entries(ranges).every(
+   ([key,[min,max]])=>
+    typeof saved[key]==="number"&&
+    Number.isFinite(saved[key])&&
+    saved[key]>=min&&saved[key]<=max
+  )){
+   scenario={...saved};
+  }
+ }catch{}
+ syncInputs();
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+ a.href=url;a.download=filename;
+ document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "part_id","part_name","plant","category","equipment",
+  "supplier","unit_cost_inr","stock_units","monthly_demand_units",
+  "lead_days","safety_stock_units","reorder_point_units",
+  "stock_coverage_days","inventory_value_inr",
+  "forecast_consumption_inr","reorder_quantity_units",
+  "reorder_cost_inr","carrying_cost_inr","status"
+ ]];
+
+ filtered().forEach(x=>{
+  rows.push([
+   x.id,x.name,x.plant,x.category,x.equipment,x.supplier,
+   x.unitCost.toFixed(2),x.stock,x.monthlyDemand.toFixed(2),
+   x.leadDays.toFixed(2),x.safetyStock,x.reorderPoint,
+   x.coverageDays.toFixed(2),x.inventoryValue.toFixed(2),
+   x.consumptionCost.toFixed(2),x.reorderQuantity,
+   x.reorderCost.toFixed(2),x.carryingCost.toFixed(2),x.status
+  ]);
+ });
+
+ const csv=rows.map(row=>row.map(value=>
+  '"'+String(value).replaceAll('"','""')+'"'
+ ).join(",")).join("\r\n");
+
+ download(
+  "industra-spare-parts-cost.csv",
+  "\uFEFF"+csv,"text/csv;charset=utf-8"
+ );
+ notify("Spare parts CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-spare-parts-cost.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   scenario,
+   horizonMonths:Number($("periodFilter").value),
+   filters:{
+    plant:$("plantFilter").value,
+    category:$("categoryFilter").value,
+    sort:$("sortFilter").value
+   },
+   parts:filtered()
+  },null,2),
+  "application/json"
+ );
+ notify("Spare parts JSON exported.");
+}
+
+$("calculateBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();calculateAll();
+ notify("Spare parts costs recalculated.");
+};
+$("applyBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();calculateAll();
+ notify("Procurement scenario applied.");
+};
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ if(!confirm("Reset spare parts cost scenario?"))return;
+ scenario={...DEFAULTS};
+ selectedId=PARTS[0].id;
+ $("plantFilter").value="all";
+ $("categoryFilter").value="all";
+ $("periodFilter").value="6";
+ $("sortFilter").value="consumption";
+ syncInputs();saveScenario();calculateAll();
+ notify("Spare parts scenario reset.");
+};
+
+["plantFilter","categoryFilter","periodFilter","sortFilter"]
+ .forEach(id=>$(id).addEventListener("change",calculateAll));
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+loadScenario();
+calculateAll();
+</script>
+</body>
+</html>

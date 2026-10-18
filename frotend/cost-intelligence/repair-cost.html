@@ -1,0 +1,1319 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Repair Cost | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / cost-intelligence</p><h1 id="page-title">Repair Cost</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Repair Cost workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Repair Cost Intelligence | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px Arial,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{background:var(--purple);color:white}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;box-shadow:0 5px 20px #10152d05
+}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.layout{
+ display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.8fr);gap:17px
+}
+.flex{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;color:#69738e;
+ border-radius:9px;padding:10px 13px;font-size:11px;font-weight:700
+}
+.btn.primary{background:var(--purple);border-color:var(--purple);color:white}
+.btn.danger{background:#ffedf0;border-color:#ffedf0;color:#d84b63}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{display:block;color:#69738e;font-size:11px;font-weight:700;margin-bottom:7px}
+.badge{
+ display:inline-block;padding:7px 10px;border-radius:8px;
+ font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.scenarios{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);
+ text-align:left;padding:13px;white-space:nowrap
+}
+td{padding:13px;border-bottom:1px solid #eef0f6;white-space:nowrap}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);border-radius:11px;
+ padding:14px;margin-bottom:12px
+}
+.record p{font-size:11px;color:#69738e;line-height:1.8}
+.chart{width:100%;height:300px;display:block}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric{
+ padding:14px;background:#f8f9fd;
+ border:1px solid var(--border);border-radius:11px
+}
+.metric strong{display:block;font-size:20px;margin-top:9px}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:11px;padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;background:var(--navy);
+ color:white;padding:13px 17px;border-radius:10px;
+ display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}.mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.scenarios,.metric-grid{grid-template-columns:1fr}
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,.scenario-panel,
+ #toast,.notice{display:none!important}
+ .main{margin:0}.content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◆ Cost Intelligence</a>
+ <a class="nav-link" href="cost-analytics.html">▦ Cost Analytics</a>
+ <a class="nav-link" href="cost-forecasting.html">◇ Cost Forecasting</a>
+ <a class="nav-link" href="future-cost-forecast.html">◉ Future Cost Forecast</a>
+ <a class="nav-link" href="expected-failure-cost.html">◆ Expected Failure Cost</a>
+ <a class="nav-link" href="avoided-cost.html">▦ Avoided Cost</a>
+ <a class="nav-link" href="downtime-cost.html">◇ Downtime Cost</a>
+ <a class="nav-link" href="emergency-cost.html">◉ Emergency Cost</a>
+ <a class="nav-link" href="energy-cost.html">◆ Energy Cost</a>
+ <a class="nav-link" href="labor-cost.html">▦ Labor Cost</a>
+ <a class="nav-link" href="production-loss.html">◇ Production Loss</a>
+ <a class="nav-link active" href="repair-cost.html">◉ Repair Cost</a>
+ <a class="nav-link" href="replacement-cost.html">◆ Replacement Cost</a>
+ <a class="nav-link" href="r-o-i-analysis.html">▦ ROI Analysis</a>
+ <div class="nav-title">MAINTENANCE</div>
+ <a class="nav-link" href="predictive-maintenance.html">◇ Predictive Maintenance</a>
+ <a class="nav-link" href="maintenance-schedule.html">◉ Maintenance Schedule</a>
+ <a class="nav-link" href="asset-management.html">◆ Asset Management</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Cost Intelligence / Asset Repair Economics</div>
+   <strong>Industrial Equipment Repair Cost Intelligence</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC REPAIR DATA</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / MAINTENANCE FINANCIAL INTELLIGENCE
+ </div>
+ <h1>Industrial Equipment Repair Cost Intelligence</h1>
+ <p>
+  Analyze maintenance repair expenditure across labor, spare parts,
+  contractor services and logistics. Estimate repair-related
+  production interruption losses, compare repair and replacement
+  scenarios, and identify potential repair cost optimization.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Equipment Repair Cost Overview</h3>
+  <div class="muted" id="summaryText">Calculating repair expenses...</div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="calculateBtn">Recalculate</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Direct Repair Expenditure</div>
+  <div class="stat-value" id="directKpi">₹0</div>
+  <div class="stat-note">Labor, parts, contractors and logistics</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Repair-Related Production Loss</div>
+  <div class="stat-value" id="downtimeKpi">₹0</div>
+  <div class="stat-note">Contribution-margin loss during repair downtime</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Total Repair Economic Impact</div>
+  <div class="stat-value" id="totalKpi">₹0</div>
+  <div class="stat-note">Direct repair cost plus production loss</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Potential Repair Savings</div>
+  <div class="stat-value" id="savingsKpi">₹0</div>
+  <div class="stat-note">Illustrative direct repair cost reduction</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Repair Cost Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="equipmentFilter">Equipment</label>
+   <select class="input" id="equipmentFilter">
+    <option value="all">All Equipment</option>
+   </select>
+  </div>
+  <div>
+   <label for="periodFilter">Analysis Period</label>
+   <select class="input" id="periodFilter">
+    <option value="3">3 Months</option>
+    <option value="6">6 Months</option>
+    <option value="12" selected>12 Months</option>
+    <option value="24">24 Months</option>
+   </select>
+  </div>
+  <div>
+   <label for="sortFilter">Sort By</label>
+   <select class="input" id="sortFilter">
+    <option value="total">Highest Economic Impact</option>
+    <option value="direct">Highest Direct Repair Cost</option>
+    <option value="hours">Longest Repair Downtime</option>
+    <option value="savings">Highest Savings Opportunity</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Equipment Repair Cost Ranking</h3>
+    <p class="muted">
+     Asset-level direct costs, production interruption and repair economics
+    </p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 assets</span>
+  </div>
+
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Equipment</th>
+      <th>Plant</th>
+      <th>Repair Labor</th>
+      <th>Spare Parts</th>
+      <th>Contractor</th>
+      <th>Logistics</th>
+      <th>Direct Repair</th>
+      <th>Downtime Loss</th>
+      <th>Total Impact</th>
+      <th>Potential Savings</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="repairTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Repair Cost Inspector</h3>
+   <span class="badge purple">ASSET PROFILE</span>
+  </div>
+
+  <div id="assetDetails"></div>
+
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Direct Repair</span>
+    <strong id="assetDirect">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Total Impact</span>
+    <strong id="assetTotal">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Repair Downtime</span>
+    <strong id="assetHours">0 h</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Potential Savings</span>
+    <strong id="assetSavings">₹0</strong>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Monthly Repair Cost Trend</h3>
+   <span class="badge purple">REPAIR SPEND TREND</span>
+  </div>
+  <p class="muted">Illustrative monthly distribution of direct repair expenditure</p>
+  <svg class="chart" id="trendChart" viewBox="0 0 640 300"
+   role="img" aria-label="Monthly repair cost trend"></svg>
+ </div>
+ <div class="panel">
+  <div class="flex">
+   <h3>Repair Cost Composition</h3>
+   <span class="badge blue">COST CATEGORIES</span>
+  </div>
+  <p class="muted">Labor, spare parts, contractors, logistics and downtime loss</p>
+  <svg class="chart" id="categoryChart" viewBox="0 0 640 300"
+   role="img" aria-label="Repair cost composition"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel scenario-panel">
+  <h3>Repair Cost Scenario Simulator</h3>
+  <div class="scenarios">
+   <div>
+    <label for="laborMultiplier">Repair Labor Cost Multiplier</label>
+    <input class="input" id="laborMultiplier"
+     type="number" min=".25" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="partsMultiplier">Spare Parts Cost Multiplier</label>
+    <input class="input" id="partsMultiplier"
+     type="number" min=".25" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="contractorMultiplier">Contractor Cost Multiplier</label>
+    <input class="input" id="contractorMultiplier"
+     type="number" min=".25" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="logisticsMultiplier">Logistics Cost Multiplier</label>
+    <input class="input" id="logisticsMultiplier"
+     type="number" min=".25" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="downtimeMultiplier">Repair Downtime Multiplier</label>
+    <input class="input" id="downtimeMultiplier"
+     type="number" min=".25" max="3" step=".05" value="1">
+   </div>
+   <div>
+    <label for="optimizationInput">Direct Repair Cost Reduction (%)</label>
+    <input class="input" id="optimizationInput"
+     type="number" min="0" max="100" step="1" value="15">
+   </div>
+  </div>
+
+  <div class="actions" style="margin-top:17px">
+   <button class="btn primary" id="applyBtn">
+    Apply Repair Cost Scenario
+   </button>
+  </div>
+
+  <p class="muted">
+   Optimization savings apply only to direct repair expenditure.
+   They do not automatically reduce downtime or include the cost
+   of implementing improvements.
+  </p>
+ </div>
+
+ <div class="panel">
+  <h3>Repair Cost Financial Summary</h3>
+  <p class="muted">Maintenance expenses, repair downtime and economic impact</p>
+  <div id="financialSummary"></div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Repair vs Replacement — Single Intervention</h3>
+  <p class="muted">
+   Select an equipment asset to compare one modeled repair
+   intervention against one replacement intervention.
+  </p>
+  <div id="comparisonPanel"></div>
+ </div>
+
+ <div class="panel">
+  <h3>Plant Repair Cost Performance</h3>
+  <p class="muted">Repair expenditure and economic impact by plant</p>
+  <div id="plantSummary"></div>
+ </div>
+</section>
+
+<section class="panel mb">
+ <h3>Repair Cost Intelligence Insights</h3>
+ <div id="insightList" class="grid-2"></div>
+</section>
+
+<div class="notice">
+ <strong>Repair cost methodology:</strong>
+ All asset data and repair expenses are synthetic. The selected
+ period scales modeled annual repair activity, rather than
+ retrieving actual historical work orders. Labor, spare parts,
+ contractor services and logistics are separate direct-cost
+ categories. Production downtime loss is shown separately and
+ must not be added again when consolidating with the
+ production-loss or downtime-cost dashboards. Repair-versus-
+ replacement results compare single interventions only; they
+ do not account for future reliability, residual asset life,
+ warranty, financing, tax or discounted life-cycle costs.
+ Validate all estimates with CMMS work orders, supplier quotes,
+ production records and finance-approved cost models.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const KEY="industra-repair-cost-v1";
+
+const ASSETS=[
+ {
+  id:"MTR-001",name:"Main Drive Motor",plant:"Plant A",
+  labor:65000,parts:145000,contractor:38000,logistics:12000,
+  downtimeHours:36,marginPerHour:18000,
+  replacementPrice:680000,replacementInstall:95000,
+  replacementDowntimeHours:58
+ },
+ {
+  id:"CMP-001",name:"Air Compressor",plant:"Plant A",
+  labor:52000,parts:118000,contractor:32000,logistics:10000,
+  downtimeHours:28,marginPerHour:15000,
+  replacementPrice:540000,replacementInstall:78000,
+  replacementDowntimeHours:45
+ },
+ {
+  id:"FAN-001",name:"Cooling Fan",plant:"Plant A",
+  labor:22000,parts:48000,contractor:12000,logistics:5000,
+  downtimeHours:12,marginPerHour:9000,
+  replacementPrice:190000,replacementInstall:28000,
+  replacementDowntimeHours:19
+ },
+ {
+  id:"GEN-001",name:"Power Generator",plant:"Plant B",
+  labor:125000,parts:360000,contractor:105000,logistics:42000,
+  downtimeHours:48,marginPerHour:24000,
+  replacementPrice:1650000,replacementInstall:220000,
+  replacementDowntimeHours:72
+ },
+ {
+  id:"PMP-001",name:"Cooling Pump",plant:"Plant B",
+  labor:42000,parts:98000,contractor:26000,logistics:8000,
+  downtimeHours:22,marginPerHour:12000,
+  replacementPrice:410000,replacementInstall:65000,
+  replacementDowntimeHours:36
+ },
+ {
+  id:"GBX-001",name:"Industrial Gearbox",plant:"Plant B",
+  labor:95000,parts:265000,contractor:78000,logistics:28000,
+  downtimeHours:40,marginPerHour:21000,
+  replacementPrice:1050000,replacementInstall:150000,
+  replacementDowntimeHours:64
+ },
+ {
+  id:"HYD-001",name:"Hydraulic Power Unit",plant:"Plant C",
+  labor:48000,parts:112000,contractor:35000,logistics:12000,
+  downtimeHours:26,marginPerHour:14000,
+  replacementPrice:510000,replacementInstall:80000,
+  replacementDowntimeHours:43
+ },
+ {
+  id:"PMP-002",name:"Process Pump",plant:"Plant C",
+  labor:76000,parts:190000,contractor:56000,logistics:18000,
+  downtimeHours:32,marginPerHour:17500,
+  replacementPrice:820000,replacementInstall:115000,
+  replacementDowntimeHours:52
+ },
+ {
+  id:"CNV-001",name:"Conveyor Drive",plant:"Plant C",
+  labor:30000,parts:72000,contractor:18000,logistics:6000,
+  downtimeHours:16,marginPerHour:11000,
+  replacementPrice:320000,replacementInstall:45000,
+  replacementDowntimeHours:26
+ }
+];
+
+const DEFAULTS={
+ laborMultiplier:1,
+ partsMultiplier:1,
+ contractorMultiplier:1,
+ logisticsMultiplier:1,
+ downtimeMultiplier:1,
+ optimization:15
+};
+
+let scenario={...DEFAULTS};
+let results=[];
+let selectedId=ASSETS[0].id;
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(value){return currency.format(value)}
+
+function compact(value){
+ const sign=value<0?"-":"";
+ const n=Math.abs(value);
+
+ if(n>=10000000)return sign+"₹"+(n/10000000).toFixed(2)+"Cr";
+ if(n>=100000)return sign+"₹"+(n/100000).toFixed(2)+"L";
+ if(n>=1000)return sign+"₹"+(n/1000).toFixed(1)+"K";
+
+ return money(value);
+}
+
+function num(value){
+ return new Intl.NumberFormat("en-IN",{
+  maximumFractionDigits:1
+ }).format(value);
+}
+
+function sum(items,key){
+ return items.reduce((total,item)=>total+(item[key]||0),0);
+}
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+
+ clearTimeout(toastTimer);
+
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function calculateAsset(asset){
+ const months=Number($("periodFilter").value);
+ const scale=months/12;
+
+ const labor=asset.labor*scale*scenario.laborMultiplier;
+ const parts=asset.parts*scale*scenario.partsMultiplier;
+
+ const contractor=
+  asset.contractor*scale*scenario.contractorMultiplier;
+
+ const logistics=
+  asset.logistics*scale*scenario.logisticsMultiplier;
+
+ const directRepair=labor+parts+contractor+logistics;
+
+ const downtimeHours=
+  asset.downtimeHours*scale*scenario.downtimeMultiplier;
+
+ const downtimeLoss=downtimeHours*asset.marginPerHour;
+
+ const totalImpact=directRepair+downtimeLoss;
+
+ const savings=directRepair*scenario.optimization/100;
+
+ const optimizedDirect=directRepair-savings;
+ const optimizedTotal=optimizedDirect+downtimeLoss;
+
+ // Single intervention comparison, not a period aggregate.
+ const singleRepairDirect=
+  asset.labor*scenario.laborMultiplier+
+  asset.parts*scenario.partsMultiplier+
+  asset.contractor*scenario.contractorMultiplier+
+  asset.logistics*scenario.logisticsMultiplier;
+
+ const singleRepairDowntime=
+  asset.downtimeHours*
+  scenario.downtimeMultiplier*
+  asset.marginPerHour;
+
+ const singleRepairImpact=
+  singleRepairDirect+singleRepairDowntime;
+
+ const replacementDirect=
+  asset.replacementPrice+asset.replacementInstall;
+
+ const replacementDowntime=
+  asset.replacementDowntimeHours*asset.marginPerHour;
+
+ const replacementImpact=
+  replacementDirect+replacementDowntime;
+
+ return{
+  ...asset,months,labor,parts,contractor,logistics,
+  directRepair,downtimeHours,downtimeLoss,totalImpact,
+  savings,optimizedDirect,optimizedTotal,
+  singleRepairDirect,singleRepairDowntime,
+  singleRepairImpact,replacementDirect,
+  replacementDowntime,replacementImpact
+ };
+}
+
+function calculateAll(){
+ results=ASSETS.map(calculateAsset);
+ render();
+}
+
+function filtered(){
+ const plant=$("plantFilter").value;
+ const equipment=$("equipmentFilter").value;
+
+ return results.filter(item=>
+  (plant==="all"||item.plant===plant)&&
+  (equipment==="all"||item.id===equipment)
+ );
+}
+
+function selected(){
+ return filtered().find(item=>item.id===selectedId)||
+  filtered()[0]||null;
+}
+
+function populateEquipment(){
+ const select=$("equipmentFilter");
+ select.replaceChildren();
+
+ const all=el("option","","All Equipment");
+ all.value="all";
+ select.append(all);
+
+ ASSETS.forEach(asset=>{
+  const option=el("option","",asset.name+" · "+asset.id);
+  option.value=asset.id;
+  select.append(option);
+ });
+}
+
+function detail(label,value){
+ const row=el("div","detail");
+
+ row.append(
+  el("span","",label),
+  el("strong","",value)
+ );
+
+ return row;
+}
+
+function renderKpis(){
+ const list=filtered();
+
+ $("directKpi").textContent=compact(sum(list,"directRepair"));
+ $("downtimeKpi").textContent=compact(sum(list,"downtimeLoss"));
+ $("totalKpi").textContent=compact(sum(list,"totalImpact"));
+ $("savingsKpi").textContent=compact(sum(list,"savings"));
+
+ $("summaryText").textContent=
+  $("periodFilter").value+"-month repair cost analysis · "+
+  list.length+" assets · "+
+  num(sum(list,"downtimeHours"))+" repair downtime hours";
+}
+
+function sortedList(){
+ const list=[...filtered()];
+ const sort=$("sortFilter").value;
+
+ if(sort==="direct"){
+  list.sort((a,b)=>b.directRepair-a.directRepair);
+ }else if(sort==="hours"){
+  list.sort((a,b)=>b.downtimeHours-a.downtimeHours);
+ }else if(sort==="savings"){
+  list.sort((a,b)=>b.savings-a.savings);
+ }else{
+  list.sort((a,b)=>b.totalImpact-a.totalImpact);
+ }
+
+ return list;
+}
+
+function renderTable(){
+ const body=$("repairTable");
+ body.replaceChildren();
+
+ const list=sortedList();
+ $("visibleCount").textContent=list.length+" assets";
+
+ list.forEach(item=>{
+  const row=el("tr");
+
+  [
+   item.name+" · "+item.id,
+   item.plant,
+   money(item.labor),
+   money(item.parts),
+   money(item.contractor),
+   money(item.logistics),
+   money(item.directRepair),
+   money(item.downtimeLoss),
+   money(item.totalImpact),
+   money(item.savings)
+  ].forEach(value=>{
+   row.append(el("td","",value));
+  });
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+
+  button.onclick=()=>{
+   selectedId=item.id;
+   renderInspector();
+   renderComparison();
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","No equipment matches the selected filters.");
+  cell.colSpan=11;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const item=selected();
+ const box=$("assetDetails");
+ box.replaceChildren();
+
+ if(!item){
+  box.append(el("p","muted","No equipment selected."));
+
+  [
+   "assetDirect","assetTotal","assetHours","assetSavings"
+  ].forEach(id=>$(id).textContent="--");
+
+  return;
+ }
+
+ [
+  ["Equipment",item.name],
+  ["Equipment ID",item.id],
+  ["Plant",item.plant],
+  ["Analysis Period",item.months+" months"],
+  ["Repair Labor Cost",money(item.labor)],
+  ["Spare Parts Cost",money(item.parts)],
+  ["Contractor Services",money(item.contractor)],
+  ["Logistics & Transportation",money(item.logistics)],
+  ["Direct Repair Expenditure",money(item.directRepair)],
+  ["Repair Downtime",num(item.downtimeHours)+" h"],
+  ["Contribution Margin / Hour",money(item.marginPerHour)],
+  ["Production Downtime Loss",money(item.downtimeLoss)],
+  ["Total Repair Economic Impact",money(item.totalImpact)],
+  ["Optimized Direct Repair Cost",money(item.optimizedDirect)],
+  ["Optimized Total Impact",money(item.optimizedTotal)]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+
+ $("assetDirect").textContent=compact(item.directRepair);
+ $("assetTotal").textContent=compact(item.totalImpact);
+ $("assetHours").textContent=num(item.downtimeHours)+" h";
+ $("assetSavings").textContent=compact(item.savings);
+}
+
+function drawTrendChart(){
+ const svg=$("trendChart");
+ svg.replaceChildren();
+
+ const months=Number($("periodFilter").value);
+ const total=sum(filtered(),"directRepair");
+
+ const weights=Array.from({length:months},(_,i)=>
+  1+.10*Math.sin(i*.8)+.05*Math.cos(i*1.5)
+ );
+
+ const weightSum=weights.reduce((a,b)=>a+b,0);
+ const values=weights.map(w=>total*w/weightSum);
+
+ const left=55,right=615,top=25,bottom=245;
+ const max=Math.max(...values,1)*1.15;
+
+ for(let i=0;i<=4;i++){
+  const y=bottom-(bottom-top)*i/4;
+
+  svg.append(svgEl("line",{
+   x1:left,y1:y,x2:right,y2:y,stroke:"#e9ebf4"
+  }));
+
+  svg.append(svgEl("text",{
+   x:4,y:y+4,fill:"#8992aa","font-size":"10"
+  },compact(max*i/4)));
+ }
+
+ const x=index=>left+(right-left)*
+  (months===1?.5:index/(months-1));
+
+ const y=value=>bottom-value/max*(bottom-top);
+
+ const points=values.map((value,index)=>
+  x(index)+","+y(value)
+ ).join(" ");
+
+ svg.append(svgEl("polyline",{
+  points,fill:"none",stroke:"#6855eb",
+  "stroke-width":"3","stroke-linejoin":"round"
+ }));
+
+ values.forEach((value,index)=>{
+  svg.append(svgEl("circle",{
+   cx:x(index),cy:y(value),r:4,fill:"#6855eb"
+  }));
+
+  if(index%Math.max(1,Math.ceil(months/12))===0){
+   svg.append(svgEl("text",{
+    x:x(index)-10,y:267,
+    fill:"#8992aa","font-size":"10"
+   },"M"+(index+1)));
+  }
+ });
+}
+
+function drawCategoryChart(){
+ const svg=$("categoryChart");
+ svg.replaceChildren();
+
+ const list=filtered();
+
+ const categories=[
+  {
+   name:"Labor",
+   value:sum(list,"labor"),
+   color:"#6855eb"
+  },
+  {
+   name:"Spare Parts",
+   value:sum(list,"parts"),
+   color:"#438df5"
+  },
+  {
+   name:"Contractor",
+   value:sum(list,"contractor"),
+   color:"#18b58c"
+  },
+  {
+   name:"Logistics",
+   value:sum(list,"logistics"),
+   color:"#f4a443"
+  },
+  {
+   name:"Downtime",
+   value:sum(list,"downtimeLoss"),
+   color:"#ed6175"
+  }
+ ];
+
+ const max=Math.max(...categories.map(item=>item.value),1);
+
+ categories.forEach((item,index)=>{
+  const y=20+index*51;
+  const width=item.value/max*320;
+
+  svg.append(svgEl("text",{
+   x:8,y:y+17,fill:"#69738e","font-size":"11"
+  },item.name));
+
+  svg.append(svgEl("rect",{
+   x:110,y,width,height:24,rx:5,fill:item.color
+  }));
+
+  svg.append(svgEl("text",{
+   x:120+width,y:y+16,
+   fill:"#202640","font-size":"11"
+  },compact(item.value)));
+ });
+}
+
+function renderFinancialSummary(){
+ const box=$("financialSummary");
+ box.replaceChildren();
+
+ const list=filtered();
+
+ [
+  ["Assets Evaluated",String(list.length)],
+  ["Repair Labor Expense",money(sum(list,"labor"))],
+  ["Spare Parts Expense",money(sum(list,"parts"))],
+  ["Contractor Expense",money(sum(list,"contractor"))],
+  ["Logistics Expense",money(sum(list,"logistics"))],
+  ["Direct Repair Expenditure",money(sum(list,"directRepair"))],
+  ["Repair Downtime Hours",num(sum(list,"downtimeHours"))+" h"],
+  ["Production Downtime Loss",money(sum(list,"downtimeLoss"))],
+  ["Total Repair Economic Impact",money(sum(list,"totalImpact"))],
+  ["Potential Direct Repair Savings",money(sum(list,"savings"))],
+  ["Optimized Direct Repair Cost",money(sum(list,"optimizedDirect"))],
+  ["Optimized Total Impact",money(sum(list,"optimizedTotal"))]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+}
+
+function renderComparison(){
+ const box=$("comparisonPanel");
+ box.replaceChildren();
+
+ const item=selected();
+
+ if(!item){
+  box.append(el("p","muted","Select an asset to compare interventions."));
+  return;
+ }
+
+ const repair=item.singleRepairImpact;
+ const replacement=item.replacementImpact;
+
+ const difference=Math.abs(repair-replacement);
+
+ const cheaper=repair<=replacement?
+  "Repair has the lower modeled immediate cost.":
+  "Replacement has the lower modeled immediate cost.";
+
+ [
+  ["Equipment",item.name],
+  ["One Repair: Direct Expense",money(item.singleRepairDirect)],
+  ["One Repair: Downtime Loss",money(item.singleRepairDowntime)],
+  ["One Repair: Total Impact",money(repair)],
+  ["One Replacement: Purchase & Installation",money(item.replacementDirect)],
+  ["One Replacement: Downtime Loss",money(item.replacementDowntime)],
+  ["One Replacement: Total Impact",money(replacement)],
+  ["Immediate Cost Difference",money(difference)]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+
+ const card=el("div","record");
+ card.style.marginTop="15px";
+
+ card.append(
+  el("h4","",cheaper),
+  el("p","",
+   "This is a single-event financial comparison, not a repair-versus-replacement recommendation. Remaining useful life, future breakdowns, reliability, safety, warranties and life-cycle costs are not modeled.")
+ );
+
+ box.append(card);
+}
+
+function renderPlants(){
+ const box=$("plantSummary");
+ box.replaceChildren();
+
+ ["Plant A","Plant B","Plant C"].forEach(plant=>{
+  const list=filtered().filter(item=>item.plant===plant);
+  const card=el("div","record");
+
+  card.append(
+   el("h4","",plant),
+   el("p","",
+    list.length+" assets · "+
+    compact(sum(list,"directRepair"))+" direct repair · "+
+    compact(sum(list,"downtimeLoss"))+" downtime loss · "+
+    compact(sum(list,"totalImpact"))+" total impact · "+
+    compact(sum(list,"savings"))+" potential savings")
+  );
+
+  box.append(card);
+ });
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const list=filtered();
+ const highest=[...list].sort(
+  (a,b)=>b.totalImpact-a.totalImpact
+ )[0];
+
+ const total=sum(list,"totalImpact");
+ const downtime=sum(list,"downtimeLoss");
+
+ const insights=[
+  [
+   "Highest Repair Economic Impact",
+   highest?
+    highest.name+" has the largest modeled repair impact at "+
+    money(highest.totalImpact)+".":
+    "No equipment matches the selected filters."
+  ],
+  [
+   "Production Interruption Exposure",
+   "Repair downtime represents "+
+   (total?(downtime/total*100).toFixed(1):"0.0")+
+   "% of modeled repair economic impact."
+  ],
+  [
+   "Direct Repair Optimization",
+   "The selected repair cost reduction assumption produces "+
+   money(sum(list,"savings"))+
+   " in hypothetical gross direct-cost savings."
+  ],
+  [
+   "Maintenance Procurement",
+   "Review spare-parts sourcing, technician work orders, contractor rates, transport expenses and repair scheduling."
+  ],
+  [
+   "Financial Reconciliation",
+   "Avoid double counting downtime loss and repair labor when consolidating this page with production-loss, downtime-cost and labor-cost reports."
+  ],
+  [
+   "Repair vs Replacement",
+   "Use whole-life cost analysis, safety requirements, expected reliability and asset condition before deciding whether to repair or replace."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+  card.append(
+   el("h4","",title),
+   el("p","",description)
+  );
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawTrendChart();
+ drawCategoryChart();
+ renderFinancialSummary();
+ renderComparison();
+ renderPlants();
+ renderInsights();
+}
+
+function validateScenario(){
+ const fields=[
+  ["laborMultiplier",.25,3],
+  ["partsMultiplier",.25,3],
+  ["contractorMultiplier",.25,3],
+  ["logisticsMultiplier",.25,3],
+  ["downtimeMultiplier",.25,3],
+  ["optimizationInput",0,100]
+ ];
+
+ const values={};
+
+ for(const [id,min,max] of fields){
+  const raw=$(id).value.trim();
+  const value=Number(raw);
+
+  if(raw===""||!Number.isFinite(value)||
+   value<min||value>max){
+   notify("Enter valid repair cost assumptions.");
+   return false;
+  }
+
+  values[id]=value;
+ }
+
+ scenario={
+  laborMultiplier:values.laborMultiplier,
+  partsMultiplier:values.partsMultiplier,
+  contractorMultiplier:values.contractorMultiplier,
+  logisticsMultiplier:values.logisticsMultiplier,
+  downtimeMultiplier:values.downtimeMultiplier,
+  optimization:values.optimizationInput
+ };
+
+ return true;
+}
+
+function syncInputs(){
+ $("laborMultiplier").value=scenario.laborMultiplier;
+ $("partsMultiplier").value=scenario.partsMultiplier;
+ $("contractorMultiplier").value=scenario.contractorMultiplier;
+ $("logisticsMultiplier").value=scenario.logisticsMultiplier;
+ $("downtimeMultiplier").value=scenario.downtimeMultiplier;
+ $("optimizationInput").value=scenario.optimization;
+}
+
+function saveScenario(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(scenario));
+ }catch{
+  notify("Browser storage unavailable.");
+ }
+}
+
+function loadScenario(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+
+  const ranges={
+   laborMultiplier:[.25,3],
+   partsMultiplier:[.25,3],
+   contractorMultiplier:[.25,3],
+   logisticsMultiplier:[.25,3],
+   downtimeMultiplier:[.25,3],
+   optimization:[0,100]
+  };
+
+  if(saved&&Object.entries(ranges).every(
+   ([key,[min,max]])=>
+    typeof saved[key]==="number"&&
+    Number.isFinite(saved[key])&&
+    saved[key]>=min&&saved[key]<=max
+  )){
+   scenario={...saved};
+  }
+ }catch{}
+
+ syncInputs();
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+
+ a.href=url;
+ a.download=filename;
+
+ document.body.append(a);
+ a.click();
+ a.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "equipment_id","equipment_name","plant",
+  "analysis_months","repair_labor_inr",
+  "spare_parts_inr","contractor_inr","logistics_inr",
+  "direct_repair_cost_inr","repair_downtime_hours",
+  "downtime_loss_inr","total_repair_impact_inr",
+  "potential_direct_savings_inr",
+  "optimized_direct_repair_inr",
+  "single_repair_impact_inr",
+  "single_replacement_impact_inr"
+ ]];
+
+ filtered().forEach(item=>{
+  rows.push([
+   item.id,item.name,item.plant,item.months,
+   item.labor.toFixed(2),
+   item.parts.toFixed(2),
+   item.contractor.toFixed(2),
+   item.logistics.toFixed(2),
+   item.directRepair.toFixed(2),
+   item.downtimeHours.toFixed(2),
+   item.downtimeLoss.toFixed(2),
+   item.totalImpact.toFixed(2),
+   item.savings.toFixed(2),
+   item.optimizedDirect.toFixed(2),
+   item.singleRepairImpact.toFixed(2),
+   item.replacementImpact.toFixed(2)
+  ]);
+ });
+
+ const csv=rows.map(row=>
+  row.map(value=>
+   '"'+String(value).replaceAll('"','""')+'"'
+  ).join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-repair-cost.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Repair cost CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-repair-cost.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   scenario,
+   analysisMonths:Number($("periodFilter").value),
+   filters:{
+    plant:$("plantFilter").value,
+    equipment:$("equipmentFilter").value,
+    sort:$("sortFilter").value
+   },
+   results:filtered()
+  },null,2),
+  "application/json"
+ );
+
+ notify("Repair cost JSON exported.");
+}
+
+$("calculateBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculateAll();
+ notify("Repair costs recalculated.");
+};
+
+$("applyBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculateAll();
+ notify("Repair cost scenario applied.");
+};
+
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ if(!confirm("Reset repair cost scenario?"))return;
+
+ scenario={...DEFAULTS};
+ selectedId=ASSETS[0].id;
+
+ $("plantFilter").value="all";
+ $("equipmentFilter").value="all";
+ $("periodFilter").value="12";
+ $("sortFilter").value="total";
+
+ syncInputs();
+ saveScenario();
+ calculateAll();
+
+ notify("Repair cost scenario reset.");
+};
+
+[
+ "plantFilter",
+ "equipmentFilter",
+ "periodFilter",
+ "sortFilter"
+].forEach(id=>{
+ $(id).addEventListener("change",calculateAll);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+populateEquipment();
+loadScenario();
+calculateAll();
+</script>
+
+</body>
+</html>

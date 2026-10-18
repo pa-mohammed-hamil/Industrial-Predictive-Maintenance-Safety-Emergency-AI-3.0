@@ -1,0 +1,1163 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cost Copilot | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / copilot</p><h1 id="page-title">Cost Copilot</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Cost Copilot workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Cost Copilot | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple-light:#eeeaff;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5{font-family:"Manrope",sans-serif;letter-spacing:-.5px}
+a{text-decoration:none}
+button,input,select{font:inherit}
+button:disabled{opacity:.5;cursor:not-allowed}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:white;z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto;
+ scrollbar-width:thin;scrollbar-color:#42496b transparent;
+}
+.brand{display:flex;align-items:center;gap:11px;padding:26px 22px;border-bottom:1px solid #ffffff12}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);font-size:22px;
+}
+.brand strong{font:800 18px "Manrope",sans-serif;color:white}
+.brand small{display:block;color:#8994bd;font-size:8px;letter-spacing:1.7px;margin-top:4px}
+.nav-section{padding:23px 20px 8px;color:#687399;font-size:9px;font-weight:800;letter-spacing:1.7px;text-transform:uppercase}
+.side-link{
+ display:flex;align-items:center;gap:12px;margin:3px 12px;padding:12px 13px;
+ border-radius:10px;color:#a4aecf;font-size:11px;font-weight:700;transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{background:linear-gradient(95deg,#6855eb,#5145b4);color:white}
+.sidebar-footer{margin-top:auto;padding:20px;color:#7884ac;font-size:10px;border-top:1px solid #ffffff12}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;justify-content:space-between;align-items:center;gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);border-radius:11px;
+ background:white;display:grid;place-items:center;color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{padding:27px 30px 45px;max-width:1650px;margin:auto}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;padding:29px 30px;
+ color:white;background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:23px;
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;border-radius:50%;
+ border:1px solid #ffffff25;right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#ddd6ff}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{color:#e6e0ff;font-size:12px;line-height:1.9;max-width:790px;margin:0}
+.hero-tag{
+ display:inline-flex;align-items:center;gap:7px;background:#ffffff20;
+ border:1px solid #ffffff25;border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:17px;
+}
+.panel,.stat-card{
+ background:white;border:1px solid var(--border);border-radius:16px;
+ box-shadow:0 5px 23px #18204105;
+}
+.panel{padding:21px}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:15px;
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 23px "Manrope",sans-serif;margin-top:7px;overflow-wrap:anywhere}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel-heading{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-bottom:19px;
+}
+.panel-heading h3{font-size:14px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:10px;margin-top:5px}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);color:white;
+ border:0;border-radius:10px;padding:11px 16px;font-size:11px;
+ font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;padding:10px 13px;
+ background:white;color:#69738e;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;border-radius:8px;
+ padding:7px 10px;font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.status-badge.purple{background:#f0edff;color:#6855eb}
+.form-label{font-size:10px;color:#68718e;font-weight:800;margin-bottom:8px}
+.form-select,.form-control{
+ border:1px solid var(--border);border-radius:10px;min-height:42px;
+ font-size:11px;padding:10px 12px;
+}
+.form-select:focus,.form-control:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12;
+}
+.section-label{
+ color:#8e97ac;font-size:10px;font-weight:800;
+ text-transform:uppercase;letter-spacing:1.2px;margin:21px 0 14px;
+}
+.section-label:first-child{margin-top:0}
+.metric-row{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:10px;padding:11px 0;border-bottom:1px solid #f0f1f7;
+ font-size:11px;
+}
+.metric-row:last-child{border-bottom:0}
+.metric-row span{color:#78829c}
+.metric-row strong{font-weight:800}
+.result-box{
+ background:#f7f5ff;border:1px solid #e6e1ff;border-radius:13px;
+ padding:18px;margin-top:15px;
+}
+.result-box small{color:#8174c3;font-size:10px;font-weight:800}
+.result-box h3{font-size:23px;font-weight:800;margin:9px 0 5px}
+.chart-box{height:275px;position:relative}
+.chart-box canvas{width:100%!important;height:100%!important}
+.scenario-card{
+ border:1px solid var(--border);border-radius:12px;
+ padding:14px;background:#fff;height:100%;
+}
+.scenario-card h4{font-size:12px;font-weight:800;margin:0 0 12px}
+.scenario-card .amount{font:800 20px "Manrope",sans-serif;margin-bottom:6px}
+.scenario-card p{font-size:10px;color:var(--muted);line-height:1.7;margin:0}
+.scenario-card.selected{border-color:#bdb3ff;background:#faf9ff}
+.chat-panel{display:flex;flex-direction:column;height:535px;padding:0;overflow:hidden}
+.chat-heading{padding:17px 19px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.chat-heading-icon{
+ width:38px;height:38px;border-radius:11px;background:#eeeaff;color:var(--purple);
+ display:grid;place-items:center;font-size:18px;
+}
+.chat-heading strong{font-size:12px}
+.chat-heading small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.chat-messages{flex:1;min-height:0;overflow-y:auto;padding:18px;background:#fdfdff}
+.chat-message{margin-bottom:17px;max-width:95%}
+.chat-message.user{margin-left:auto}
+.chat-meta{font-size:10px;font-weight:800;color:#98a1b5;margin-bottom:6px}
+.chat-message.user .chat-meta{text-align:right}
+.chat-bubble{
+ padding:13px 15px;border-radius:4px 12px 12px 12px;
+ background:white;border:1px solid var(--border);
+ line-height:1.8;font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere;
+}
+.chat-message.user .chat-bubble{
+ background:var(--purple);color:white;border-color:var(--purple);
+ border-radius:12px 4px 12px 12px;
+}
+.chat-composer{border-top:1px solid var(--border);padding:13px}
+.chat-composer textarea{resize:none;min-height:60px;max-height:130px}
+.quick-prompts{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.quick-prompt{
+ border:1px solid #e4dfff;border-radius:8px;background:#f7f5ff;
+ color:var(--purple);font-size:10px;font-weight:700;padding:8px 10px;
+}
+.quick-prompt:hover{background:#eeeaff}
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;font-size:10px;font-weight:800;padding:13px;
+ background:#f9faff;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.table tbody td{padding:13px;vertical-align:middle;border-color:#f0f1f7}
+.table tbody tr:hover{background:#fcfbff}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;color:#986b2d;
+ border-radius:12px;padding:15px 17px;font-size:11px;
+ line-height:1.8;display:flex;align-items:flex-start;gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1100px){
+ :root{--sidebar:225px}
+ .content{padding:22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%);transition:transform .25s;width:260px}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{display:block;position:fixed;inset:0;background:#10152d88;z-index:999}
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:15px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:16px}
+ .chat-panel{padding:0}
+ .mobile-hide{display:none}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+ <a class="side-link" href="notifications.html"><i class="bi bi-bell"></i> Notifications</a>
+
+ <div class="nav-section">AI Intelligence</div>
+ <a class="side-link" href="a-i-copilot.html"><i class="bi bi-stars"></i> AI Copilot</a>
+ <a class="side-link" href="chat-history.html"><i class="bi bi-clock-history"></i> Chat History</a>
+ <a class="side-link active" href="cost-copilot.html"><i class="bi bi-cash-coin"></i> Cost Copilot</a>
+ <a class="side-link" href="equipment-condition.html"><i class="bi bi-cpu"></i> Equipment Condition</a>
+ <a class="side-link" href="vision-dashboard.html"><i class="bi bi-eye"></i> Vision Dashboard</a>
+
+ <div class="nav-section">Industrial Intelligence</div>
+ <a class="side-link" href="inspection-history.html"><i class="bi bi-clipboard-data"></i> Inspection History</a>
+ <a class="side-link" href="detection-results.html"><i class="bi bi-bounding-box-circles"></i> Detection Results</a>
+ <a class="side-link" href="video-inspection.html"><i class="bi bi-film"></i> Video Inspection</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/agent-dashboard.html"><i class="bi bi-diagram-3"></i> Agent Dashboard</a>
+ <a class="side-link" href="agents/cost-agent.html"><i class="bi bi-calculator"></i> Cost Agent</a>
+ <a class="side-link" href="agents/maintenance-agent.html"><i class="bi bi-tools"></i> Maintenance Agent</a>
+ <a class="side-link" href="agents/repair-replacement-agent.html"><i class="bi bi-arrow-left-right"></i> Repair / Replacement Agent</a>
+ <a class="side-link" href="agents/supervisor-agent.html"><i class="bi bi-diagram-3"></i> Supervisor Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Industrial Cost Intelligence
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">AI Intelligence / <strong>Cost Copilot</strong></div>
+   <div class="fw-bold mt-1" style="font-size:13px">Industrial Financial Intelligence</div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="status-badge info mobile-hide"><i class="bi bi-calculator"></i> Local Calculation Engine</span>
+  <a href="notifications.html" class="top-icon" aria-label="Notifications"><i class="bi bi-bell"></i></a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">INDUSTRA AI / Asset Financial Intelligence</div>
+ <h1><i class="bi bi-cash-coin me-2"></i> Industrial Cost Copilot</h1>
+ <p>
+  Compare equipment repair and replacement costs, quantify downtime exposure,
+  estimate multi-year lifecycle expenses, and explore financial scenarios
+  using transparent, editable assumptions.
+ </p>
+ <div class="hero-tag"><i class="bi bi-info-circle"></i> Illustrative inputs · Deterministic calculations · No live ERP connection</div>
+</section>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+ <div>
+  <h5 class="fw-bold mb-1">Asset Cost Decision Workspace</h5>
+  <div class="text-secondary" style="font-size:11px">Update the assumptions to calculate a new financial comparison.</div>
+ </div>
+ <div class="d-flex gap-2 flex-wrap">
+  <button class="btn-outline-custom" id="resetButton"><i class="bi bi-arrow-counterclockwise"></i> Reset Example</button>
+  <button class="btn-outline-custom" id="exportCsvButton"><i class="bi bi-filetype-csv"></i> Export CSV</button>
+  <button class="btn-purple" id="exportReportButton"><i class="bi bi-download"></i> Export Report</button>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb"><i class="bi bi-tools"></i></div>
+   <div class="stat-label">Repair Lifecycle Cost</div>
+   <div class="stat-value" id="repairKpi">—</div>
+   <div class="stat-note">Discounted estimate</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eaf2ff;color:#438df5"><i class="bi bi-box-seam"></i></div>
+   <div class="stat-label">Replace Lifecycle Cost</div>
+   <div class="stat-value" id="replaceKpi">—</div>
+   <div class="stat-note">Discounted estimate</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#fff4e6;color:#d68a22"><i class="bi bi-clock-history"></i></div>
+   <div class="stat-label">Repair Downtime Loss</div>
+   <div class="stat-value" id="downtimeKpi">—</div>
+   <div class="stat-note">Initial repair downtime</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e7f8f1;color:#18b58c"><i class="bi bi-graph-up-arrow"></i></div>
+   <div class="stat-label">Cost Difference</div>
+   <div class="stat-value" id="savingsKpi">—</div>
+   <div class="stat-note" id="savingsNote">Lower minus higher option</div>
+  </div>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+
+ <div class="col-xl-4">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3><i class="bi bi-sliders me-2" style="color:var(--purple)"></i> Cost Assumptions</h3>
+     <div class="panel-subtitle">Enter asset-specific financial estimates.</div>
+    </div>
+    <span class="status-badge purple">Editable</span>
+   </div>
+
+   <form id="costForm">
+    <div class="section-label">Asset Information</div>
+    <div class="mb-3">
+     <label class="form-label" for="assetName">Equipment / Asset</label>
+     <input id="assetName" class="form-control" maxlength="100" value="Centrifugal Pump P-204" required>
+    </div>
+    <div class="row g-2">
+     <div class="col-6">
+      <label class="form-label" for="currency">Currency</label>
+      <select id="currency" class="form-select">
+       <option value="INR">INR (₹)</option>
+       <option value="USD">USD ($)</option>
+       <option value="EUR">EUR (€)</option>
+       <option value="GBP">GBP (£)</option>
+      </select>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="years">Analysis Horizon (Years)</label>
+      <input id="years" type="number" min="1" max="20" step="1" class="form-control" value="5" required>
+     </div>
+    </div>
+
+    <div class="section-label">Repair Scenario</div>
+    <div class="row g-2">
+     <div class="col-6">
+      <label class="form-label" for="repairParts">Parts Cost</label>
+      <input id="repairParts" type="number" min="0" step="any" class="form-control" value="65000" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="repairLabor">Labor Cost</label>
+      <input id="repairLabor" type="number" min="0" step="any" class="form-control" value="22000" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="repairHours">Repair Downtime (Hours)</label>
+      <input id="repairHours" type="number" min="0" step="any" class="form-control" value="16" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="hourlyLoss">Production Loss / Hour</label>
+      <input id="hourlyLoss" type="number" min="0" step="any" class="form-control" value="7500" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="repairAnnual">Annual Maintenance Cost</label>
+      <input id="repairAnnual" type="number" min="0" step="any" class="form-control" value="55000" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="repairRisk">Expected Annual Failure Loss</label>
+      <input id="repairRisk" type="number" min="0" step="any" class="form-control" value="35000" required>
+     </div>
+    </div>
+
+    <div class="section-label">Replacement Scenario</div>
+    <div class="row g-2">
+     <div class="col-6">
+      <label class="form-label" for="newEquipment">Equipment Purchase</label>
+      <input id="newEquipment" type="number" min="0" step="any" class="form-control" value="450000" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="installation">Installation Cost</label>
+      <input id="installation" type="number" min="0" step="any" class="form-control" value="45000" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="replaceHours">Replacement Downtime (Hours)</label>
+      <input id="replaceHours" type="number" min="0" step="any" class="form-control" value="24" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="replaceAnnual">Annual Maintenance Cost</label>
+      <input id="replaceAnnual" type="number" min="0" step="any" class="form-control" value="18000" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="replaceRisk">Expected Annual Failure Loss</label>
+      <input id="replaceRisk" type="number" min="0" step="any" class="form-control" value="9000" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="energySavings">Annual Energy Savings</label>
+      <input id="energySavings" type="number" min="0" step="any" class="form-control" value="28000" required>
+     </div>
+    </div>
+
+    <div class="section-label">Financial Assumptions</div>
+    <div class="row g-2">
+     <div class="col-6">
+      <label class="form-label" for="discountRate">Discount Rate (%)</label>
+      <input id="discountRate" type="number" min="0" max="50" step="any" class="form-control" value="10" required>
+     </div>
+     <div class="col-6">
+      <label class="form-label" for="residualValue">Replacement Residual Value</label>
+      <input id="residualValue" type="number" min="0" step="any" class="form-control" value="90000" required>
+     </div>
+    </div>
+
+    <button class="btn-purple w-100 mt-4" type="submit">
+     <i class="bi bi-calculator"></i> Calculate Cost Comparison
+    </button>
+   </form>
+  </section>
+ </div>
+
+ <div class="col-xl-8">
+  <div class="row g-3">
+
+   <div class="col-12">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3><i class="bi bi-bar-chart me-2" style="color:var(--purple)"></i> Lifecycle Cost Comparison</h3>
+       <div class="panel-subtitle">Discounted cumulative costs by year.</div>
+      </div>
+      <span class="status-badge info">Net Present Cost</span>
+     </div>
+     <div class="chart-box"><canvas id="lifecycleChart"></canvas></div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel h-100">
+     <div class="panel-heading">
+      <div>
+       <h3>Cost Breakdown</h3>
+       <div class="panel-subtitle">Initial versus discounted ongoing cost.</div>
+      </div>
+     </div>
+     <div class="chart-box" style="height:225px"><canvas id="breakdownChart"></canvas></div>
+    </section>
+   </div>
+
+   <div class="col-lg-6">
+    <section class="panel h-100">
+     <div class="panel-heading">
+      <div>
+       <h3>Financial Comparison</h3>
+       <div class="panel-subtitle">Based on entered assumptions.</div>
+      </div>
+     </div>
+     <div id="comparisonMetrics"></div>
+     <div class="result-box">
+      <small>LOWER ESTIMATED LIFECYCLE COST</small>
+      <h3 id="recommendationText">—</h3>
+      <div class="text-secondary" id="recommendationDetail" style="font-size:10px;line-height:1.7"></div>
+     </div>
+    </section>
+   </div>
+
+   <div class="col-12">
+    <section class="panel">
+     <div class="panel-heading">
+      <div>
+       <h3>Downtime Sensitivity Analysis</h3>
+       <div class="panel-subtitle">How repair downtime assumptions affect the comparison.</div>
+      </div>
+      <span class="status-badge purple">Scenario Modeling</span>
+     </div>
+     <div class="row g-3" id="scenarioCards"></div>
+    </section>
+   </div>
+
+  </div>
+ </div>
+
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-7">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3><i class="bi bi-table me-2" style="color:var(--purple)"></i> Annual Cost Projection</h3>
+     <div class="panel-subtitle">Year-by-year discounted cumulative cost estimates.</div>
+    </div>
+   </div>
+   <div class="table-responsive">
+    <table class="table mb-0">
+     <thead>
+      <tr>
+       <th>Year</th>
+       <th>Repair Cumulative</th>
+       <th>Replace Cumulative</th>
+       <th>Lower-Cost Option</th>
+      </tr>
+     </thead>
+     <tbody id="projectionTable"></tbody>
+    </table>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-5">
+  <section class="panel chat-panel">
+   <div class="chat-heading">
+    <div class="chat-heading-icon"><i class="bi bi-stars"></i></div>
+    <div>
+     <strong>Industrial Cost Copilot</strong>
+     <small>Calculation-based financial explanations</small>
+    </div>
+    <span class="status-badge purple ms-auto">LOCAL</span>
+   </div>
+
+   <div class="chat-messages" id="chatMessages"></div>
+
+   <div class="chat-composer">
+    <div class="quick-prompts">
+     <button class="quick-prompt" data-question="Which option costs less?">Compare options</button>
+     <button class="quick-prompt" data-question="Explain downtime cost.">Downtime impact</button>
+     <button class="quick-prompt" data-question="What assumptions should I verify?">Validate assumptions</button>
+    </div>
+    <div class="d-flex gap-2">
+     <textarea class="form-control" id="chatInput" rows="2" maxlength="1500" placeholder="Ask about these cost calculations..."></textarea>
+     <button class="btn-purple align-self-end" id="sendChat" aria-label="Send message">
+      <i class="bi bi-arrow-up"></i>
+     </button>
+    </div>
+    <div class="text-secondary mt-2" style="font-size:9px">
+     Rule-based explanations, not LLM inference or financial advice.
+    </div>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="notice">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Decision-support limitation:</strong>
+  The initial numbers are fictional examples. The calculator uses a simplified
+  discounted cash-flow model, not an independently validated asset reliability
+  model. Expected failure losses, energy savings, downtime, salvage values,
+  taxes, inflation, operational constraints, and engineering risks require
+  site-specific validation. Lower modeled cost does not establish equipment
+  safety or authorize repair or replacement. Qualified engineering and finance
+  teams must review any actual investment decision.
+ </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const INPUT_IDS=[
+ "assetName","currency","years",
+ "repairParts","repairLabor","repairHours","hourlyLoss",
+ "repairAnnual","repairRisk","newEquipment","installation",
+ "replaceHours","replaceAnnual","replaceRisk",
+ "energySavings","discountRate","residualValue"
+];
+const defaults=Object.fromEntries(INPUT_IDS.map(id=>[id,$(id).value]));
+
+let result=null;
+let lifecycleChart=null;
+let breakdownChart=null;
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function readInputs(){
+ const p={
+  assetName:$("assetName").value.trim(),
+  currency:$("currency").value,
+  years:Number($("years").value)
+ };
+
+ if(!p.assetName)throw Error("Enter an asset name.");
+ if(!Number.isInteger(p.years)||p.years<1||p.years>20){
+  throw Error("Analysis horizon must be between 1 and 20 years.");
+ }
+
+ for(const id of INPUT_IDS.slice(3)){
+  const value=$ (id).value.trim();
+  if(value==="")throw Error("Complete all cost fields.");
+  const number=Number(value);
+  if(!Number.isFinite(number)||number<0){
+   throw Error("Enter valid nonnegative amounts.");
+  }
+  p[id]=number;
+ }
+
+ if(p.discountRate>50)throw Error("Discount rate must not exceed 50%.");
+ return p;
+}
+
+function money(amount,currency=result?.inputs.currency||"INR"){
+ return new Intl.NumberFormat(
+  currency==="INR"?"en-IN":"en-US",
+  {style:"currency",currency,maximumFractionDigits:0}
+ ).format(amount);
+}
+
+function compactMoney(amount,currency){
+ const symbol={INR:"₹",USD:"$",EUR:"€",GBP:"£"}[currency]||"";
+ const abs=Math.abs(amount);
+ const sign=amount<0?"-":"";
+ if(abs>=1e7)return sign+symbol+(abs/1e7).toFixed(2)+"Cr";
+ if(abs>=1e5)return sign+symbol+(abs/1e5).toFixed(2)+"L";
+ if(abs>=1e3)return sign+symbol+(abs/1e3).toFixed(1)+"K";
+ return sign+symbol+Math.round(abs);
+}
+
+function calculate(p,repairHoursOverride=p.repairHours){
+ const discount=p.discountRate/100;
+ const repairDowntime=repairHoursOverride*p.hourlyLoss;
+ const replaceDowntime=p.replaceHours*p.hourlyLoss;
+
+ const repairInitial=p.repairParts+p.repairLabor+repairDowntime;
+ const replaceInitial=p.newEquipment+p.installation+replaceDowntime;
+
+ const repairAnnual=p.repairAnnual+p.repairRisk;
+ const replaceAnnual=p.replaceAnnual+p.replaceRisk-p.energySavings;
+
+ let repairTotal=repairInitial;
+ let replaceTotal=replaceInitial;
+
+ const projection=[{
+  year:0,repair:repairTotal,replace:replaceTotal
+ }];
+
+ for(let year=1;year<=p.years;year++){
+  const factor=Math.pow(1+discount,year);
+
+  repairTotal+=repairAnnual/factor;
+  replaceTotal+=replaceAnnual/factor;
+
+  if(year===p.years){
+   replaceTotal-=p.residualValue/factor;
+  }
+
+  projection.push({
+   year,
+   repair:repairTotal,
+   replace:replaceTotal
+  });
+ }
+
+ return {
+  inputs:p,
+  repairInitial,
+  replaceInitial,
+  repairDowntime,
+  replaceDowntime,
+  repairAnnual,
+  replaceAnnual,
+  repairTotal,
+  replaceTotal,
+  difference:Math.abs(repairTotal-replaceTotal),
+  lower:repairTotal<replaceTotal?"Repair":
+   replaceTotal<repairTotal?"Replace":"Equal",
+  projection
+ };
+}
+
+function setText(id,value){
+ $(id).textContent=value;
+}
+
+function addMetric(label,value){
+ const row=document.createElement("div");
+ row.className="metric-row";
+ const left=document.createElement("span");
+ left.textContent=label;
+ const right=document.createElement("strong");
+ right.textContent=value;
+ row.append(left,right);
+ $("comparisonMetrics").append(row);
+}
+
+function updateDashboard(){
+ const r=result;
+ const c=r.inputs.currency;
+
+ setText("repairKpi",compactMoney(r.repairTotal,c));
+ setText("replaceKpi",compactMoney(r.replaceTotal,c));
+ setText("downtimeKpi",compactMoney(r.repairDowntime,c));
+ setText("savingsKpi",compactMoney(r.difference,c));
+ setText("savingsNote",r.lower==="Equal"?
+  "Both options have equal modeled cost":
+  r.lower+" has the lower modeled cost");
+
+ $("comparisonMetrics").replaceChildren();
+ addMetric("Initial Repair Cost",money(r.repairInitial,c));
+ addMetric("Initial Replacement Cost",money(r.replaceInitial,c));
+ addMetric("Repair Annual Expected Cost",money(r.repairAnnual,c));
+ addMetric("Replacement Annual Net Cost",money(r.replaceAnnual,c));
+ addMetric("Replacement Downtime Loss",money(r.replaceDowntime,c));
+
+ setText("recommendationText",
+  r.lower==="Equal"?"Cost Tie":r.lower);
+ setText("recommendationDetail",
+  r.lower==="Equal"?
+  "Both scenarios have equal modeled lifecycle costs.":
+  r.lower+" is lower by "+money(r.difference,c)+
+  " over "+r.inputs.years+" years under the current assumptions.");
+
+ renderCharts();
+ renderProjection();
+ renderScenarios();
+}
+
+function renderCharts(){
+ const r=result;
+ const labels=r.projection.map(row=>"Year "+row.year);
+
+ const lineData={
+  labels,
+  datasets:[
+   {
+    label:"Repair",
+    data:r.projection.map(row=>row.repair),
+    borderColor:"#6855eb",
+    backgroundColor:"#6855eb18",
+    tension:.32,
+    borderWidth:3,
+    pointRadius:3
+   },
+   {
+    label:"Replace",
+    data:r.projection.map(row=>row.replace),
+    borderColor:"#18b58c",
+    backgroundColor:"#18b58c18",
+    tension:.32,
+    borderWidth:3,
+    pointRadius:3
+   }
+  ]
+ };
+
+ if(lifecycleChart){
+  lifecycleChart.data=lineData;
+  lifecycleChart.update();
+ }else{
+  lifecycleChart=new Chart($("lifecycleChart"),{
+   type:"line",
+   data:lineData,
+   options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+     legend:{position:"bottom",labels:{usePointStyle:true,boxWidth:9}},
+     tooltip:{callbacks:{label:context=>
+      context.dataset.label+": "+money(context.parsed.y,r.inputs.currency)
+     }}
+    },
+    scales:{
+     y:{ticks:{callback:value=>compactMoney(value,r.inputs.currency)},
+      grid:{color:"#edf0f6"}},
+     x:{grid:{display:false}}
+    }
+   }
+  });
+ }
+
+ const breakdown={
+  labels:["Repair Initial","Repair Future Net","Replace Initial","Replace Future Net"],
+  datasets:[{
+   label:"Discounted Cost",
+   data:[
+    r.repairInitial,
+    r.repairTotal-r.repairInitial,
+    r.replaceInitial,
+    r.replaceTotal-r.replaceInitial
+   ],
+   backgroundColor:["#6855eb","#b4a8ff","#18b58c","#a1e6d2"],
+   borderRadius:6
+  }]
+ };
+
+ if(breakdownChart){
+  breakdownChart.data=breakdown;
+  breakdownChart.update();
+ }else{
+  breakdownChart=new Chart($("breakdownChart"),{
+   type:"bar",
+   data:breakdown,
+   options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+     legend:{display:false},
+     tooltip:{callbacks:{label:context=>
+      money(context.parsed.y,r.inputs.currency)
+     }}
+    },
+    scales:{
+     y:{ticks:{callback:value=>compactMoney(value,r.inputs.currency)},
+      grid:{color:"#edf0f6"}},
+     x:{grid:{display:false},ticks:{font:{size:9}}}
+    }
+   }
+  });
+ }
+}
+
+function renderProjection(){
+ const tbody=$("projectionTable");
+ tbody.replaceChildren();
+
+ result.projection.forEach(row=>{
+  const tr=document.createElement("tr");
+  const winner=row.repair<row.replace?"Repair":
+   row.replace<row.repair?"Replace":"Equal";
+
+  [
+   row.year===0?"Initial":String(row.year),
+   money(row.repair),
+   money(row.replace),
+   winner
+  ].forEach((value,index)=>{
+   const td=document.createElement("td");
+
+   if(index===3){
+    const badge=document.createElement("span");
+    badge.className="status-badge "+
+     (winner==="Repair"?"purple":
+      winner==="Replace"?"success":"info");
+    badge.textContent=winner;
+    td.append(badge);
+   }else{
+    td.textContent=value;
+   }
+   tr.append(td);
+  });
+
+  tbody.append(tr);
+ });
+}
+
+function renderScenarios(){
+ const container=$("scenarioCards");
+ container.replaceChildren();
+
+ const multipliers=[
+  {name:"Reduced Downtime",factor:.5,description:"Repair downtime decreases by 50%."},
+  {name:"Current Estimate",factor:1,description:"Uses the entered repair downtime."},
+  {name:"Extended Downtime",factor:1.5,description:"Repair downtime increases by 50%."}
+ ];
+
+ multipliers.forEach(item=>{
+  const scenario=calculate(
+   result.inputs,
+   result.inputs.repairHours*item.factor
+  );
+
+  const col=document.createElement("div");
+  col.className="col-md-4";
+
+  const card=document.createElement("div");
+  card.className="scenario-card "+
+   (item.factor===1?"selected":"");
+
+  const title=document.createElement("h4");
+  title.textContent=item.name;
+
+  const amount=document.createElement("div");
+  amount.className="amount";
+  amount.textContent=money(scenario.repairTotal);
+
+  const description=document.createElement("p");
+  description.textContent=item.description;
+
+  const badge=document.createElement("span");
+  badge.className="status-badge mt-3 "+
+   (scenario.lower==="Repair"?"purple":
+    scenario.lower==="Replace"?"success":"info");
+  badge.textContent="Lower cost: "+scenario.lower;
+
+  card.append(title,amount,description,badge);
+  col.append(card);
+  container.append(col);
+ });
+}
+
+function calculateFromForm(){
+ try{
+  result=calculate(readInputs());
+  updateDashboard();
+  return true;
+ }catch(error){
+  notify(error.message);
+  return false;
+ }
+}
+
+$("costForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ if(calculateFromForm()){
+  notify("Cost comparison updated.");
+  appendChat("assistant",
+   "The cost model has been recalculated. Ask me to compare the options or explain the downtime impact.");
+ }
+});
+
+INPUT_IDS.forEach(id=>{
+ $(id).addEventListener("change",calculateFromForm);
+});
+
+$("resetButton").addEventListener("click",()=>{
+ INPUT_IDS.forEach(id=>{$(id).value=defaults[id]});
+ calculateFromForm();
+ notify("Illustrative assumptions restored.");
+});
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportReportButton").addEventListener("click",()=>{
+ if(!result)return;
+ const report={
+  application:"INDUSTRA AI",
+  module:"Industrial Cost Copilot",
+  generatedAt:new Date().toISOString(),
+  dataSource:"user-entered and illustrative inputs",
+  calculationEngine:"deterministic discounted lifecycle cost",
+  aiInferencePerformed:false,
+  validatedFinancialAdvice:false,
+  ...result
+ };
+ downloadFile("industra-cost-analysis.json",
+  JSON.stringify(report,null,2),"application/json");
+ notify("Cost report exported.");
+});
+
+$("exportCsvButton").addEventListener("click",()=>{
+ if(!result)return;
+
+ const escapeCsv=value=>
+  '"'+String(value??"").replace(/"/g,'""')+'"';
+
+ const rows=[
+  ["Year","Repair Cumulative","Replace Cumulative"],
+  ...result.projection.map(row=>[
+   row.year,row.repair.toFixed(2),row.replace.toFixed(2)
+  ])
+ ];
+
+ const csv=rows.map(row=>row.map(escapeCsv).join(",")).join("\r\n");
+ downloadFile("industra-cost-projection.csv",csv,"text/csv;charset=utf-8");
+ notify("Projection CSV exported.");
+});
+
+function appendChat(role,message){
+ const container=$("chatMessages");
+ const wrapper=document.createElement("div");
+ wrapper.className="chat-message "+role;
+
+ const meta=document.createElement("div");
+ meta.className="chat-meta";
+ meta.textContent=role==="user"?"You":"Cost Copilot · Calculated Explanation";
+
+ const bubble=document.createElement("div");
+ bubble.className="chat-bubble";
+ bubble.textContent=message;
+
+ wrapper.append(meta,bubble);
+ container.append(wrapper);
+ container.scrollTop=container.scrollHeight;
+}
+
+function explainCost(question){
+ if(!result)return "Complete the cost inputs first.";
+
+ const q=question.toLowerCase();
+ const r=result;
+ const p=r.inputs;
+
+ if(/downtime|production|loss per hour/.test(q)){
+  return `Downtime analysis for ${p.assetName}:
+
+Repair: ${p.repairHours} hours × ${money(p.hourlyLoss)} per hour = ${money(r.repairDowntime)}.
+
+Replacement: ${p.replaceHours} hours × ${money(p.hourlyLoss)} per hour = ${money(r.replaceDowntime)}.
+
+These are estimated production losses only. They exclude any additional restart, quality, or supply-chain effects not entered in the model.`;
+ }
+
+ if(/assumption|verify|risk|reliab|accurac/.test(q)){
+  return `Key assumptions to validate:
+
+1. Actual repair parts and labor quotations.
+2. Equipment replacement purchase and installation quotations.
+3. Verified production contribution lost per downtime hour.
+4. Realistic repair and replacement outage durations.
+5. Historical annual maintenance costs.
+6. Expected annual failure losses based on reliability data.
+7. Energy savings supported by measured consumption.
+8. Residual value, discount rate, and planning horizon.
+
+The model does not verify these values or determine technical feasibility.`;
+ }
+
+ if(/annual|maintenance|energy|saving/.test(q)){
+  return `Annual operating comparison:
+
+Repair expected annual cost:
+${money(p.repairAnnual)} maintenance + ${money(p.repairRisk)} failure loss = ${money(r.repairAnnual)}.
+
+Replacement expected annual net cost:
+${money(p.replaceAnnual)} maintenance + ${money(p.replaceRisk)} failure loss − ${money(p.energySavings)} energy savings = ${money(r.replaceAnnual)}.
+
+The annual values are assumed constant and discounted over ${p.years} years.`;
+ }
+
+ if(/discount|present value|npv|lifecycle/.test(q)){
+  return `Discounted lifecycle analysis:
+
+Analysis horizon: ${p.years} years.
+Discount rate: ${p.discountRate}% per year.
+
+Repair net present cost: ${money(r.repairTotal)}.
+Replacement net present cost: ${money(r.replaceTotal)}.
+
+Future annual costs are discounted by (1 + discount rate)^year. Replacement residual value is deducted at the end of the horizon.
+
+This is a simplified net present cost comparison, not a full corporate capital-budgeting model.`;
+ }
+
+ return `Cost comparison for ${p.assetName}:
+
+Repair lifecycle cost: ${money(r.repairTotal)}.
+Replacement lifecycle cost: ${money(r.replaceTotal)}.
+Absolute difference: ${money(r.difference)}.
+
+Lower modeled cost: ${r.lower==="Equal"?"Both options are equal":r.lower}.
+
+This conclusion is financial only and depends entirely on the entered assumptions. It does not determine whether repairing or replacing the asset is technically safe or operationally feasible.`;
+}
+
+function sendChat(){
+ const input=$("chatInput");
+ const question=input.value.trim();
+ if(!question)return;
+
+ appendChat("user",question);
+ input.value="";
+ appendChat("assistant",explainCost(question));
+}
+
+$("sendChat").addEventListener("click",sendChat);
+$("chatInput").addEventListener("keydown",event=>{
+ if(event.key==="Enter"&&!event.shiftKey){
+  event.preventDefault();
+  sendChat();
+ }
+});
+document.querySelectorAll("[data-question]").forEach(button=>{
+ button.addEventListener("click",()=>{
+  appendChat("user",button.dataset.question);
+  appendChat("assistant",explainCost(button.dataset.question));
+ });
+});
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+calculateFromForm();
+appendChat(
+ "assistant",
+ "Welcome to the Industrial Cost Copilot.\n\nI can explain the current repair-versus-replacement calculation, downtime exposure, annual maintenance assumptions, and discounted lifecycle costs.\n\nAll answers use the values in this page. No live financial or asset data is connected."
+);
+</script>
+</body>
+</html>

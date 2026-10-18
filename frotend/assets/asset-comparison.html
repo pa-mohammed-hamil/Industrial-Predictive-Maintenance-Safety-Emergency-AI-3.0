@@ -1,0 +1,1098 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Asset Comparison | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / assets</p><h1 id="page-title">Asset Comparison</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Asset Comparison workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Asset Comparison | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px Arial,Helvetica,sans-serif
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px
+}
+.nav-link:hover,.nav-link.active{
+ background:var(--purple);color:white
+}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;
+ border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;
+ box-shadow:0 5px 20px #10152d05
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:16px
+}
+.grid-2{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));gap:16px
+}
+.layout{
+ display:grid;
+ grid-template-columns:minmax(0,1.4fr) minmax(300px,.8fr);
+ gap:17px
+}
+.flex{
+ display:flex;align-items:center;
+ justify-content:space-between;gap:12px;flex-wrap:wrap
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;color:#69738e;
+ border-radius:9px;padding:10px 13px;font-size:11px;font-weight:700
+}
+.btn.primary{
+ background:var(--purple);border-color:var(--purple);color:white
+}
+.btn.danger{
+ background:#ffedf0;border-color:#ffedf0;color:#d84b63
+}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text)
+}
+label{
+ display:block;color:#69738e;font-size:11px;
+ font-weight:700;margin-bottom:7px
+}
+.badge{
+ display:inline-block;padding:7px 10px;
+ border-radius:8px;font-size:10px;font-weight:800
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));gap:12px
+}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);
+ text-align:left;padding:13px;white-space:nowrap
+}
+td{
+ padding:13px;border-bottom:1px solid #eef0f6;
+ white-space:nowrap
+}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);
+ font-size:11px
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);
+ border-radius:11px;padding:14px;margin-bottom:12px
+}
+.record p{font-size:11px;color:#69738e;line-height:1.8}
+.chart{width:100%;height:300px;display:block}
+.metric-grid{
+ display:grid;grid-template-columns:1fr 1fr;gap:12px
+}
+.metric{
+ padding:14px;background:#f8f9fd;
+ border:1px solid var(--border);border-radius:11px
+}
+.metric strong{display:block;font-size:20px;margin-top:9px}
+}
+.checklist{
+ display:grid;grid-template-columns:repeat(3,1fr);gap:12px
+}
+.checkitem{
+ padding:13px;border:1px solid var(--border);
+ border-radius:10px;background:#fafbff;
+ display:flex;gap:9px;align-items:center
+}
+.checkitem input{accent-color:var(--purple)}
+.progress{
+ height:8px;border-radius:10px;
+ background:#edf0f7;overflow:hidden;margin-top:8px
+}
+.progress span{
+ display:block;height:100%;
+ background:var(--purple);border-radius:10px
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:11px;
+ padding:15px;font-size:11px;line-height:1.8
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;
+ background:var(--navy);color:white;
+ padding:13px 17px;border-radius:10px;
+ display:none;z-index:300
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}.mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.checklist,.metric-grid{
+  grid-template-columns:1fr
+ }
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,
+ #toast,.notice{display:none!important}
+ .main{margin:0}.content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◆ Cost Intelligence</a>
+ <a class="nav-link" href="cost-analytics.html">▦ Cost Analytics</a>
+ <a class="nav-link" href="cost-forecasting.html">◇ Cost Forecasting</a>
+ <a class="nav-link" href="future-cost-forecast.html">◉ Future Cost Forecast</a>
+ <a class="nav-link" href="expected-failure-cost.html">◆ Expected Failure Cost</a>
+ <a class="nav-link" href="avoided-cost.html">▦ Avoided Cost</a>
+ <a class="nav-link" href="downtime-cost.html">◇ Downtime Cost</a>
+ <a class="nav-link" href="emergency-cost.html">◉ Emergency Cost</a>
+ <a class="nav-link" href="energy-cost.html">◆ Energy Cost</a>
+ <a class="nav-link" href="labor-cost.html">▦ Labor Cost</a>
+ <a class="nav-link" href="production-loss.html">◇ Production Loss</a>
+ <a class="nav-link" href="repair-cost.html">◉ Repair Cost</a>
+ <a class="nav-link" href="repair-replacement.html">◆ Repair vs Replacement</a>
+ <a class="nav-link" href="replacement-cost.html">▦ Replacement Cost</a>
+ <a class="nav-link" href="scrap-cost.html">◇ Scrap Cost</a>
+ <a class="nav-link" href="spare-parts-cost.html">◉ Spare Parts Cost</a>
+ <a class="nav-link" href="total-cost-ownership.html">◆ Total Cost of Ownership</a>
+ <a class="nav-link active" href="asset-comparison.html">▦ Asset Comparison</a>
+ <a class="nav-link" href="r-o-i-analysis.html">◇ ROI Analysis</a>
+
+ <div class="nav-title">MAINTENANCE</div>
+ <a class="nav-link" href="asset-management.html">◉ Asset Management</a>
+ <a class="nav-link" href="predictive-maintenance.html">◆ Predictive Maintenance</a>
+ <a class="nav-link" href="r-u-l-prediction.html">▦ RUL Prediction</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Cost Intelligence / Industrial Asset Benchmarking</div>
+   <strong>Asset Comparison & Lifecycle Intelligence</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC ASSET DATA</span>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / INDUSTRIAL ASSET COMPARISON ENGINE
+ </div>
+ <h1>Asset Comparison & Lifecycle Intelligence</h1>
+ <p>
+  Compare industrial equipment across maintenance costs,
+  energy consumption, downtime losses, expected failure exposure,
+  total cost of ownership, health scores and remaining useful life.
+  Identify high-cost assets and prioritize reliability improvement.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Industrial Equipment Comparison Overview</h3>
+  <div class="muted" id="summaryText">Calculating asset comparisons...</div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="compareBtn">Compare Selected Assets</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Compared Assets</div>
+  <div class="stat-value" id="assetCountKpi">0</div>
+  <div class="stat-note">Equipment included in comparison</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Combined Ownership Cost</div>
+  <div class="stat-value" id="tcoKpi">₹0</div>
+  <div class="stat-note">Illustrative lifecycle TCO</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Average Asset Health</div>
+  <div class="stat-value" id="healthKpi">0%</div>
+  <div class="stat-note">Unweighted equipment health average</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">High-Risk Assets</div>
+  <div class="stat-value" id="riskKpi">0</div>
+  <div class="stat-note">Health below 65 or failure probability above 35%</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Comparison Configuration</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Industrial Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="horizonFilter">Cost Comparison Horizon</label>
+   <select class="input" id="horizonFilter">
+    <option value="12">12 Months</option>
+    <option value="36">36 Months</option>
+    <option value="60" selected>60 Months</option>
+    <option value="120">120 Months</option>
+   </select>
+  </div>
+  <div>
+   <label for="metricFilter">Comparison Metric</label>
+   <select class="input" id="metricFilter">
+    <option value="tco">Total Cost of Ownership</option>
+    <option value="maintenance">Maintenance Cost</option>
+    <option value="energy">Energy Cost</option>
+    <option value="downtime">Downtime Loss</option>
+    <option value="failure">Expected Failure Cost</option>
+    <option value="health">Asset Health Score</option>
+    <option value="rul">Remaining Useful Life</option>
+   </select>
+  </div>
+  <div>
+   <label for="sortFilter">Sort By</label>
+   <select class="input" id="sortFilter">
+    <option value="tco">Highest TCO</option>
+    <option value="failure">Highest Failure Exposure</option>
+    <option value="health">Lowest Health Score</option>
+    <option value="rul">Shortest Remaining Life</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="panel mb">
+ <div class="flex">
+  <h3>Select Equipment for Comparison</h3>
+  <span class="badge blue">UP TO 9 ASSETS</span>
+ </div>
+ <p class="muted">
+  Select the industrial assets you want to compare.
+  Plant filtering limits which assets can be included.
+ </p>
+ <div class="checklist" id="assetChecklist"></div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Equipment Financial & Reliability Comparison</h3>
+    <p class="muted">Lifecycle costs, asset health and failure exposure</p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 assets</span>
+  </div>
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Equipment</th>
+      <th>Plant</th>
+      <th>Health</th>
+      <th>RUL</th>
+      <th>Failure Probability</th>
+      <th>Maintenance</th>
+      <th>Energy</th>
+      <th>Downtime</th>
+      <th>Expected Failure</th>
+      <th>TCO</th>
+      <th>Priority</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="comparisonTable"></tbody>
+   </table>
+  </div>
+ </div>
+
+ <div class="panel">
+  <div class="flex">
+   <h3>Equipment Comparison Inspector</h3>
+   <span class="badge purple">ASSET PROFILE</span>
+  </div>
+  <div id="assetDetails"></div>
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Total Ownership Cost</span>
+    <strong id="assetTco">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Health Score</span>
+    <strong id="assetHealth">0%</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Remaining Useful Life</span>
+    <strong id="assetRul">0 months</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Expected Failure Cost</span>
+    <strong id="assetFailure">₹0</strong>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Asset Cost Comparison Chart</h3>
+   <span class="badge purple">SELECTED METRIC</span>
+  </div>
+  <p class="muted">Equipment-level comparison across the selected metric</p>
+  <svg class="chart" id="costChart" viewBox="0 0 640 300"
+   role="img" aria-label="Asset metric comparison"></svg>
+ </div>
+ <div class="panel">
+  <div class="flex">
+   <h3>Asset Health Comparison</h3>
+   <span class="badge blue">HEALTH MONITORING</span>
+  </div>
+  <p class="muted">Illustrative asset condition scores from 0 to 100</p>
+  <svg class="chart" id="healthChart" viewBox="0 0 640 300"
+   role="img" aria-label="Asset health comparison"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Asset Comparison Financial Summary</h3>
+  <p class="muted">Aggregated lifecycle costs for selected equipment</p>
+  <div id="financialSummary"></div>
+ </div>
+ <div class="panel">
+  <h3>Maintenance & Replacement Priority Insights</h3>
+  <p class="muted">Rule-based recommendations based on asset risk and cost</p>
+  <div id="insightList"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Comparison methodology:</strong>
+ All equipment data are synthetic. Acquisition cost is included
+ as a new-asset lifecycle reference and is not necessarily a future
+ cash outflow for already-owned equipment. Maintenance includes
+ routine service and spare-part expenditure, while downtime loss
+ and expected failure consequences are modeled as separate,
+ non-overlapping cost categories. The expected failure component
+ excludes downtime already represented in the downtime category.
+ Failure probabilities are annual assumptions, and expected
+ failure cost is calculated using a linear annual expectation.
+ The illustrative TCO is undiscounted and does not include
+ financing, tax, inflation, disposal or salvage. Equipment health
+ and remaining useful life are illustrative rather than outputs
+ from a trained predictive maintenance model.
+</div>
+
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const KEY="industra-asset-comparison-v1";
+
+const ASSETS=[
+ {
+  id:"MTR-001",name:"Main Drive Motor",plant:"Plant A",
+  acquisition:520000,monthlyMaintenance:18500,
+  monthlyEnergy:78000,monthlyDowntime:22000,
+  annualFailureProbability:.32,failureConsequence:175000,
+  health:74,rul:48
+ },
+ {
+  id:"CMP-001",name:"Air Compressor",plant:"Plant A",
+  acquisition:440000,monthlyMaintenance:15500,
+  monthlyEnergy:93000,monthlyDowntime:18000,
+  annualFailureProbability:.25,failureConsequence:145000,
+  health:81,rul:58
+ },
+ {
+  id:"FAN-001",name:"Cooling Fan",plant:"Plant A",
+  acquisition:160000,monthlyMaintenance:6500,
+  monthlyEnergy:28000,monthlyDowntime:7000,
+  annualFailureProbability:.12,failureConsequence:55000,
+  health:91,rul:86
+ },
+ {
+  id:"GEN-001",name:"Power Generator",plant:"Plant B",
+  acquisition:1100000,monthlyMaintenance:28500,
+  monthlyEnergy:115000,monthlyDowntime:47000,
+  annualFailureProbability:.43,failureConsequence:350000,
+  health:52,rul:24
+ },
+ {
+  id:"PMP-001",name:"Cooling Pump",plant:"Plant B",
+  acquisition:280000,monthlyMaintenance:10500,
+  monthlyEnergy:54000,monthlyDowntime:11500,
+  annualFailureProbability:.20,failureConsequence:95000,
+  health:84,rul:69
+ },
+ {
+  id:"GBX-001",name:"Industrial Gearbox",plant:"Plant B",
+  acquisition:850000,monthlyMaintenance:23500,
+  monthlyEnergy:69000,monthlyDowntime:34000,
+  annualFailureProbability:.37,failureConsequence:275000,
+  health:59,rul:31
+ },
+ {
+  id:"HYD-001",name:"Hydraulic Power Unit",plant:"Plant C",
+  acquisition:390000,monthlyMaintenance:13500,
+  monthlyEnergy:61000,monthlyDowntime:16500,
+  annualFailureProbability:.27,failureConsequence:130000,
+  health:76,rul:55
+ },
+ {
+  id:"PMP-002",name:"Process Pump",plant:"Plant C",
+  acquisition:650000,monthlyMaintenance:19500,
+  monthlyEnergy:89000,monthlyDowntime:27500,
+  annualFailureProbability:.35,failureConsequence:210000,
+  health:63,rul:37
+ },
+ {
+  id:"CNV-001",name:"Conveyor Drive",plant:"Plant C",
+  acquisition:210000,monthlyMaintenance:8500,
+  monthlyEnergy:35000,monthlyDowntime:9500,
+  annualFailureProbability:.15,failureConsequence:75000,
+  health:88,rul:78
+ }
+];
+
+let selectedIds=new Set(ASSETS.map(x=>x.id));
+let selectedId=ASSETS[0].id;
+let results=[];
+let toastTimer;
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+function money(n){return currency.format(n)}
+
+function compact(n){
+ const sign=n<0?"-":"";
+ const x=Math.abs(n);
+ if(x>=10000000)return sign+"₹"+(x/10000000).toFixed(2)+"Cr";
+ if(x>=100000)return sign+"₹"+(x/100000).toFixed(2)+"L";
+ if(x>=1000)return sign+"₹"+(x/1000).toFixed(1)+"K";
+ return money(n);
+}
+
+function num(n){
+ return new Intl.NumberFormat("en-IN",{
+  maximumFractionDigits:1
+ }).format(n);
+}
+
+function sum(items,key){
+ return items.reduce((a,b)=>a+(b[key]||0),0);
+}
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(el("span","",label),el("strong","",value));
+ return row;
+}
+
+function priority(asset){
+ if(asset.health<65||asset.annualFailureProbability>.35){
+  return "High";
+ }
+ if(asset.health<80||asset.annualFailureProbability>.25){
+  return "Medium";
+ }
+ return "Low";
+}
+
+function calculateAsset(asset){
+ const months=Number($("horizonFilter").value);
+ const years=months/12;
+
+ const maintenance=asset.monthlyMaintenance*months;
+ const energy=asset.monthlyEnergy*months;
+ const downtime=asset.monthlyDowntime*months;
+
+ const expectedFailure=
+  asset.annualFailureProbability*
+  asset.failureConsequence*years;
+
+ const tco=
+  asset.acquisition+
+  maintenance+energy+downtime+expectedFailure;
+
+ return{
+  ...asset,months,years,
+  maintenance,energy,downtime,
+  expectedFailure,tco,
+  priority:priority(asset)
+ };
+}
+
+function calculateAll(){
+ results=ASSETS.map(calculateAsset);
+ render();
+}
+
+function filtered(){
+ const plant=$("plantFilter").value;
+ return results.filter(item=>
+  selectedIds.has(item.id)&&
+  (plant==="all"||item.plant===plant)
+ );
+}
+
+function sortedList(){
+ const list=[...filtered()];
+ const sort=$("sortFilter").value;
+
+ if(sort==="health"){
+  return list.sort((a,b)=>a.health-b.health);
+ }
+ if(sort==="rul"){
+  return list.sort((a,b)=>a.rul-b.rul);
+ }
+ if(sort==="failure"){
+  return list.sort((a,b)=>b.expectedFailure-a.expectedFailure);
+ }
+ return list.sort((a,b)=>b.tco-a.tco);
+}
+
+function selected(){
+ return filtered().find(x=>x.id===selectedId)||filtered()[0]||null;
+}
+
+function populateChecklist(){
+ const box=$("assetChecklist");
+ box.replaceChildren();
+
+ const plant=$("plantFilter").value;
+
+ ASSETS.filter(x=>plant==="all"||x.plant===plant)
+ .forEach(asset=>{
+  const label=el("label","checkitem");
+  label.style.margin="0";
+  label.style.cursor="pointer";
+
+  const checkbox=document.createElement("input");
+  checkbox.type="checkbox";
+  checkbox.checked=selectedIds.has(asset.id);
+
+  checkbox.onchange=()=>{
+   if(checkbox.checked){
+    selectedIds.add(asset.id);
+   }else{
+    selectedIds.delete(asset.id);
+   }
+   calculateAll();
+  };
+
+  const text=el("span","",asset.name+" · "+asset.id);
+  label.append(checkbox,text);
+  box.append(label);
+ });
+}
+
+function renderKpis(){
+ const list=filtered();
+
+ $("assetCountKpi").textContent=list.length;
+ $("tcoKpi").textContent=compact(sum(list,"tco"));
+
+ const average=list.length?
+  sum(list,"health")/list.length:0;
+
+ $("healthKpi").textContent=average.toFixed(1)+"%";
+
+ $("riskKpi").textContent=list.filter(
+  x=>x.priority==="High"
+ ).length;
+
+ $("summaryText").textContent=
+  list.length+" selected assets · "+
+  $("horizonFilter").value+"-month cost comparison · "+
+  $("plantFilter").value;
+}
+
+function renderTable(){
+ const body=$("comparisonTable");
+ body.replaceChildren();
+
+ const list=sortedList();
+ $("visibleCount").textContent=list.length+" assets";
+
+ list.forEach(item=>{
+  const row=el("tr");
+
+  [
+   item.name+" · "+item.id,
+   item.plant,
+   item.health+"%",
+   item.rul+" months",
+   (item.annualFailureProbability*100).toFixed(1)+"%",
+   money(item.maintenance),
+   money(item.energy),
+   money(item.downtime),
+   money(item.expectedFailure),
+   money(item.tco)
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const priorityCell=el("td");
+  const cls=item.priority==="High"?"red":
+   item.priority==="Medium"?"orange":"green";
+
+  priorityCell.append(el("span","badge "+cls,item.priority));
+  row.append(priorityCell);
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+
+  button.onclick=()=>{
+   selectedId=item.id;
+   renderInspector();
+  };
+
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","Select at least one asset for comparison.");
+  cell.colSpan=12;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const item=selected();
+ const box=$("assetDetails");
+ box.replaceChildren();
+
+ if(!item){
+  box.append(el("p","muted","No asset selected."));
+  [
+   "assetTco","assetHealth","assetRul","assetFailure"
+  ].forEach(id=>$(id).textContent="--");
+  return;
+ }
+
+ [
+  ["Equipment",item.name],
+  ["Equipment ID",item.id],
+  ["Plant",item.plant],
+  ["Comparison Horizon",item.months+" months"],
+  ["Acquisition Reference Cost",money(item.acquisition)],
+  ["Maintenance Cost",money(item.maintenance)],
+  ["Energy Cost",money(item.energy)],
+  ["Downtime Loss",money(item.downtime)],
+  ["Annual Failure Probability",
+   (item.annualFailureProbability*100).toFixed(1)+"%"],
+  ["Failure Consequence",money(item.failureConsequence)],
+  ["Expected Failure Cost",money(item.expectedFailure)],
+  ["Total Cost of Ownership",money(item.tco)],
+  ["Health Score",item.health+"%"],
+  ["Remaining Useful Life",item.rul+" months"],
+  ["Maintenance Priority",item.priority]
+ ].forEach(([label,value])=>box.append(detail(label,value)));
+
+ $("assetTco").textContent=compact(item.tco);
+ $("assetHealth").textContent=item.health+"%";
+ $("assetRul").textContent=item.rul+" months";
+ $("assetFailure").textContent=compact(item.expectedFailure);
+}
+
+function drawBarChart(id,data,metric,maxOverride){
+ const svg=$(id);
+ svg.replaceChildren();
+
+ if(!data.length){
+  svg.append(svgEl("text",{
+   x:200,y:150,fill:"#8992aa","font-size":"13"
+  },"No selected assets"));
+  return;
+ }
+
+ const max=maxOverride||Math.max(...data.map(x=>x[metric]),1)*1.15;
+ const left=70,right=615,top=25,bottom=245;
+ const barSpace=(right-left)/data.length;
+ const barWidth=Math.min(48,barSpace*.65);
+
+ for(let i=0;i<=4;i++){
+  const y=bottom-(bottom-top)*i/4;
+
+  svg.append(svgEl("line",{
+   x1:left,y1:y,x2:right,y2:y,stroke:"#e9ebf4"
+  }));
+
+  svg.append(svgEl("text",{
+   x:4,y:y+4,fill:"#8992aa","font-size":"10"
+  },metric==="health"||metric==="rul"?
+    num(max*i/4):compact(max*i/4)));
+ }
+
+ data.forEach((item,index)=>{
+  const value=item[metric];
+  const height=value/max*(bottom-top);
+  const x=left+barSpace*index+(barSpace-barWidth)/2;
+
+  const color=metric==="health"?
+   (item.health<65?"#ed6175":
+    item.health<80?"#f4a443":"#18b58c"):
+   "#6855eb";
+
+  svg.append(svgEl("rect",{
+   x,y:bottom-height,width:barWidth,height,
+   rx:4,fill:color
+  }));
+
+  svg.append(svgEl("text",{
+   x:x+barWidth/2,
+   y:266,
+   fill:"#8992aa",
+   "font-size":"9",
+   "text-anchor":"middle"
+  },item.id));
+
+  svg.append(svgEl("title",{},
+   item.name+": "+(metric==="health"||metric==="rul"?
+    num(value):money(value))));
+ });
+}
+
+function renderCharts(){
+ const list=sortedList();
+ const metric=$("metricFilter").value;
+
+ drawBarChart(
+  "costChart",list,metric,
+  metric==="health"?100:null
+ );
+
+ drawBarChart(
+  "healthChart",list,"health",100
+ );
+}
+
+function renderFinancialSummary(){
+ const box=$("financialSummary");
+ box.replaceChildren();
+
+ const list=filtered();
+
+ [
+  ["Compared Equipment",String(list.length)],
+  ["Acquisition Reference Cost",money(sum(list,"acquisition"))],
+  ["Maintenance Cost",money(sum(list,"maintenance"))],
+  ["Energy Cost",money(sum(list,"energy"))],
+  ["Downtime Loss",money(sum(list,"downtime"))],
+  ["Expected Failure Cost",money(sum(list,"expectedFailure"))],
+  ["Combined Total Ownership Cost",money(sum(list,"tco"))],
+  ["Average Asset Health",
+   (list.length?sum(list,"health")/list.length:0).toFixed(1)+"%"],
+  ["High-Priority Assets",
+   String(list.filter(x=>x.priority==="High").length)]
+ ].forEach(([label,value])=>box.append(detail(label,value)));
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+
+ const list=filtered();
+
+ const highestTco=[...list].sort((a,b)=>b.tco-a.tco)[0];
+ const weakest=[...list].sort((a,b)=>a.health-b.health)[0];
+ const shortest=[...list].sort((a,b)=>a.rul-b.rul)[0];
+
+ const insights=[
+  [
+   "Highest Ownership Cost",
+   highestTco?
+    highestTco.name+" has the largest modeled TCO of "+
+    money(highestTco.tco)+".":"No selected equipment."
+  ],
+  [
+   "Lowest Equipment Health",
+   weakest?
+    weakest.name+" has a health score of "+weakest.health+
+    "%. Prioritize condition assessment.":"No selected equipment."
+  ],
+  [
+   "Shortest Remaining Useful Life",
+   shortest?
+    shortest.name+" has an estimated RUL of "+
+    shortest.rul+" months.":"No selected equipment."
+  ],
+  [
+   "High-Risk Asset Count",
+   list.filter(x=>x.priority==="High").length+
+   " assets meet the modeled high-risk criteria."
+  ],
+  [
+   "Reliability Improvement",
+   "Prioritize root-cause analysis, predictive maintenance and planned intervention for equipment with elevated failure exposure."
+  ],
+  [
+   "Investment Decision",
+   "Compare incremental future repair and replacement cash flows rather than using historical acquisition costs as future expenditure."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+  card.append(el("h4","",title),el("p","",description));
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ renderCharts();
+ renderFinancialSummary();
+ renderInsights();
+}
+
+function saveSelection(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify([...selectedIds]));
+ }catch{
+  notify("Browser storage unavailable.");
+ }
+}
+
+function loadSelection(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+
+  if(Array.isArray(saved)){
+   const validIds=new Set(ASSETS.map(x=>x.id));
+   selectedIds=new Set(
+    saved.filter(id=>validIds.has(id))
+   );
+  }
+ }catch{}
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+ a.href=url;a.download=filename;
+ document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "equipment_id","equipment_name","plant","comparison_months",
+  "health_score","rul_months","annual_failure_probability",
+  "acquisition_reference_inr","maintenance_cost_inr",
+  "energy_cost_inr","downtime_loss_inr",
+  "expected_failure_cost_inr","total_cost_ownership_inr",
+  "priority"
+ ]];
+
+ filtered().forEach(x=>{
+  rows.push([
+   x.id,x.name,x.plant,x.months,
+   x.health,x.rul,x.annualFailureProbability,
+   x.acquisition.toFixed(2),x.maintenance.toFixed(2),
+   x.energy.toFixed(2),x.downtime.toFixed(2),
+   x.expectedFailure.toFixed(2),x.tco.toFixed(2),
+   x.priority
+  ]);
+ });
+
+ const csv=rows.map(row=>row.map(value=>
+  '"'+String(value).replaceAll('"','""')+'"'
+ ).join(",")).join("\r\n");
+
+ download(
+  "industra-asset-comparison.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+ notify("Asset comparison CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-asset-comparison.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   horizonMonths:Number($("horizonFilter").value),
+   metric:$("metricFilter").value,
+   selectedAssets:filtered()
+  },null,2),
+  "application/json"
+ );
+ notify("Asset comparison JSON exported.");
+}
+
+$("compareBtn").onclick=()=>{
+ saveSelection();
+ calculateAll();
+ notify("Asset comparison updated.");
+};
+
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ if(!confirm("Reset asset comparison selection?"))return;
+
+ selectedIds=new Set(ASSETS.map(x=>x.id));
+ selectedId=ASSETS[0].id;
+
+ $("plantFilter").value="all";
+ $("horizonFilter").value="60";
+ $("metricFilter").value="tco";
+ $("sortFilter").value="tco";
+
+ populateChecklist();
+ saveSelection();
+ calculateAll();
+
+ notify("Asset comparison reset.");
+};
+
+$("plantFilter").addEventListener("change",()=>{
+ populateChecklist();
+ calculateAll();
+});
+
+["horizonFilter","metricFilter","sortFilter"].forEach(id=>{
+ $(id).addEventListener("change",calculateAll);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+loadSelection();
+populateChecklist();
+calculateAll();
+
+document.querySelectorAll("#assetChecklist input").forEach(input=>{
+ input.addEventListener("change",saveSelection);
+});
+</script>
+</body>
+</html>

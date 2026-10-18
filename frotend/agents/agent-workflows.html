@@ -1,0 +1,1689 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Workflows | INDUSTRA AI</title>
+<meta name="theme-color" content="#f5f6fb">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--purple2:#917cf9;
+ --green:#16b88a;--red:#eb6174;--orange:#f2a53a;
+ --blue:#438df5;--bg:#f5f6fb;--text:#202640;
+ --muted:#8b93aa;--border:#e9ebf3;--sidebar:258px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5,h6{font-family:Manrope,sans-serif;letter-spacing:-.6px}
+a{text-decoration:none}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+ outline:3px solid #aa9cff!important;outline-offset:2px
+}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:#aab1ce;z-index:1050;
+ display:flex;flex-direction:column;transition:transform .25s
+}
+.brand{
+ height:83px;padding:21px 23px;display:flex;align-items:center;
+ gap:12px;border-bottom:1px solid #ffffff12
+}
+.brand-mark{
+ width:43px;height:43px;border-radius:14px;
+ background:linear-gradient(135deg,#9c83ff,#5a48e4);
+ color:white;display:grid;place-items:center;font-size:22px
+}
+.brand strong{color:white;font-size:17px}
+.brand small{display:block;font-size:9px;letter-spacing:2px;color:#7883b0}
+.sidebar-body{overflow-y:auto;flex:1;padding:16px 12px}
+.sidebar-label{
+ color:#687397;text-transform:uppercase;font-size:9px;
+ font-weight:800;letter-spacing:2px;padding:20px 15px 9px
+}
+.side-link{
+ display:flex;align-items:center;gap:13px;padding:11px 14px;
+ margin:3px 0;color:#9da8ca;border-radius:11px;
+ font-size:12px;font-weight:600;transition:.2s
+}
+.side-link i{font-size:17px;width:21px;text-align:center}
+.side-link:hover{background:#ffffff10;color:white}
+.side-link.active{background:linear-gradient(90deg,#6b59e8,#5346ba);color:white}
+.sidebar-foot{padding:18px;border-top:1px solid #ffffff12}
+.sidebar-status{border-radius:13px;padding:13px;background:#ffffff09;border:1px solid #ffffff12}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2cdaa2;margin-right:7px}
+.app{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ background:white;min-height:76px;display:flex;align-items:center;
+ justify-content:space-between;gap:15px;padding:15px 30px;
+ border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100
+}
+.topbar-title{font-size:15px;font-weight:800}
+.topbar-sub{color:var(--muted);font-size:11px;margin-top:3px}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ height:39px;width:39px;display:grid;place-items:center;
+ border-radius:12px;border:1px solid var(--border);
+ background:#fafaff;color:#555e7b;font-size:16px
+}
+.top-icon:hover{background:#eeecff;color:var(--purple)}
+.avatar{
+ height:39px;width:39px;border-radius:13px;display:grid;
+ place-items:center;color:white;font-weight:800;
+ background:linear-gradient(135deg,#7e6bf4,#a18dff)
+}
+.content{padding:29px;max-width:1850px;margin:auto}
+.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:10px;font-weight:800;color:var(--purple)}
+.page-title{font-size:29px;font-weight:800;margin:9px 0 6px}
+.page-description{color:var(--muted);line-height:1.7}
+.btn-premium,.btn-soft{
+ display:inline-flex;align-items:center;justify-content:center;
+ gap:8px;border-radius:11px;padding:11px 16px;
+ font-size:12px;font-weight:700;transition:.2s
+}
+.btn-premium{background:var(--purple);color:white;border:1px solid var(--purple)}
+.btn-premium:hover{background:#5542d5;color:white}
+.btn-soft{background:white;color:#5e6680;border:1px solid var(--border)}
+.btn-soft:hover{background:#f1efff;color:var(--purple)}
+.btn-premium:disabled,.btn-soft:disabled{opacity:.45;cursor:not-allowed}
+.surface{
+ background:white;border:1px solid var(--border);
+ border-radius:18px;box-shadow:0 8px 30px #24305b08
+}
+.hero{
+ position:relative;overflow:hidden;
+ background:linear-gradient(115deg,#6651e9,#8e74f4 65%,#a894ff);
+ color:white;border-radius:22px;padding:31px 33px;
+ box-shadow:0 15px 35px #7564ea28
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ right:-60px;top:-145px;border:1px solid #ffffff45;
+ border-radius:50%;box-shadow:0 0 0 45px #ffffff0b,0 0 0 95px #ffffff09;
+ pointer-events:none
+}
+.hero h2{font-size:25px;font-weight:800}
+.hero p{max-width:680px;color:#eeeaff;line-height:1.8}
+.hero-chip{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff23;border:1px solid #ffffff30;
+ padding:8px 12px;border-radius:9px;font-size:10px;font-weight:700
+}
+.metric{padding:21px;height:100%}
+.metric-top{display:flex;justify-content:space-between;align-items:center}
+.metric-label{color:#8a92a8;font-size:11px;font-weight:700}
+.metric-icon{
+ width:44px;height:44px;border-radius:14px;
+ display:grid;place-items:center;font-size:20px
+}
+.metric-value{font:800 29px Manrope,sans-serif;margin:14px 0 6px}
+.metric-foot{font-size:10px;color:#9aa1b3}
+.section-title{font-size:17px;font-weight:800}
+.section-sub{font-size:11px;color:var(--muted)}
+.badge-soft{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:6px 10px;border-radius:8px;font-size:10px;font-weight:800
+}
+.b-success{background:#e5f8f0;color:#13a776}
+.b-running{background:#eaf2ff;color:#438df5}
+.b-failed{background:#ffebee;color:#df4d64}
+.b-pending{background:#fff4e2;color:#d58c20}
+.b-draft{background:#f0f1f6;color:#788098}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ padding:11px 12px;font-size:12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#a69aff;box-shadow:0 0 0 3px #6855eb12
+}
+.form-label{font-size:11px;font-weight:800;color:#5b6480}
+.workflow-layout{
+ display:grid;grid-template-columns:220px minmax(0,1fr) 260px;
+ gap:15px;align-items:stretch
+}
+.palette,.inspector{padding:18px}
+.palette-item{
+ display:flex;align-items:center;gap:11px;
+ padding:12px;border:1px solid var(--border);
+ border-radius:12px;margin-top:10px;background:#fff;
+ cursor:grab;transition:.2s
+}
+.palette-item:hover{border-color:#bcb3ff;background:#f8f6ff;transform:translateY(-1px)}
+.palette-item:active{cursor:grabbing}
+.palette-icon{
+ width:37px;height:37px;display:grid;place-items:center;
+ border-radius:11px;background:#eeebff;color:var(--purple);
+ font-size:17px;flex-shrink:0
+}
+.palette-item strong{font-size:11px;display:block}
+.palette-item small{font-size:9px;color:var(--muted)}
+.workflow-canvas{
+ padding:20px;min-height:530px;
+ background-color:#fcfcff;
+ background-image:radial-gradient(#dfe1ef 1px,transparent 1px);
+ background-size:20px 20px;
+ border-radius:18px
+}
+.workflow-canvas.drag-over{
+ outline:2px dashed var(--purple);
+ outline-offset:-7px;background-color:#f7f5ff
+}
+.workflow-node{
+ position:relative;max-width:470px;margin:0 auto;
+ padding:15px 17px;border:1px solid var(--border);
+ border-radius:15px;background:white;
+ box-shadow:0 7px 20px #24305b09;cursor:pointer;transition:.2s
+}
+.workflow-node:hover{border-color:#a89aff}
+.workflow-node.selected{
+ border-color:var(--purple);
+ box-shadow:0 0 0 3px #6855eb13,0 7px 20px #24305b09
+}
+.workflow-node.complete{border-left:4px solid var(--green)}
+.workflow-node.running{border-left:4px solid var(--blue)}
+.workflow-node.waiting{border-left:4px solid var(--orange)}
+.node-icon{
+ width:42px;height:42px;border-radius:12px;
+ display:grid;place-items:center;font-size:20px;
+ background:#eeebff;color:var(--purple)
+}
+.node-title{font-size:12px;font-weight:800}
+.node-sub{font-size:10px;color:var(--muted);margin-top:5px}
+.node-connector{
+ width:2px;height:37px;margin:auto;
+ background:linear-gradient(#b5a8ff,#e3dfff);
+ position:relative
+}
+.node-connector:after{
+ content:"";position:absolute;bottom:0;left:-4px;
+ border-left:5px solid transparent;border-right:5px solid transparent;
+ border-top:6px solid var(--purple)
+}
+.node-actions{display:flex;gap:5px}
+.icon-action{
+ border:1px solid var(--border);background:#fafaff;
+ width:27px;height:27px;border-radius:7px;
+ color:#727b96;display:grid;place-items:center;font-size:12px
+}
+.icon-action:hover{background:#eeebff;color:var(--purple)}
+.icon-action:disabled{opacity:.3;cursor:not-allowed}
+.empty-canvas{
+ display:grid;place-items:center;text-align:center;
+ padding:60px 15px;color:#9ba2b8
+}
+.empty-canvas i{font-size:38px;color:#a699fa}
+.inspector-value{
+ background:#f8f9fd;border:1px solid var(--border);
+ border-radius:10px;padding:12px;font-size:11px;
+ overflow-wrap:anywhere
+}
+.template-card{
+ border:1px solid var(--border);border-radius:15px;
+ padding:18px;height:100%;background:white;transition:.2s
+}
+.template-card:hover{border-color:#b8adff;box-shadow:0 10px 24px #6855eb10}
+.template-icon{
+ width:46px;height:46px;border-radius:14px;
+ display:grid;place-items:center;font-size:22px;margin-bottom:13px
+}
+.template-card h3{font-size:13px;font-weight:800}
+.template-card p{font-size:10px;color:var(--muted);line-height:1.7;min-height:36px}
+.template-meta{font-size:10px;color:#8790a8}
+.chart-wrap{height:240px;position:relative}
+.table thead th{
+ background:#fafbfe;color:#9099ae;font-size:10px;
+ text-transform:uppercase;letter-spacing:.7px;padding:15px 18px;
+ white-space:nowrap;border-bottom:1px solid var(--border)
+}
+.table tbody td{
+ padding:15px 18px;font-size:11px;color:#66708a;
+ vertical-align:middle;border-color:#f0f1f7
+}
+.table-title{font-weight:800;color:#252c48}
+.table-sub{font-size:9px;color:#9ca4b8;margin-top:5px}
+.small-action{
+ border:1px solid var(--border);background:white;
+ border-radius:8px;padding:7px 10px;color:#66718d;
+ font-size:10px;font-weight:700
+}
+.small-action:hover{background:#eeebff;color:var(--purple)}
+.trace-item{
+ display:flex;gap:12px;padding:13px 0;
+ border-bottom:1px solid var(--border)
+}
+.trace-item:last-child{border-bottom:0}
+.trace-dot{
+ width:9px;height:9px;border-radius:50%;
+ margin-top:4px;flex-shrink:0
+}
+.trace-item strong{font-size:11px}
+.trace-item p{font-size:10px;color:var(--muted);margin:5px 0;line-height:1.6}
+.progress{height:7px;background:#eef0f7;border-radius:10px}
+.progress-bar{background:var(--purple);border-radius:10px}
+.footer{
+ padding:23px 30px;border-top:1px solid var(--border);
+ color:#9aa2b5;font-size:10px;display:flex;
+ justify-content:space-between;gap:12px
+}
+.mobile-shade{display:none}
+@media(max-width:1450px){
+ .workflow-layout{grid-template-columns:195px minmax(0,1fr)}
+ .inspector{grid-column:1/-1}
+}
+@media(max-width:1199px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .app{margin-left:0}
+ .mobile-shade.show{
+  display:block;position:fixed;inset:0;background:#0008;z-index:1040
+ }
+}
+@media(max-width:767px){
+ .workflow-layout{grid-template-columns:1fr}
+ .inspector{grid-column:auto}
+ .palette-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .palette-item{margin:0}
+ .workflow-canvas{min-height:350px}
+}
+@media(max-width:575px){
+ .content{padding:17px}.topbar{padding:13px 17px}
+ .page-title{font-size:23px}.hero{padding:23px}
+ .hero h2{font-size:20px}.metric-value{font-size:25px}
+ .palette-items{grid-template-columns:1fr}
+ .footer{flex-direction:column;padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-shade" id="shade"></div>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div class="brand-mark"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a997ff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <nav class="sidebar-body" aria-label="Main navigation">
+  <div class="sidebar-label">Main Menu</div>
+  <a class="side-link" href="../index.html"><i class="bi bi-house-door"></i>Home</a>
+  <a class="side-link" href="../dashboard.html"><i class="bi bi-grid-1x2"></i>Dashboard</a>
+  <a class="side-link" href="../command-center.html"><i class="bi bi-broadcast"></i>Command Center</a>
+  <a class="side-link" href="../analytics.html"><i class="bi bi-bar-chart-line"></i>Analytics Studio</a>
+  <a class="side-link" href="../reports.html"><i class="bi bi-file-earmark-bar-graph"></i>Reports</a>
+  <a class="side-link" href="../notifications.html"><i class="bi bi-bell"></i>Notifications</a>
+
+  <div class="sidebar-label">Operations</div>
+  <a class="side-link" href="../assets/assets.html"><i class="bi bi-cpu"></i>Asset Intelligence</a>
+  <a class="side-link" href="../telemetry/live-telemetry.html"><i class="bi bi-activity"></i>Live Telemetry</a>
+  <a class="side-link" href="../predictive-maintenance/maintenance-dashboard.html"><i class="bi bi-tools"></i>Predictive Maintenance</a>
+  <a class="side-link" href="../computer-vision/vision-dashboard.html"><i class="bi bi-eye"></i>Computer Vision</a>
+  <a class="side-link" href="../maintenance/work-orders.html"><i class="bi bi-clipboard-check"></i>Work Orders</a>
+  <a class="side-link" href="../production/production-dashboard.html"><i class="bi bi-buildings"></i>Production & OEE</a>
+  <a class="side-link" href="../energy/energy-dashboard.html"><i class="bi bi-lightning-charge"></i>Energy Analytics</a>
+
+  <div class="sidebar-label">Risk & Intelligence</div>
+  <a class="side-link" href="../safety/safety-dashboard.html"><i class="bi bi-shield-check"></i>Safety Intelligence</a>
+  <a class="side-link" href="../emergency/emergency-dashboard.html"><i class="bi bi-exclamation-triangle"></i>Emergency Response</a>
+  <a class="side-link" href="../cost-intelligence/cost-dashboard.html"><i class="bi bi-currency-rupee"></i>Cost Intelligence</a>
+  <a class="side-link" href="../copilot/ai-copilot.html"><i class="bi bi-stars"></i>AI Copilot</a>
+  <a class="side-link" href="agent-dashboard.html"><i class="bi bi-diagram-3"></i>AI Agents</a>
+  <a class="side-link" href="agent-evaluation.html"><i class="bi bi-clipboard-data"></i>Agent Evaluation</a>
+  <a class="side-link" href="agent-executions.html"><i class="bi bi-play-circle"></i>Agent Executions</a>
+  <a class="side-link" href="agent-tool-calls.html"><i class="bi bi-wrench-adjustable"></i>Agent Tool Calls</a>
+  <a class="side-link active" href="agent-workflows.html" aria-current="page"><i class="bi bi-bezier2"></i>Agent Workflows</a>
+  <a class="side-link" href="../rag/knowledge-base.html"><i class="bi bi-journal-text"></i>Knowledge & RAG</a>
+  <a class="side-link" href="../mlops/mlops-dashboard.html"><i class="bi bi-boxes"></i>MLOps</a>
+  <a class="side-link" href="../evaluation/evaluation-dashboard.html"><i class="bi bi-check2-circle"></i>Evaluation Center</a>
+
+  <div class="sidebar-label">Administration</div>
+  <a class="side-link" href="../observability/observability-dashboard.html"><i class="bi bi-speedometer2"></i>Observability</a>
+  <a class="side-link" href="../security/security-dashboard.html"><i class="bi bi-lock"></i>Security</a>
+  <a class="side-link" href="../settings/settings.html"><i class="bi bi-gear"></i>Settings</a>
+ </nav>
+
+ <div class="sidebar-foot">
+  <div class="sidebar-status">
+   <div class="fw-bold text-white small">
+    <span class="status-dot"></span>Workflow Designer
+   </div>
+   <div class="mt-2" style="font-size:10px">
+    Local simulation · No live industrial control
+   </div>
+  </div>
+ </div>
+</aside>
+
+<div class="app">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon d-xl-none" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="topbar-title">Agent Workflow Orchestration</div>
+   <div class="topbar-sub">Workspace / Agent Intelligence / Workflows</div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="d-none d-md-inline text-secondary small">Demo workflow environment</span>
+  <button class="top-icon" id="resetButton" aria-label="Reset workflow">
+   <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <a href="../notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <a href="../settings/profile.html" class="avatar" aria-label="Profile">AI</a>
+ </div>
+</header>
+
+<main class="content">
+
+ <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div>
+   <div class="eyebrow">Agent Orchestration & Workflow Intelligence</div>
+   <h1 class="page-title">Agent Workflows <span style="color:var(--purple)">✦</span></h1>
+   <div class="page-description">
+    Design, configure and simulate multi-agent industrial workflows with visible steps and approval gates.
+   </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-soft" id="importButton"><i class="bi bi-upload"></i> Import JSON</button>
+   <button class="btn-soft" id="exportButton"><i class="bi bi-download"></i> Export JSON</button>
+   <button class="btn-premium" id="newWorkflowButton"><i class="bi bi-plus-lg"></i> New Workflow</button>
+  </div>
+ </div>
+
+ <section class="hero mb-4">
+  <div class="position-relative" style="z-index:1">
+   <div class="text-uppercase fw-bold mb-3" style="font-size:10px;letter-spacing:2px">
+    <i class="bi bi-stars me-1"></i> Visual Multi-Agent Orchestration
+   </div>
+   <h2>Design intelligent workflows.<br>Coordinate specialized agents.</h2>
+   <p class="mt-3 mb-4">
+    Combine supervisor, maintenance, inspection, safety, emergency, and cost agents
+    into transparent workflows with step-by-step simulation and human review.
+   </p>
+   <div class="d-flex flex-wrap gap-2">
+    <span class="hero-chip"><i class="bi bi-diagram-3"></i> Agent Orchestration</span>
+    <span class="hero-chip"><i class="bi bi-bezier2"></i> Visual Workflow Builder</span>
+    <span class="hero-chip"><i class="bi bi-person-check"></i> Approval Gates</span>
+    <span class="hero-chip"><i class="bi bi-activity"></i> Execution Traces</span>
+    <span class="hero-chip"><i class="bi bi-info-circle"></i> Demo Mode</span>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4" aria-label="Workflow metrics">
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Saved Workflows</span>
+     <span class="metric-icon" style="background:#eeebff;color:var(--purple)">
+      <i class="bi bi-diagram-3"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="totalWorkflows">0</div>
+    <div class="metric-foot">Current browser session</div>
+   </div>
+  </div>
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Workflow Runs</span>
+     <span class="metric-icon" style="background:#eaf2ff;color:var(--blue)">
+      <i class="bi bi-play-circle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="totalRuns">0</div>
+    <div class="metric-foot">Simulated execution attempts</div>
+   </div>
+  </div>
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Completed Runs</span>
+     <span class="metric-icon" style="background:#e5f8f0;color:var(--green)">
+      <i class="bi bi-check-circle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="completedRuns">0</div>
+    <div class="metric-foot">Finished demo workflows</div>
+   </div>
+  </div>
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Approval Requests</span>
+     <span class="metric-icon" style="background:#fff4e2;color:var(--orange)">
+      <i class="bi bi-person-check"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="pendingApprovals">0</div>
+    <div class="metric-foot">Awaiting simulated human review</div>
+   </div>
+  </div>
+ </section>
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+   <div>
+    <h2 class="section-title mb-1">Workflow Templates</h2>
+    <p class="section-sub mb-0">Start from a predefined industrial AI workflow</p>
+   </div>
+   <span class="badge-soft b-draft">TEMPLATE LIBRARY</span>
+  </div>
+  <div class="row g-3" id="templateGrid"></div>
+ </section>
+
+ <section class="mb-4" id="builderSection">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+   <div>
+    <h2 class="section-title mb-1">Visual Workflow Builder</h2>
+    <p class="section-sub mb-0">Add agents, reorder steps, configure approvals and simulate execution</p>
+   </div>
+   <div class="d-flex flex-wrap gap-2">
+    <button class="btn-soft" id="saveWorkflowButton"><i class="bi bi-floppy"></i> Save Workflow</button>
+    <button class="btn-premium" id="runWorkflowButton"><i class="bi bi-play-fill"></i> Run Simulation</button>
+   </div>
+  </div>
+
+  <div class="surface p-3 mb-3">
+   <div class="row g-3">
+    <div class="col-md-5">
+     <label class="form-label" for="workflowName">Workflow Name</label>
+     <input class="form-control" id="workflowName" maxlength="100" value="Predictive Maintenance Intelligence">
+    </div>
+    <div class="col-md-4">
+     <label class="form-label" for="workflowDescription">Description</label>
+     <input class="form-control" id="workflowDescription" maxlength="180"
+      value="Analyze asset condition and recommend maintenance">
+    </div>
+    <div class="col-md-3">
+     <label class="form-label" for="workflowPriority">Priority</label>
+     <select class="form-select" id="workflowPriority">
+      <option>Normal</option><option>High</option><option>Critical</option>
+     </select>
+    </div>
+   </div>
+  </div>
+
+  <div class="workflow-layout">
+   <div class="surface palette">
+    <h3 class="section-title mb-1">Agent Library</h3>
+    <p class="section-sub mb-3">Drag or click to add an agent</p>
+    <div class="palette-items" id="agentPalette"></div>
+   </div>
+
+   <div class="surface workflow-canvas" id="workflowCanvas">
+    <div class="d-flex justify-content-between align-items-center gap-2 mb-4">
+     <div>
+      <h3 class="section-title mb-1">Workflow Canvas</h3>
+      <p class="section-sub mb-0" id="canvasSubtitle">Sequential workflow steps</p>
+     </div>
+     <span class="badge-soft b-running" id="workflowStateBadge">DRAFT</span>
+    </div>
+    <div id="workflowNodes"></div>
+    <div class="text-center mt-3">
+     <button class="btn-soft" id="addApprovalButton">
+      <i class="bi bi-person-check"></i> Add Approval Gate
+     </button>
+    </div>
+   </div>
+
+   <div class="surface inspector">
+    <h3 class="section-title mb-1">Step Inspector</h3>
+    <p class="section-sub mb-4">Configure the selected workflow node</p>
+    <div id="inspectorContent">
+     <p class="text-secondary">Select a step in the canvas.</p>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h2 class="section-title mb-1">Execution Simulation</h2>
+      <p class="section-sub mb-0">Advance the workflow through its steps</p>
+     </div>
+     <span class="badge-soft b-draft" id="runStatus">NOT STARTED</span>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+     <span class="section-sub" id="progressLabel">0 of 0 steps completed</span>
+     <strong id="progressPercent" style="font-size:12px">0%</strong>
+    </div>
+    <div class="progress mb-4">
+     <div class="progress-bar" id="runProgressBar" style="width:0%"></div>
+    </div>
+
+    <div id="executionTrace">
+     <p class="text-secondary">Start a workflow simulation to view its execution trace.</p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mt-4">
+     <button class="btn-premium" id="nextStepButton" disabled>
+      <i class="bi bi-skip-forward"></i> Advance Step
+     </button>
+     <button class="btn-soft" id="approveButton" disabled>
+      <i class="bi bi-check-circle"></i> Approve Gate
+     </button>
+     <button class="btn-soft" id="rejectButton" disabled>
+      <i class="bi bi-x-circle"></i> Reject Gate
+     </button>
+     <button class="btn-soft" id="cancelRunButton" disabled>
+      <i class="bi bi-stop-circle"></i> Cancel Run
+     </button>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Workflow Execution Overview</h2>
+    <p class="section-sub mb-3">Simulated run outcomes</p>
+    <div class="chart-wrap">
+     <canvas id="runChart" role="img" aria-label="Workflow run status distribution"></canvas>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="surface mb-4">
+  <div class="p-4 pb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+   <div>
+    <h2 class="section-title mb-1">Saved Workflow Library</h2>
+    <p class="section-sub mb-0">Workflows created or imported in this browser session</p>
+   </div>
+   <input id="workflowSearch" class="form-control" style="max-width:290px"
+    type="search" placeholder="Search workflows..." aria-label="Search saved workflows">
+  </div>
+
+  <div class="table-responsive">
+   <table class="table mb-0">
+    <thead>
+     <tr>
+      <th>Workflow</th>
+      <th>Priority</th>
+      <th>Steps</th>
+      <th>Last Run</th>
+      <th>Actions</th>
+     </tr>
+    </thead>
+    <tbody id="workflowTable"></tbody>
+   </table>
+  </div>
+ </section>
+
+</main>
+
+<footer class="footer">
+ <span>© 2026 INDUSTRA AI · Multi-Agent Workflow Orchestration</span>
+ <span>Local demo · No real agent, tool, or industrial equipment execution</span>
+</footer>
+</div>
+
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1200">
+ <div class="toast border-0 shadow" id="appToast" role="status" aria-live="polite">
+  <div class="toast-body d-flex align-items-center gap-2">
+   <i class="bi bi-info-circle text-primary"></i>
+   <span id="toastMessage"></span>
+  </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ INDUSTRA AI — AGENT WORKFLOWS DEMO
+
+ This is a standalone, browser-only sequential workflow builder.
+
+ Supported:
+ - Agent palette and drag/drop additions
+ - Sequential dependency ordering
+ - Editable steps
+ - Approval gates
+ - Step-by-step simulation
+ - Save/load in current browser session
+ - JSON import/export
+ - Simulation run history and chart
+
+ Not implemented:
+ - Actual LLM or agent execution
+ - Parallel DAG execution
+ - Backend persistence
+ - Real industrial control
+ - Authenticated approvals
+ - Live WebSocket streams
+
+ Suggested backend interfaces (verify before integration):
+ GET    /api/v1/agents/workflows
+ POST   /api/v1/agents/workflows
+ GET    /api/v1/agents/workflows/{id}
+ POST   /api/v1/agents/workflows/{id}/runs
+ POST   /api/v1/agents/workflow-runs/{id}/approve
+ GET    /api/v1/agents/workflow-runs/{id}/events
+*/
+
+const $=id=>document.getElementById(id);
+
+const agentDefinitions=[
+ {id:"supervisor",name:"Supervisor Agent",icon:"bi-diagram-3",description:"Coordinate specialized agents"},
+ {id:"asset",name:"Asset Health Agent",icon:"bi-cpu",description:"Inspect equipment health"},
+ {id:"maintenance",name:"Maintenance Agent",icon:"bi-tools",description:"Plan maintenance actions"},
+ {id:"failure",name:"Failure Analysis Agent",icon:"bi-graph-up",description:"Analyze failure risk"},
+ {id:"inspection",name:"Inspection Agent",icon:"bi-eye",description:"Review inspection findings"},
+ {id:"safety",name:"Safety Agent",icon:"bi-shield-check",description:"Evaluate safety conditions"},
+ {id:"emergency",name:"Emergency Response Agent",icon:"bi-exclamation-triangle",description:"Review emergency protocols"},
+ {id:"cost",name:"Cost Intelligence Agent",icon:"bi-currency-rupee",description:"Compare maintenance costs"},
+ {id:"incident",name:"Incident Agent",icon:"bi-clipboard2-pulse",description:"Investigate incidents"},
+ {id:"report",name:"Report Agent",icon:"bi-file-earmark-text",description:"Generate workflow summaries"}
+];
+
+const templates=[
+ {
+  id:"predictive",name:"Predictive Maintenance",
+  description:"Analyze telemetry, failure risk, maintenance and cost.",
+  icon:"bi-tools",color:"#6855eb",background:"#eeebff",
+  priority:"High",
+  agents:["supervisor","asset","failure","maintenance","cost","approval","report"]
+ },
+ {
+  id:"safety",name:"Worker Safety Review",
+  description:"Inspect PPE findings, assess risk and require review.",
+  icon:"bi-shield-check",color:"#16b88a",background:"#e5f8f0",
+  priority:"Critical",
+  agents:["supervisor","inspection","safety","approval","report"]
+ },
+ {
+  id:"emergency",name:"Emergency Assessment",
+  description:"Review an incident, protocols and authorized response.",
+  icon:"bi-exclamation-triangle",color:"#eb6174",background:"#ffebee",
+  priority:"Critical",
+  agents:["supervisor","incident","emergency","safety","approval","report"]
+ },
+ {
+  id:"inspection",name:"Asset Inspection",
+  description:"Evaluate inspection evidence and asset condition.",
+  icon:"bi-eye",color:"#438df5",background:"#eaf2ff",
+  priority:"Normal",
+  agents:["inspection","asset","maintenance","report"]
+ },
+ {
+  id:"cost",name:"Repair vs Replacement",
+  description:"Review failure risk and estimate economic alternatives.",
+  icon:"bi-currency-rupee",color:"#f2a53a",background:"#fff4e2",
+  priority:"High",
+  agents:["asset","failure","cost","approval","report"]
+ },
+ {
+  id:"report",name:"Industrial Intelligence Report",
+  description:"Aggregate simulated agent findings into a report.",
+  icon:"bi-file-earmark-bar-graph",color:"#8971ed",background:"#f0edff",
+  priority:"Normal",
+  agents:["supervisor","asset","safety","cost","report"]
+ }
+];
+
+let sequence=1;
+let workflowSequence=100;
+let runSequence=1000;
+
+let currentWorkflow={
+ id:null,
+ name:"Predictive Maintenance Intelligence",
+ description:"Analyze asset condition and recommend maintenance",
+ priority:"High",
+ nodes:[]
+};
+
+let savedWorkflows=[];
+let runs=[];
+let selectedNodeId=null;
+let activeRun=null;
+let runChart=null;
+
+function uid(){
+ return "node-"+sequence++;
+}
+
+function createNode(type){
+ if(type==="approval"){
+  return {
+   id:uid(),type:"approval",name:"Human Approval Gate",
+   description:"Requires explicit review before continuing",
+   approvalRequired:true
+  };
+ }
+
+ const definition=agentDefinitions.find(a=>a.id===type);
+ if(!definition)return null;
+
+ return {
+  id:uid(),type,
+  name:definition.name,
+  description:definition.description,
+  approvalRequired:false
+ };
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast"),{delay:3000}).show();
+}
+
+function makeButton(icon,title,callback,disabled=false){
+ const button=document.createElement("button");
+ button.type="button";
+ button.className="icon-action";
+ button.title=title;
+ button.setAttribute("aria-label",title);
+ button.disabled=disabled;
+ const i=document.createElement("i");
+ i.className="bi "+icon;
+ button.append(i);
+ button.addEventListener("click",event=>{
+  event.stopPropagation();
+  callback();
+ });
+ return button;
+}
+
+function statusClass(status){
+ return {
+  Completed:"b-success",
+  Running:"b-running",
+  "Awaiting Approval":"b-pending",
+  Rejected:"b-failed",
+  Cancelled:"b-draft",
+  Draft:"b-draft"
+ }[status]||"b-draft";
+}
+
+function setBadge(element,status){
+ element.className="badge-soft "+statusClass(status);
+ element.textContent=status.toUpperCase();
+}
+
+function renderPalette(){
+ const root=$("agentPalette");
+ root.replaceChildren();
+
+ agentDefinitions.forEach(agent=>{
+  const item=document.createElement("div");
+  item.className="palette-item";
+  item.draggable=true;
+  item.tabIndex=0;
+  item.setAttribute("role","button");
+  item.setAttribute("aria-label","Add "+agent.name);
+
+  const icon=document.createElement("div");
+  icon.className="palette-icon";
+  const symbol=document.createElement("i");
+  symbol.className="bi "+agent.icon;
+  icon.append(symbol);
+
+  const body=document.createElement("div");
+  const title=document.createElement("strong");
+  title.textContent=agent.name;
+  const hint=document.createElement("small");
+  hint.textContent="Add to workflow";
+  body.append(title,hint);
+  item.append(icon,body);
+
+  item.addEventListener("dragstart",event=>{
+   event.dataTransfer.setData("text/plain",agent.id);
+   event.dataTransfer.effectAllowed="copy";
+  });
+  item.addEventListener("click",()=>addNode(agent.id));
+  item.addEventListener("keydown",event=>{
+   if(event.key==="Enter"||event.key===" "){
+    event.preventDefault();
+    addNode(agent.id);
+   }
+  });
+
+  root.append(item);
+ });
+}
+
+function renderTemplates(){
+ const root=$("templateGrid");
+ root.replaceChildren();
+
+ templates.forEach(template=>{
+  const column=document.createElement("div");
+  column.className="col-md-6 col-xl-4";
+
+  const card=document.createElement("div");
+  card.className="template-card";
+
+  const icon=document.createElement("div");
+  icon.className="template-icon";
+  icon.style.color=template.color;
+  icon.style.background=template.background;
+  const symbol=document.createElement("i");
+  symbol.className="bi "+template.icon;
+  icon.append(symbol);
+
+  const title=document.createElement("h3");
+  title.textContent=template.name;
+
+  const description=document.createElement("p");
+  description.textContent=template.description;
+
+  const meta=document.createElement("div");
+  meta.className="template-meta mb-3";
+  meta.textContent=template.agents.length+" steps · "+template.priority+" priority";
+
+  const button=document.createElement("button");
+  button.className="btn-soft w-100";
+  button.type="button";
+  button.textContent="Use Template";
+  button.addEventListener("click",()=>loadTemplate(template));
+
+  card.append(icon,title,description,meta,button);
+  column.append(card);
+  root.append(column);
+ });
+}
+
+function readForm(){
+ currentWorkflow.name=$("workflowName").value.trim();
+ currentWorkflow.description=$("workflowDescription").value.trim();
+ currentWorkflow.priority=$("workflowPriority").value;
+}
+
+function fillForm(){
+ $("workflowName").value=currentWorkflow.name;
+ $("workflowDescription").value=currentWorkflow.description;
+ $("workflowPriority").value=currentWorkflow.priority;
+}
+
+function isLocked(){
+ return activeRun&&["Running","Awaiting Approval"].includes(activeRun.status);
+}
+
+function addNode(type){
+ if(isLocked()){
+  notify("Finish or cancel the current simulation before editing");
+  return;
+ }
+ const node=createNode(type);
+ if(!node)return;
+ currentWorkflow.nodes.push(node);
+ selectedNodeId=node.id;
+ renderCanvas();
+ renderInspector();
+ notify("Step added to workflow");
+}
+
+function moveNode(id,direction){
+ if(isLocked())return;
+ const index=currentWorkflow.nodes.findIndex(n=>n.id===id);
+ const target=index+direction;
+ if(index<0||target<0||target>=currentWorkflow.nodes.length)return;
+
+ [currentWorkflow.nodes[index],currentWorkflow.nodes[target]]=
+ [currentWorkflow.nodes[target],currentWorkflow.nodes[index]];
+
+ renderCanvas();
+}
+
+function deleteNode(id){
+ if(isLocked())return;
+ currentWorkflow.nodes=currentWorkflow.nodes.filter(n=>n.id!==id);
+ if(selectedNodeId===id)selectedNodeId=null;
+ renderCanvas();
+ renderInspector();
+}
+
+function renderCanvas(){
+ const root=$("workflowNodes");
+ root.replaceChildren();
+
+ $("canvasSubtitle").textContent=
+  currentWorkflow.nodes.length+" sequential workflow steps";
+
+ setBadge($("workflowStateBadge"),
+  activeRun?.status||"Draft");
+
+ if(!currentWorkflow.nodes.length){
+  const empty=document.createElement("div");
+  empty.className="empty-canvas";
+  empty.innerHTML=
+   '<div><i class="bi bi-diagram-3"></i>'+
+   '<h3 class="section-title mt-3">Start building your workflow</h3>'+
+   '<p>Choose an agent from the library to add the first step.</p></div>';
+  root.append(empty);
+  return;
+ }
+
+ currentWorkflow.nodes.forEach((node,index)=>{
+  if(index>0){
+   const connector=document.createElement("div");
+   connector.className="node-connector";
+   root.append(connector);
+  }
+
+  const card=document.createElement("div");
+  card.className="workflow-node";
+  card.tabIndex=0;
+  card.setAttribute("role","button");
+  card.setAttribute("aria-label","Select "+node.name);
+
+  if(node.id===selectedNodeId)card.classList.add("selected");
+
+  if(activeRun){
+   if(index<activeRun.cursor)card.classList.add("complete");
+   if(index===activeRun.cursor&&activeRun.status==="Running")card.classList.add("running");
+   if(index===activeRun.cursor&&activeRun.status==="Awaiting Approval")card.classList.add("waiting");
+  }
+
+  const layout=document.createElement("div");
+  layout.className="d-flex align-items-center gap-3";
+
+  const icon=document.createElement("div");
+  icon.className="node-icon";
+  const symbol=document.createElement("i");
+  const definition=agentDefinitions.find(a=>a.id===node.type);
+  symbol.className="bi "+(node.type==="approval"?"bi-person-check":definition?.icon||"bi-cpu");
+  icon.append(symbol);
+
+  const body=document.createElement("div");
+  body.className="flex-grow-1";
+
+  const title=document.createElement("div");
+  title.className="node-title";
+  title.textContent=(index+1)+". "+node.name;
+
+  const description=document.createElement("div");
+  description.className="node-sub";
+  description.textContent=node.description;
+
+  body.append(title,description);
+
+  const actions=document.createElement("div");
+  actions.className="node-actions";
+
+  actions.append(
+   makeButton("bi-arrow-up","Move step up",()=>moveNode(node.id,-1),isLocked()||index===0),
+   makeButton("bi-arrow-down","Move step down",()=>moveNode(node.id,1),isLocked()||index===currentWorkflow.nodes.length-1),
+   makeButton("bi-trash","Remove step",()=>deleteNode(node.id),isLocked())
+  );
+
+  layout.append(icon,body,actions);
+  card.append(layout);
+
+  card.addEventListener("click",()=>{
+   selectedNodeId=node.id;
+   renderCanvas();
+   renderInspector();
+  });
+
+  card.addEventListener("keydown",event=>{
+   if(event.key==="Enter"||event.key===" "){
+    event.preventDefault();
+    selectedNodeId=node.id;
+    renderCanvas();
+    renderInspector();
+   }
+  });
+
+  root.append(card);
+ });
+
+ $("addApprovalButton").disabled=!!isLocked();
+}
+
+function renderInspector(){
+ const root=$("inspectorContent");
+ root.replaceChildren();
+
+ const node=currentWorkflow.nodes.find(n=>n.id===selectedNodeId);
+
+ if(!node){
+  const p=document.createElement("p");
+  p.className="text-secondary";
+  p.textContent="Select a step in the workflow canvas to inspect its configuration.";
+  root.append(p);
+  return;
+ }
+
+ const label=document.createElement("label");
+ label.className="form-label";
+ label.textContent="Step Name";
+
+ const name=document.createElement("input");
+ name.className="form-control mb-3";
+ name.maxLength=90;
+ name.value=node.name;
+ name.disabled=!!isLocked();
+ name.addEventListener("change",()=>{
+  node.name=name.value.trim()||node.name;
+  renderCanvas();
+ });
+
+ const descLabel=document.createElement("label");
+ descLabel.className="form-label";
+ descLabel.textContent="Description";
+
+ const description=document.createElement("textarea");
+ description.className="form-control mb-3";
+ description.rows=4;
+ description.maxLength=250;
+ description.value=node.description;
+ description.disabled=!!isLocked();
+ description.addEventListener("change",()=>{
+  node.description=description.value.trim();
+  renderCanvas();
+ });
+
+ const typeLabel=document.createElement("div");
+ typeLabel.className="form-label";
+ typeLabel.textContent="Step Type";
+
+ const typeValue=document.createElement("div");
+ typeValue.className="inspector-value mb-3";
+ typeValue.textContent=node.type==="approval"?"Human Approval":node.type;
+
+ const idLabel=document.createElement("div");
+ idLabel.className="form-label";
+ idLabel.textContent="Node ID";
+
+ const idValue=document.createElement("div");
+ idValue.className="inspector-value mb-3";
+ idValue.textContent=node.id;
+
+ const info=document.createElement("div");
+ info.className="p-3 rounded-3";
+ info.style.background="#f4f2ff";
+ info.style.color="var(--purple)";
+ info.style.fontSize="11px";
+ info.style.lineHeight="1.7";
+ info.textContent=node.type==="approval"
+  ?"Approval gates pause the simulation until explicitly approved or rejected."
+  :"Agent steps advance through synthetic results. No LLM or external tool is called.";
+
+ root.append(label,name,descLabel,description,typeLabel,typeValue,idLabel,idValue,info);
+}
+
+function loadTemplate(template){
+ if(isLocked()){
+  notify("Cancel the current simulation before loading a template");
+  return;
+ }
+
+ currentWorkflow={
+  id:null,
+  name:template.name,
+  description:template.description,
+  priority:template.priority,
+  nodes:template.agents.map(createNode)
+ };
+
+ selectedNodeId=currentWorkflow.nodes[0]?.id||null;
+ activeRun=null;
+ fillForm();
+ renderAll();
+ $("builderSection").scrollIntoView({behavior:"smooth"});
+ notify("Template loaded");
+}
+
+function newWorkflow(){
+ if(isLocked()){
+  notify("Cancel the current simulation before creating a new workflow");
+  return;
+ }
+
+ currentWorkflow={
+  id:null,name:"Untitled Workflow",description:"",
+  priority:"Normal",nodes:[]
+ };
+ selectedNodeId=null;
+ activeRun=null;
+ fillForm();
+ renderAll();
+ $("builderSection").scrollIntoView({behavior:"smooth"});
+ notify("New workflow created");
+}
+
+function snapshotWorkflow(){
+ readForm();
+ return JSON.parse(JSON.stringify(currentWorkflow));
+}
+
+function saveWorkflow(){
+ if(isLocked()){
+  notify("Finish or cancel the current simulation before saving");
+  return;
+ }
+ readForm();
+
+ if(!currentWorkflow.name){
+  notify("Enter a workflow name");
+  return;
+ }
+ if(!currentWorkflow.nodes.length){
+  notify("Add at least one workflow step");
+  return;
+ }
+
+ if(!currentWorkflow.id){
+  currentWorkflow.id="WF-"+workflowSequence++;
+ }
+
+ const snapshot=snapshotWorkflow();
+ const index=savedWorkflows.findIndex(w=>w.id===snapshot.id);
+
+ if(index>=0)savedWorkflows[index]=snapshot;
+ else savedWorkflows.unshift(snapshot);
+
+ renderMetrics();
+ renderWorkflowTable();
+ notify("Workflow saved in this browser session");
+}
+
+function loadSavedWorkflow(id){
+ if(isLocked()){
+  notify("Cancel the active simulation before switching workflows");
+  return;
+ }
+ const workflow=savedWorkflows.find(w=>w.id===id);
+ if(!workflow)return;
+
+ currentWorkflow=JSON.parse(JSON.stringify(workflow));
+ selectedNodeId=currentWorkflow.nodes[0]?.id||null;
+ activeRun=null;
+ fillForm();
+ renderAll();
+ $("builderSection").scrollIntoView({behavior:"smooth"});
+ notify("Saved workflow loaded");
+}
+
+function deleteSavedWorkflow(id){
+ if(isLocked()){
+  notify("Finish the active simulation before deleting workflows");
+  return;
+ }
+ if(!confirm("Delete this saved workflow from the current session?"))return;
+
+ savedWorkflows=savedWorkflows.filter(w=>w.id!==id);
+ if(currentWorkflow.id===id)currentWorkflow.id=null;
+ renderMetrics();
+ renderWorkflowTable();
+ notify("Saved workflow deleted");
+}
+
+function startRun(){
+ if(isLocked()){
+  notify("A simulation is already active");
+  return;
+ }
+
+ readForm();
+ if(!currentWorkflow.nodes.length){
+  notify("Add at least one step before running");
+  return;
+ }
+
+ activeRun={
+  id:"RUN-"+runSequence++,
+  workflowId:currentWorkflow.id||"UNSAVED",
+  workflowName:currentWorkflow.name||"Untitled Workflow",
+  status:"Running",
+  cursor:0,
+  nodes:JSON.parse(JSON.stringify(currentWorkflow.nodes)),
+  trace:[{
+   title:"Simulation started",
+   detail:"Workflow accepted for browser-only step simulation",
+   color:"#438df5"
+  }]
+ };
+
+ runs.unshift(activeRun);
+ renderAll();
+ notify("Workflow simulation started");
+}
+
+function advanceRun(){
+ if(!activeRun||activeRun.status!=="Running")return;
+
+ const node=activeRun.nodes[activeRun.cursor];
+ if(!node)return;
+
+ if(node.type==="approval"){
+  activeRun.status="Awaiting Approval";
+  activeRun.trace.push({
+   title:"Human approval requested",
+   detail:node.name+" — waiting for simulated review",
+   color:"#f2a53a"
+  });
+  renderAll();
+  notify("Approval required to continue");
+  return;
+ }
+
+ activeRun.trace.push({
+  title:node.name+" completed",
+  detail:"Synthetic agent output recorded; no real tools invoked",
+  color:"#16b88a"
+ });
+
+ activeRun.cursor++;
+
+ if(activeRun.cursor>=activeRun.nodes.length){
+  activeRun.status="Completed";
+  activeRun.trace.push({
+   title:"Workflow completed",
+   detail:"All simulated steps finished",
+   color:"#16b88a"
+  });
+  notify("Workflow simulation completed");
+ }else{
+  notify("Step completed; advance to the next step");
+ }
+
+ renderAll();
+}
+
+function resolveApproval(approved){
+ if(!activeRun||activeRun.status!=="Awaiting Approval")return;
+
+ const node=activeRun.nodes[activeRun.cursor];
+
+ if(!approved){
+  activeRun.status="Rejected";
+  activeRun.trace.push({
+   title:"Approval rejected",
+   detail:node.name+" — simulation stopped",
+   color:"#eb6174"
+  });
+  notify("Approval rejected; workflow stopped");
+ }else{
+  activeRun.trace.push({
+   title:"Approval granted",
+   detail:node.name+" — simulated review accepted",
+   color:"#16b88a"
+  });
+  activeRun.cursor++;
+  activeRun.status=activeRun.cursor>=activeRun.nodes.length
+   ?"Completed":"Running";
+
+  if(activeRun.status==="Completed"){
+   activeRun.trace.push({
+    title:"Workflow completed",
+    detail:"All simulated steps finished",
+    color:"#16b88a"
+   });
+  }
+  notify("Approval granted");
+ }
+
+ renderAll();
+}
+
+function cancelRun(){
+ if(!activeRun||!isLocked())return;
+
+ activeRun.status="Cancelled";
+ activeRun.trace.push({
+  title:"Simulation cancelled",
+  detail:"Workflow stopped by user",
+  color:"#9ba2b5"
+ });
+ renderAll();
+ notify("Workflow simulation cancelled");
+}
+
+function renderRun(){
+ const root=$("executionTrace");
+ root.replaceChildren();
+
+ if(!activeRun){
+  const p=document.createElement("p");
+  p.className="text-secondary";
+  p.textContent="Start a workflow simulation to view its execution trace.";
+  root.append(p);
+
+  $("progressLabel").textContent="0 of 0 steps completed";
+  $("progressPercent").textContent="0%";
+  $("runProgressBar").style.width="0%";
+  setBadge($("runStatus"),"Draft");
+ }else{
+  const total=activeRun.nodes.length;
+  const completed=activeRun.cursor;
+  const percentage=total?Math.round(completed/total*100):0;
+
+  $("progressLabel").textContent=`${completed} of ${total} steps completed`;
+  $("progressPercent").textContent=percentage+"%";
+  $("runProgressBar").style.width=percentage+"%";
+  setBadge($("runStatus"),activeRun.status);
+
+  activeRun.trace.forEach(entry=>{
+   const row=document.createElement("div");
+   row.className="trace-item";
+
+   const dot=document.createElement("div");
+   dot.className="trace-dot";
+   dot.style.background=entry.color;
+
+   const body=document.createElement("div");
+   const title=document.createElement("strong");
+   title.textContent=entry.title;
+   const detail=document.createElement("p");
+   detail.textContent=entry.detail;
+
+   body.append(title,detail);
+   row.append(dot,body);
+   root.append(row);
+  });
+ }
+
+ $("nextStepButton").disabled=!activeRun||activeRun.status!=="Running";
+ $("approveButton").disabled=!activeRun||activeRun.status!=="Awaiting Approval";
+ $("rejectButton").disabled=!activeRun||activeRun.status!=="Awaiting Approval";
+ $("cancelRunButton").disabled=!isLocked();
+ $("runWorkflowButton").disabled=!!isLocked();
+ $("saveWorkflowButton").disabled=!!isLocked();
+}
+
+function renderMetrics(){
+ $("totalWorkflows").textContent=savedWorkflows.length;
+ $("totalRuns").textContent=runs.length;
+ $("completedRuns").textContent=runs.filter(r=>r.status==="Completed").length;
+ $("pendingApprovals").textContent=runs.filter(r=>r.status==="Awaiting Approval").length;
+}
+
+function renderRunChart(){
+ if(typeof Chart==="undefined")return;
+
+ const labels=["Completed","Running","Awaiting Approval","Rejected","Cancelled"];
+ const values=labels.map(s=>runs.filter(r=>r.status===s).length);
+
+ if(runChart){
+  runChart.data.datasets[0].data=values;
+  runChart.update();
+  return;
+ }
+
+ runChart=new Chart($("runChart"),{
+  type:"doughnut",
+  data:{
+   labels,
+   datasets:[{
+    data:values,
+    backgroundColor:["#16b88a","#438df5","#f2a53a","#eb6174","#a6aabb"],
+    borderWidth:0,hoverOffset:5
+   }]
+  },
+  options:{
+   responsive:true,maintainAspectRatio:false,cutout:"72%",
+   plugins:{legend:{position:"bottom",labels:{boxWidth:10,font:{size:10}}}}
+  }
+ });
+}
+
+function renderWorkflowTable(){
+ const query=$("workflowSearch").value.trim().toLowerCase();
+ const filtered=savedWorkflows.filter(w=>
+  `${w.name} ${w.description} ${w.id}`.toLowerCase().includes(query)
+ );
+
+ const root=$("workflowTable");
+ root.replaceChildren();
+
+ if(!filtered.length){
+  const row=document.createElement("tr");
+  const cell=document.createElement("td");
+  cell.colSpan=5;
+  cell.className="text-center py-5 text-secondary";
+  cell.textContent="No saved workflows match your search.";
+  row.append(cell);
+  root.append(row);
+  return;
+ }
+
+ filtered.forEach(w=>{
+  const row=document.createElement("tr");
+
+  const nameCell=document.createElement("td");
+  const title=document.createElement("div");
+  title.className="table-title";
+  title.textContent=w.name;
+  const subtitle=document.createElement("div");
+  subtitle.className="table-sub";
+  subtitle.textContent=w.id+" · "+w.description;
+  nameCell.append(title,subtitle);
+
+  const priorityCell=document.createElement("td");
+  priorityCell.textContent=w.priority;
+
+  const stepCell=document.createElement("td");
+  stepCell.textContent=w.nodes.length;
+
+  const lastRunCell=document.createElement("td");
+  const latest=runs.find(r=>r.workflowId===w.id);
+  lastRunCell.append(latest
+   ?document.createTextNode(latest.status)
+   :document.createTextNode("Not run"));
+
+  const actionCell=document.createElement("td");
+
+  const open=document.createElement("button");
+  open.className="small-action me-2";
+  open.textContent="Open";
+  open.addEventListener("click",()=>loadSavedWorkflow(w.id));
+
+  const remove=document.createElement("button");
+  remove.className="small-action";
+  remove.textContent="Delete";
+  remove.addEventListener("click",()=>deleteSavedWorkflow(w.id));
+
+  actionCell.append(open,remove);
+  row.append(nameCell,priorityCell,stepCell,lastRunCell,actionCell);
+  root.append(row);
+ });
+}
+
+function renderAll(){
+ renderMetrics();
+ renderCanvas();
+ renderInspector();
+ renderRun();
+ renderRunChart();
+ renderWorkflowTable();
+}
+
+function downloadJson(){
+ readForm();
+
+ const data={
+  format:"industra-workflow-v1",
+  workflow:snapshotWorkflow()
+ };
+
+ const blob=new Blob([JSON.stringify(data,null,2)],{
+  type:"application/json"
+ });
+
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+ link.href=url;
+ link.download="industra-agent-workflow.json";
+ document.body.append(link);
+ link.click();
+ link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+ notify("Workflow JSON exported");
+}
+
+async function importJson(file){
+ if(!file)return;
+
+ if(isLocked()){
+  notify("Cancel the current simulation before importing");
+  return;
+ }
+
+ if(file.size>1024*1024){
+  notify("JSON file exceeds 1 MB");
+  return;
+ }
+
+ try{
+  const data=JSON.parse(await file.text());
+
+  if(data.format!=="industra-workflow-v1"||!data.workflow){
+   throw new Error("Unsupported workflow format");
+  }
+
+  const w=data.workflow;
+
+  if(
+   typeof w.name!=="string"||
+   typeof w.description!=="string"||
+   !["Normal","High","Critical"].includes(w.priority)||
+   !Array.isArray(w.nodes)||
+   w.nodes.length>60
+  ){
+   throw new Error("Invalid workflow structure");
+  }
+
+  const allowed=new Set([...agentDefinitions.map(a=>a.id),"approval"]);
+
+  if(!w.nodes.every(n=>
+   n&&allowed.has(n.type)&&
+   typeof n.name==="string"&&
+   typeof n.description==="string"&&
+   n.name.length<=90&&n.description.length<=250
+  )){
+   throw new Error("Invalid workflow nodes");
+  }
+
+  currentWorkflow={
+   id:null,
+   name:w.name.slice(0,100),
+   description:w.description.slice(0,180),
+   priority:w.priority,
+   nodes:w.nodes.map(n=>({
+    id:uid(),
+    type:n.type,
+    name:n.name,
+    description:n.description,
+    approvalRequired:n.type==="approval"
+   }))
+  };
+
+  selectedNodeId=currentWorkflow.nodes[0]?.id||null;
+  activeRun=null;
+  fillForm();
+  renderAll();
+  notify("Workflow imported successfully");
+ }catch(error){
+  notify("Import failed: "+error.message);
+ }finally{
+  $("importFile").value="";
+ }
+}
+
+function initNavigation(){
+ const sidebar=$("sidebar");
+ const shade=$("shade");
+
+ function close(){
+  sidebar.classList.remove("open");
+  shade.classList.remove("show");
+ }
+
+ $("menuButton").addEventListener("click",()=>{
+  sidebar.classList.add("open");
+  shade.classList.add("show");
+ });
+
+ shade.addEventListener("click",close);
+ document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")close();
+ });
+}
+
+function initCanvasDrop(){
+ const canvas=$("workflowCanvas");
+
+ canvas.addEventListener("dragover",event=>{
+  if(isLocked())return;
+  event.preventDefault();
+  canvas.classList.add("drag-over");
+ });
+
+ canvas.addEventListener("dragleave",event=>{
+  if(!canvas.contains(event.relatedTarget)){
+   canvas.classList.remove("drag-over");
+  }
+ });
+
+ canvas.addEventListener("drop",event=>{
+  event.preventDefault();
+  canvas.classList.remove("drag-over");
+  const type=event.dataTransfer.getData("text/plain");
+  if(agentDefinitions.some(a=>a.id===type))addNode(type);
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ initNavigation();
+ initCanvasDrop();
+ renderPalette();
+ renderTemplates();
+
+ loadTemplate(templates[0]);
+
+ $("newWorkflowButton").addEventListener("click",newWorkflow);
+ $("saveWorkflowButton").addEventListener("click",saveWorkflow);
+ $("runWorkflowButton").addEventListener("click",startRun);
+ $("nextStepButton").addEventListener("click",advanceRun);
+ $("approveButton").addEventListener("click",()=>resolveApproval(true));
+ $("rejectButton").addEventListener("click",()=>resolveApproval(false));
+ $("cancelRunButton").addEventListener("click",cancelRun);
+ $("addApprovalButton").addEventListener("click",()=>addNode("approval"));
+
+ $("workflowSearch").addEventListener("input",renderWorkflowTable);
+
+ $("importButton").addEventListener("click",()=>$("importFile").click());
+ $("importFile").addEventListener("change",event=>importJson(event.target.files[0]));
+ $("exportButton").addEventListener("click",downloadJson);
+
+ $("resetButton").addEventListener("click",()=>{
+  if(confirm("Reset the workflow builder and simulation history?")){
+   savedWorkflows=[];
+   runs=[];
+   activeRun=null;
+   $("workflowSearch").value="";
+   loadTemplate(templates[0]);
+   notify("Workflow demo reset");
+  }
+ });
+});
+</script>
+</body>
+</html>

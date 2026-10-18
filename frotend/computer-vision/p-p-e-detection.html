@@ -1,0 +1,1633 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>P P E Detection | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / computer-vision</p><h1 id="page-title">P P E Detection</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>P P E Detection workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>PPE Detection | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple2:#9482ff;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+ --sidebar:258px;
+}
+
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5{
+ font-family:"Manrope",sans-serif;
+ letter-spacing:-.5px;
+}
+a{text-decoration:none}
+button,input,select{font:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible,
+select:focus-visible{
+ outline:3px solid #b9adff;
+ outline-offset:2px;
+}
+
+.sidebar{
+ position:fixed;
+ inset:0 auto 0 0;
+ width:var(--sidebar);
+ background:var(--navy);
+ color:white;
+ z-index:1000;
+ display:flex;
+ flex-direction:column;
+ overflow-y:auto;
+ scrollbar-width:thin;
+ scrollbar-color:#42496b transparent;
+}
+.brand{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ padding:26px 22px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;height:43px;
+ border-radius:13px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);
+ font-size:22px;
+}
+.brand strong{
+ font:800 18px "Manrope",sans-serif;
+ color:white;
+}
+.brand small{
+ display:block;
+ color:#8994bd;
+ font-size:8px;
+ letter-spacing:1.7px;
+ margin-top:4px;
+}
+.nav-section{
+ padding:23px 20px 8px;
+ color:#687399;
+ font-size:9px;
+ font-weight:800;
+ letter-spacing:1.7px;
+ text-transform:uppercase;
+}
+.side-link{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ margin:3px 12px;
+ padding:12px 13px;
+ border-radius:10px;
+ color:#a4aecf;
+ font-size:11px;
+ font-weight:700;
+ transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+ color:white;
+}
+.sidebar-footer{
+ margin-top:auto;
+ padding:20px;
+ color:#7884ac;
+ font-size:10px;
+ border-top:1px solid #ffffff12;
+}
+
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;
+ background:white;
+ border-bottom:1px solid var(--border);
+ padding:0 32px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;
+ border:1px solid var(--border);
+ border-radius:11px;
+ background:white;
+ display:grid;place-items:center;
+ color:#68718e;
+ font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;
+ border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;
+ font-weight:800;
+}
+.mobile-menu{display:none}
+.content{
+ padding:28px 32px 45px;
+ max-width:1650px;
+ margin:auto;
+}
+
+.hero{
+ position:relative;
+ overflow:hidden;
+ border-radius:19px;
+ padding:30px;
+ color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:25px;
+}
+.hero:after{
+ content:"";
+ position:absolute;
+ width:330px;height:330px;
+ border-radius:50%;
+ border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;
+ font-weight:800;
+ text-transform:uppercase;
+ letter-spacing:2px;
+ color:#ddd6ff;
+}
+.hero h1{
+ font-size:26px;
+ font-weight:800;
+ margin:12px 0;
+}
+.hero p{
+ color:#e6e0ff;
+ font-size:12px;
+ line-height:1.9;
+ max-width:760px;
+ margin:0;
+}
+.hero-tag{
+ display:inline-flex;
+ align-items:center;
+ gap:7px;
+ background:#ffffff20;
+ border:1px solid #ffffff25;
+ border-radius:9px;
+ padding:8px 11px;
+ font-size:10px;
+ font-weight:700;
+ margin-top:20px;
+}
+
+.stat-card,.panel{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:16px;
+ box-shadow:0 5px 23px #18204105;
+}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;
+ display:grid;place-items:center;
+ border-radius:12px;
+ font-size:19px;
+ margin-bottom:16px;
+}
+.stat-label{
+ font-size:11px;
+ color:var(--muted);
+ font-weight:700;
+}
+.stat-value{
+ font:800 26px "Manrope",sans-serif;
+ margin-top:6px;
+}
+.stat-note{
+ color:#a0a8ba;
+ font-size:10px;
+ margin-top:6px;
+}
+.panel{padding:23px;height:100%}
+.panel-heading{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:10px;
+ margin-bottom:21px;
+}
+.panel-heading h3{
+ font-size:15px;
+ font-weight:800;
+ margin:0;
+}
+.panel-subtitle{
+ color:var(--muted);
+ font-size:11px;
+ margin-top:5px;
+}
+
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;
+ border:0;
+ border-radius:10px;
+ padding:11px 17px;
+ font-size:11px;
+ font-weight:800;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);
+ border-radius:10px;
+ padding:10px 14px;
+ background:white;
+ color:#69738e;
+ font-size:11px;
+ font-weight:800;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+}
+.btn-outline-custom:hover{
+ background:#f5f3ff;
+ color:var(--purple);
+}
+.btn-danger-custom{
+ background:var(--red);
+ color:white;
+ border:0;
+ border-radius:10px;
+ padding:11px 17px;
+ font-size:11px;
+ font-weight:800;
+}
+button:disabled{opacity:.5;cursor:not-allowed}
+.status-badge{
+ display:inline-flex;
+ align-items:center;
+ gap:6px;
+ border-radius:8px;
+ padding:7px 10px;
+ font-size:10px;
+ font-weight:800;
+ background:#f1f2f8;
+ color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffecef;color:#d64b62}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+
+.section-label{
+ display:block;
+ font-size:10px;
+ color:#59637f;
+ font-weight:800;
+ margin-bottom:9px;
+}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;
+ min-height:43px;
+ font-size:12px;
+ padding:10px 12px;
+ color:var(--text);
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+
+.upload-zone{
+ border:2px dashed #c9c4f6;
+ border-radius:15px;
+ background:#faf9ff;
+ min-height:225px;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ align-items:center;
+ text-align:center;
+ padding:20px;
+ cursor:pointer;
+ transition:.2s;
+}
+.upload-zone:hover,.upload-zone.dragging{
+ border-color:var(--purple);
+ background:#f1efff;
+}
+.upload-icon{
+ width:60px;height:60px;
+ display:grid;place-items:center;
+ background:#ebe7ff;
+ color:var(--purple);
+ border-radius:16px;
+ font-size:27px;
+ margin-bottom:13px;
+}
+.upload-zone strong{font-size:13px}
+.upload-zone p{
+ font-size:11px;
+ color:var(--muted);
+ margin:9px 0 0;
+}
+.preview-wrap{
+ background:#10152d;
+ border-radius:14px;
+ overflow:hidden;
+ position:relative;
+ min-height:250px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+}
+.preview-wrap img,.preview-wrap video{
+ max-width:100%;
+ max-height:390px;
+ object-fit:contain;
+}
+.preview-label{
+ position:absolute;
+ top:12px;left:12px;
+ z-index:2;
+ background:#10152ddc;
+ color:white;
+ padding:8px 11px;
+ border-radius:8px;
+ font-size:10px;
+ font-weight:800;
+}
+.ppe-item{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ border:1px solid var(--border);
+ border-radius:12px;
+ padding:13px;
+ margin-bottom:11px;
+}
+.ppe-icon{
+ width:40px;height:40px;
+ border-radius:11px;
+ display:grid;place-items:center;
+ background:#eeeaff;
+ color:var(--purple);
+ font-size:18px;
+ flex-shrink:0;
+}
+.ppe-info{flex:1;min-width:0}
+.ppe-name{font-size:11px;font-weight:800}
+.ppe-desc{
+ font-size:10px;
+ color:var(--muted);
+ margin-top:4px;
+}
+.ppe-select{
+ width:132px;
+ min-height:36px;
+ padding:6px 9px;
+ font-size:11px;
+}
+.compliance-display{
+ border-radius:15px;
+ background:linear-gradient(135deg,#171d38,#2b275f);
+ padding:24px;
+ color:white;
+}
+.compliance-number{
+ font:800 43px "Manrope",sans-serif;
+ letter-spacing:-1.5px;
+}
+.compliance-track{
+ background:#ffffff20;
+ height:9px;
+ border-radius:20px;
+ overflow:hidden;
+ margin-top:15px;
+}
+.compliance-fill{
+ height:100%;
+ width:0;
+ background:linear-gradient(90deg,#18b58c,#8bdfc2);
+ border-radius:20px;
+ transition:.25s;
+}
+.info-row{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+ padding:12px 0;
+ border-bottom:1px solid #f0f1f7;
+}
+.info-row span{color:var(--muted);font-size:11px}
+.info-row strong{font-size:11px;text-align:right}
+.chart-container{height:245px;position:relative}
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;
+ font-size:10px;
+ font-weight:800;
+ padding:13px;
+ background:#f9faff;
+ border-bottom:1px solid var(--border);
+ white-space:nowrap;
+}
+.table tbody td{
+ padding:14px 13px;
+ vertical-align:middle;
+ border-color:#f0f1f7;
+}
+.empty-state{
+ text-align:center;
+ padding:35px 15px;
+ color:var(--muted);
+ font-size:11px;
+}
+.empty-state i{
+ display:block;
+ font-size:33px;
+ color:#c2b9ff;
+ margin-bottom:12px;
+}
+.notice{
+ background:#fff8eb;
+ border:1px solid #ffe8c3;
+ color:#986b2d;
+ border-radius:12px;
+ padding:15px 17px;
+ font-size:11px;
+ line-height:1.8;
+ display:flex;
+ align-items:flex-start;
+ gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+
+@media(max-width:1150px){
+ :root{--sidebar:225px}
+ .content{padding:25px 22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{
+  transform:translateX(-100%);
+  transition:transform .25s;
+  width:260px;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;
+  position:fixed;
+  inset:0;
+  background:#10152d88;
+  z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:18px 14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:17px}
+ .mobile-hide{display:none}
+ .ppe-item{flex-wrap:wrap}
+ .ppe-select{width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+ <a class="side-link" href="notifications.html"><i class="bi bi-bell"></i> Notifications</a>
+
+ <div class="nav-section">Vision Intelligence</div>
+ <a class="side-link" href="live-camera.html"><i class="bi bi-camera-video"></i> Live Camera</a>
+ <a class="side-link" href="image-inspection.html"><i class="bi bi-image"></i> Image Inspection</a>
+ <a class="side-link active" href="p-p-e-detection.html"><i class="bi bi-shield-check"></i> PPE Detection</a>
+ <a class="side-link" href="motion-detection.html"><i class="bi bi-bounding-box"></i> Motion Detection</a>
+ <a class="side-link" href="fire-detection.html"><i class="bi bi-fire"></i> Fire Detection</a>
+ <a class="side-link" href="overheating-detection.html"><i class="bi bi-thermometer-high"></i> Overheating Detection</a>
+ <a class="side-link" href="corrosion-detection.html"><i class="bi bi-search-heart"></i> Corrosion Detection</a>
+ <a class="side-link" href="crack-detection.html"><i class="bi bi-intersect"></i> Crack Detection</a>
+ <a class="side-link" href="defect-detection.html"><i class="bi bi-bounding-box-circles"></i> Defect Detection</a>
+ <a class="side-link" href="detection-results.html"><i class="bi bi-clipboard-data"></i> Detection Results</a>
+ <a class="side-link" href="inspection-history.html"><i class="bi bi-clock-history"></i> Inspection History</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/inspection-agent.html"><i class="bi bi-clipboard-check"></i> Inspection Agent</a>
+ <a class="side-link" href="agents/safety-agent.html"><i class="bi bi-shield-check"></i> Safety Agent</a>
+ <a class="side-link" href="agents/supervisor-agent.html"><i class="bi bi-diagram-3"></i> Supervisor Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Manual PPE Inspection
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">
+    Vision Intelligence / <strong>PPE Detection</strong>
+   </div>
+   <div class="fw-bold mt-1" style="font-size:13px">
+    Worker Safety & PPE Inspection Studio
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="status-badge info mobile-hide">
+   <i class="bi bi-person-check"></i>
+   Manual Assessment
+  </span>
+  <a href="notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">Industrial Vision / Worker Safety</div>
+ <h1>
+  <i class="bi bi-shield-check me-2"></i>
+  PPE Detection & Safety Inspection
+ </h1>
+ <p>
+  Upload workplace images or capture a camera frame,
+  document required protective equipment, record worker
+  observations, and produce structured PPE inspection
+  reports with transparent compliance calculations.
+ </p>
+ <div class="hero-tag">
+  <i class="bi bi-info-circle"></i>
+  Inspector-entered findings — no automated PPE recognition
+ </div>
+</section>
+
+<div class="row g-3 mb-4">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+    <i class="bi bi-clipboard-check"></i>
+   </div>
+   <div class="stat-label">Inspections</div>
+   <div class="stat-value" id="inspectionKpi">0</div>
+   <div class="stat-note">Current browser session</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e8f9f1;color:#18b58c">
+    <i class="bi bi-check-circle"></i>
+   </div>
+   <div class="stat-label">Fully Compliant</div>
+   <div class="stat-value" id="compliantKpi">0</div>
+   <div class="stat-note">Recorded assessments</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#ffecef;color:#ed6175">
+    <i class="bi bi-exclamation-triangle"></i>
+   </div>
+   <div class="stat-label">Non-Compliant</div>
+   <div class="stat-value" id="noncompliantKpi">0</div>
+   <div class="stat-note">Missing required PPE</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eaf2ff;color:#438df5">
+    <i class="bi bi-percent"></i>
+   </div>
+   <div class="stat-label">Compliance Rate</div>
+   <div class="stat-value" id="rateKpi">—</div>
+   <div class="stat-note">Inspections fully compliant</div>
+  </div>
+ </div>
+</div>
+
+<div class="row g-4 mb-4">
+
+ <div class="col-xl-7">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Image & Camera Inspection</h3>
+     <div class="panel-subtitle">
+      Provide visual evidence for a manual assessment
+     </div>
+    </div>
+    <span class="status-badge info">Local Image Processing</span>
+   </div>
+
+   <input type="file" id="imageInput"
+    accept="image/png,image/jpeg,image/webp" hidden>
+
+   <div class="upload-zone" id="uploadZone" role="button"
+    tabindex="0" aria-label="Upload workplace image">
+    <div class="upload-icon">
+     <i class="bi bi-cloud-arrow-up"></i>
+    </div>
+    <strong>Upload Workplace Inspection Image</strong>
+    <p>Click or drag an image here (JPG, PNG, WebP; maximum 10 MB)</p>
+    <button class="btn-purple mt-3" id="browseButton">
+     <i class="bi bi-image"></i> Choose Image
+    </button>
+   </div>
+
+   <div id="previewSection" class="hidden">
+    <div class="preview-wrap">
+     <span class="preview-label" id="previewLabel">IMAGE EVIDENCE</span>
+     <img id="imagePreview" alt="Uploaded workplace inspection evidence">
+     <video id="cameraVideo" autoplay muted playsinline class="hidden"></video>
+    </div>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+     <button class="btn-outline-custom" id="replaceImage">
+      <i class="bi bi-arrow-repeat"></i> Replace Image
+     </button>
+     <button class="btn-outline-custom" id="removeImage">
+      <i class="bi bi-trash"></i> Remove
+     </button>
+    </div>
+   </div>
+
+   <div class="d-flex flex-wrap gap-2 mt-3">
+    <button class="btn-outline-custom" id="startCamera">
+     <i class="bi bi-camera-video"></i> Start Camera
+    </button>
+    <button class="btn-purple" id="captureCamera" disabled>
+     <i class="bi bi-camera"></i> Capture Frame
+    </button>
+    <button class="btn-danger-custom" id="stopCamera" disabled>
+     <i class="bi bi-stop-circle"></i> Stop Camera
+    </button>
+   </div>
+
+   <div class="mt-4">
+    <div class="row g-3">
+     <div class="col-md-6">
+      <label class="section-label" for="workerId">Worker / Inspection Reference</label>
+      <input class="form-control" id="workerId"
+       maxlength="80" placeholder="e.g. WORKER-024">
+     </div>
+     <div class="col-md-6">
+      <label class="section-label" for="inspectionZone">Inspection Zone</label>
+      <select class="form-select" id="inspectionZone">
+       <option value="Production Floor">Production Floor</option>
+       <option value="Maintenance Workshop">Maintenance Workshop</option>
+       <option value="Assembly Line">Assembly Line</option>
+       <option value="Warehouse">Warehouse</option>
+       <option value="Construction Area">Construction Area</option>
+       <option value="Chemical Processing">Chemical Processing</option>
+       <option value="Other">Other</option>
+      </select>
+     </div>
+     <div class="col-md-6">
+      <label class="section-label" for="inspectorName">Inspector</label>
+      <input class="form-control" id="inspectorName"
+       maxlength="100" placeholder="Inspector name">
+     </div>
+     <div class="col-md-6">
+      <label class="section-label" for="inspectionDate">Inspection Date</label>
+      <input type="date" class="form-control" id="inspectionDate">
+     </div>
+     <div class="col-12">
+      <label class="section-label" for="inspectionNotes">Inspection Notes</label>
+      <textarea id="inspectionNotes" class="form-control"
+       rows="3" maxlength="2000"
+       placeholder="Document observed conditions, uncertainties and required follow-up..."></textarea>
+     </div>
+    </div>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-5">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>PPE Checklist</h3>
+     <div class="panel-subtitle">
+      Set the requirement and inspector observation for each item
+     </div>
+    </div>
+   </div>
+
+   <div id="ppeChecklist"></div>
+
+   <button class="btn-purple w-100 mt-3" id="saveInspection">
+    <i class="bi bi-clipboard-check"></i>
+    Save Inspection Assessment
+   </button>
+
+   <button class="btn-outline-custom w-100 mt-2" id="resetChecklist">
+    <i class="bi bi-arrow-counterclockwise"></i>
+    Reset Checklist
+   </button>
+  </section>
+ </div>
+
+</div>
+
+<div class="row g-4 mb-4">
+ <div class="col-lg-5">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>Current Assessment</h3>
+     <div class="panel-subtitle">Required PPE items marked present</div>
+    </div>
+   </div>
+
+   <div class="compliance-display">
+    <div style="color:#b4bde0;font-size:11px">
+     Checklist Completion Score
+    </div>
+    <div class="compliance-number" id="currentScore">—</div>
+    <div style="font-size:11px;color:#b4bde0" id="scoreDescription">
+     Complete the checklist to calculate a score.
+    </div>
+    <div class="compliance-track">
+     <div class="compliance-fill" id="complianceFill"></div>
+    </div>
+   </div>
+
+   <div class="mt-3">
+    <div class="info-row">
+     <span>Required PPE Items</span>
+     <strong id="requiredCount">0</strong>
+    </div>
+    <div class="info-row">
+     <span>Marked Present</span>
+     <strong id="presentCount">0</strong>
+    </div>
+    <div class="info-row">
+     <span>Marked Missing</span>
+     <strong id="missingCount">0</strong>
+    </div>
+    <div class="info-row">
+     <span>Not Yet Assessed</span>
+     <strong id="unknownCount">0</strong>
+    </div>
+    <div class="info-row">
+     <span>Assessment Status</span>
+     <strong id="assessmentStatus">Pending</strong>
+    </div>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-lg-7">
+  <section class="panel">
+   <div class="panel-heading">
+    <div>
+     <h3>PPE Compliance Overview</h3>
+     <div class="panel-subtitle">
+      Distribution of completed inspection assessments
+     </div>
+    </div>
+    <span class="status-badge info">Session Analytics</span>
+   </div>
+   <div class="chart-container">
+    <canvas id="complianceChart"></canvas>
+   </div>
+  </section>
+ </div>
+</div>
+
+<section class="panel mb-4">
+ <div class="panel-heading">
+  <div>
+   <h3>Worker PPE Inspection History</h3>
+   <div class="panel-subtitle">
+    Locally recorded assessments in this browser session
+   </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-outline-custom" id="exportCsv">
+    <i class="bi bi-filetype-csv"></i> Export CSV
+   </button>
+   <button class="btn-purple" id="exportJson">
+    <i class="bi bi-download"></i> Export JSON
+   </button>
+   <button class="btn-outline-custom" id="clearHistory">
+    <i class="bi bi-trash"></i> Clear
+   </button>
+  </div>
+ </div>
+
+ <div class="row g-3 mb-3">
+  <div class="col-md-7">
+   <input class="form-control" id="historySearch"
+    placeholder="Search worker, inspector or zone...">
+  </div>
+  <div class="col-md-5">
+   <select class="form-select" id="statusFilter">
+    <option value="all">All Assessments</option>
+    <option value="compliant">Compliant</option>
+    <option value="noncompliant">Non-Compliant</option>
+   </select>
+  </div>
+ </div>
+
+ <div class="table-responsive">
+  <table class="table align-middle mb-0">
+   <thead>
+    <tr>
+     <th>Inspection ID</th>
+     <th>Worker / Reference</th>
+     <th>Zone</th>
+     <th>Date</th>
+     <th>PPE Score</th>
+     <th>Status</th>
+     <th>Action</th>
+    </tr>
+   </thead>
+   <tbody id="historyTable"></tbody>
+  </table>
+ </div>
+
+ <div class="d-flex justify-content-between align-items-center mt-3">
+  <span class="text-secondary" id="historyCount"></span>
+  <div class="d-flex gap-2">
+   <button class="btn-outline-custom" id="prevPage">Previous</button>
+   <button class="btn-outline-custom" id="nextPage">Next</button>
+  </div>
+ </div>
+</section>
+
+<div class="notice">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Safety limitation:</strong>
+  PPE findings are entered by an inspector, not detected
+  automatically from images. Compliance scores only summarize
+  the selected checklist and do not establish that PPE is
+  suitable, correctly fitted, certified, or sufficient for
+  a particular hazard. Required PPE must be determined from
+  the applicable workplace risk assessment and verified by
+  qualified safety personnel. No emergency or safety alarms
+  are generated by this page.
+ </div>
+</div>
+
+</main>
+</div>
+
+<!-- INSPECTION DETAILS MODAL -->
+
+<div class="modal fade" id="inspectionModal" tabindex="-1"
+ aria-labelledby="inspectionModalTitle" aria-hidden="true">
+ <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-content" style="border-radius:16px;border:0">
+   <div class="modal-header">
+    <h5 class="modal-title fw-bold" id="inspectionModalTitle">
+     PPE Inspection Details
+    </h5>
+    <button class="btn-close" data-bs-dismiss="modal"
+     aria-label="Close"></button>
+   </div>
+   <div class="modal-body" id="inspectionModalBody"></div>
+   <div class="modal-footer">
+    <button class="btn-outline-custom" data-bs-dismiss="modal">
+     Close
+    </button>
+   </div>
+  </div>
+ </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+
+const ppeTypes=[
+ {id:"helmet",name:"Safety Helmet",icon:"bi-shield-check",
+  description:"Head protection"},
+ {id:"vest",name:"High-Visibility Vest",icon:"bi-person-badge",
+  description:"High-visibility clothing"},
+ {id:"gloves",name:"Protective Gloves",icon:"bi-hand-index",
+  description:"Task-appropriate hand protection"},
+ {id:"goggles",name:"Safety Goggles",icon:"bi-eyeglasses",
+  description:"Eye protection"},
+ {id:"boots",name:"Safety Footwear",icon:"bi-person-walking",
+  description:"Foot protection"},
+ {id:"mask",name:"Respiratory Protection",icon:"bi-lungs",
+  description:"Task-specific respiratory PPE"},
+ {id:"hearing",name:"Hearing Protection",icon:"bi-ear",
+  description:"Noise exposure protection"}
+];
+
+let inspections=[];
+let currentImageUrl=null;
+let currentImageName="";
+let cameraStream=null;
+let cameraRequest=0;
+let chart=null;
+let page=1;
+const PAGE_SIZE=6;
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+function makeOption(value,label){
+ const option=document.createElement("option");
+ option.value=value;
+ option.textContent=label;
+ return option;
+}
+
+function buildChecklist(){
+ const container=$("ppeChecklist");
+ container.replaceChildren();
+
+ ppeTypes.forEach(type=>{
+  const row=document.createElement("div");
+  row.className="ppe-item";
+
+  const icon=document.createElement("div");
+  icon.className="ppe-icon";
+  const iconInner=document.createElement("i");
+  iconInner.className="bi "+type.icon;
+  icon.append(iconInner);
+
+  const info=document.createElement("div");
+  info.className="ppe-info";
+  const name=document.createElement("div");
+  name.className="ppe-name";
+  name.textContent=type.name;
+  const desc=document.createElement("div");
+  desc.className="ppe-desc";
+  desc.textContent=type.description;
+  info.append(name,desc);
+
+  const controls=document.createElement("div");
+  controls.style.minWidth="132px";
+
+  const required=document.createElement("select");
+  required.className="form-select ppe-select mb-2";
+  required.id="required-"+type.id;
+  required.setAttribute("aria-label",type.name+" requirement");
+  required.append(
+   makeOption("required","Required"),
+   makeOption("not-required","Not Required")
+  );
+
+  const observation=document.createElement("select");
+  observation.className="form-select ppe-select";
+  observation.id="observed-"+type.id;
+  observation.setAttribute("aria-label",type.name+" observation");
+  observation.append(
+   makeOption("unknown","Not Assessed"),
+   makeOption("present","Present"),
+   makeOption("missing","Missing")
+  );
+
+  required.addEventListener("change",()=>{
+   observation.disabled=required.value==="not-required";
+   calculateAssessment();
+  });
+  observation.addEventListener("change",calculateAssessment);
+
+  controls.append(required,observation);
+  row.append(icon,info,controls);
+  container.append(row);
+ });
+}
+
+function getChecklist(){
+ return ppeTypes.map(type=>({
+  id:type.id,
+  name:type.name,
+  required:$("required-"+type.id).value==="required",
+  observed:$("observed-"+type.id).value
+ }));
+}
+
+function calculateAssessment(){
+ const checklist=getChecklist();
+ const required=checklist.filter(item=>item.required);
+ const present=required.filter(item=>item.observed==="present");
+ const missing=required.filter(item=>item.observed==="missing");
+ const unknown=required.filter(item=>item.observed==="unknown");
+
+ const score=required.length?
+  Math.round(present.length/required.length*100):null;
+
+ const complete=required.length>0&&unknown.length===0;
+ const compliant=complete&&missing.length===0;
+
+ $("requiredCount").textContent=required.length;
+ $("presentCount").textContent=present.length;
+ $("missingCount").textContent=missing.length;
+ $("unknownCount").textContent=unknown.length;
+
+ $("currentScore").textContent=score===null?"—":score+"%";
+ $("complianceFill").style.width=(score||0)+"%";
+
+ let status="Pending";
+ if(required.length===0)status="No Required Items";
+ else if(missing.length)status="Missing PPE";
+ else if(complete)status="Checklist Complete";
+
+ $("assessmentStatus").textContent=status;
+ $("scoreDescription").textContent=
+  required.length?
+  present.length+" of "+required.length+
+  " required items marked present":
+  "Select at least one required PPE item.";
+
+ return {checklist,required:required.length,
+  present:present.length,missing:missing.length,
+  unknown:unknown.length,score,complete,compliant};
+}
+
+$("resetChecklist").addEventListener("click",()=>{
+ ppeTypes.forEach(type=>{
+  $("required-"+type.id).value="required";
+  $("observed-"+type.id).value="unknown";
+  $("observed-"+type.id).disabled=false;
+ });
+ calculateAssessment();
+ notify("Checklist reset.");
+});
+
+/* IMAGE UPLOAD */
+
+function clearImage(){
+ if(currentImageUrl){
+  URL.revokeObjectURL(currentImageUrl);
+  currentImageUrl=null;
+ }
+ currentImageName="";
+ $("imagePreview").removeAttribute("src");
+ $("previewSection").classList.add("hidden");
+ $("uploadZone").classList.remove("hidden");
+ $("imageInput").value="";
+}
+
+function setImage(file){
+ if(!file)return;
+
+ const allowed=["image/jpeg","image/png","image/webp"];
+ if(!allowed.includes(file.type)){
+  notify("Choose a JPG, PNG or WebP image.");
+  return;
+ }
+ if(file.size>10*1024*1024){
+  notify("Image must be 10 MB or smaller.");
+  return;
+ }
+
+ stopCamera();
+
+ if(currentImageUrl)URL.revokeObjectURL(currentImageUrl);
+ currentImageUrl=URL.createObjectURL(file);
+ currentImageName=file.name;
+
+ $("imagePreview").src=currentImageUrl;
+ $("imagePreview").classList.remove("hidden");
+ $("cameraVideo").classList.add("hidden");
+ $("previewLabel").textContent="IMAGE EVIDENCE";
+ $("uploadZone").classList.add("hidden");
+ $("previewSection").classList.remove("hidden");
+ notify("Image loaded for manual inspection.");
+}
+
+$("browseButton").addEventListener("click",event=>{
+ event.stopPropagation();
+ $("imageInput").click();
+});
+$("uploadZone").addEventListener("click",()=>$("imageInput").click());
+$("uploadZone").addEventListener("keydown",event=>{
+ if(event.key==="Enter"||event.key===" "){
+  event.preventDefault();
+  $("imageInput").click();
+ }
+});
+$("imageInput").addEventListener("change",event=>{
+ setImage(event.target.files[0]);
+});
+$("replaceImage").addEventListener("click",()=>$("imageInput").click());
+$("removeImage").addEventListener("click",clearImage);
+
+$("uploadZone").addEventListener("dragover",event=>{
+ event.preventDefault();
+ $("uploadZone").classList.add("dragging");
+});
+$("uploadZone").addEventListener("dragleave",()=>{
+ $("uploadZone").classList.remove("dragging");
+});
+$("uploadZone").addEventListener("drop",event=>{
+ event.preventDefault();
+ $("uploadZone").classList.remove("dragging");
+ setImage(event.dataTransfer.files[0]);
+});
+
+/* CAMERA */
+
+function updateCameraButtons(active){
+ $("startCamera").disabled=active;
+ $("captureCamera").disabled=!active;
+ $("stopCamera").disabled=!active;
+}
+
+function stopCamera(){
+ cameraRequest++;
+ if(cameraStream){
+  cameraStream.getTracks().forEach(track=>track.stop());
+  cameraStream=null;
+ }
+ $("cameraVideo").pause();
+ $("cameraVideo").srcObject=null;
+ $("cameraVideo").classList.add("hidden");
+ updateCameraButtons(false);
+}
+
+$("startCamera").addEventListener("click",async()=>{
+ if(!navigator.mediaDevices?.getUserMedia){
+  notify("Camera access requires HTTPS or localhost.");
+  return;
+ }
+
+ stopCamera();
+ const request=++cameraRequest;
+ $("startCamera").disabled=true;
+
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({
+   video:true,audio:false
+  });
+  if(request!==cameraRequest){
+   stream.getTracks().forEach(track=>track.stop());
+   return;
+  }
+
+  cameraStream=stream;
+  const video=$("cameraVideo");
+  video.srcObject=stream;
+  await video.play();
+
+  if(request!==cameraRequest){
+   stream.getTracks().forEach(track=>track.stop());
+   return;
+  }
+
+  $("imagePreview").classList.add("hidden");
+  $("uploadZone").classList.add("hidden");
+  $("previewSection").classList.remove("hidden");
+  video.classList.remove("hidden");
+  $("previewLabel").textContent="LIVE CAMERA";
+  updateCameraButtons(true);
+
+  stream.getVideoTracks()[0].addEventListener("ended",()=>{
+   if(cameraStream===stream)stopCamera();
+  });
+
+  notify("Camera started. Capture a frame for inspection.");
+ }catch(error){
+  if(request!==cameraRequest)return;
+  stopCamera();
+  notify("Unable to access camera: "+error.message);
+ }
+});
+
+$("captureCamera").addEventListener("click",()=>{
+ const video=$("cameraVideo");
+ if(!cameraStream||video.readyState<2)return;
+
+ const canvas=document.createElement("canvas");
+ canvas.width=video.videoWidth;
+ canvas.height=video.videoHeight;
+ canvas.getContext("2d").drawImage(video,0,0);
+
+ canvas.toBlob(blob=>{
+  if(!blob)return;
+  const file=new File([blob],"ppe-camera-capture.jpg",{
+   type:"image/jpeg"
+  });
+  setImage(file);
+ },"image/jpeg",.85);
+});
+
+$("stopCamera").addEventListener("click",()=>{
+ stopCamera();
+ if(!currentImageUrl)clearImage();
+ notify("Camera stopped.");
+});
+
+/* INSPECTION RECORDS */
+
+function saveInspection(){
+ const result=calculateAssessment();
+
+ if(!result.required){
+  notify("Select at least one required PPE item.");
+  return;
+ }
+ if(!result.complete){
+  notify("Assess every required PPE item before saving.");
+  return;
+ }
+
+ const worker=$("workerId").value.trim();
+ const inspector=$("inspectorName").value.trim();
+
+ if(!worker||!inspector){
+  notify("Enter the worker reference and inspector name.");
+  return;
+ }
+
+ const record={
+  id:"PPE-"+Date.now(),
+  recordedAt:new Date().toISOString(),
+  inspectionDate:$("inspectionDate").value,
+  worker,
+  inspector,
+  zone:$("inspectionZone").value,
+  notes:$("inspectionNotes").value.trim(),
+  evidenceName:currentImageName||"No image supplied",
+  evidenceIncludedInExport:false,
+  ...result,
+  status:result.compliant?"compliant":"noncompliant",
+  assessmentMethod:"manual-inspector-observation"
+ };
+
+ inspections.unshift(record);
+ page=1;
+ renderAll();
+ notify("PPE assessment saved in this browser session.");
+}
+
+$("saveInspection").addEventListener("click",saveInspection);
+
+function renderKpis(){
+ const compliant=inspections.filter(x=>x.compliant).length;
+ $("inspectionKpi").textContent=inspections.length;
+ $("compliantKpi").textContent=compliant;
+ $("noncompliantKpi").textContent=inspections.length-compliant;
+ $("rateKpi").textContent=inspections.length?
+  Math.round(compliant/inspections.length*100)+"%":"—";
+}
+
+function initializeChart(){
+ if(typeof Chart==="undefined")return;
+ chart=new Chart($("complianceChart"),{
+  type:"doughnut",
+  data:{
+   labels:["Compliant","Non-Compliant"],
+   datasets:[{
+    data:[0,0],
+    backgroundColor:["#18b58c","#ed6175"],
+    borderWidth:0,
+    hoverOffset:7
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   cutout:"73%",
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{usePointStyle:true,padding:20}
+    }
+   }
+  }
+ });
+}
+
+function renderChart(){
+ if(!chart)return;
+ const compliant=inspections.filter(x=>x.compliant).length;
+ chart.data.datasets[0].data=[
+  compliant,inspections.length-compliant
+ ];
+ chart.update();
+}
+
+function filteredInspections(){
+ const search=$("historySearch").value.toLowerCase().trim();
+ const status=$("statusFilter").value;
+
+ return inspections.filter(record=>{
+  const matchesSearch=[
+   record.worker,record.inspector,record.zone,record.id
+  ].some(value=>value.toLowerCase().includes(search));
+
+  return matchesSearch&&
+   (status==="all"||record.status===status);
+ });
+}
+
+function renderHistory(){
+ const rows=filteredInspections();
+ const pages=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
+ page=Math.min(page,pages);
+
+ const visible=rows.slice(
+  (page-1)*PAGE_SIZE,page*PAGE_SIZE
+ );
+ const tbody=$("historyTable");
+ tbody.replaceChildren();
+
+ if(!visible.length){
+  const tr=document.createElement("tr");
+  const td=document.createElement("td");
+  td.colSpan=7;
+  td.className="empty-state";
+  td.textContent="No inspection records match your filters.";
+  tr.append(td);
+  tbody.append(tr);
+ }
+
+ visible.forEach(record=>{
+  const tr=document.createElement("tr");
+
+  const values=[
+   record.id,
+   record.worker,
+   record.zone,
+   record.inspectionDate||"—",
+   record.score+"%"
+  ];
+
+  values.forEach(value=>{
+   const td=document.createElement("td");
+   td.textContent=value;
+   tr.append(td);
+  });
+
+  const statusTd=document.createElement("td");
+  const badge=document.createElement("span");
+  badge.className="status-badge "+
+   (record.compliant?"success":"danger");
+  badge.textContent=record.compliant?
+   "Compliant":"Non-Compliant";
+  statusTd.append(badge);
+  tr.append(statusTd);
+
+  const actionTd=document.createElement("td");
+  const button=document.createElement("button");
+  button.className="btn-outline-custom";
+  button.textContent="View";
+  button.addEventListener("click",()=>showInspection(record));
+  actionTd.append(button);
+  tr.append(actionTd);
+
+  tbody.append(tr);
+ });
+
+ $("historyCount").textContent=
+  rows.length+" results · Page "+page+" of "+pages;
+ $("prevPage").disabled=page===1;
+ $("nextPage").disabled=page===pages;
+}
+
+function showInspection(record){
+ const body=$("inspectionModalBody");
+ body.replaceChildren();
+
+ const details=[
+  ["Inspection ID",record.id],
+  ["Worker / Reference",record.worker],
+  ["Inspector",record.inspector],
+  ["Zone",record.zone],
+  ["Inspection Date",record.inspectionDate||"—"],
+  ["Score",record.score+"%"],
+  ["Assessment",record.status],
+  ["Image Reference",record.evidenceName],
+  ["Notes",record.notes||"—"]
+ ];
+
+ details.forEach(([label,value])=>{
+  const row=document.createElement("div");
+  row.className="info-row";
+  const name=document.createElement("span");
+  name.textContent=label;
+  const result=document.createElement("strong");
+  result.textContent=value;
+  row.append(name,result);
+  body.append(row);
+ });
+
+ const heading=document.createElement("h6");
+ heading.className="fw-bold mt-4";
+ heading.textContent="PPE Checklist";
+ body.append(heading);
+
+ record.checklist.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="info-row";
+  const label=document.createElement("span");
+  label.textContent=item.name;
+  const value=document.createElement("strong");
+  value.textContent=item.required?
+   item.observed:"Not Required";
+  row.append(label,value);
+  body.append(row);
+ });
+
+ bootstrap.Modal.getOrCreateInstance(
+  $("inspectionModal")
+ ).show();
+}
+
+function renderAll(){
+ renderKpis();
+ renderChart();
+ renderHistory();
+}
+
+$("historySearch").addEventListener("input",()=>{
+ page=1;renderHistory();
+});
+$("statusFilter").addEventListener("change",()=>{
+ page=1;renderHistory();
+});
+$("prevPage").addEventListener("click",()=>{
+ if(page>1){page--;renderHistory();}
+});
+$("nextPage").addEventListener("click",()=>{
+ if(page*PAGE_SIZE<filteredInspections().length){
+  page++;renderHistory();
+ }
+});
+$("clearHistory").addEventListener("click",()=>{
+ if(!inspections.length)return;
+ if(!confirm("Clear all session PPE inspection records?"))return;
+ inspections=[];
+ page=1;
+ renderAll();
+ notify("Inspection history cleared.");
+});
+
+/* EXPORT */
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+const escapeCsv=value=>
+ '"'+String(value??"").replace(/"/g,'""')+'"';
+
+$("exportCsv").addEventListener("click",()=>{
+ const fields=[
+  "id","recordedAt","inspectionDate","worker","inspector",
+  "zone","required","present","missing","score",
+  "status","evidenceName","notes"
+ ];
+ const csv=[
+  fields.join(","),
+  ...inspections.map(record=>
+   fields.map(key=>escapeCsv(record[key])).join(",")
+  )
+ ].join("\r\n");
+
+ downloadFile("industra-ppe-inspections.csv",
+  csv,"text/csv;charset=utf-8");
+ notify("PPE CSV report exported.");
+});
+
+$("exportJson").addEventListener("click",()=>{
+ const report={
+  application:"INDUSTRA AI",
+  module:"PPE Detection",
+  generatedAt:new Date().toISOString(),
+  detectionMethod:"manual-inspector-observation",
+  automatedPpeRecognition:false,
+  safetyCertification:false,
+  imagesIncluded:false,
+  inspections
+ };
+ downloadFile("industra-ppe-report.json",
+  JSON.stringify(report,null,2),"application/json");
+ notify("PPE JSON report exported.");
+});
+
+window.addEventListener("pagehide",()=>{
+ stopCamera();
+ if(currentImageUrl)URL.revokeObjectURL(currentImageUrl);
+});
+
+/* INITIALIZE */
+
+$("inspectionDate").value=
+ new Date().toLocaleDateString("en-CA");
+
+buildChecklist();
+calculateAssessment();
+initializeChart();
+renderAll();
+
+</script>
+</body>
+</html>

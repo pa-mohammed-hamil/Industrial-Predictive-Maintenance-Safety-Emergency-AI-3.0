@@ -1,0 +1,1993 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Human Approvals | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple2:#8b7af9;
+ --green:#16b88a;
+ --orange:#f2a53a;
+ --red:#eb6174;
+ --blue:#438df5;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8b93aa;
+ --border:#e9ebf3;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif
+}
+h1,h2,h3,h4,h5,h6{
+ font-family:Manrope,sans-serif;letter-spacing:-.6px
+}
+a{text-decoration:none}
+button:focus-visible,a:focus-visible,
+input:focus-visible,select:focus-visible,
+textarea:focus-visible{
+ outline:3px solid #a99cff!important;outline-offset:2px
+}
+
+/* Sidebar */
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:#aab1ce;z-index:1050;
+ display:flex;flex-direction:column;
+ transition:transform .25s
+}
+.brand{
+ height:83px;padding:21px 23px;
+ display:flex;align-items:center;gap:12px;
+ border-bottom:1px solid #ffffff12
+}
+.brand-mark{
+ width:43px;height:43px;border-radius:14px;
+ background:linear-gradient(135deg,#9c83ff,#5a48e4);
+ color:white;display:grid;place-items:center;font-size:22px
+}
+.brand strong{color:white;font-size:17px}
+.brand small{
+ display:block;font-size:9px;letter-spacing:2px;
+ color:#7883b0
+}
+.sidebar-body{overflow-y:auto;flex:1;padding:16px 12px}
+.sidebar-label{
+ color:#687397;text-transform:uppercase;
+ font-size:9px;font-weight:800;letter-spacing:2px;
+ padding:20px 15px 9px
+}
+.side-link{
+ display:flex;align-items:center;gap:13px;
+ padding:11px 14px;margin:3px 0;color:#9da8ca;
+ border-radius:11px;font-size:12px;
+ font-weight:600;transition:.2s
+}
+.side-link i{font-size:17px;width:21px;text-align:center}
+.side-link:hover{background:#ffffff10;color:white}
+.side-link.active{
+ background:linear-gradient(90deg,#6b59e8,#5346ba);
+ color:white
+}
+.sidebar-foot{
+ padding:18px;border-top:1px solid #ffffff12
+}
+.sidebar-status{
+ border-radius:13px;padding:13px;
+ background:#ffffff09;border:1px solid #ffffff12
+}
+.status-dot{
+ display:inline-block;width:8px;height:8px;
+ border-radius:50%;background:#2cdaa2;margin-right:7px
+}
+
+/* Main */
+.app{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ background:white;min-height:76px;
+ display:flex;align-items:center;
+ justify-content:space-between;gap:15px;
+ padding:15px 30px;border-bottom:1px solid var(--border);
+ position:sticky;top:0;z-index:100
+}
+.topbar-title{font-size:15px;font-weight:800}
+.topbar-sub{color:var(--muted);font-size:11px;margin-top:3px}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ height:39px;width:39px;display:grid;place-items:center;
+ border-radius:12px;border:1px solid var(--border);
+ background:#fafaff;color:#555e7b;font-size:16px
+}
+.top-icon:hover{background:#eeecff;color:var(--purple)}
+.avatar{
+ height:39px;width:39px;border-radius:13px;
+ display:grid;place-items:center;color:white;
+ font-weight:800;background:linear-gradient(135deg,#7e6bf4,#a18dff)
+}
+.content{padding:29px;max-width:1850px;margin:auto}
+.eyebrow{
+ text-transform:uppercase;letter-spacing:2px;
+ font-size:10px;font-weight:800;color:var(--purple)
+}
+.page-title{font-size:29px;font-weight:800;margin:9px 0 6px}
+.page-description{color:var(--muted);line-height:1.7}
+
+/* Buttons */
+.btn-premium,.btn-soft,.btn-success-soft,.btn-danger-soft{
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;
+ border-radius:11px;padding:11px 16px;
+ font-size:12px;font-weight:700;transition:.2s;
+ cursor:pointer
+}
+.btn-premium{
+ background:var(--purple);color:white;
+ border:1px solid var(--purple)
+}
+.btn-premium:hover{background:#5542d5;color:white}
+.btn-soft{
+ background:white;color:#5e6680;
+ border:1px solid var(--border)
+}
+.btn-soft:hover{background:#f1efff;color:var(--purple)}
+.btn-success-soft{
+ background:#e5f8f0;color:#0e9970;
+ border:1px solid #c9f1df
+}
+.btn-success-soft:hover{background:#cff3e2}
+.btn-danger-soft{
+ background:#ffebee;color:#d9435b;
+ border:1px solid #ffd9e0
+}
+.btn-danger-soft:hover{background:#ffdfe5}
+button:disabled{opacity:.48;cursor:not-allowed}
+
+/* Cards */
+.surface{
+ background:white;border:1px solid var(--border);
+ border-radius:18px;box-shadow:0 8px 30px #24305b08
+}
+.hero{
+ position:relative;overflow:hidden;
+ background:linear-gradient(115deg,#6651e9,#8e74f4 65%,#a894ff);
+ color:white;border-radius:22px;padding:31px 33px;
+ box-shadow:0 15px 35px #7564ea28
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ right:-60px;top:-145px;border:1px solid #ffffff45;
+ border-radius:50%;
+ box-shadow:0 0 0 45px #ffffff0b,0 0 0 95px #ffffff09;
+ pointer-events:none
+}
+.hero h2{font-size:25px;font-weight:800}
+.hero p{max-width:720px;color:#eeeaff;line-height:1.8}
+.hero-chip{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff23;border:1px solid #ffffff30;
+ padding:8px 12px;border-radius:9px;
+ font-size:10px;font-weight:700
+}
+.metric{padding:21px;height:100%}
+.metric-top{
+ display:flex;justify-content:space-between;align-items:center
+}
+.metric-label{color:#8a92a8;font-size:11px;font-weight:700}
+.metric-icon{
+ width:44px;height:44px;border-radius:14px;
+ display:grid;place-items:center;font-size:20px
+}
+.metric-value{
+ font:800 27px Manrope,sans-serif;margin:14px 0 6px
+}
+.metric-foot{font-size:10px;color:#9aa1b3}
+.section-title{font-size:17px;font-weight:800}
+.section-sub{font-size:11px;color:var(--muted)}
+
+/* Badges */
+.badge-soft{
+ display:inline-flex;align-items:center;gap:6px;
+ padding:6px 10px;border-radius:8px;
+ font-size:10px;font-weight:800
+}
+.b-success{background:#e5f8f0;color:#13a776}
+.b-warning{background:#fff4e2;color:#d58c20}
+.b-danger{background:#ffebee;color:#df4d64}
+.b-info{background:#eaf2ff;color:#438df5}
+.b-neutral{background:#f0f1f6;color:#788098}
+.b-purple{background:#eeebff;color:#6855eb}
+
+/* Forms */
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;padding:11px 12px;font-size:12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#a69aff;box-shadow:0 0 0 3px #6855eb12
+}
+.form-label{
+ font-size:11px;font-weight:800;color:#5b6480
+}
+.form-check-input:checked{
+ background-color:var(--purple);
+ border-color:var(--purple)
+}
+
+/* Queue */
+.queue-item{
+ border:1px solid var(--border);
+ border-radius:14px;padding:17px;
+ margin-bottom:12px;background:white;
+ transition:.2s
+}
+.queue-item:hover{border-color:#d1c9ff}
+.queue-item.selected{
+ border-color:#a89cff;background:#fbfaff;
+ box-shadow:0 0 0 2px #6855eb0a
+}
+.queue-icon{
+ width:44px;height:44px;flex-shrink:0;
+ border-radius:13px;display:grid;place-items:center;
+ font-size:20px;background:#eeebff;color:var(--purple)
+}
+.queue-title{font-size:12px;font-weight:800}
+.queue-meta{
+ font-size:10px;color:var(--muted);
+ line-height:1.7;margin-top:5px
+}
+.queue-description{
+ font-size:11px;color:#727b94;
+ line-height:1.7;margin-top:10px
+}
+.small-action{
+ border:1px solid var(--border);
+ background:white;border-radius:8px;
+ padding:7px 10px;color:#66718d;
+ font-size:10px;font-weight:700
+}
+.small-action:hover{background:#eeebff;color:var(--purple)}
+
+/* Review */
+.detail-row{
+ display:flex;justify-content:space-between;
+ gap:15px;padding:13px 0;
+ border-bottom:1px solid var(--border)
+}
+.detail-row:last-child{border-bottom:0}
+.detail-label{font-size:11px;color:var(--muted)}
+.detail-value{
+ font-size:11px;font-weight:800;
+ text-align:right;overflow-wrap:anywhere
+}
+.policy-row{
+ display:flex;gap:12px;padding:14px;
+ border:1px solid var(--border);
+ border-radius:12px;margin-bottom:10px
+}
+.policy-icon{
+ width:38px;height:38px;flex-shrink:0;
+ border-radius:11px;display:grid;place-items:center;
+ background:#eeebff;color:var(--purple);font-size:18px
+}
+.policy-row strong{font-size:11px}
+.policy-row p{
+ font-size:10px;color:var(--muted);
+ line-height:1.7;margin:5px 0 0
+}
+.audit-item{
+ display:flex;gap:12px;padding:15px 0;
+ border-bottom:1px solid var(--border)
+}
+.audit-item:last-child{border-bottom:0}
+.audit-icon{
+ width:36px;height:36px;flex-shrink:0;
+ border-radius:11px;display:grid;place-items:center;
+ background:#eeebff;color:var(--purple);font-size:17px
+}
+.audit-item strong{font-size:11px}
+.audit-item p{
+ font-size:10px;color:var(--muted);
+ margin:5px 0;line-height:1.6
+}
+.chart-wrap{height:275px;position:relative}
+
+/* Tables */
+.table thead th{
+ background:#fafbfe;color:#9099ae;
+ font-size:10px;text-transform:uppercase;
+ letter-spacing:.7px;padding:15px 18px;
+ white-space:nowrap;
+ border-bottom:1px solid var(--border)
+}
+.table tbody td{
+ padding:15px 18px;font-size:11px;
+ color:#66708a;vertical-align:middle;
+ border-color:#f0f1f7
+}
+.table-title{font-weight:800;color:#252c48}
+.table-sub{
+ font-size:9px;color:#9ca4b8;margin-top:5px
+}
+.report-code{
+ background:#141a31;color:#dce6ff;
+ border-radius:13px;padding:18px;
+ font:11px/1.8 monospace;
+ white-space:pre-wrap;overflow-wrap:anywhere;
+ max-height:330px;overflow:auto
+}
+.safety-banner{
+ border:1px solid #ded8ff;background:#f3f0ff;
+ color:#6052a7;border-radius:14px;
+ padding:17px;line-height:1.7;font-size:11px
+}
+.footer{
+ padding:23px 30px;border-top:1px solid var(--border);
+ color:#9aa2b5;font-size:10px;
+ display:flex;justify-content:space-between;gap:12px
+}
+.mobile-shade{display:none}
+@media(max-width:1199px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .app{margin-left:0}
+ .mobile-shade.show{
+  display:block;position:fixed;inset:0;
+  background:#0008;z-index:1040
+ }
+}
+@media(max-width:575px){
+ .content{padding:17px}
+ .topbar{padding:13px 17px}
+ .page-title{font-size:23px}
+ .hero{padding:23px}
+ .hero h2{font-size:20px}
+ .metric-value{font-size:23px}
+ .footer{flex-direction:column;padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-shade" id="shade"></div>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div class="brand-mark">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a997ff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <nav class="sidebar-body" aria-label="Main navigation">
+  <div class="sidebar-label">Main Menu</div>
+
+  <a class="side-link" href="../index.html">
+   <i class="bi bi-house-door"></i>Home
+  </a>
+  <a class="side-link" href="../dashboard.html">
+   <i class="bi bi-grid-1x2"></i>Dashboard
+  </a>
+  <a class="side-link" href="../command-center.html">
+   <i class="bi bi-broadcast"></i>Command Center
+  </a>
+  <a class="side-link" href="../analytics.html">
+   <i class="bi bi-bar-chart-line"></i>Analytics Studio
+  </a>
+  <a class="side-link" href="../reports.html">
+   <i class="bi bi-file-earmark-bar-graph"></i>Reports
+  </a>
+  <a class="side-link" href="../notifications.html">
+   <i class="bi bi-bell"></i>Notifications
+  </a>
+
+  <div class="sidebar-label">Operations</div>
+
+  <a class="side-link" href="../assets/assets.html">
+   <i class="bi bi-cpu"></i>Asset Intelligence
+  </a>
+  <a class="side-link" href="../telemetry/live-telemetry.html">
+   <i class="bi bi-activity"></i>Live Telemetry
+  </a>
+  <a class="side-link" href="../predictive-maintenance/maintenance-dashboard.html">
+   <i class="bi bi-tools"></i>Predictive Maintenance
+  </a>
+  <a class="side-link" href="../maintenance/work-orders.html">
+   <i class="bi bi-clipboard-check"></i>Work Orders
+  </a>
+
+  <div class="sidebar-label">Risk & Intelligence</div>
+
+  <a class="side-link" href="../safety/safety-dashboard.html">
+   <i class="bi bi-shield-check"></i>Safety Intelligence
+  </a>
+  <a class="side-link" href="../emergency/emergency-dashboard.html">
+   <i class="bi bi-exclamation-triangle"></i>Emergency Response
+  </a>
+  <a class="side-link" href="../cost-intelligence/cost-dashboard.html">
+   <i class="bi bi-currency-rupee"></i>Cost Intelligence
+  </a>
+  <a class="side-link" href="../copilot/ai-copilot.html">
+   <i class="bi bi-stars"></i>AI Copilot
+  </a>
+
+  <div class="sidebar-label">Agentic AI</div>
+
+  <a class="side-link" href="agent-dashboard.html">
+   <i class="bi bi-diagram-3"></i>Agent Dashboard
+  </a>
+  <a class="side-link" href="agent-workflows.html">
+   <i class="bi bi-bezier2"></i>Agent Workflows
+  </a>
+  <a class="side-link" href="agent-executions.html">
+   <i class="bi bi-play-circle"></i>Agent Executions
+  </a>
+  <a class="side-link" href="agent-tool-calls.html">
+   <i class="bi bi-wrench-adjustable"></i>Agent Tool Calls
+  </a>
+  <a class="side-link" href="agent-evaluation.html">
+   <i class="bi bi-clipboard-data"></i>Agent Evaluation
+  </a>
+  <a class="side-link" href="asset-health-agent.html">
+   <i class="bi bi-heart-pulse"></i>Asset Health Agent
+  </a>
+  <a class="side-link" href="cost-agent.html">
+   <i class="bi bi-currency-rupee"></i>Cost Agent
+  </a>
+  <a class="side-link" href="emergency-response-agent.html">
+   <i class="bi bi-exclamation-octagon"></i>Emergency Response Agent
+  </a>
+  <a class="side-link" href="failure-analysis-agent.html">
+   <i class="bi bi-search-heart"></i>Failure Analysis Agent
+  </a>
+  <a class="side-link active" href="human-approvals.html" aria-current="page">
+   <i class="bi bi-person-check"></i>Human Approvals
+  </a>
+
+  <div class="sidebar-label">Administration</div>
+
+  <a class="side-link" href="../observability/observability-dashboard.html">
+   <i class="bi bi-speedometer2"></i>Observability
+  </a>
+  <a class="side-link" href="../security/security-dashboard.html">
+   <i class="bi bi-lock"></i>Security
+  </a>
+  <a class="side-link" href="../settings/settings.html">
+   <i class="bi bi-gear"></i>Settings
+  </a>
+ </nav>
+
+ <div class="sidebar-foot">
+  <div class="sidebar-status">
+   <div class="fw-bold text-white small">
+    <span class="status-dot"></span>Human Review Console
+   </div>
+   <div class="mt-2" style="font-size:10px">
+    Governance demonstration · No live actions
+   </div>
+  </div>
+ </div>
+</aside>
+
+<div class="app">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon d-xl-none" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="topbar-title">Human Approvals & AI Governance</div>
+   <div class="topbar-sub">
+    Workspace / AI Agents / Human Approvals
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="d-none d-md-inline text-secondary small">
+   Demo review environment
+  </span>
+  <button class="top-icon" id="resetButton" aria-label="Reset simulation">
+   <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <a href="../notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <a href="../settings/settings.html" class="avatar" aria-label="Settings">
+   AI
+  </a>
+ </div>
+</header>
+
+<main class="content">
+
+ <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div>
+   <div class="eyebrow">Human-in-the-Loop AI Governance</div>
+   <h1 class="page-title">
+    Human Approvals
+    <span style="color:var(--purple)">✦</span>
+   </h1>
+   <div class="page-description">
+    Review AI agent recommendations, inspect evidence,
+    manage approvals and maintain an auditable decision history.
+   </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-soft" id="exportCsvButton">
+    <i class="bi bi-filetype-csv"></i> Export CSV
+   </button>
+   <button class="btn-soft" id="exportJsonButton">
+    <i class="bi bi-download"></i> Export JSON
+   </button>
+   <button class="btn-premium" id="newRequestButton">
+    <i class="bi bi-plus-lg"></i> New Demo Request
+   </button>
+  </div>
+ </div>
+
+ <section class="hero mb-4">
+  <div class="position-relative" style="z-index:1">
+   <div class="text-uppercase fw-bold mb-3"
+    style="font-size:10px;letter-spacing:2px">
+    <i class="bi bi-shield-check me-1"></i>
+    Responsible Agentic AI Operations
+   </div>
+
+   <h2>
+    AI recommends.<br>
+    Humans review and decide.
+   </h2>
+
+   <p class="mt-3 mb-4">
+    Centralize simulated agent approval requests for
+    maintenance planning, cost decisions, safety investigations,
+    emergency documentation and asset inspection.
+    Every decision is traceable and remains subject to human oversight.
+   </p>
+
+   <div class="d-flex flex-wrap gap-2">
+    <span class="hero-chip">
+     <i class="bi bi-person-check"></i> Human Review
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-shield-lock"></i> Governance Gates
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-journal-check"></i> Audit Trail
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-diagram-3"></i> Multi-Agent Requests
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-check2-square"></i> Decision Tracking
+    </span>
+   </div>
+  </div>
+ </section>
+
+ <section class="safety-banner mb-4">
+  <div class="d-flex align-items-start gap-3">
+   <i class="bi bi-info-circle-fill fs-4"></i>
+   <div>
+    <strong>Demonstration approval environment</strong>
+    <div class="mt-1">
+     Decisions on this page are stored only in browser memory.
+     They do not authorize real equipment shutdowns, maintenance,
+     emergency actions, purchasing or financial transactions.
+     Production use requires verified identities, role-based permissions,
+     independent safety controls, durable audit logs and server-side approval enforcement.
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Pending Approvals</span>
+     <span class="metric-icon"
+      style="background:#fff4e2;color:var(--orange)">
+      <i class="bi bi-hourglass-split"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="pendingKpi">—</div>
+    <div class="metric-foot">Awaiting demo reviewer decisions</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Approved Requests</span>
+     <span class="metric-icon"
+      style="background:#e5f8f0;color:var(--green)">
+      <i class="bi bi-check-circle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="approvedKpi">—</div>
+    <div class="metric-foot">Local demonstration approvals</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">High-Risk Pending</span>
+     <span class="metric-icon"
+      style="background:#ffebee;color:var(--red)">
+      <i class="bi bi-exclamation-triangle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="highRiskKpi">—</div>
+    <div class="metric-foot">Critical or high-risk requests</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Decisions Recorded</span>
+     <span class="metric-icon"
+      style="background:#eeebff;color:var(--purple)">
+      <i class="bi bi-journal-check"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="decisionsKpi">—</div>
+    <div class="metric-foot">Demo decisions in this session</div>
+   </div>
+  </div>
+
+ </section>
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+     <div>
+      <h2 class="section-title mb-1">Approval Request Queue</h2>
+      <p class="section-sub mb-0">
+       Select a request to inspect and review
+      </p>
+     </div>
+     <span class="badge-soft b-purple">HUMAN REVIEW</span>
+    </div>
+
+    <div class="row g-2 mb-3">
+     <div class="col-12">
+      <input type="search" id="requestSearch"
+       class="form-control"
+       placeholder="Search request, agent, asset or ID..."
+       aria-label="Search approval requests">
+     </div>
+     <div class="col-6">
+      <select class="form-select" id="statusFilter"
+       aria-label="Filter by status">
+       <option value="all">All Statuses</option>
+       <option value="Pending">Pending</option>
+       <option value="Approved">Approved</option>
+       <option value="Rejected">Rejected</option>
+       <option value="Changes Requested">Changes Requested</option>
+      </select>
+     </div>
+     <div class="col-6">
+      <select class="form-select" id="riskFilter"
+       aria-label="Filter by risk">
+       <option value="all">All Risk Levels</option>
+       <option value="Critical">Critical</option>
+       <option value="High">High</option>
+       <option value="Medium">Medium</option>
+       <option value="Low">Low</option>
+      </select>
+     </div>
+    </div>
+
+    <div id="requestQueue"></div>
+
+   </div>
+  </div>
+
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+     <div>
+      <div class="eyebrow mb-2">Review Workspace</div>
+      <h2 class="section-title mb-1" id="detailTitle">—</h2>
+      <p class="section-sub mb-0" id="detailSubtitle">—</p>
+     </div>
+     <span class="badge-soft b-neutral" id="detailStatus">—</span>
+    </div>
+
+    <div class="row g-3 mb-4">
+     <div class="col-sm-6">
+      <div class="surface p-3 shadow-none">
+       <div class="section-sub">Risk Classification</div>
+       <div class="mt-2" id="detailRisk">—</div>
+      </div>
+     </div>
+     <div class="col-sm-6">
+      <div class="surface p-3 shadow-none">
+       <div class="section-sub">Requested By</div>
+       <div class="fw-bold mt-2" id="detailAgent">—</div>
+      </div>
+     </div>
+    </div>
+
+    <h3 class="section-title mb-2">Request Details</h3>
+    <div id="requestDetails"></div>
+
+    <h3 class="section-title mt-4 mb-2">Agent Recommendation</h3>
+    <div class="p-3 rounded-3"
+     style="background:#f8f7ff;border:1px solid #eae5ff">
+     <p class="mb-0" id="agentRecommendation"
+      style="font-size:11px;line-height:1.8;color:#5e6680"></p>
+    </div>
+
+    <h3 class="section-title mt-4 mb-2">Evidence & Review Notes</h3>
+    <div id="evidenceList"></div>
+
+    <div class="mt-4">
+     <label class="form-label" for="reviewNote">
+      Reviewer Note
+     </label>
+     <textarea id="reviewNote" class="form-control"
+      rows="3" maxlength="1000"
+      placeholder="Explain your review decision..."></textarea>
+     <div class="section-sub mt-2">
+      A reason is required for rejection or requesting changes.
+     </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mt-4">
+     <button class="btn-success-soft" id="approveButton">
+      <i class="bi bi-check-circle"></i> Approve Demo
+     </button>
+     <button class="btn-danger-soft" id="rejectButton">
+      <i class="bi bi-x-circle"></i> Reject
+     </button>
+     <button class="btn-soft" id="changesButton">
+      <i class="bi bi-arrow-counterclockwise"></i> Request Changes
+     </button>
+    </div>
+
+   </div>
+  </div>
+
+ </section>
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Approval Status Distribution</h2>
+    <p class="section-sub mb-3">
+     Simulated requests grouped by decision status
+    </p>
+    <div class="chart-wrap">
+     <canvas id="statusChart"
+      aria-label="Approval status distribution"></canvas>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Pending Requests by Risk</h2>
+    <p class="section-sub mb-3">
+     Risk classification across pending reviews
+    </p>
+    <div class="chart-wrap">
+     <canvas id="riskChart"
+      aria-label="Pending requests by risk level"></canvas>
+    </div>
+   </div>
+  </div>
+
+ </section>
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Governance Policy Checks</h2>
+    <p class="section-sub mb-3">
+     Illustrative controls for responsible agent execution
+    </p>
+    <div id="policyChecks"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Decision Audit Trail</h2>
+    <p class="section-sub mb-3">
+     Local history of simulated reviewer actions
+    </p>
+    <div id="auditTrail"></div>
+   </div>
+  </div>
+
+ </section>
+
+ <section class="surface mb-4">
+
+  <div class="p-4 pb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+   <div>
+    <h2 class="section-title mb-1">Approval Register</h2>
+    <p class="section-sub mb-0">
+     Complete list of demonstration approval requests
+    </p>
+   </div>
+
+   <div class="d-flex flex-wrap gap-2">
+    <button class="btn-soft" id="selectPendingButton">
+     <i class="bi bi-check2-square"></i> Select Pending
+    </button>
+    <button class="btn-soft" id="clearSelectionButton">
+     <i class="bi bi-x-lg"></i> Clear Selection
+    </button>
+    <button class="btn-danger-soft" id="bulkRejectButton">
+     <i class="bi bi-x-circle"></i> Bulk Reject
+    </button>
+   </div>
+  </div>
+
+  <div class="table-responsive">
+   <table class="table mb-0">
+    <thead>
+     <tr>
+      <th>
+       <input class="form-check-input" type="checkbox"
+        id="selectAll" aria-label="Select all pending requests">
+      </th>
+      <th>Request</th>
+      <th>Agent</th>
+      <th>Risk</th>
+      <th>Status</th>
+      <th>Asset</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="approvalTable"></tbody>
+   </table>
+  </div>
+
+ </section>
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">Structured Approval Record</h2>
+    <p class="section-sub mb-0">
+     Inspect the selected request and its local review metadata
+    </p>
+   </div>
+   <button class="btn-soft" id="copyJsonButton">
+    <i class="bi bi-copy"></i> Copy JSON
+   </button>
+  </div>
+  <pre class="report-code mb-0" id="outputJson"></pre>
+ </section>
+
+</main>
+
+<footer class="footer">
+ <span>© 2026 INDUSTRA AI · Human Approvals</span>
+ <span>Demo governance only · No real-world authorization</span>
+</footer>
+
+</div>
+
+<!-- New request modal -->
+<div class="modal fade" id="newRequestModal" tabindex="-1"
+ aria-labelledby="newRequestTitle" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-content border-0 rounded-4">
+   <div class="modal-header border-0 px-4 pt-4">
+    <div>
+     <h2 class="modal-title section-title" id="newRequestTitle">
+      Create Demo Approval Request
+     </h2>
+     <p class="section-sub mb-0 mt-1">
+      Adds a fictional request to the local review queue
+     </p>
+    </div>
+    <button type="button" class="btn-close"
+     data-bs-dismiss="modal" aria-label="Close"></button>
+   </div>
+
+   <form id="newRequestForm">
+    <div class="modal-body px-4">
+     <div class="row g-3">
+      <div class="col-md-6">
+       <label class="form-label" for="newTitle">Request Title</label>
+       <input id="newTitle" class="form-control"
+        required maxlength="100"
+        placeholder="Example: Inspect pump condition">
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="newAgent">Requesting Agent</label>
+       <select id="newAgent" class="form-select">
+        <option>Maintenance Agent</option>
+        <option>Asset Health Agent</option>
+        <option>Failure Analysis Agent</option>
+        <option>Cost Agent</option>
+        <option>Inspection Agent</option>
+        <option>Safety Agent</option>
+        <option>Emergency Response Agent</option>
+        <option>Supervisor Agent</option>
+       </select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="newRisk">Risk Level</label>
+       <select id="newRisk" class="form-select">
+        <option>Low</option>
+        <option selected>Medium</option>
+        <option>High</option>
+        <option>Critical</option>
+       </select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="newAsset">Asset ID</label>
+       <input id="newAsset" class="form-control"
+        maxlength="40" required placeholder="Example: PUMP-12">
+      </div>
+      <div class="col-12">
+       <label class="form-label" for="newDescription">
+        Recommendation / Reason
+       </label>
+       <textarea id="newDescription" class="form-control"
+        rows="3" required maxlength="600"
+        placeholder="Describe the simulated recommendation..."></textarea>
+      </div>
+     </div>
+    </div>
+    <div class="modal-footer border-0 px-4 pb-4">
+     <button type="button" class="btn-soft"
+      data-bs-dismiss="modal">Cancel</button>
+     <button type="submit" class="btn-premium">
+      <i class="bi bi-plus-circle"></i> Create Request
+     </button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>
+
+<!-- Decision confirmation modal -->
+<div class="modal fade" id="decisionModal" tabindex="-1"
+ aria-labelledby="decisionModalTitle" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content border-0 rounded-4">
+   <div class="modal-header border-0 px-4 pt-4">
+    <h2 class="modal-title section-title" id="decisionModalTitle">
+     Confirm Demo Decision
+    </h2>
+    <button type="button" class="btn-close"
+     data-bs-dismiss="modal" aria-label="Close"></button>
+   </div>
+   <div class="modal-body px-4">
+    <p id="decisionModalDescription"
+     class="text-secondary" style="line-height:1.8"></p>
+    <div class="safety-banner">
+     This changes only in-memory demonstration records.
+     No physical or external actions will occur.
+    </div>
+   </div>
+   <div class="modal-footer border-0 px-4 pb-4">
+    <button class="btn-soft" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn-premium" id="confirmDecisionButton">
+     Confirm Decision
+    </button>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3"
+ style="z-index:1200">
+ <div class="toast border-0 shadow" id="appToast"
+  role="status" aria-live="polite">
+  <div class="toast-body d-flex align-items-center gap-2">
+   <i class="bi bi-info-circle text-primary"></i>
+   <span id="toastMessage"></span>
+  </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ INDUSTRA AI — HUMAN APPROVALS DEMONSTRATION
+
+ - All requests are fictional.
+ - No authentication or authorization is performed.
+ - Decisions are stored in browser memory only.
+ - No real workflow or equipment is controlled.
+ - Audit records are not tamper-proof or persistent.
+
+ Production requirements:
+ - Verified reviewer identity
+ - RBAC / ABAC
+ - Server-side approval policy enforcement
+ - Separation of duties
+ - Durable audit records
+ - Idempotent state transitions
+ - Request version checks
+ - Escalation and expiration policies
+ - Independent industrial safety interlocks
+*/
+
+const $ = id => document.getElementById(id);
+
+const seedRequests = [
+ {
+  id:"APR-1042",
+  title:"Hydraulic Pump Maintenance Plan",
+  agent:"Maintenance Agent",
+  risk:"High",
+  status:"Pending",
+  asset:"PUMP-12",
+  plant:"Plant A",
+  category:"Maintenance",
+  description:"Review proposed maintenance planning for a synthetic hydraulic pump anomaly.",
+  recommendation:"Inspect the pump assembly and review lubrication and vibration history before scheduling maintenance.",
+  evidence:[
+   "Synthetic vibration indicator: 7.2 mm/s",
+   "Illustrative bearing degradation score: 76/100",
+   "Maintenance history requires verification"
+  ],
+  created:"2026-10-09 09:20",
+  note:"",
+  reviewer:null,
+  decidedAt:null
+ },
+ {
+  id:"APR-1043",
+  title:"Emergency Response Documentation",
+  agent:"Emergency Response Agent",
+  risk:"Critical",
+  status:"Pending",
+  asset:"MOTOR-12",
+  plant:"Plant A",
+  category:"Emergency",
+  description:"Review a fictional smoke-indicator incident summary and draft coordination plan.",
+  recommendation:"Review the draft against site-approved emergency procedures and escalate to authorized personnel if this were a real event.",
+  evidence:[
+   "Synthetic smoke index: 82/100",
+   "Fictional temperature: 94°C",
+   "No verified alarm or live incident data"
+  ],
+  created:"2026-10-09 09:35",
+  note:"",
+  reviewer:null,
+  decidedAt:null
+ },
+ {
+  id:"APR-1044",
+  title:"Compressor Inspection Recommendation",
+  agent:"Asset Health Agent",
+  risk:"Medium",
+  status:"Pending",
+  asset:"COMP-06",
+  plant:"Plant C",
+  category:"Inspection",
+  description:"Review a suggested condition inspection for a compressor.",
+  recommendation:"Schedule an engineering review of vibration and temperature trends.",
+  evidence:[
+   "Illustrative asset health score: 67/100",
+   "Synthetic temperature: 78°C",
+   "No validated prediction model was executed"
+  ],
+  created:"2026-10-09 10:05",
+  note:"",
+  reviewer:null,
+  decidedAt:null
+ },
+ {
+  id:"APR-1045",
+  title:"Repair vs Replacement Cost Review",
+  agent:"Cost Agent",
+  risk:"High",
+  status:"Pending",
+  asset:"HYD-08",
+  plant:"Plant B",
+  category:"Cost",
+  description:"Evaluate a fictional repair-versus-replacement recommendation.",
+  recommendation:"Compare estimated costs with vendor quotations, downtime assumptions and engineering requirements.",
+  evidence:[
+   "Illustrative repair estimate: ₹1,85,000",
+   "Illustrative replacement estimate: ₹5,40,000",
+   "Vendor quotations are not verified"
+  ],
+  created:"2026-10-09 10:20",
+  note:"",
+  reviewer:null,
+  decidedAt:null
+ },
+ {
+  id:"APR-1046",
+  title:"Thermal Inspection Follow-up",
+  agent:"Inspection Agent",
+  risk:"Medium",
+  status:"Approved",
+  asset:"FURNACE-02",
+  plant:"Plant B",
+  category:"Inspection",
+  description:"Review a fictional thermal inspection report.",
+  recommendation:"Include thermal inspection findings in the next engineering review.",
+  evidence:[
+   "Synthetic thermal anomaly image reference",
+   "No real camera or sensor connected"
+  ],
+  created:"2026-10-09 08:10",
+  note:"Demo documentation reviewed.",
+  reviewer:"Demo Reviewer",
+  decidedAt:"2026-10-09 08:30"
+ },
+ {
+  id:"APR-1047",
+  title:"Safety Inspection Exception",
+  agent:"Safety Agent",
+  risk:"Critical",
+  status:"Rejected",
+  asset:"CONV-04",
+  plant:"Plant A",
+  category:"Safety",
+  description:"Review an illustrative machine-guarding exception.",
+  recommendation:"Refer the matter to qualified safety personnel for investigation.",
+  evidence:[
+   "Synthetic visual inspection finding",
+   "No verified site inspection available"
+  ],
+  created:"2026-10-09 08:45",
+  note:"Insufficient verified evidence for approval.",
+  reviewer:"Demo Reviewer",
+  decidedAt:"2026-10-09 09:00"
+ },
+ {
+  id:"APR-1048",
+  title:"Motor Failure Investigation",
+  agent:"Failure Analysis Agent",
+  risk:"High",
+  status:"Pending",
+  asset:"MOTOR-18",
+  plant:"Plant C",
+  category:"Diagnostics",
+  description:"Review an illustrative bearing-failure investigation.",
+  recommendation:"Request engineering validation of the proposed failure causes.",
+  evidence:[
+   "Synthetic bearing wear indicator: 81/100",
+   "Illustrative remaining useful life: 410 hours",
+   "No calibrated prognostic model"
+  ],
+  created:"2026-10-09 10:45",
+  note:"",
+  reviewer:null,
+  decidedAt:null
+ },
+ {
+  id:"APR-1049",
+  title:"Energy Optimization Proposal",
+  agent:"Supervisor Agent",
+  risk:"Low",
+  status:"Changes Requested",
+  asset:"ENERGY-03",
+  plant:"Plant B",
+  category:"Optimization",
+  description:"Review a simulated energy-efficiency recommendation.",
+  recommendation:"Validate baseline energy data and assumptions before implementing changes.",
+  evidence:[
+   "Illustrative energy-saving estimate: 8%",
+   "No metered production data"
+  ],
+  created:"2026-10-09 09:55",
+  note:"Add verified baseline data.",
+  reviewer:"Demo Reviewer",
+  decidedAt:"2026-10-09 10:00"
+ }
+];
+
+let requests=structuredClone(seedRequests);
+let selectedId="APR-1042";
+let selectedRows=new Set();
+let auditEvents=[];
+let statusChart=null;
+let riskChart=null;
+let pendingDecision=null;
+let nextId=1050;
+
+const riskOrder={
+ Critical:4,High:3,Medium:2,Low:1
+};
+
+const policyItems=[
+ {
+  icon:"bi-person-badge",
+  title:"Reviewer Identity",
+  detail:"Production decisions require authenticated, authorized reviewer identities."
+ },
+ {
+  icon:"bi-shield-lock",
+  title:"Risk-Based Approval Gates",
+  detail:"High-risk operations require additional controls and appropriate approval authority."
+ },
+ {
+  icon:"bi-people",
+  title:"Separation of Duties",
+  detail:"A request creator should not automatically approve their own sensitive action."
+ },
+ {
+  icon:"bi-journal-check",
+  title:"Immutable Audit Records",
+  detail:"Production decisions must be stored in durable, protected audit infrastructure."
+ },
+ {
+  icon:"bi-exclamation-triangle",
+  title:"Independent Safety Controls",
+  detail:"Human approvals cannot bypass emergency procedures, safety interlocks or legal obligations."
+ }
+];
+
+function element(tag,text,className){
+ const node=document.createElement(tag);
+ if(className)node.className=className;
+ if(text!==undefined)node.textContent=text;
+ return node;
+}
+
+function add(parent,tag,text,className){
+ const node=element(tag,text,className);
+ parent.append(node);
+ return node;
+}
+
+function badge(text,kind){
+ return element("span",text,"badge-soft "+kind);
+}
+
+function riskClass(risk){
+ return risk==="Critical"?"b-danger":
+  risk==="High"?"b-warning":
+  risk==="Medium"?"b-info":"b-success";
+}
+
+function statusClass(status){
+ return status==="Approved"?"b-success":
+  status==="Rejected"?"b-danger":
+  status==="Changes Requested"?"b-info":"b-warning";
+}
+
+function selected(){
+ return requests.find(request=>request.id===selectedId);
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance(
+  $("appToast"),{delay:3000}
+ ).show();
+}
+
+function dateTime(){
+ return new Date().toLocaleString("en-IN",{
+  year:"numeric",month:"short",day:"2-digit",
+  hour:"2-digit",minute:"2-digit",second:"2-digit"
+ });
+}
+
+function logEvent(request,action,note){
+ auditEvents.unshift({
+  id:"AUD-"+String(auditEvents.length+1).padStart(4,"0"),
+  requestId:request.id,
+  title:request.title,
+  action,
+  note,
+  reviewer:"Demo Reviewer",
+  timestamp:dateTime()
+ });
+}
+
+function renderKpis(){
+ $("pendingKpi").textContent=
+  requests.filter(r=>r.status==="Pending").length;
+
+ $("approvedKpi").textContent=
+  requests.filter(r=>r.status==="Approved").length;
+
+ $("highRiskKpi").textContent=
+  requests.filter(r=>
+   r.status==="Pending"&&
+   ["Critical","High"].includes(r.risk)
+  ).length;
+
+ $("decisionsKpi").textContent=auditEvents.filter(e=>
+  ["Approved","Rejected","Changes Requested"].includes(e.action)
+ ).length;
+}
+
+function filteredRequests(){
+ const query=$("requestSearch").value.trim().toLowerCase();
+ const status=$("statusFilter").value;
+ const risk=$("riskFilter").value;
+
+ return requests.filter(r=>{
+  const matchesText=
+   `${r.id} ${r.title} ${r.agent} ${r.asset} ${r.plant}`
+   .toLowerCase().includes(query);
+
+  return matchesText&&
+   (status==="all"||r.status===status)&&
+   (risk==="all"||r.risk===risk);
+ }).sort((a,b)=>{
+  const aPending=a.status==="Pending"?1:0;
+  const bPending=b.status==="Pending"?1:0;
+  if(aPending!==bPending)return bPending-aPending;
+  return riskOrder[b.risk]-riskOrder[a.risk];
+ });
+}
+
+function renderQueue(){
+ const root=$("requestQueue");
+ root.replaceChildren();
+
+ const data=filteredRequests();
+
+ if(!data.length){
+  add(root,"p","No matching approval requests.","text-secondary py-4");
+  return;
+ }
+
+ data.forEach(r=>{
+  const card=element(
+   "div",undefined,
+   "queue-item"+(r.id===selectedId?" selected":"")
+  );
+
+  const top=element("div",undefined,"d-flex gap-3");
+
+  const icon=element("div",undefined,"queue-icon");
+  icon.append(element("i",undefined,"bi bi-person-check"));
+
+  const body=element("div",undefined,"flex-grow-1");
+  add(body,"div",r.title,"queue-title");
+  add(body,"div",`${r.id} · ${r.agent} · ${r.asset}`,"queue-meta");
+
+  const badges=element("div",undefined,"d-flex flex-wrap gap-2 mt-2");
+  badges.append(
+   badge(r.risk,riskClass(r.risk)),
+   badge(r.status,statusClass(r.status))
+  );
+  body.append(badges);
+
+  top.append(icon,body);
+  card.append(top);
+
+  add(card,"p",r.description,"queue-description");
+
+  const button=element("button","Review Request","small-action");
+  button.type="button";
+  button.addEventListener("click",()=>{
+   selectedId=r.id;
+   $("reviewNote").value=r.note||"";
+   renderAll();
+  });
+
+  card.append(button);
+  root.append(card);
+ });
+}
+
+function detailRow(label,value){
+ const row=element("div",undefined,"detail-row");
+ add(row,"span",label,"detail-label");
+ add(row,"span",value,"detail-value");
+ return row;
+}
+
+function renderDetails(){
+ const r=selected();
+ if(!r)return;
+
+ $("detailTitle").textContent=r.title;
+ $("detailSubtitle").textContent=
+  `${r.id} · ${r.category} · ${r.plant}`;
+
+ $("detailStatus").className=
+  "badge-soft "+statusClass(r.status);
+ $("detailStatus").textContent=r.status;
+
+ $("detailRisk").replaceChildren(
+  badge(r.risk,riskClass(r.risk))
+ );
+
+ $("detailAgent").textContent=r.agent;
+
+ const details=$("requestDetails");
+ details.replaceChildren(
+  detailRow("Request ID",r.id),
+  detailRow("Asset",r.asset),
+  detailRow("Plant",r.plant),
+  detailRow("Category",r.category),
+  detailRow("Created",r.created),
+  detailRow("Reviewer",r.reviewer||"Unassigned"),
+  detailRow("Decision Time",r.decidedAt||"Not decided")
+ );
+
+ $("agentRecommendation").textContent=r.recommendation;
+
+ const evidence=$("evidenceList");
+ evidence.replaceChildren();
+
+ r.evidence.forEach(item=>{
+  const row=element(
+   "div",undefined,"d-flex gap-2 align-items-start py-2"
+  );
+  const icon=element("i",undefined,"bi bi-file-earmark-text");
+  icon.style.color="var(--purple)";
+  add(row,"span",item,"section-sub");
+  row.prepend(icon);
+  evidence.append(row);
+ });
+
+ const pending=r.status==="Pending";
+ $("approveButton").disabled=!pending;
+ $("rejectButton").disabled=!pending;
+ $("changesButton").disabled=!pending;
+}
+
+function renderPolicies(){
+ const root=$("policyChecks");
+ root.replaceChildren();
+
+ policyItems.forEach(item=>{
+  const row=element("div",undefined,"policy-row");
+  const icon=element("div",undefined,"policy-icon");
+  icon.append(element("i",undefined,"bi "+item.icon));
+
+  const body=element("div");
+  add(body,"strong",item.title);
+  add(body,"p",item.detail);
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderAudit(){
+ const root=$("auditTrail");
+ root.replaceChildren();
+
+ if(!auditEvents.length){
+  add(root,"p",
+   "No new decisions recorded in this demo session.",
+   "text-secondary"
+  );
+  return;
+ }
+
+ auditEvents.slice(0,8).forEach(event=>{
+  const row=element("div",undefined,"audit-item");
+  const icon=element("div",undefined,"audit-icon");
+
+  icon.append(element(
+   "i",undefined,
+   "bi "+(event.action==="Approved"?
+    "bi-check-circle":
+    event.action==="Rejected"?
+    "bi-x-circle":"bi-arrow-repeat")
+  ));
+
+  const body=element("div");
+  add(body,"strong",`${event.action} · ${event.requestId}`);
+  add(body,"p",event.title);
+  add(body,"p",event.note||"No note supplied");
+  add(body,"div",event.timestamp,"section-sub");
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderCharts(){
+ if(typeof Chart==="undefined")return;
+
+ const statuses=[
+  "Pending","Approved","Rejected","Changes Requested"
+ ];
+ const statusValues=statuses.map(status=>
+  requests.filter(r=>r.status===status).length
+ );
+
+ if(statusChart){
+  statusChart.data.datasets[0].data=statusValues;
+  statusChart.update();
+ }else{
+  statusChart=new Chart($("statusChart"),{
+   type:"doughnut",
+   data:{
+    labels:statuses,
+    datasets:[{
+     data:statusValues,
+     backgroundColor:[
+      "#f2a53a","#16b88a","#eb6174","#6855eb"
+     ],
+     borderWidth:0
+    }]
+   },
+   options:{
+    responsive:true,maintainAspectRatio:false,
+    cutout:"67%",
+    plugins:{
+     legend:{
+      position:"bottom",
+      labels:{boxWidth:10,font:{size:10}}
+     }
+    }
+   }
+  });
+ }
+
+ const risks=["Critical","High","Medium","Low"];
+ const riskValues=risks.map(risk=>
+  requests.filter(r=>
+   r.risk===risk&&r.status==="Pending"
+  ).length
+ );
+
+ if(riskChart){
+  riskChart.data.datasets[0].data=riskValues;
+  riskChart.update();
+ }else{
+  riskChart=new Chart($("riskChart"),{
+   type:"bar",
+   data:{
+    labels:risks,
+    datasets:[{
+     label:"Pending Requests",
+     data:riskValues,
+     backgroundColor:[
+      "#eb6174","#f2a53a","#438df5","#16b88a"
+     ],
+     borderRadius:8,
+     barThickness:38
+    }]
+   },
+   options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+     y:{
+      beginAtZero:true,
+      ticks:{stepSize:1,color:"#8992aa"},
+      grid:{color:"#eef0f7"}
+     },
+     x:{
+      grid:{display:false},
+      ticks:{color:"#8992aa"}
+     }
+    }
+   }
+  });
+ }
+}
+
+function renderTable(){
+ const root=$("approvalTable");
+ root.replaceChildren();
+
+ requests.forEach(r=>{
+  const row=element("tr");
+
+  const selectCell=element("td");
+  const check=element("input",undefined,"form-check-input");
+  check.type="checkbox";
+  check.checked=selectedRows.has(r.id);
+  check.disabled=r.status!=="Pending";
+  check.setAttribute("aria-label","Select "+r.id);
+
+  check.addEventListener("change",()=>{
+   if(check.checked)selectedRows.add(r.id);
+   else selectedRows.delete(r.id);
+   syncSelectAll();
+  });
+
+  selectCell.append(check);
+
+  const name=element("td");
+  add(name,"div",r.title,"table-title");
+  add(name,"div",r.id,"table-sub");
+
+  const agent=element("td",r.agent);
+
+  const risk=element("td");
+  risk.append(badge(r.risk,riskClass(r.risk)));
+
+  const status=element("td");
+  status.append(badge(r.status,statusClass(r.status)));
+
+  const asset=element("td",r.asset);
+
+  const action=element("td");
+  const button=element("button","Review","small-action");
+  button.type="button";
+  button.addEventListener("click",()=>{
+   selectedId=r.id;
+   $("reviewNote").value=r.note||"";
+   renderAll();
+   window.scrollTo({top:0,behavior:"smooth"});
+  });
+  action.append(button);
+
+  row.append(
+   selectCell,name,agent,risk,status,asset,action
+  );
+
+  root.append(row);
+ });
+
+ syncSelectAll();
+}
+
+function syncSelectAll(){
+ const pending=requests.filter(r=>r.status==="Pending");
+ $("selectAll").checked=
+  pending.length>0&&pending.every(r=>selectedRows.has(r.id));
+ $("selectAll").indeterminate=
+  pending.some(r=>selectedRows.has(r.id))&&
+  !pending.every(r=>selectedRows.has(r.id));
+}
+
+function renderJson(){
+ $("outputJson").textContent=
+  JSON.stringify({
+   mode:"simulation",
+   reviewer:"Demo Reviewer",
+   request:selected(),
+   real_authorization_granted:false,
+   external_action_executed:false,
+   audit_events:auditEvents.filter(e=>e.requestId===selectedId)
+  },null,2);
+}
+
+function renderAll(){
+ renderKpis();
+ renderQueue();
+ renderDetails();
+ renderPolicies();
+ renderAudit();
+ renderCharts();
+ renderTable();
+ renderJson();
+}
+
+function openDecision(action,ids){
+ const eligible=ids.filter(id=>{
+  const request=requests.find(r=>r.id===id);
+  return request&&request.status==="Pending";
+ });
+
+ if(!eligible.length){
+  notify("No pending requests selected");
+  return;
+ }
+
+ const note=$("reviewNote").value.trim();
+
+ if(
+  ["Rejected","Changes Requested"].includes(action)&&
+  eligible.length===1&&
+  !note
+ ){
+  notify("Enter a reviewer reason before proceeding");
+  $("reviewNote").focus();
+  return;
+ }
+
+ pendingDecision={action,ids:eligible};
+
+ $("decisionModalTitle").textContent=
+  `Confirm ${action}`;
+
+ $("decisionModalDescription").textContent=
+  `You are about to mark ${eligible.length} fictional request(s) as "${action}". `+
+  "This is a local demonstration decision only.";
+
+ bootstrap.Modal.getOrCreateInstance(
+  $("decisionModal")
+ ).show();
+}
+
+function applyDecision(){
+ if(!pendingDecision)return;
+
+ const {action,ids}=pendingDecision;
+ const note=$("reviewNote").value.trim();
+
+ if(
+  ["Rejected","Changes Requested"].includes(action)&&
+  !note
+ ){
+  notify("A review reason is required");
+  bootstrap.Modal.getOrCreateInstance(
+   $("decisionModal")
+  ).hide();
+  pendingDecision=null;
+  return;
+ }
+
+ ids.forEach(id=>{
+  const request=requests.find(r=>r.id===id);
+  if(!request||request.status!=="Pending")return;
+
+  request.status=action;
+  request.note=note||
+   "Reviewed in the local demonstration";
+  request.reviewer="Demo Reviewer";
+  request.decidedAt=dateTime();
+
+  logEvent(request,action,request.note);
+  selectedRows.delete(id);
+ });
+
+ pendingDecision=null;
+
+ bootstrap.Modal.getOrCreateInstance(
+  $("decisionModal")
+ ).hide();
+
+ renderAll();
+ notify(`${ids.length} demo request(s) updated`);
+}
+
+function createRequest(event){
+ event.preventDefault();
+
+ const title=$("newTitle").value.trim();
+ const agent=$("newAgent").value;
+ const risk=$("newRisk").value;
+ const asset=$("newAsset").value.trim();
+ const description=$("newDescription").value.trim();
+
+ if(!title||!asset||!description){
+  notify("Complete all required fields");
+  return;
+ }
+
+ const request={
+  id:"APR-"+nextId++,
+  title,agent,risk,
+  status:"Pending",
+  asset,
+  plant:"Demo Workspace",
+  category:"Custom",
+  description,
+  recommendation:description,
+  evidence:[
+   "User-created synthetic demonstration request",
+   "No verified operational evidence attached"
+  ],
+  created:dateTime(),
+  note:"",
+  reviewer:null,
+  decidedAt:null
+ };
+
+ requests.unshift(request);
+ selectedId=request.id;
+ $("reviewNote").value="";
+
+ logEvent(request,"Created","Demo request created");
+
+ $("newRequestForm").reset();
+
+ bootstrap.Modal.getOrCreateInstance(
+  $("newRequestModal")
+ ).hide();
+
+ renderAll();
+ notify("New demonstration approval request created");
+}
+
+function csvCell(value){
+ const str=String(value??"");
+ const safe=/^\s*[=+\-@]/.test(str)?"'"+str:str;
+ return '"'+safe.replaceAll('"','""')+'"';
+}
+
+function download(content,filename,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[
+  [
+   "Request ID","Title","Agent","Risk","Status",
+   "Asset","Plant","Reviewer","Decision Time","Note"
+  ],
+  ...requests.map(r=>[
+   r.id,r.title,r.agent,r.risk,r.status,
+   r.asset,r.plant,r.reviewer||"",
+   r.decidedAt||"",r.note||""
+  ])
+ ];
+
+ download(
+  rows.map(row=>row.map(csvCell).join(",")).join("\r\n"),
+  "human-approvals-demo.csv",
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Approval register exported");
+}
+
+function exportJson(){
+ download(
+  JSON.stringify({
+   mode:"simulation",
+   requests,
+   audit_events:auditEvents,
+   external_actions_executed:false
+  },null,2),
+  "human-approvals-demo.json",
+  "application/json"
+ );
+
+ notify("Approval data exported");
+}
+
+async function copyJson(){
+ try{
+  await navigator.clipboard.writeText(
+   $("outputJson").textContent
+  );
+  notify("Structured approval record copied");
+ }catch{
+  notify("Clipboard unavailable; select JSON manually");
+ }
+}
+
+function reset(){
+ requests=structuredClone(seedRequests);
+ selectedId="APR-1042";
+ selectedRows.clear();
+ auditEvents=[];
+ pendingDecision=null;
+ nextId=1050;
+
+ $("requestSearch").value="";
+ $("statusFilter").value="all";
+ $("riskFilter").value="all";
+ $("reviewNote").value="";
+
+ renderAll();
+ notify("Human approvals simulation reset");
+}
+
+function initNavigation(){
+ const sidebar=$("sidebar");
+ const shade=$("shade");
+
+ function close(){
+  sidebar.classList.remove("open");
+  shade.classList.remove("show");
+ }
+
+ $("menuButton").addEventListener("click",()=>{
+  sidebar.classList.add("open");
+  shade.classList.add("show");
+ });
+
+ shade.addEventListener("click",close);
+
+ document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")close();
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ initNavigation();
+ renderAll();
+
+ $("requestSearch").addEventListener("input",renderQueue);
+ $("statusFilter").addEventListener("change",renderQueue);
+ $("riskFilter").addEventListener("change",renderQueue);
+
+ $("approveButton").addEventListener("click",()=>{
+  openDecision("Approved",[selectedId]);
+ });
+
+ $("rejectButton").addEventListener("click",()=>{
+  openDecision("Rejected",[selectedId]);
+ });
+
+ $("changesButton").addEventListener("click",()=>{
+  openDecision("Changes Requested",[selectedId]);
+ });
+
+ $("confirmDecisionButton").addEventListener(
+  "click",applyDecision
+ );
+
+ $("newRequestButton").addEventListener("click",()=>{
+  bootstrap.Modal.getOrCreateInstance(
+   $("newRequestModal")
+  ).show();
+ });
+
+ $("newRequestForm").addEventListener(
+  "submit",createRequest
+ );
+
+ $("selectAll").addEventListener("change",event=>{
+  if(event.target.checked){
+   requests.filter(r=>r.status==="Pending")
+    .forEach(r=>selectedRows.add(r.id));
+  }else{
+   selectedRows.clear();
+  }
+  renderTable();
+ });
+
+ $("selectPendingButton").addEventListener("click",()=>{
+  requests.filter(r=>r.status==="Pending")
+   .forEach(r=>selectedRows.add(r.id));
+  renderTable();
+  notify("Pending requests selected");
+ });
+
+ $("clearSelectionButton").addEventListener("click",()=>{
+  selectedRows.clear();
+  renderTable();
+ });
+
+ $("bulkRejectButton").addEventListener("click",()=>{
+  openDecision("Rejected",[...selectedRows]);
+ });
+
+ $("exportCsvButton").addEventListener("click",exportCsv);
+ $("exportJsonButton").addEventListener("click",exportJson);
+ $("copyJsonButton").addEventListener("click",copyJson);
+ $("resetButton").addEventListener("click",reset);
+});
+</script>
+
+</body>
+</html>

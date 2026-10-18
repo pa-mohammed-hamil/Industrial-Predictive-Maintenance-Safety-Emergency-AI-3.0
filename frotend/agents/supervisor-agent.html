@@ -1,0 +1,2294 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Supervisor Agent | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / agents</p><h1 id="page-title">Supervisor Agent</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Supervisor Agent workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Supervisor Agent | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple2:#8b7af9;
+ --green:#16b88a;
+ --orange:#f2a53a;
+ --red:#eb6174;
+ --blue:#438df5;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8b93aa;
+ --border:#e9ebf3;
+ --sidebar:258px;
+}
+
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5,h6{
+ font-family:Manrope,sans-serif;
+ letter-spacing:-.6px;
+}
+a{text-decoration:none}
+button{cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,a:focus-visible,
+input:focus-visible,select:focus-visible{
+ outline:3px solid #a99cff!important;
+ outline-offset:2px;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+ position:fixed;
+ inset:0 auto 0 0;
+ width:var(--sidebar);
+ background:var(--navy);
+ color:#aab1ce;
+ z-index:1050;
+ display:flex;
+ flex-direction:column;
+ transition:transform .25s;
+}
+.brand{
+ height:83px;
+ padding:21px 23px;
+ display:flex;
+ align-items:center;
+ gap:12px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-mark{
+ width:43px;height:43px;
+ border-radius:14px;
+ background:linear-gradient(135deg,#9c83ff,#5a48e4);
+ color:white;
+ display:grid;
+ place-items:center;
+ font-size:22px;
+}
+.brand strong{color:white;font-size:17px}
+.brand small{
+ display:block;
+ font-size:9px;
+ letter-spacing:2px;
+ color:#7883b0;
+}
+.sidebar-body{
+ overflow-y:auto;
+ flex:1;
+ padding:16px 12px;
+}
+.sidebar-label{
+ color:#687397;
+ text-transform:uppercase;
+ font-size:9px;
+ font-weight:800;
+ letter-spacing:2px;
+ padding:20px 15px 9px;
+}
+.side-link{
+ display:flex;
+ align-items:center;
+ gap:13px;
+ padding:11px 14px;
+ margin:3px 0;
+ color:#9da8ca;
+ border-radius:11px;
+ font-size:12px;
+ font-weight:600;
+ transition:.2s;
+}
+.side-link i{
+ font-size:17px;
+ width:21px;
+ text-align:center;
+}
+.side-link:hover{
+ background:#ffffff10;
+ color:white;
+}
+.side-link.active{
+ background:linear-gradient(90deg,#6b59e8,#5346ba);
+ color:white;
+}
+.sidebar-foot{
+ padding:18px;
+ border-top:1px solid #ffffff12;
+}
+.sidebar-status{
+ border-radius:13px;
+ padding:13px;
+ background:#ffffff09;
+ border:1px solid #ffffff12;
+}
+.status-dot{
+ display:inline-block;
+ width:8px;height:8px;
+ border-radius:50%;
+ background:#2cdaa2;
+ margin-right:7px;
+}
+
+/* LAYOUT */
+
+.app{
+ margin-left:var(--sidebar);
+ min-height:100vh;
+}
+.topbar{
+ background:white;
+ min-height:76px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:15px;
+ padding:15px 30px;
+ border-bottom:1px solid var(--border);
+ position:sticky;
+ top:0;
+ z-index:100;
+}
+.topbar-title{
+ font-size:15px;
+ font-weight:800;
+}
+.topbar-sub{
+ color:var(--muted);
+ font-size:11px;
+ margin-top:3px;
+}
+.top-actions{
+ display:flex;
+ align-items:center;
+ gap:12px;
+}
+.top-icon{
+ height:39px;width:39px;
+ display:grid;
+ place-items:center;
+ border-radius:12px;
+ border:1px solid var(--border);
+ background:#fafaff;
+ color:#555e7b;
+ font-size:16px;
+}
+.top-icon:hover{
+ background:#eeecff;
+ color:var(--purple);
+}
+.avatar{
+ height:39px;width:39px;
+ border-radius:13px;
+ display:grid;
+ place-items:center;
+ color:white;
+ font-weight:800;
+ background:linear-gradient(135deg,#7e6bf4,#a18dff);
+}
+.content{
+ padding:29px;
+ max-width:1850px;
+ margin:auto;
+}
+.eyebrow{
+ text-transform:uppercase;
+ letter-spacing:2px;
+ font-size:10px;
+ font-weight:800;
+ color:var(--purple);
+}
+.page-title{
+ font-size:29px;
+ font-weight:800;
+ margin:9px 0 6px;
+}
+.page-description{
+ color:var(--muted);
+ line-height:1.7;
+}
+
+/* BUTTONS */
+
+.btn-premium,.btn-soft,.btn-danger-soft{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+ border-radius:11px;
+ padding:11px 16px;
+ font-size:12px;
+ font-weight:700;
+ transition:.2s;
+}
+.btn-premium{
+ background:var(--purple);
+ color:white;
+ border:1px solid var(--purple);
+}
+.btn-premium:hover{
+ background:#5542d5;
+ color:white;
+}
+.btn-soft{
+ background:white;
+ color:#5e6680;
+ border:1px solid var(--border);
+}
+.btn-soft:hover{
+ background:#f1efff;
+ color:var(--purple);
+}
+.btn-danger-soft{
+ background:#ffebee;
+ color:#d9435b;
+ border:1px solid #ffd9e0;
+}
+.btn-danger-soft:hover{background:#ffdfe5}
+
+/* CARDS */
+
+.surface{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:18px;
+ box-shadow:0 8px 30px #24305b08;
+}
+.hero{
+ position:relative;
+ overflow:hidden;
+ background:linear-gradient(
+  115deg,#6651e9,#8e74f4 65%,#a894ff
+ );
+ color:white;
+ border-radius:22px;
+ padding:31px 33px;
+ box-shadow:0 15px 35px #7564ea28;
+}
+.hero:after{
+ content:"";
+ position:absolute;
+ width:330px;height:330px;
+ right:-60px;top:-145px;
+ border:1px solid #ffffff45;
+ border-radius:50%;
+ box-shadow:
+  0 0 0 45px #ffffff0b,
+  0 0 0 95px #ffffff09;
+ pointer-events:none;
+}
+.hero h2{
+ font-size:25px;
+ font-weight:800;
+}
+.hero p{
+ max-width:740px;
+ color:#eeeaff;
+ line-height:1.8;
+}
+.hero-chip{
+ display:inline-flex;
+ align-items:center;
+ gap:7px;
+ background:#ffffff23;
+ border:1px solid #ffffff30;
+ padding:8px 12px;
+ border-radius:9px;
+ font-size:10px;
+ font-weight:700;
+}
+.metric{
+ padding:21px;
+ height:100%;
+}
+.metric-top{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
+.metric-label{
+ color:#8a92a8;
+ font-size:11px;
+ font-weight:700;
+}
+.metric-icon{
+ width:44px;height:44px;
+ border-radius:14px;
+ display:grid;
+ place-items:center;
+ font-size:20px;
+}
+.metric-value{
+ font:800 25px Manrope,sans-serif;
+ margin:14px 0 6px;
+}
+.metric-foot{
+ font-size:10px;
+ color:#9aa1b3;
+}
+.section-title{
+ font-size:17px;
+ font-weight:800;
+}
+.section-sub{
+ font-size:11px;
+ color:var(--muted);
+}
+.badge-soft{
+ display:inline-flex;
+ align-items:center;
+ gap:6px;
+ padding:6px 10px;
+ border-radius:8px;
+ font-size:10px;
+ font-weight:800;
+}
+.b-success{background:#e5f8f0;color:#13a776}
+.b-warning{background:#fff4e2;color:#d58c20}
+.b-danger{background:#ffebee;color:#df4d64}
+.b-info{background:#eaf2ff;color:#438df5}
+.b-neutral{background:#f0f1f6;color:#788098}
+.b-purple{background:#eeebff;color:#6855eb}
+
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;
+ padding:11px 12px;
+ font-size:12px;
+}
+.form-control:focus,.form-select:focus{
+ border-color:#a69aff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+.form-label{
+ font-size:11px;
+ font-weight:800;
+ color:#5b6480;
+}
+
+/* AGENT NETWORK */
+
+.agent-node{
+ border:1px solid var(--border);
+ border-radius:14px;
+ padding:17px;
+ height:100%;
+ background:white;
+ transition:.2s;
+}
+.agent-node:hover{
+ border-color:#b8afff;
+ transform:translateY(-2px);
+}
+.agent-node.running{
+ border-color:#a99aff;
+ background:#faf9ff;
+}
+.agent-node.completed{
+ border-color:#a9e9d4;
+ background:#fbfffd;
+}
+.agent-node.failed{
+ border-color:#ffb8c2;
+ background:#fffafa;
+}
+.agent-icon{
+ width:45px;height:45px;
+ border-radius:13px;
+ display:grid;
+ place-items:center;
+ background:#eeebff;
+ color:var(--purple);
+ font-size:20px;
+ flex-shrink:0;
+}
+.agent-name{
+ font-size:12px;
+ font-weight:800;
+}
+.agent-description{
+ font-size:10px;
+ color:var(--muted);
+ line-height:1.7;
+}
+.agent-status{
+ font-size:10px;
+ font-weight:800;
+}
+.agent-meta{
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ padding-top:12px;
+ margin-top:13px;
+ border-top:1px solid var(--border);
+ color:var(--muted);
+ font-size:10px;
+}
+.orchestrator{
+ background:linear-gradient(135deg,#171d42,#37337d);
+ border-radius:17px;
+ color:white;
+ padding:23px;
+}
+.orchestrator-icon{
+ width:56px;height:56px;
+ border-radius:16px;
+ background:#ffffff20;
+ display:grid;
+ place-items:center;
+ font-size:27px;
+}
+.orchestrator h3{
+ font-size:19px;
+ font-weight:800;
+}
+.orchestrator p{
+ font-size:11px;
+ color:#cdd1ef;
+ line-height:1.8;
+}
+.flow-line{
+ height:30px;
+ width:2px;
+ background:linear-gradient(var(--purple),#b8adff);
+ margin:auto;
+ position:relative;
+}
+.flow-line:after{
+ content:"";
+ position:absolute;
+ bottom:0;left:-4px;
+ border-left:5px solid transparent;
+ border-right:5px solid transparent;
+ border-top:7px solid var(--purple);
+}
+.workflow-step{
+ display:flex;
+ align-items:flex-start;
+ gap:13px;
+ padding:15px;
+ border:1px solid var(--border);
+ border-radius:13px;
+ margin-bottom:10px;
+ background:white;
+}
+.step-number{
+ width:36px;height:36px;
+ flex-shrink:0;
+ border-radius:11px;
+ display:grid;
+ place-items:center;
+ background:#eeebff;
+ color:var(--purple);
+ font-weight:800;
+}
+.step-title{
+ font-size:12px;
+ font-weight:800;
+}
+.step-description{
+ font-size:10px;
+ color:var(--muted);
+ margin-top:5px;
+ line-height:1.7;
+}
+.trace-item{
+ display:flex;
+ gap:12px;
+ padding:13px 0;
+ border-bottom:1px solid var(--border);
+}
+.trace-item:last-child{border-bottom:0}
+.trace-icon{
+ width:35px;height:35px;
+ border-radius:10px;
+ background:#eeebff;
+ color:var(--purple);
+ display:grid;
+ place-items:center;
+ flex-shrink:0;
+}
+.trace-item strong{font-size:11px}
+.trace-item p{
+ margin:5px 0 0;
+ color:var(--muted);
+ font-size:10px;
+ line-height:1.7;
+}
+.chart-wrap{
+ height:285px;
+ position:relative;
+}
+.table thead th{
+ background:#fafbfe;
+ color:#9099ae;
+ font-size:10px;
+ text-transform:uppercase;
+ letter-spacing:.7px;
+ padding:15px 18px;
+ white-space:nowrap;
+ border-bottom:1px solid var(--border);
+}
+.table tbody td{
+ padding:15px 18px;
+ font-size:11px;
+ color:#66708a;
+ vertical-align:middle;
+ border-color:#f0f1f7;
+}
+.table-title{
+ font-weight:800;
+ color:#252c48;
+}
+.table-sub{
+ font-size:9px;
+ color:#9ca4b8;
+ margin-top:5px;
+}
+.small-action{
+ border:1px solid var(--border);
+ background:white;
+ border-radius:8px;
+ padding:7px 10px;
+ color:#66718d;
+ font-size:10px;
+ font-weight:700;
+}
+.small-action:hover{
+ background:#eeebff;
+ color:var(--purple);
+}
+.report-code{
+ background:#141a31;
+ color:#dce6ff;
+ border-radius:13px;
+ padding:18px;
+ font:11px/1.8 monospace;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+ max-height:350px;
+ overflow:auto;
+}
+.safety-note{
+ background:#f3f0ff;
+ border:1px solid #ded8ff;
+ color:#6052a7;
+ border-radius:13px;
+ padding:16px;
+ font-size:11px;
+ line-height:1.8;
+}
+.footer{
+ padding:23px 30px;
+ border-top:1px solid var(--border);
+ color:#9aa2b5;
+ font-size:10px;
+ display:flex;
+ justify-content:space-between;
+ gap:12px;
+}
+.mobile-shade{display:none}
+
+@media(max-width:1199px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .app{margin-left:0}
+ .mobile-shade.show{
+  display:block;
+  position:fixed;
+  inset:0;
+  background:#0008;
+  z-index:1040;
+ }
+}
+@media(max-width:575px){
+ .content{padding:17px}
+ .topbar{padding:13px 17px}
+ .page-title{font-size:23px}
+ .hero{padding:23px}
+ .hero h2{font-size:20px}
+ .metric-value{font-size:21px}
+ .footer{flex-direction:column;padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-shade" id="shade"></div>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div class="brand-mark">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a997ff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <nav class="sidebar-body" aria-label="Main navigation">
+
+  <div class="sidebar-label">Main Menu</div>
+
+  <a class="side-link" href="../index.html">
+   <i class="bi bi-house-door"></i>Home
+  </a>
+  <a class="side-link" href="../dashboard.html">
+   <i class="bi bi-grid-1x2"></i>Dashboard
+  </a>
+  <a class="side-link" href="../command-center.html">
+   <i class="bi bi-broadcast"></i>Command Center
+  </a>
+  <a class="side-link" href="../analytics.html">
+   <i class="bi bi-bar-chart-line"></i>Analytics Studio
+  </a>
+  <a class="side-link" href="../reports.html">
+   <i class="bi bi-file-earmark-bar-graph"></i>Reports
+  </a>
+  <a class="side-link" href="../notifications.html">
+   <i class="bi bi-bell"></i>Notifications
+  </a>
+
+  <div class="sidebar-label">Operations</div>
+
+  <a class="side-link" href="../assets/assets.html">
+   <i class="bi bi-cpu"></i>Asset Intelligence
+  </a>
+  <a class="side-link" href="../telemetry/live-telemetry.html">
+   <i class="bi bi-activity"></i>Live Telemetry
+  </a>
+  <a class="side-link" href="../predictive-maintenance/maintenance-dashboard.html">
+   <i class="bi bi-tools"></i>Predictive Maintenance
+  </a>
+  <a class="side-link" href="../maintenance/work-orders.html">
+   <i class="bi bi-clipboard-check"></i>Work Orders
+  </a>
+  <a class="side-link" href="../computer-vision/vision-dashboard.html">
+   <i class="bi bi-camera"></i>Computer Vision
+  </a>
+
+  <div class="sidebar-label">Risk & Intelligence</div>
+
+  <a class="side-link" href="../safety/safety-dashboard.html">
+   <i class="bi bi-shield-check"></i>Safety Intelligence
+  </a>
+  <a class="side-link" href="../emergency/emergency-dashboard.html">
+   <i class="bi bi-exclamation-triangle"></i>Emergency Response
+  </a>
+  <a class="side-link" href="../cost-intelligence/cost-dashboard.html">
+   <i class="bi bi-currency-rupee"></i>Cost Intelligence
+  </a>
+  <a class="side-link" href="../copilot/ai-copilot.html">
+   <i class="bi bi-stars"></i>AI Copilot
+  </a>
+
+  <div class="sidebar-label">Agentic AI</div>
+
+  <a class="side-link" href="agent-dashboard.html">
+   <i class="bi bi-diagram-3"></i>Agent Dashboard
+  </a>
+  <a class="side-link" href="agent-workflows.html">
+   <i class="bi bi-bezier2"></i>Agent Workflows
+  </a>
+  <a class="side-link" href="agent-executions.html">
+   <i class="bi bi-play-circle"></i>Agent Executions
+  </a>
+  <a class="side-link" href="agent-tool-calls.html">
+   <i class="bi bi-wrench-adjustable"></i>Agent Tool Calls
+  </a>
+  <a class="side-link" href="agent-evaluation.html">
+   <i class="bi bi-clipboard-data"></i>Agent Evaluation
+  </a>
+  <a class="side-link" href="asset-health-agent.html">
+   <i class="bi bi-heart-pulse"></i>Asset Health Agent
+  </a>
+  <a class="side-link" href="cost-agent.html">
+   <i class="bi bi-currency-rupee"></i>Cost Agent
+  </a>
+  <a class="side-link" href="emergency-response-agent.html">
+   <i class="bi bi-exclamation-octagon"></i>Emergency Response Agent
+  </a>
+  <a class="side-link" href="failure-analysis-agent.html">
+   <i class="bi bi-search-heart"></i>Failure Analysis Agent
+  </a>
+  <a class="side-link" href="human-approvals.html">
+   <i class="bi bi-person-check"></i>Human Approvals
+  </a>
+  <a class="side-link" href="incident-agent.html">
+   <i class="bi bi-clipboard-pulse"></i>Incident Agent
+  </a>
+  <a class="side-link" href="inspection-agent.html">
+   <i class="bi bi-camera"></i>Inspection Agent
+  </a>
+  <a class="side-link" href="maintenance-agent.html">
+   <i class="bi bi-tools"></i>Maintenance Agent
+  </a>
+  <a class="side-link" href="repair-replacement-agent.html">
+   <i class="bi bi-arrow-left-right"></i>Repair & Replacement Agent
+  </a>
+  <a class="side-link" href="report-agent.html">
+   <i class="bi bi-file-earmark-richtext"></i>Report Agent
+  </a>
+  <a class="side-link" href="safety-agent.html">
+   <i class="bi bi-shield-check"></i>Safety Agent
+  </a>
+  <a class="side-link active" href="supervisor-agent.html"
+   aria-current="page">
+   <i class="bi bi-diagram-3-fill"></i>Supervisor Agent
+  </a>
+
+  <div class="sidebar-label">Administration</div>
+
+  <a class="side-link" href="../observability/observability-dashboard.html">
+   <i class="bi bi-speedometer2"></i>Observability
+  </a>
+  <a class="side-link" href="../security/security-dashboard.html">
+   <i class="bi bi-lock"></i>Security
+  </a>
+  <a class="side-link" href="../settings/settings.html">
+   <i class="bi bi-gear"></i>Settings
+  </a>
+
+ </nav>
+
+ <div class="sidebar-foot">
+  <div class="sidebar-status">
+   <div class="fw-bold text-white small">
+    <span class="status-dot"></span>Supervisor Orchestrator
+   </div>
+   <div class="mt-2" style="font-size:10px">
+    Multi-agent coordination · Demo mode
+   </div>
+  </div>
+ </div>
+</aside>
+
+<div class="app">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon d-xl-none" id="menuButton"
+   aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="topbar-title">Multi-Agent Orchestration</div>
+   <div class="topbar-sub">
+    Workspace / AI Agents / Supervisor Agent
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="d-none d-md-inline text-secondary small">
+   Simulated orchestration workspace
+  </span>
+  <button class="top-icon" id="resetButton"
+   aria-label="Reset orchestration">
+   <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <a href="../notifications.html" class="top-icon"
+   aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <a href="../settings/settings.html" class="avatar"
+   aria-label="Settings">AI</a>
+ </div>
+</header>
+
+<main class="content">
+
+ <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div>
+   <div class="eyebrow">
+    Agentic AI / Workflow Orchestration
+   </div>
+   <h1 class="page-title">
+    Supervisor Agent
+    <span style="color:var(--purple)">✦</span>
+   </h1>
+   <div class="page-description">
+    Coordinate industrial intelligence agents, manage task
+    dependencies, monitor workflow execution and enforce
+    simulated human approval gates.
+   </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-soft" id="exportCsvButton">
+    <i class="bi bi-filetype-csv"></i> CSV
+   </button>
+   <button class="btn-soft" id="exportJsonButton">
+    <i class="bi bi-download"></i> JSON
+   </button>
+   <button class="btn-premium" id="startButton">
+    <i class="bi bi-play-fill"></i> Start Workflow
+   </button>
+  </div>
+ </div>
+
+ <section class="hero mb-4">
+  <div class="position-relative" style="z-index:1">
+   <div class="text-uppercase fw-bold mb-3"
+    style="font-size:10px;letter-spacing:2px">
+    <i class="bi bi-diagram-3 me-1"></i>
+    Multi-Agent Supervisor Intelligence
+   </div>
+   <h2>
+    One orchestrator.<br>
+    Multiple specialized agents.
+   </h2>
+   <p class="mt-3 mb-4">
+    Simulate the coordination of asset health, failure analysis,
+    inspection, maintenance, safety, emergency, cost and
+    reporting agents through structured execution plans,
+    status tracking and human-review checkpoints.
+   </p>
+   <div class="d-flex flex-wrap gap-2">
+    <span class="hero-chip">
+     <i class="bi bi-diagram-3"></i> Agent Routing
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-bezier2"></i> Workflow Planning
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-activity"></i> Execution Tracking
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-person-check"></i> Human Approval
+    </span>
+    <span class="hero-chip">
+     <i class="bi bi-clipboard-data"></i> Agent Evaluation
+    </span>
+   </div>
+  </div>
+ </section>
+
+ <section class="safety-note mb-4">
+  <i class="bi bi-info-circle me-2"></i>
+  <strong>Browser simulation.</strong>
+  The workflow engine uses predefined agent tasks, local
+  JavaScript state and timed transitions. No real agents,
+  LLMs, databases, tools or industrial equipment are connected.
+  Human approval is simulated and cannot authorize real
+  operational or emergency actions.
+ </section>
+
+ <!-- KPIs -->
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Available Agents</span>
+     <span class="metric-icon"
+      style="background:#eeebff;color:var(--purple)">
+      <i class="bi bi-robot"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="agentsKpi">0</div>
+    <div class="metric-foot">Configured specialist agents</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Completed Tasks</span>
+     <span class="metric-icon"
+      style="background:#e5f8f0;color:var(--green)">
+      <i class="bi bi-check2-circle"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="completedKpi">0</div>
+    <div class="metric-foot">Current workflow</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Running Tasks</span>
+     <span class="metric-icon"
+      style="background:#eaf2ff;color:var(--blue)">
+      <i class="bi bi-arrow-repeat"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="runningKpi">0</div>
+    <div class="metric-foot">Active simulated execution</div>
+   </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Approval Gates</span>
+     <span class="metric-icon"
+      style="background:#fff4e2;color:var(--orange)">
+      <i class="bi bi-person-check"></i>
+     </span>
+    </div>
+    <div class="metric-value" id="approvalKpi">0</div>
+    <div class="metric-foot">Awaiting simulated approval</div>
+   </div>
+  </div>
+
+ </section>
+
+ <!-- WORKFLOW CONFIGURATION -->
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">
+     Supervisor Workflow Configuration
+    </h2>
+    <p class="section-sub mb-0">
+     Select a scenario and define execution parameters
+    </p>
+   </div>
+   <span class="badge-soft b-purple">
+    ORCHESTRATION BUILDER
+   </span>
+  </div>
+
+  <div class="row g-3">
+
+   <div class="col-md-4">
+    <label class="form-label" for="workflowType">
+     Workflow Type
+    </label>
+    <select id="workflowType" class="form-select">
+     <option value="comprehensive">
+      Comprehensive Asset Intelligence
+     </option>
+     <option value="maintenance">
+      Predictive Maintenance Workflow
+     </option>
+     <option value="safety">
+      Industrial Safety Investigation
+     </option>
+     <option value="inspection">
+      Inspection & Repair Planning
+     </option>
+     <option value="emergency">
+      Emergency Intelligence Review
+     </option>
+     <option value="cost">
+      Repair & Replacement Analysis
+     </option>
+    </select>
+   </div>
+
+   <div class="col-md-4">
+    <label class="form-label" for="assetSelect">
+     Target Asset
+    </label>
+    <select id="assetSelect" class="form-select">
+     <option value="MOTOR-12">MOTOR-12 · Electric Motor</option>
+     <option value="PUMP-12">PUMP-12 · Hydraulic Pump</option>
+     <option value="FURNACE-02">FURNACE-02 · Furnace</option>
+     <option value="HYD-08">HYD-08 · Hydraulic Unit</option>
+     <option value="COMP-06">COMP-06 · Compressor</option>
+    </select>
+   </div>
+
+   <div class="col-md-4">
+    <label class="form-label" for="prioritySelect">
+     Workflow Priority
+    </label>
+    <select id="prioritySelect" class="form-select">
+     <option>Normal</option>
+     <option>High</option>
+     <option>Critical</option>
+    </select>
+   </div>
+
+   <div class="col-md-6">
+    <label class="form-label" for="workflowName">
+     Workflow Name
+    </label>
+    <input id="workflowName" class="form-control"
+     maxlength="100"
+     placeholder="Optional custom workflow name">
+   </div>
+
+   <div class="col-md-3">
+    <label class="form-label" for="executionSpeed">
+     Simulation Speed
+    </label>
+    <select id="executionSpeed" class="form-select">
+     <option value="1200">Normal</option>
+     <option value="600">Fast</option>
+     <option value="2000">Detailed</option>
+    </select>
+   </div>
+
+   <div class="col-md-3">
+    <label class="form-label" for="approvalMode">
+     Human Approval Gate
+    </label>
+    <select id="approvalMode" class="form-select">
+     <option value="enabled">Enabled</option>
+     <option value="disabled">Disabled (Demo Only)</option>
+    </select>
+   </div>
+
+   <div class="col-12 d-flex flex-wrap gap-2">
+    <button class="btn-premium" id="planButton">
+     <i class="bi bi-diagram-3"></i> Generate Plan
+    </button>
+    <button class="btn-soft" id="pauseButton" disabled>
+     <i class="bi bi-pause-fill"></i> Pause
+    </button>
+    <button class="btn-soft" id="resumeButton" disabled>
+     <i class="bi bi-play-fill"></i> Resume
+    </button>
+    <button class="btn-danger-soft" id="cancelButton" disabled>
+     <i class="bi bi-x-circle"></i> Cancel Workflow
+    </button>
+   </div>
+
+  </div>
+ </section>
+
+ <!-- ORCHESTRATION MAP -->
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">
+     Multi-Agent Orchestration Network
+    </h2>
+    <p class="section-sub mb-0">
+     Supervisor coordination and specialist execution states
+    </p>
+   </div>
+   <span id="workflowStatus" class="badge-soft b-neutral">
+    Idle
+   </span>
+  </div>
+
+  <div class="orchestrator text-center">
+   <div class="orchestrator-icon mx-auto mb-3">
+    <i class="bi bi-diagram-3-fill"></i>
+   </div>
+   <h3>Supervisor Orchestrator</h3>
+   <p class="mb-2">
+    Task planning · Dependency resolution · Agent dispatch
+    · Approval checkpoints · Result aggregation
+   </p>
+   <span id="supervisorState" class="badge-soft b-purple">
+    Awaiting Workflow
+   </span>
+  </div>
+
+  <div class="flow-line"></div>
+
+  <div class="row g-3" id="agentGrid"></div>
+ </section>
+
+ <!-- EXECUTION PLAN -->
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">
+     Workflow Execution Plan
+    </h2>
+    <p class="section-sub mb-3">
+     Ordered tasks and dependencies
+    </p>
+
+    <div class="progress progress-thin mb-3"
+     style="height:9px;background:#eef0f6">
+     <div id="workflowProgress"
+      class="progress-bar"
+      style="width:0%;background:var(--purple)">
+     </div>
+    </div>
+
+    <div class="d-flex justify-content-between mb-3">
+     <span class="section-sub" id="progressText">
+      No workflow planned
+     </span>
+     <strong id="progressPercent">0%</strong>
+    </div>
+
+    <div id="workflowSteps"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">
+     Supervisor Decision Center
+    </h2>
+    <p class="section-sub mb-3">
+     Human approval and workflow decision status
+    </p>
+
+    <div id="decisionDetails"></div>
+
+    <div class="safety-note mt-3">
+     Human approvals here affect only the simulated workflow.
+     No work orders, safety actions, equipment shutdowns or
+     external notifications are executed.
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mt-3">
+     <button class="btn-premium" id="approveButton" disabled>
+      <i class="bi bi-check-circle"></i> Approve Demo
+     </button>
+     <button class="btn-danger-soft" id="rejectButton" disabled>
+      <i class="bi bi-x-circle"></i> Reject Demo
+     </button>
+    </div>
+   </div>
+  </div>
+
+ </section>
+
+ <!-- CHARTS -->
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-7">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">
+     Agent Execution Distribution
+    </h2>
+    <p class="section-sub mb-3">
+     Task completion by specialist agent
+    </p>
+    <div class="chart-wrap">
+     <canvas id="agentChart"></canvas>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-5">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">
+     Workflow Task Status
+    </h2>
+    <p class="section-sub mb-3">
+     Current simulated execution states
+    </p>
+    <div class="chart-wrap">
+     <canvas id="statusChart"></canvas>
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <!-- TRACE -->
+
+ <section class="row g-3 mb-4">
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">
+     Supervisor Execution Trace
+    </h2>
+    <p class="section-sub mb-3">
+     Orchestration events from the current workflow
+    </p>
+    <div id="executionTrace"></div>
+   </div>
+  </div>
+
+  <div class="col-xl-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">
+     Agent Task Results
+    </h2>
+    <p class="section-sub mb-3">
+     Synthetic outputs produced by completed tasks
+    </p>
+    <div id="taskResults"></div>
+   </div>
+  </div>
+
+ </section>
+
+ <!-- HISTORY -->
+
+ <section class="surface mb-4">
+  <div class="p-4 pb-3">
+   <h2 class="section-title mb-1">
+    Workflow Execution History
+   </h2>
+   <p class="section-sub mb-0">
+    In-session orchestration records
+   </p>
+  </div>
+
+  <div class="table-responsive">
+   <table class="table mb-0">
+    <thead>
+     <tr>
+      <th>Workflow ID</th>
+      <th>Type</th>
+      <th>Asset</th>
+      <th>Priority</th>
+      <th>Status</th>
+      <th>Completed</th>
+      <th>Started</th>
+      <th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="historyTable"></tbody>
+   </table>
+  </div>
+ </section>
+
+ <!-- JSON -->
+
+ <section class="surface p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+   <div>
+    <h2 class="section-title mb-1">
+     Structured Supervisor Output
+    </h2>
+    <p class="section-sub mb-0">
+     Workflow plan, task states, agent results and approval metadata
+    </p>
+   </div>
+   <button class="btn-soft" id="copyButton">
+    <i class="bi bi-copy"></i> Copy JSON
+   </button>
+  </div>
+  <pre class="report-code mb-0" id="outputJson"></pre>
+ </section>
+
+</main>
+
+<footer class="footer">
+ <span>© 2026 INDUSTRA AI · Supervisor Agent</span>
+ <span>Simulated multi-agent orchestration · No live integrations</span>
+</footer>
+
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3"
+ style="z-index:1200">
+ <div class="toast border-0 shadow" id="appToast"
+  role="status" aria-live="polite">
+  <div class="toast-body d-flex align-items-center gap-2">
+   <i class="bi bi-info-circle text-primary"></i>
+   <span id="toastMessage"></span>
+  </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ INDUSTRA AI — SUPERVISOR AGENT
+
+ Browser-only multi-agent workflow simulation.
+
+ Includes:
+ - Deterministic workflow planning
+ - Agent task assignment
+ - Sequential dependency execution
+ - Pause/resume/cancel
+ - Simulated human approval
+ - Execution trace
+ - History and export
+
+ No actual agent invocation or industrial action.
+*/
+
+const $=id=>document.getElementById(id);
+
+const agents=[
+ {
+  id:"asset-health",
+  name:"Asset Health Agent",
+  icon:"bi-heart-pulse",
+  description:"Condition monitoring and asset health assessment"
+ },
+ {
+  id:"failure-analysis",
+  name:"Failure Analysis Agent",
+  icon:"bi-search-heart",
+  description:"Failure mode and root-cause investigation"
+ },
+ {
+  id:"inspection",
+  name:"Inspection Agent",
+  icon:"bi-camera",
+  description:"Inspection findings and visual condition review"
+ },
+ {
+  id:"maintenance",
+  name:"Maintenance Agent",
+  icon:"bi-tools",
+  description:"Maintenance planning and task recommendations"
+ },
+ {
+  id:"safety",
+  name:"Safety Agent",
+  icon:"bi-shield-check",
+  description:"Safety indicators and hazard assessment"
+ },
+ {
+  id:"emergency",
+  name:"Emergency Response Agent",
+  icon:"bi-exclamation-octagon",
+  description:"Emergency intelligence and escalation review"
+ },
+ {
+  id:"cost",
+  name:"Cost Agent",
+  icon:"bi-currency-rupee",
+  description:"Repair, replacement and downtime cost estimation"
+ },
+ {
+  id:"repair-replacement",
+  name:"Repair & Replacement Agent",
+  icon:"bi-arrow-left-right",
+  description:"Repair-versus-replacement comparison"
+ },
+ {
+  id:"incident",
+  name:"Incident Agent",
+  icon:"bi-clipboard-pulse",
+  description:"Incident investigation and event summaries"
+ },
+ {
+  id:"report",
+  name:"Report Agent",
+  icon:"bi-file-earmark-richtext",
+  description:"Consolidated operational reporting"
+ }
+];
+
+const workflowTemplates={
+ comprehensive:[
+  "asset-health",
+  "failure-analysis",
+  "inspection",
+  "maintenance",
+  "safety",
+  "cost",
+  "report"
+ ],
+ maintenance:[
+  "asset-health",
+  "failure-analysis",
+  "maintenance",
+  "cost",
+  "report"
+ ],
+ safety:[
+  "safety",
+  "incident",
+  "inspection",
+  "report"
+ ],
+ inspection:[
+  "inspection",
+  "failure-analysis",
+  "repair-replacement",
+  "cost",
+  "report"
+ ],
+ emergency:[
+  "safety",
+  "incident",
+  "emergency",
+  "report"
+ ],
+ cost:[
+  "asset-health",
+  "repair-replacement",
+  "cost",
+  "report"
+ ]
+};
+
+const resultTemplates={
+ "asset-health":"Synthetic asset condition assessment completed.",
+ "failure-analysis":"Illustrative failure modes and contributing factors summarized.",
+ "inspection":"Simulated inspection findings assembled for review.",
+ "maintenance":"Preventive maintenance planning recommendations prepared.",
+ "safety":"Synthetic hazard indicators evaluated for human review.",
+ "emergency":"Emergency response scenario and escalation guidance documented.",
+ "cost":"Illustrative cost categories and planning estimates prepared.",
+ "repair-replacement":"Repair and replacement scenarios compared using demonstration assumptions.",
+ "incident":"Synthetic incident investigation summary generated.",
+ "report":"Consolidated demonstration report assembled."
+};
+
+let currentWorkflow=null;
+let history=[];
+let nextWorkflowId=1;
+let timer=null;
+let agentChart=null;
+let statusChart=null;
+
+function element(tag,text,className){
+ const node=document.createElement(tag);
+ if(className)node.className=className;
+ if(text!==undefined)node.textContent=text;
+ return node;
+}
+
+function add(parent,tag,text,className){
+ const node=element(tag,text,className);
+ parent.append(node);
+ return node;
+}
+
+function badge(text,kind){
+ return element("span",text,"badge-soft "+kind);
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance(
+  $("appToast"),{delay:3000}
+ ).show();
+}
+
+function now(){
+ return new Date().toLocaleString("en-IN",{
+  year:"numeric",month:"short",day:"2-digit",
+  hour:"2-digit",minute:"2-digit"
+ });
+}
+
+function agentById(id){
+ return agents.find(agent=>agent.id===id);
+}
+
+function statusClass(status){
+ return status==="Completed"?"b-success":
+  status==="Running"?"b-info":
+  status==="Awaiting Approval"?"b-warning":
+  status==="Rejected"||status==="Cancelled"?
+  "b-danger":
+  status==="Paused"?"b-warning":"b-neutral";
+}
+
+function trace(message){
+ if(!currentWorkflow)return;
+
+ currentWorkflow.trace.unshift({
+  timestamp:now(),
+  message
+ });
+
+ renderTrace();
+ renderJson();
+}
+
+function clearTimer(){
+ if(timer!==null){
+  clearTimeout(timer);
+  timer=null;
+ }
+}
+
+function createPlan(){
+ clearTimer();
+
+ const template=$("workflowType").value;
+ const agentIds=workflowTemplates[template];
+
+ const name=$("workflowName").value.trim()||
+  $("workflowType").selectedOptions[0].text;
+
+ currentWorkflow={
+  id:"WF-"+String(nextWorkflowId++).padStart(4,"0"),
+  name,
+  type:template,
+  asset:$("assetSelect").value,
+  priority:$("prioritySelect").value,
+  approval_required:$("approvalMode").value==="enabled",
+  speed:Number($("executionSpeed").value),
+  status:"Planned",
+  started_at:null,
+  completed_at:null,
+  approval:null,
+  tasks:agentIds.map((agentId,index)=>({
+   id:"TASK-"+String(index+1).padStart(2,"0"),
+   agent_id:agentId,
+   agent_name:agentById(agentId).name,
+   depends_on:index===0?[]:[
+    "TASK-"+String(index).padStart(2,"0")
+   ],
+   status:"Pending",
+   result:null
+  })),
+  trace:[],
+  simulated:true
+ };
+
+ history.unshift(currentWorkflow);
+
+ trace("Supervisor generated a deterministic execution plan.");
+
+ renderAll();
+ notify("Supervisor workflow plan generated");
+}
+
+function completedCount(){
+ return currentWorkflow?
+  currentWorkflow.tasks.filter(
+   task=>task.status==="Completed"
+  ).length:0;
+}
+
+function runningCount(){
+ return currentWorkflow?
+  currentWorkflow.tasks.filter(
+   task=>task.status==="Running"
+  ).length:0;
+}
+
+function nextPendingTask(){
+ if(!currentWorkflow)return null;
+
+ return currentWorkflow.tasks.find(
+  task=>task.status==="Pending"
+ );
+
+}
+
+function startWorkflow(){
+ if(!currentWorkflow){
+  createPlan();
+ }
+
+ const w=currentWorkflow;
+
+ if(w.status!=="Planned"){
+  notify("Create a new plan to start another workflow");
+  return;
+ }
+
+ w.status="Running";
+ w.started_at=now();
+
+ trace("Supervisor started simulated workflow execution.");
+ renderAll();
+ scheduleNext();
+}
+
+function scheduleNext(){
+ clearTimer();
+
+ const w=currentWorkflow;
+
+ if(!w||w.status!=="Running")return;
+
+ const task=nextPendingTask();
+
+ if(!task){
+  finishWorkflow();
+  return;
+ }
+
+ const dependenciesMet=task.depends_on.every(id=>
+  w.tasks.some(t=>t.id===id&&t.status==="Completed")
+ );
+
+ if(!dependenciesMet){
+  w.status="Blocked";
+  trace("Workflow blocked: task dependencies not satisfied.");
+  renderAll();
+  return;
+ }
+
+ task.status="Running";
+
+ trace(`${task.agent_name} assigned task ${task.id}.`);
+ renderAll();
+
+ timer=setTimeout(()=>{
+  timer=null;
+
+  if(w!==currentWorkflow||w.status!=="Running")return;
+
+  task.status="Completed";
+  task.result=resultTemplates[task.agent_id];
+
+  trace(`${task.agent_name} completed ${task.id}.`);
+
+  renderAll();
+  scheduleNext();
+ },w.speed);
+}
+
+function finishWorkflow(){
+ const w=currentWorkflow;
+ if(!w)return;
+
+ if(w.approval_required){
+  w.status="Awaiting Approval";
+  trace("Supervisor reached the simulated human approval gate.");
+ }else{
+  w.status="Completed";
+  w.completed_at=now();
+  trace("Supervisor completed the demonstration workflow.");
+ }
+
+ renderAll();
+}
+
+function pauseWorkflow(){
+ const w=currentWorkflow;
+
+ if(!w||w.status!=="Running")return;
+
+ clearTimer();
+
+ const task=w.tasks.find(t=>t.status==="Running");
+
+ if(task){
+  task.status="Pending";
+ }
+
+ w.status="Paused";
+ trace("Workflow paused; active simulated task returned to pending.");
+ renderAll();
+}
+
+function resumeWorkflow(){
+ const w=currentWorkflow;
+
+ if(!w||w.status!=="Paused")return;
+
+ w.status="Running";
+ trace("Supervisor resumed workflow execution.");
+
+ renderAll();
+ scheduleNext();
+}
+
+function cancelWorkflow(){
+ const w=currentWorkflow;
+
+ if(!w||[
+  "Completed","Rejected","Cancelled"
+ ].includes(w.status))return;
+
+ clearTimer();
+
+ w.tasks.forEach(task=>{
+  if(task.status==="Running"||task.status==="Pending"){
+   task.status="Cancelled";
+  }
+ });
+
+ w.status="Cancelled";
+ w.completed_at=now();
+
+ trace("Supervisor cancelled the simulated workflow.");
+ renderAll();
+}
+
+function approvalDecision(approved){
+ const w=currentWorkflow;
+
+ if(!w||w.status!=="Awaiting Approval")return;
+
+ w.approval={
+  decision:approved?"Approved":"Rejected",
+  timestamp:now(),
+  simulated:true
+ };
+
+ w.status=approved?"Completed":"Rejected";
+ w.completed_at=now();
+
+ trace(
+  approved?
+  "Human review gate approved the demonstration workflow.":
+  "Human review gate rejected the demonstration workflow."
+ );
+
+ renderAll();
+ notify("Simulated review decision recorded");
+}
+
+function renderAgents(){
+ const root=$("agentGrid");
+ root.replaceChildren();
+
+ agents.forEach(agent=>{
+  const task=currentWorkflow?.tasks.find(
+   t=>t.agent_id===agent.id
+  );
+
+  const status=task?.status||"Available";
+
+  const col=element("div",undefined,"col-md-6 col-xl-4");
+
+  const card=element(
+   "div",undefined,
+   "agent-node "+(
+    status==="Running"?"running":
+    status==="Completed"?"completed":
+    status==="Cancelled"?"failed":""
+   )
+  );
+
+  const row=element("div",undefined,"d-flex gap-3");
+
+  const icon=element("div",undefined,"agent-icon");
+  icon.append(element("i",undefined,"bi "+agent.icon));
+
+  const body=element("div",undefined,"flex-grow-1");
+  add(body,"div",agent.name,"agent-name");
+  add(body,"div",agent.description,"agent-description mt-1");
+
+  const tag=badge(status,statusClass(status));
+  tag.classList.add("mt-2");
+  body.append(tag);
+
+  row.append(icon,body);
+  card.append(row);
+
+  const meta=element("div",undefined,"agent-meta");
+  add(meta,"span",task?"Assigned":"Standby");
+  add(meta,"span",task?.id||"No task");
+
+  card.append(meta);
+  col.append(card);
+  root.append(col);
+ });
+}
+
+function renderSteps(){
+ const root=$("workflowSteps");
+ root.replaceChildren();
+
+ if(!currentWorkflow){
+  add(root,"p","Generate a workflow plan to view tasks.",
+   "text-secondary");
+  return;
+ }
+
+ currentWorkflow.tasks.forEach((task,index)=>{
+  const row=element("div",undefined,"workflow-step");
+
+  add(row,"div",String(index+1),"step-number");
+
+  const body=element("div",undefined,"flex-grow-1");
+
+  add(body,"div",task.agent_name,"step-title");
+
+  add(body,"div",
+   task.depends_on.length?
+   "Depends on "+task.depends_on.join(", "):
+   "No task dependencies",
+   "step-description"
+  );
+
+  if(task.result){
+   add(body,"div",task.result,"step-description");
+  }
+
+  const status=badge(
+   task.status,statusClass(task.status)
+  );
+
+  row.append(body,status);
+  root.append(row);
+ });
+}
+
+function renderProgress(){
+ const w=currentWorkflow;
+
+ if(!w){
+  $("workflowProgress").style.width="0%";
+  $("progressPercent").textContent="0%";
+  $("progressText").textContent="No workflow planned";
+  return;
+ }
+
+ const count=completedCount();
+ const total=w.tasks.length;
+ const percent=total?Math.round(count/total*100):0;
+
+ $("workflowProgress").style.width=percent+"%";
+ $("progressPercent").textContent=percent+"%";
+ $("progressText").textContent=
+  `${count} of ${total} tasks completed`;
+}
+
+function detailRow(label,value){
+ const row=element(
+  "div",undefined,
+  "d-flex justify-content-between gap-3 py-3 border-bottom"
+ );
+
+ add(row,"span",label,"text-secondary");
+ add(row,"strong",value);
+
+ return row;
+}
+
+function renderDecision(){
+ const root=$("decisionDetails");
+ root.replaceChildren();
+
+ const w=currentWorkflow;
+
+ if(!w){
+  add(root,"p","No active workflow.","text-secondary");
+  return;
+ }
+
+ root.append(
+  detailRow("Workflow ID",w.id),
+  detailRow("Asset",w.asset),
+  detailRow("Priority",w.priority),
+  detailRow("Tasks",String(w.tasks.length)),
+  detailRow("Approval Gate",w.approval_required?"Enabled":"Disabled"),
+  detailRow("Status",w.status)
+ );
+
+ if(w.approval){
+  root.append(
+   detailRow("Review Decision",w.approval.decision)
+  );
+ }
+}
+
+function renderTrace(){
+ const root=$("executionTrace");
+ root.replaceChildren();
+
+ if(!currentWorkflow||!currentWorkflow.trace.length){
+  add(root,"p","No execution events recorded.",
+   "text-secondary");
+  return;
+ }
+
+ currentWorkflow.trace.forEach(event=>{
+  const row=element("div",undefined,"trace-item");
+
+  const icon=element("div",undefined,"trace-icon");
+  icon.append(
+   element("i",undefined,"bi bi-activity")
+  );
+
+  const body=element("div");
+  add(body,"strong",event.message);
+  add(body,"p",event.timestamp);
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderResults(){
+ const root=$("taskResults");
+ root.replaceChildren();
+
+ const completed=currentWorkflow?.tasks.filter(
+  task=>task.result
+ )||[];
+
+ if(!completed.length){
+  add(root,"p","No completed agent outputs yet.",
+   "text-secondary");
+  return;
+ }
+
+ completed.forEach(task=>{
+  const row=element("div",undefined,"trace-item");
+
+  const icon=element("div",undefined,"trace-icon");
+  icon.append(
+   element("i",undefined,"bi bi-check2-circle")
+  );
+
+  const body=element("div");
+  add(body,"strong",task.agent_name);
+  add(body,"p",task.result);
+
+  row.append(icon,body);
+  root.append(row);
+ });
+}
+
+function renderKpis(){
+ $("agentsKpi").textContent=agents.length;
+ $("completedKpi").textContent=completedCount();
+ $("runningKpi").textContent=runningCount();
+ $("approvalKpi").textContent=
+  currentWorkflow?.status==="Awaiting Approval"?1:0;
+}
+
+function renderControls(){
+ const status=currentWorkflow?.status||"Idle";
+
+ $("workflowStatus").textContent=status;
+ $("workflowStatus").className=
+  "badge-soft "+statusClass(status);
+
+ $("supervisorState").textContent=status;
+
+ $("startButton").disabled=
+  status!=="Planned"&&status!=="Idle";
+
+ $("pauseButton").disabled=status!=="Running";
+ $("resumeButton").disabled=status!=="Paused";
+
+ $("cancelButton").disabled=![
+  "Planned","Running","Paused",
+  "Awaiting Approval","Blocked"
+ ].includes(status);
+
+ $("approveButton").disabled=status!=="Awaiting Approval";
+ $("rejectButton").disabled=status!=="Awaiting Approval";
+
+ const locked=["Running","Paused","Awaiting Approval"]
+  .includes(status);
+
+ $("planButton").disabled=locked;
+
+ [
+  "workflowType","assetSelect","prioritySelect",
+  "workflowName","executionSpeed","approvalMode"
+ ].forEach(id=>{
+  $(id).disabled=locked;
+ });
+}
+
+function renderCharts(){
+ if(agentChart){
+  agentChart.destroy();
+  agentChart=null;
+ }
+
+ if(statusChart){
+  statusChart.destroy();
+  statusChart=null;
+ }
+
+ if(typeof Chart==="undefined")return;
+
+ const tasks=currentWorkflow?.tasks||[];
+
+ const labels=agents.map(agent=>agent.name.replace(" Agent",""));
+
+ const values=agents.map(agent=>
+  tasks.filter(task=>
+   task.agent_id===agent.id&&task.status==="Completed"
+  ).length
+ );
+
+ agentChart=new Chart($("agentChart"),{
+  type:"bar",
+  data:{
+   labels,
+   datasets:[{
+    label:"Completed Tasks",
+    data:values,
+    backgroundColor:"#6855eb",
+    borderRadius:6
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   indexAxis:"y",
+   plugins:{legend:{display:false}},
+   scales:{
+    x:{
+     min:0,
+     max:1,
+     ticks:{stepSize:1},
+     grid:{color:"#eef0f7"}
+    },
+    y:{grid:{display:false}}
+   }
+  }
+ });
+
+ const statuses=[
+  "Completed","Running","Pending","Cancelled"
+ ];
+
+ statusChart=new Chart($("statusChart"),{
+  type:"doughnut",
+  data:{
+   labels:statuses,
+   datasets:[{
+    data:statuses.map(status=>
+     tasks.filter(task=>task.status===status).length
+    ),
+    backgroundColor:[
+     "#16b88a","#438df5","#b7bed1","#eb6174"
+    ],
+    borderWidth:0
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   cutout:"67%",
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{boxWidth:10,font:{size:10}}
+    }
+   }
+  }
+ });
+}
+
+function renderHistory(){
+ const root=$("historyTable");
+ root.replaceChildren();
+
+ if(!history.length){
+  const row=element("tr");
+  const cell=element(
+   "td","No workflows created yet.",
+   "text-center text-secondary py-4"
+  );
+  cell.colSpan=8;
+  row.append(cell);
+  root.append(row);
+  return;
+ }
+
+ history.forEach(w=>{
+  const row=element("tr");
+
+  const id=element("td");
+  add(id,"div",w.id,"table-title");
+  add(id,"div",w.name,"table-sub");
+
+  const type=element("td",w.type);
+  const asset=element("td",w.asset);
+  const priority=element("td",w.priority);
+
+  const status=element("td");
+  status.append(
+   badge(w.status,statusClass(w.status))
+  );
+
+  const completed=element(
+   "td",
+   `${w.tasks.filter(t=>t.status==="Completed").length}/${w.tasks.length}`
+  );
+
+  const started=element(
+   "td",w.started_at||"Not started"
+  );
+
+  const action=element("td");
+  const button=element(
+   "button","View","small-action"
+  );
+
+  button.type="button";
+  button.disabled=
+   Boolean(currentWorkflow&&[
+    "Running","Paused","Awaiting Approval"
+   ].includes(currentWorkflow.status));
+
+  button.addEventListener("click",()=>{
+   clearTimer();
+   currentWorkflow=w;
+   renderAll();
+  });
+
+  action.append(button);
+
+  row.append(
+   id,type,asset,priority,
+   status,completed,started,action
+  );
+
+  root.append(row);
+ });
+}
+
+function renderJson(){
+ $("outputJson").textContent=JSON.stringify({
+  current_workflow:currentWorkflow,
+  total_workflows:history.length,
+  simulation:true,
+  real_agent_calls:false,
+  backend_connected:false,
+  industrial_actions_executed:false
+ },null,2);
+}
+
+function renderAll(){
+ renderAgents();
+ renderSteps();
+ renderProgress();
+ renderDecision();
+ renderTrace();
+ renderResults();
+ renderKpis();
+ renderControls();
+ renderCharts();
+ renderHistory();
+ renderJson();
+}
+
+function csvCell(value){
+ const text=String(value??"");
+ const safe=/^\s*[=+\-@]/.test(text)?"'"+text:text;
+ return '"'+safe.replaceAll('"','""')+'"';
+}
+
+function download(content,filename,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[
+  [
+   "Workflow ID","Type","Asset","Priority",
+   "Status","Completed Tasks","Total Tasks","Started"
+  ],
+  ...history.map(w=>[
+   w.id,w.type,w.asset,w.priority,
+   w.status,
+   w.tasks.filter(t=>t.status==="Completed").length,
+   w.tasks.length,w.started_at||""
+  ])
+ ];
+
+ download(
+  rows.map(row=>row.map(csvCell).join(",")).join("\r\n"),
+  "supervisor-workflows.csv",
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Workflow history CSV exported");
+}
+
+function exportJson(){
+ download(
+  JSON.stringify({
+   workflows:history,
+   simulation:true
+  },null,2),
+  "supervisor-workflows.json",
+  "application/json"
+ );
+
+ notify("Supervisor JSON exported");
+}
+
+async function copyJson(){
+ try{
+  await navigator.clipboard.writeText(
+   $("outputJson").textContent
+  );
+  notify("Supervisor JSON copied");
+ }catch{
+  notify("Clipboard unavailable; select JSON manually");
+ }
+}
+
+function reset(){
+ clearTimer();
+
+ currentWorkflow=null;
+ history=[];
+ nextWorkflowId=1;
+
+ $("workflowType").selectedIndex=0;
+ $("assetSelect").selectedIndex=0;
+ $("prioritySelect").selectedIndex=0;
+ $("workflowName").value="";
+ $("executionSpeed").value="1200";
+ $("approvalMode").value="enabled";
+
+ renderAll();
+ notify("Supervisor workspace reset");
+}
+
+function initNavigation(){
+ const sidebar=$("sidebar");
+ const shade=$("shade");
+
+ function close(){
+  sidebar.classList.remove("open");
+  shade.classList.remove("show");
+ }
+
+ $("menuButton").addEventListener("click",()=>{
+  sidebar.classList.add("open");
+  shade.classList.add("show");
+ });
+
+ shade.addEventListener("click",close);
+
+ document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")close();
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ initNavigation();
+ renderAll();
+
+ $("planButton").addEventListener("click",createPlan);
+ $("startButton").addEventListener("click",startWorkflow);
+ $("pauseButton").addEventListener("click",pauseWorkflow);
+ $("resumeButton").addEventListener("click",resumeWorkflow);
+ $("cancelButton").addEventListener("click",cancelWorkflow);
+
+ $("approveButton").addEventListener("click",()=>{
+  approvalDecision(true);
+ });
+
+ $("rejectButton").addEventListener("click",()=>{
+  approvalDecision(false);
+ });
+
+ $("exportCsvButton").addEventListener("click",exportCsv);
+ $("exportJsonButton").addEventListener("click",exportJson);
+ $("copyButton").addEventListener("click",copyJson);
+ $("resetButton").addEventListener("click",reset);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1418 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f6fb">
+<title>AI Agent Command Center | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple2:#8b7af9;
+ --green:#16b88a;
+ --orange:#f2a53a;
+ --red:#eb6174;
+ --blue:#438df5;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8b93aa;
+ --border:#e9ebf3;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5,h6{
+ font-family:"Manrope",sans-serif;
+ letter-spacing:-.6px;
+}
+a{text-decoration:none}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
+ outline:3px solid #a89aff!important;
+ outline-offset:2px;
+}
+.sidebar{
+ position:fixed;
+ inset:0 auto 0 0;
+ width:var(--sidebar);
+ background:var(--navy);
+ color:#aab1ce;
+ z-index:1050;
+ display:flex;
+ flex-direction:column;
+ transition:transform .25s;
+}
+.brand{
+ height:83px;
+ padding:21px 23px;
+ display:flex;
+ align-items:center;
+ gap:12px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-mark{
+ width:43px;height:43px;
+ border-radius:14px;
+ background:linear-gradient(135deg,#9c83ff,#5a48e4);
+ color:white;
+ display:grid;
+ place-items:center;
+ font-size:22px;
+}
+.brand strong{color:white;font-size:17px}
+.brand small{
+ display:block;
+ font-size:9px;
+ letter-spacing:2px;
+ color:#7883b0;
+}
+.sidebar-body{
+ overflow-y:auto;
+ flex:1;
+ padding:16px 12px;
+}
+.sidebar-label{
+ color:#687397;
+ text-transform:uppercase;
+ font-size:9px;
+ font-weight:800;
+ letter-spacing:2px;
+ padding:20px 15px 9px;
+}
+.side-link{
+ display:flex;
+ align-items:center;
+ gap:13px;
+ padding:11px 14px;
+ margin:3px 0;
+ color:#9da8ca;
+ border-radius:11px;
+ font-size:12px;
+ font-weight:600;
+ transition:.2s;
+}
+.side-link i{font-size:17px;width:21px;text-align:center}
+.side-link:hover{background:#ffffff10;color:white}
+.side-link.active{
+ background:linear-gradient(90deg,#6b59e8,#5346ba);
+ color:white;
+}
+.sidebar-foot{padding:18px;border-top:1px solid #ffffff12}
+.sidebar-status{
+ border-radius:13px;
+ padding:13px;
+ background:#ffffff09;
+ border:1px solid #ffffff12;
+}
+.status-dot{
+ display:inline-block;
+ width:8px;height:8px;
+ border-radius:50%;
+ background:#2cdaa2;
+ margin-right:7px;
+}
+.app{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ background:white;
+ min-height:76px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:15px;
+ padding:15px 30px;
+ border-bottom:1px solid var(--border);
+ position:sticky;
+ top:0;
+ z-index:100;
+}
+.topbar-title{font-size:15px;font-weight:800}
+.topbar-sub{color:var(--muted);font-size:11px;margin-top:3px}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ height:39px;width:39px;
+ display:grid;place-items:center;
+ border-radius:12px;
+ border:1px solid var(--border);
+ background:#fafaff;
+ color:#555e7b;
+ font-size:16px;
+}
+.top-icon:hover{background:#eeecff;color:var(--purple)}
+.avatar{
+ height:39px;width:39px;
+ border-radius:13px;
+ display:grid;place-items:center;
+ color:white;
+ font-weight:800;
+ background:linear-gradient(135deg,#7e6bf4,#a18dff);
+}
+.content{padding:29px;max-width:1850px;margin:auto}
+.eyebrow{
+ text-transform:uppercase;
+ letter-spacing:2px;
+ font-size:10px;
+ font-weight:800;
+ color:var(--purple);
+}
+.page-title{font-size:29px;font-weight:800;margin:9px 0 6px}
+.page-description{color:var(--muted);line-height:1.7}
+.btn-premium{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+ background:var(--purple);
+ color:white;
+ border:1px solid var(--purple);
+ border-radius:11px;
+ padding:11px 17px;
+ font-size:12px;
+ font-weight:700;
+}
+.btn-premium:hover{background:#5642d7;color:white}
+.btn-soft{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+ background:white;
+ color:#5e6680;
+ border:1px solid var(--border);
+ border-radius:11px;
+ padding:11px 15px;
+ font-size:12px;
+ font-weight:700;
+}
+.btn-soft:hover{background:#f1efff;color:var(--purple)}
+.surface{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:18px;
+ box-shadow:0 8px 30px #24305b08;
+}
+.hero{
+ position:relative;
+ overflow:hidden;
+ background:linear-gradient(115deg,#6651e9,#8e74f4 65%,#a894ff);
+ color:white;
+ border-radius:22px;
+ padding:31px 33px;
+ box-shadow:0 15px 35px #7564ea28;
+}
+.hero:after{
+ content:"";
+ position:absolute;
+ width:330px;height:330px;
+ right:-60px;top:-145px;
+ border:1px solid #ffffff45;
+ border-radius:50%;
+ box-shadow:0 0 0 45px #ffffff0b,0 0 0 95px #ffffff09;
+ pointer-events:none;
+}
+.hero h2{font-size:25px;font-weight:800}
+.hero p{max-width:640px;color:#eeeaff;line-height:1.8}
+.hero-chip{
+ display:inline-flex;
+ align-items:center;
+ gap:7px;
+ background:#ffffff23;
+ border:1px solid #ffffff30;
+ padding:8px 12px;
+ border-radius:9px;
+ font-size:10px;
+ font-weight:700;
+}
+.metric{padding:21px;height:100%}
+.metric-top{display:flex;justify-content:space-between;align-items:center}
+.metric-label{color:#8a92a8;font-size:11px;font-weight:700}
+.metric-icon{
+ width:44px;height:44px;
+ border-radius:14px;
+ display:grid;place-items:center;
+ font-size:20px;
+}
+.metric-value{
+ font-size:29px;
+ font-family:"Manrope",sans-serif;
+ font-weight:800;
+ margin:14px 0 6px;
+}
+.metric-foot{font-size:10px;color:#9aa1b3}
+.section-title{font-size:17px;font-weight:800}
+.section-sub{font-size:11px;color:var(--muted)}
+.agent-card{
+ padding:21px;
+ height:100%;
+ transition:.2s;
+}
+.agent-card:hover{
+ transform:translateY(-3px);
+ border-color:#d9d3ff;
+ box-shadow:0 14px 35px #6855eb13;
+}
+.agent-icon{
+ width:48px;height:48px;
+ border-radius:15px;
+ display:grid;place-items:center;
+ font-size:22px;
+}
+.agent-card h3{font-size:13px;font-weight:800;margin:0}
+.agent-card p{
+ font-size:11px;
+ color:#8790a6;
+ line-height:1.7;
+ min-height:56px;
+}
+.agent-stat{
+ background:#f8f9fd;
+ border:1px solid #eff0f6;
+ border-radius:11px;
+ padding:11px;
+}
+.agent-stat strong{font-size:15px;font-weight:800}
+.agent-stat span{font-size:9px;color:var(--muted)}
+.status-badge{
+ display:inline-flex;
+ align-items:center;
+ gap:5px;
+ padding:6px 10px;
+ border-radius:8px;
+ font-size:9px;
+ font-weight:800;
+}
+.status-active{background:#e5f8f0;color:#13a776}
+.status-idle{background:#eaf2ff;color:#438df5}
+.status-paused{background:#fff4e2;color:#d58c20}
+.status-review{background:#fff4e2;color:#d58c20}
+.status-completed{background:#e5f8f0;color:#13a776}
+.status-queued{background:#eaf2ff;color:#438df5}
+.status-rejected{background:#ffebee;color:#df4d64}
+.workflow-node{
+ position:relative;
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:15px;
+ border:1px solid var(--border);
+ border-radius:13px;
+ background:#fafbff;
+ margin-bottom:12px;
+}
+.workflow-node .node-icon{
+ width:37px;height:37px;
+ border-radius:11px;
+ background:#eeebff;
+ color:var(--purple);
+ display:grid;
+ place-items:center;
+ font-size:17px;
+ flex-shrink:0;
+}
+.workflow-node strong{font-size:11px}
+.workflow-node small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.workflow-arrow{text-align:center;color:#b3a8fa;margin:-7px 0 5px}
+.table thead th{
+ background:#fafbfe;
+ color:#9099ae;
+ font-size:10px;
+ text-transform:uppercase;
+ letter-spacing:.7px;
+ padding:15px 18px;
+ white-space:nowrap;
+ border-bottom:1px solid var(--border);
+}
+.table tbody td{
+ padding:16px 18px;
+ font-size:11px;
+ color:#66708a;
+ vertical-align:middle;
+ border-color:#f0f1f7;
+}
+.task-title{font-weight:800;color:#252c48}
+.task-sub{font-size:9px;color:#9ca4b8;margin-top:5px}
+.small-action{
+ border:1px solid var(--border);
+ background:white;
+ border-radius:8px;
+ padding:7px 10px;
+ color:#66718d;
+ font-size:10px;
+ font-weight:700;
+}
+.small-action:hover{background:#eeebff;color:var(--purple)}
+.activity-row{
+ display:flex;
+ gap:12px;
+ padding:13px 0;
+ border-bottom:1px solid var(--border);
+}
+.activity-row:last-child{border-bottom:0}
+.activity-dot{
+ width:9px;height:9px;
+ border-radius:50%;
+ flex-shrink:0;
+ margin-top:5px;
+}
+.activity-row strong{font-size:11px}
+.activity-row p{font-size:10px;color:var(--muted);margin:5px 0}
+.chart-wrap{height:270px;position:relative}
+.form-label{font-size:11px;font-weight:800;color:#5b6480}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;
+ padding:11px 12px;
+ font-size:12px;
+}
+.form-control:focus,.form-select:focus{
+ border-color:#a69aff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+.modal-content{border:0;border-radius:18px}
+.modal-header,.modal-footer{border-color:var(--border)}
+.footer{
+ padding:23px 30px;
+ border-top:1px solid var(--border);
+ color:#9aa2b5;
+ font-size:10px;
+ display:flex;
+ justify-content:space-between;
+ gap:12px;
+}
+.mobile-shade{display:none}
+@media(max-width:1199px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .app{margin-left:0}
+ .mobile-shade.show{
+  display:block;
+  position:fixed;
+  inset:0;
+  background:#0008;
+  z-index:1040;
+ }
+}
+@media(max-width:575px){
+ .content{padding:17px}
+ .topbar{padding:13px 17px}
+ .page-title{font-size:23px}
+ .hero{padding:23px}
+ .hero h2{font-size:20px}
+ .metric-value{font-size:25px}
+ .footer{flex-direction:column;padding:17px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-shade" id="shade"></div>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div class="brand-mark"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a997ff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </div>
+
+ <nav class="sidebar-body" aria-label="Main navigation">
+  <div class="sidebar-label">Main Menu</div>
+  <a class="side-link" href="../index.html"><i class="bi bi-house-door"></i>Home</a>
+  <a class="side-link" href="../dashboard.html"><i class="bi bi-grid-1x2"></i>Dashboard</a>
+  <a class="side-link" href="../command-center.html"><i class="bi bi-broadcast"></i>Command Center</a>
+  <a class="side-link" href="../analytics.html"><i class="bi bi-bar-chart-line"></i>Analytics Studio</a>
+  <a class="side-link" href="../reports.html"><i class="bi bi-file-earmark-bar-graph"></i>Reports</a>
+  <a class="side-link" href="../notifications.html"><i class="bi bi-bell"></i>Notifications</a>
+
+  <div class="sidebar-label">Operations</div>
+  <a class="side-link" href="../assets/assets.html"><i class="bi bi-cpu"></i>Asset Intelligence</a>
+  <a class="side-link" href="../telemetry/live-telemetry.html"><i class="bi bi-activity"></i>Live Telemetry</a>
+  <a class="side-link" href="../predictive-maintenance/maintenance-dashboard.html"><i class="bi bi-tools"></i>Predictive Maintenance</a>
+  <a class="side-link" href="../computer-vision/vision-dashboard.html"><i class="bi bi-eye"></i>Computer Vision</a>
+  <a class="side-link" href="../maintenance/work-orders.html"><i class="bi bi-clipboard-check"></i>Work Orders</a>
+  <a class="side-link" href="../production/production-dashboard.html"><i class="bi bi-buildings"></i>Production & OEE</a>
+  <a class="side-link" href="../energy/energy-dashboard.html"><i class="bi bi-lightning-charge"></i>Energy Analytics</a>
+
+  <div class="sidebar-label">Risk & Intelligence</div>
+  <a class="side-link" href="../safety/safety-dashboard.html"><i class="bi bi-shield-check"></i>Safety Intelligence</a>
+  <a class="side-link" href="../emergency/emergency-dashboard.html"><i class="bi bi-exclamation-triangle"></i>Emergency Response</a>
+  <a class="side-link" href="../cost-intelligence/cost-dashboard.html"><i class="bi bi-currency-rupee"></i>Cost Intelligence</a>
+  <a class="side-link" href="../copilot/ai-copilot.html"><i class="bi bi-stars"></i>AI Copilot</a>
+  <a class="side-link active" href="agent-dashboard.html" aria-current="page"><i class="bi bi-diagram-3"></i>AI Agents</a>
+  <a class="side-link" href="../rag/knowledge-base.html"><i class="bi bi-journal-text"></i>Knowledge & RAG</a>
+  <a class="side-link" href="../mlops/mlops-dashboard.html"><i class="bi bi-boxes"></i>MLOps</a>
+  <a class="side-link" href="../evaluation/evaluation-dashboard.html"><i class="bi bi-check2-circle"></i>Evaluation</a>
+
+  <div class="sidebar-label">Administration</div>
+  <a class="side-link" href="../observability/observability-dashboard.html"><i class="bi bi-speedometer2"></i>Observability</a>
+  <a class="side-link" href="../security/security-dashboard.html"><i class="bi bi-lock"></i>Security</a>
+  <a class="side-link" href="../settings/settings.html"><i class="bi bi-gear"></i>Settings</a>
+ </nav>
+
+ <div class="sidebar-foot">
+  <div class="sidebar-status">
+   <div class="fw-bold text-white small"><span class="status-dot"></span>Agent Orchestration</div>
+   <div class="mt-2" style="font-size:10px">Simulation mode · No live agent execution</div>
+  </div>
+ </div>
+</aside>
+
+<div class="app">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon d-xl-none" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="topbar-title">Multi-Agent Orchestration Center</div>
+   <div class="topbar-sub">Workspace / AI Intelligence / Agents</div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="d-none d-md-inline text-secondary small">Simulation mode</span>
+  <button class="top-icon" id="refreshButton" aria-label="Reset simulation">
+   <i class="bi bi-arrow-clockwise"></i>
+  </button>
+  <a href="../notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <a href="../settings/profile.html" class="avatar" aria-label="Profile">AI</a>
+ </div>
+</header>
+
+<main class="content">
+
+ <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+  <div>
+   <div class="eyebrow">Advanced Agentic AI Infrastructure</div>
+   <h1 class="page-title">AI Agent Command Center <span style="color:var(--purple)">✦</span></h1>
+   <div class="page-description">
+    Coordinate industrial AI agents, simulate workflows, review task queues and monitor orchestration performance.
+   </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+   <button class="btn-soft" id="pauseAllButton"><i class="bi bi-pause-circle"></i> Pause All</button>
+   <button class="btn-premium" data-bs-toggle="modal" data-bs-target="#taskModal">
+    <i class="bi bi-plus-circle"></i> New Agent Task
+   </button>
+  </div>
+ </div>
+
+ <section class="hero mb-4">
+  <div class="position-relative" style="z-index:1">
+   <div class="text-uppercase fw-bold mb-3" style="font-size:10px;letter-spacing:2px">
+    <i class="bi bi-stars me-1"></i> Autonomous Intelligence Orchestration
+   </div>
+   <h2>One supervisor.<br>Multiple intelligent agents.</h2>
+   <p class="mt-3 mb-4">
+    Explore an orchestrated network of specialized industrial AI agents for
+    equipment health, predictive maintenance, safety, emergency response,
+    inspection, cost optimization and reporting.
+   </p>
+   <div class="d-flex flex-wrap gap-2">
+    <span class="hero-chip"><i class="bi bi-diagram-3"></i> Supervisor Architecture</span>
+    <span class="hero-chip"><i class="bi bi-cpu"></i> Specialized Agents</span>
+    <span class="hero-chip"><i class="bi bi-shield-check"></i> Human Approvals</span>
+    <span class="hero-chip"><i class="bi bi-info-circle"></i> Demo Simulation</span>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4" aria-label="Agent metrics">
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Registered Agents</span>
+     <span class="metric-icon" style="background:#eeebff;color:var(--purple)"><i class="bi bi-robot"></i></span>
+    </div>
+    <div class="metric-value" id="totalAgents">0</div>
+    <div class="metric-foot">Available agent configurations</div>
+   </div>
+  </div>
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Active Agents</span>
+     <span class="metric-icon" style="background:#e5f8f0;color:var(--green)"><i class="bi bi-lightning-charge"></i></span>
+    </div>
+    <div class="metric-value" id="activeAgents">0</div>
+    <div class="metric-foot">Enabled in simulation</div>
+   </div>
+  </div>
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Completed Tasks</span>
+     <span class="metric-icon" style="background:#eaf2ff;color:var(--blue)"><i class="bi bi-check-circle"></i></span>
+    </div>
+    <div class="metric-value" id="completedTasks">0</div>
+    <div class="metric-foot">Simulated task completions</div>
+   </div>
+  </div>
+  <div class="col-6 col-lg-3">
+   <div class="surface metric">
+    <div class="metric-top">
+     <span class="metric-label">Pending Approvals</span>
+     <span class="metric-icon" style="background:#fff4e2;color:var(--orange)"><i class="bi bi-person-check"></i></span>
+    </div>
+    <div class="metric-value" id="pendingApprovals">0</div>
+    <div class="metric-foot">Human review queue</div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-8">
+   <div class="surface p-4 h-100">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+     <div>
+      <h2 class="section-title mb-1">Agent Orchestration Workflow</h2>
+      <p class="section-sub mb-0">Illustrative supervisor-to-specialist execution flow</p>
+     </div>
+     <span class="status-badge status-active">SIMULATION READY</span>
+    </div>
+
+    <div class="workflow-node">
+     <div class="node-icon"><i class="bi bi-diagram-3"></i></div>
+     <div class="flex-grow-1">
+      <strong>Supervisor Agent</strong>
+      <small>Task routing · Delegation · Policy checks</small>
+     </div>
+     <span class="status-badge status-active">Enabled</span>
+    </div>
+
+    <div class="workflow-arrow"><i class="bi bi-arrow-down"></i></div>
+
+    <div class="row g-2 mb-2">
+     <div class="col-md-4">
+      <div class="workflow-node mb-0">
+       <div class="node-icon"><i class="bi bi-cpu"></i></div>
+       <div><strong>Asset Analysis</strong><small>Condition intelligence</small></div>
+      </div>
+     </div>
+     <div class="col-md-4">
+      <div class="workflow-node mb-0">
+       <div class="node-icon"><i class="bi bi-tools"></i></div>
+       <div><strong>Maintenance</strong><small>Failure & RUL</small></div>
+      </div>
+     </div>
+     <div class="col-md-4">
+      <div class="workflow-node mb-0">
+       <div class="node-icon"><i class="bi bi-shield-check"></i></div>
+       <div><strong>Safety</strong><small>Risk intelligence</small></div>
+      </div>
+     </div>
+    </div>
+
+    <div class="workflow-arrow"><i class="bi bi-arrow-down"></i></div>
+
+    <div class="workflow-node">
+     <div class="node-icon"><i class="bi bi-person-check"></i></div>
+     <div class="flex-grow-1">
+      <strong>Human Review & Approval</strong>
+      <small>Required for consequential industrial decisions</small>
+     </div>
+     <span class="status-badge status-review">Review Gate</span>
+    </div>
+
+    <div class="workflow-arrow"><i class="bi bi-arrow-down"></i></div>
+
+    <div class="workflow-node mb-0">
+     <div class="node-icon"><i class="bi bi-file-earmark-check"></i></div>
+     <div class="flex-grow-1">
+      <strong>Report & Audit Output</strong>
+      <small>Documented recommendations and workflow records</small>
+     </div>
+     <span class="status-badge status-idle">Preview</span>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-4">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Agent Performance</h2>
+    <p class="section-sub mb-3">Illustrative completed-task counts by agent</p>
+    <div class="chart-wrap">
+     <canvas id="performanceChart" aria-label="Agent task completion chart" role="img"></canvas>
+    </div>
+    <div class="p-3 rounded-3 mt-3" style="background:#f6f4ff;color:#6855eb;font-size:11px;line-height:1.8">
+     <i class="bi bi-info-circle me-1"></i>
+     The chart represents demo activity and is not a live agent evaluation or reliability benchmark.
+    </div>
+   </div>
+  </div>
+ </section>
+
+ <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <div>
+   <h2 class="section-title mb-1">Specialized AI Agent Network</h2>
+   <p class="section-sub mb-0">Select an agent to inspect its capabilities or change its simulated state</p>
+  </div>
+  <button class="btn-soft" id="resumeAllButton"><i class="bi bi-play-circle"></i> Resume All</button>
+ </div>
+
+ <section class="row g-3 mb-4" id="agentGrid"></section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-xl-8">
+   <div class="surface h-100">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 p-4 pb-3">
+     <div>
+      <h2 class="section-title mb-1">Agent Task Queue</h2>
+      <p class="section-sub mb-0">Simulation tasks and approval workflow</p>
+     </div>
+     <button class="btn-soft" id="runQueuedButton"><i class="bi bi-play-fill"></i> Run Queued</button>
+    </div>
+
+    <div class="table-responsive">
+     <table class="table mb-0">
+      <thead>
+       <tr>
+        <th>Task</th>
+        <th>Assigned Agent</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Actions</th>
+       </tr>
+      </thead>
+      <tbody id="taskTable"></tbody>
+     </table>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-xl-4">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Agent Activity Timeline</h2>
+    <p class="section-sub mb-3">Recent simulation events</p>
+    <div id="activityList"></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="row g-3 mb-4">
+  <div class="col-md-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Human-in-the-Loop Governance</h2>
+    <p class="section-sub mb-3">Review before consequential actions</p>
+    <div class="d-flex gap-3 align-items-start mb-3">
+     <div class="agent-icon" style="background:#fff4e2;color:#d58c20"><i class="bi bi-person-check"></i></div>
+     <div>
+      <strong>Approval Required</strong>
+      <p class="text-secondary mt-2" style="font-size:11px;line-height:1.8">
+       Maintenance decisions, emergency recommendations, work-order approvals and financial decisions should be reviewed by authorized personnel.
+      </p>
+     </div>
+    </div>
+    <span class="status-badge status-review">Human Review Enabled</span>
+   </div>
+  </div>
+
+  <div class="col-md-6">
+   <div class="surface p-4 h-100">
+    <h2 class="section-title mb-1">Agent Evaluation & Observability</h2>
+    <p class="section-sub mb-3">Explore quality and monitoring modules</p>
+    <div class="d-grid gap-2">
+     <a href="../evaluation/evaluation-dashboard.html" class="btn-soft justify-content-start">
+      <i class="bi bi-check2-circle"></i> Agent Evaluation Dashboard
+     </a>
+     <a href="../observability/observability-dashboard.html" class="btn-soft justify-content-start">
+      <i class="bi bi-activity"></i> Agent Observability
+     </a>
+     <a href="../mlops/mlops-dashboard.html" class="btn-soft justify-content-start">
+      <i class="bi bi-boxes"></i> Model Lifecycle & MLOps
+     </a>
+    </div>
+   </div>
+  </div>
+ </section>
+
+</main>
+
+<footer class="footer">
+ <span>© 2026 INDUSTRA AI · Multi-Agent Orchestration Workspace</span>
+ <span>Simulation only · No physical equipment control</span>
+</footer>
+
+</div>
+
+<!-- Create Task Modal -->
+<div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalTitle" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+   <div class="modal-header px-4 py-3">
+    <h5 class="modal-title fw-bold" id="taskModalTitle">Create Agent Task</h5>
+    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+   </div>
+   <form id="taskForm">
+    <div class="modal-body p-4">
+     <div class="mb-3">
+      <label class="form-label" for="taskName">Task Description</label>
+      <input id="taskName" class="form-control" maxlength="120" required placeholder="e.g. Review Motor M-12 vibration anomaly">
+     </div>
+     <div class="mb-3">
+      <label class="form-label" for="taskAgent">Assign Agent</label>
+      <select id="taskAgent" class="form-select" required></select>
+     </div>
+     <div class="mb-3">
+      <label class="form-label" for="taskPriority">Priority</label>
+      <select id="taskPriority" class="form-select">
+       <option>Normal</option>
+       <option>High</option>
+       <option>Critical</option>
+      </select>
+     </div>
+     <div class="p-3 rounded-3" style="background:#f4f2ff;color:#6855eb;font-size:11px;line-height:1.8">
+      This task will be added to a simulated queue. No LLM, external tools, industrial devices or backend services will be invoked.
+     </div>
+    </div>
+    <div class="modal-footer px-4">
+     <button class="btn-soft" type="button" data-bs-dismiss="modal">Cancel</button>
+     <button class="btn-premium" type="submit">Create Task</button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>
+
+<!-- Agent Details Modal -->
+<div class="modal fade" id="agentModal" tabindex="-1" aria-labelledby="agentModalTitle" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+   <div class="modal-header px-4 py-3">
+    <h5 class="modal-title fw-bold" id="agentModalTitle">Agent Details</h5>
+    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+   </div>
+   <div class="modal-body p-4">
+    <p class="text-secondary" id="agentDescription" style="line-height:1.9"></p>
+    <h6 class="fw-bold mt-4">Capabilities</h6>
+    <div id="agentCapabilities" class="d-flex flex-wrap gap-2 mt-3"></div>
+    <div class="mt-4 p-3 rounded-3" style="background:#f7f8fd">
+     <div class="d-flex justify-content-between">
+      <span>Simulation Status</span>
+      <strong id="agentStatus"></strong>
+     </div>
+    </div>
+   </div>
+   <div class="modal-footer px-4">
+    <button class="btn-soft" type="button" data-bs-dismiss="modal">Close</button>
+    <button class="btn-premium" type="button" id="toggleAgentButton">Pause Agent</button>
+   </div>
+  </div>
+ </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1200">
+ <div class="toast border-0 shadow" id="appToast" role="status" aria-live="polite">
+  <div class="toast-body d-flex align-items-center gap-2">
+   <i class="bi bi-info-circle text-primary"></i>
+   <span id="toastMessage"></span>
+  </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+/*
+ INDUSTRA AI AGENT DASHBOARD — DEMO MODE
+
+ All agent states, task completions and approvals are simulated.
+
+ Suggested future backend integration:
+ GET   /api/v1/agents
+ GET   /api/v1/agents/{id}
+ POST  /api/v1/agents/tasks
+ GET   /api/v1/agents/tasks
+ POST  /api/v1/agents/tasks/{id}/approve
+ POST  /api/v1/agents/tasks/{id}/reject
+ POST  /api/v1/agents/tasks/{id}/execute
+
+ Verify actual FastAPI routes, permissions and response schemas
+ before connecting this page to live services.
+*/
+
+const $=id=>document.getElementById(id);
+
+const seedAgents=[
+ {
+  id:"supervisor",
+  name:"Supervisor Agent",
+  icon:"bi-diagram-3",
+  color:"#6855eb",
+  bg:"#eeebff",
+  description:"Coordinates specialist agents, routes tasks and manages orchestration policies.",
+  capabilities:["Task Routing","Delegation","Workflow Planning","Approval Gates"],
+  completed:48,
+  active:true
+ },
+ {
+  id:"asset",
+  name:"Asset Health Agent",
+  icon:"bi-cpu",
+  color:"#438df5",
+  bg:"#eaf2ff",
+  description:"Reviews machine condition, telemetry signals and equipment health indicators.",
+  capabilities:["Asset Analysis","Telemetry Review","Health Scoring","Diagnostics"],
+  completed:36,
+  active:true
+ },
+ {
+  id:"maintenance",
+  name:"Maintenance Agent",
+  icon:"bi-tools",
+  color:"#f2a53a",
+  bg:"#fff4e2",
+  description:"Evaluates maintenance priorities, failure predictions and remaining useful life estimates.",
+  capabilities:["Failure Prediction","RUL Review","Maintenance Planning","Work Orders"],
+  completed:42,
+  active:true
+ },
+ {
+  id:"safety",
+  name:"Safety Agent",
+  icon:"bi-shield-check",
+  color:"#eb6174",
+  bg:"#ffebee",
+  description:"Reviews workplace hazards, safety observations and industrial risk indicators.",
+  capabilities:["Hazard Review","Safety Analysis","Risk Assessment","Compliance"],
+  completed:28,
+  active:true
+ },
+ {
+  id:"emergency",
+  name:"Emergency Response Agent",
+  icon:"bi-exclamation-triangle",
+  color:"#eb6174",
+  bg:"#ffebee",
+  description:"Produces emergency response recommendations for authorized human review.",
+  capabilities:["Incident Assessment","Response Planning","Escalation","Safety Protocols"],
+  completed:15,
+  active:true
+ },
+ {
+  id:"inspection",
+  name:"Inspection Agent",
+  icon:"bi-eye",
+  color:"#438df5",
+  bg:"#eaf2ff",
+  description:"Reviews computer-vision inspection findings, defects and image evidence.",
+  capabilities:["Visual Inspection","Defect Review","PPE Analysis","Evidence"],
+  completed:31,
+  active:true
+ },
+ {
+  id:"cost",
+  name:"Cost Intelligence Agent",
+  icon:"bi-currency-rupee",
+  color:"#16b88a",
+  bg:"#e5f8f0",
+  description:"Analyzes repair, replacement, downtime and maintenance cost scenarios.",
+  capabilities:["Cost Estimates","ROI","Repair vs Replace","Downtime Analysis"],
+  completed:25,
+  active:true
+ },
+ {
+  id:"report",
+  name:"Reporting Agent",
+  icon:"bi-file-earmark-bar-graph",
+  color:"#6855eb",
+  bg:"#eeebff",
+  description:"Prepares structured summaries and audit-ready draft reports.",
+  capabilities:["Report Drafting","Summaries","Audit Records","Recommendations"],
+  completed:33,
+  active:true
+ },
+ {
+  id:"failure",
+  name:"Failure Analysis Agent",
+  icon:"bi-activity",
+  color:"#f2a53a",
+  bg:"#fff4e2",
+  description:"Investigates possible failure patterns and anomaly correlations.",
+  capabilities:["Failure Analysis","Anomaly Review","Root Cause Hypotheses","Diagnostics"],
+  completed:22,
+  active:true
+ },
+ {
+  id:"incident",
+  name:"Incident Analysis Agent",
+  icon:"bi-clipboard-pulse",
+  color:"#eb6174",
+  bg:"#ffebee",
+  description:"Reviews incident evidence and drafts investigation summaries.",
+  capabilities:["Incident Review","Timeline Analysis","Risk Classification","Documentation"],
+  completed:19,
+  active:true
+ }
+];
+
+const seedTasks=[
+ {id:101,title:"Review Motor M-12 vibration anomaly",agent:"maintenance",priority:"High",status:"Queued"},
+ {id:102,title:"Assess sample PPE inspection finding",agent:"safety",priority:"Critical",status:"Pending Approval"},
+ {id:103,title:"Generate weekly equipment health summary",agent:"report",priority:"Normal",status:"Completed"},
+ {id:104,title:"Compare pump repair and replacement costs",agent:"cost",priority:"High",status:"Pending Approval"},
+ {id:105,title:"Review hydraulic pressure anomaly",agent:"failure",priority:"Normal",status:"Queued"}
+];
+
+let agents=seedAgents.map(a=>({...a,capabilities:[...a.capabilities]}));
+let tasks=seedTasks.map(t=>({...t}));
+let selectedAgentId=null;
+let nextTaskId=200;
+
+let activities=[
+ {text:"Agent simulation initialized",detail:"Demonstration workspace",color:"#6855eb"},
+ {text:"Reporting task marked complete",detail:"Sample task #103",color:"#16b88a"},
+ {text:"Safety review queued for approval",detail:"Sample task #102",color:"#f2a53a"}
+];
+
+let performanceChart=null;
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast"),{delay:3000}).show();
+}
+
+function logActivity(text,detail,color="#6855eb"){
+ activities.unshift({text,detail,color});
+ activities=activities.slice(0,12);
+ renderActivity();
+}
+
+function statusBadge(status){
+ const span=document.createElement("span");
+ const classMap={
+  "Queued":"status-queued",
+  "Pending Approval":"status-review",
+  "Completed":"status-completed",
+  "Rejected":"status-rejected"
+ };
+ span.className="status-badge "+(classMap[status]||"status-idle");
+ span.textContent=status;
+ return span;
+}
+
+function renderStats(){
+ $("totalAgents").textContent=agents.length;
+ $("activeAgents").textContent=agents.filter(a=>a.active).length;
+ $("completedTasks").textContent=tasks.filter(t=>t.status==="Completed").length;
+ $("pendingApprovals").textContent=tasks.filter(t=>t.status==="Pending Approval").length;
+}
+
+function renderAgents(){
+ const root=$("agentGrid");
+ root.replaceChildren();
+
+ agents.forEach(a=>{
+  const col=document.createElement("div");
+  col.className="col-md-6 col-xxl-4";
+
+  const card=document.createElement("article");
+  card.className="surface agent-card";
+
+  const header=document.createElement("div");
+  header.className="d-flex align-items-center gap-3 mb-3";
+
+  const icon=document.createElement("div");
+  icon.className="agent-icon";
+  icon.style.background=a.bg;
+  icon.style.color=a.color;
+
+  const symbol=document.createElement("i");
+  symbol.className="bi "+a.icon;
+  icon.append(symbol);
+
+  const heading=document.createElement("div");
+  heading.className="flex-grow-1";
+
+  const title=document.createElement("h3");
+  title.textContent=a.name;
+
+  const badge=document.createElement("span");
+  badge.className="status-badge mt-2 "+(a.active?"status-active":"status-paused");
+  badge.textContent=a.active?"Active":"Paused";
+
+  heading.append(title,badge);
+  header.append(icon,heading);
+
+  const description=document.createElement("p");
+  description.textContent=a.description;
+
+  const stats=document.createElement("div");
+  stats.className="row g-2 mb-3";
+
+  const statCol=document.createElement("div");
+  statCol.className="col-6";
+  const statBox=document.createElement("div");
+  statBox.className="agent-stat";
+  const statValue=document.createElement("strong");
+  statValue.textContent=a.completed;
+  const statLabel=document.createElement("span");
+  statLabel.className="d-block mt-1";
+  statLabel.textContent="Demo tasks";
+  statBox.append(statValue,statLabel);
+  statCol.append(statBox);
+
+  const capCol=document.createElement("div");
+  capCol.className="col-6";
+  const capBox=document.createElement("div");
+  capBox.className="agent-stat";
+  const capValue=document.createElement("strong");
+  capValue.textContent=a.capabilities.length;
+  const capLabel=document.createElement("span");
+  capLabel.className="d-block mt-1";
+  capLabel.textContent="Capabilities";
+  capBox.append(capValue,capLabel);
+  capCol.append(capBox);
+
+  stats.append(statCol,capCol);
+
+  const button=document.createElement("button");
+  button.type="button";
+  button.className="btn-soft w-100";
+  button.textContent="View Agent Details";
+  button.addEventListener("click",()=>openAgent(a.id));
+
+  card.append(header,description,stats,button);
+  col.append(card);
+  root.append(col);
+ });
+}
+
+function renderTasks(){
+ const root=$("taskTable");
+ root.replaceChildren();
+
+ if(!tasks.length){
+  const row=document.createElement("tr");
+  const cell=document.createElement("td");
+  cell.colSpan=5;
+  cell.className="text-center py-5 text-secondary";
+  cell.textContent="No simulation tasks available.";
+  row.append(cell);
+  root.append(row);
+  return;
+ }
+
+ tasks.forEach(t=>{
+  const row=document.createElement("tr");
+
+  const titleCell=document.createElement("td");
+  const title=document.createElement("div");
+  title.className="task-title";
+  title.textContent=t.title;
+  const sub=document.createElement("div");
+  sub.className="task-sub";
+  sub.textContent="Task #"+t.id;
+  titleCell.append(title,sub);
+
+  const agentCell=document.createElement("td");
+  const agent=agents.find(a=>a.id===t.agent);
+  agentCell.textContent=agent?agent.name:t.agent;
+
+  const priorityCell=document.createElement("td");
+  priorityCell.textContent=t.priority;
+
+  const statusCell=document.createElement("td");
+  statusCell.append(statusBadge(t.status));
+
+  const actions=document.createElement("td");
+
+  if(t.status==="Queued"){
+   const run=document.createElement("button");
+   run.className="small-action";
+   run.textContent="Simulate";
+   run.addEventListener("click",()=>runTask(t.id));
+   actions.append(run);
+  }else if(t.status==="Pending Approval"){
+   const approve=document.createElement("button");
+   approve.className="small-action me-1";
+   approve.textContent="Approve";
+   approve.addEventListener("click",()=>reviewTask(t.id,true));
+
+   const reject=document.createElement("button");
+   reject.className="small-action";
+   reject.textContent="Reject";
+   reject.addEventListener("click",()=>reviewTask(t.id,false));
+
+   actions.append(approve,reject);
+  }else{
+   actions.textContent="—";
+  }
+
+  row.append(titleCell,agentCell,priorityCell,statusCell,actions);
+  root.append(row);
+ });
+}
+
+function renderActivity(){
+ const root=$("activityList");
+ root.replaceChildren();
+
+ activities.slice(0,7).forEach(a=>{
+  const row=document.createElement("div");
+  row.className="activity-row";
+
+  const dot=document.createElement("div");
+  dot.className="activity-dot";
+  dot.style.background=a.color;
+
+  const body=document.createElement("div");
+  const title=document.createElement("strong");
+  title.textContent=a.text;
+  const detail=document.createElement("p");
+  detail.textContent=a.detail;
+
+  body.append(title,detail);
+  row.append(dot,body);
+  root.append(row);
+ });
+}
+
+function renderChart(){
+ if(typeof Chart==="undefined")return;
+
+ const labels=agents.slice(0,6).map(a=>a.name.replace(" Agent",""));
+ const values=agents.slice(0,6).map(a=>a.completed);
+
+ if(performanceChart){
+  performanceChart.data.labels=labels;
+  performanceChart.data.datasets[0].data=values;
+  performanceChart.update();
+  return;
+ }
+
+ performanceChart=new Chart($("performanceChart"),{
+  type:"bar",
+  data:{
+   labels,
+   datasets:[{
+    label:"Demo tasks",
+    data:values,
+    backgroundColor:["#6855eb","#438df5","#f2a53a","#eb6174","#16b88a","#8b7af9"],
+    borderRadius:7,
+    barThickness:17
+   }]
+  },
+  options:{
+   indexAxis:"y",
+   responsive:true,
+   maintainAspectRatio:false,
+   plugins:{legend:{display:false}},
+   scales:{
+    x:{beginAtZero:true,grid:{color:"#f0f1f7"},ticks:{color:"#8992aa"}},
+    y:{grid:{display:false},ticks:{color:"#65708d",font:{size:10}}}
+   }
+  }
+ });
+}
+
+function renderAll(){
+ renderStats();
+ renderAgents();
+ renderTasks();
+ renderActivity();
+ renderChart();
+}
+
+function openAgent(id){
+ const a=agents.find(item=>item.id===id);
+ if(!a)return;
+
+ selectedAgentId=id;
+ $("agentModalTitle").textContent=a.name;
+ $("agentDescription").textContent=a.description;
+ $("agentStatus").textContent=a.active?"Active":"Paused";
+ $("toggleAgentButton").textContent=a.active?"Pause Agent":"Resume Agent";
+
+ const root=$("agentCapabilities");
+ root.replaceChildren();
+
+ a.capabilities.forEach(cap=>{
+  const badge=document.createElement("span");
+  badge.className="status-badge status-idle";
+  badge.textContent=cap;
+  root.append(badge);
+ });
+
+ bootstrap.Modal.getOrCreateInstance($("agentModal")).show();
+}
+
+function toggleAgent(id){
+ const a=agents.find(item=>item.id===id);
+ if(!a)return;
+
+ a.active=!a.active;
+ logActivity(
+  a.name+(a.active?" resumed":" paused"),
+  "Simulation state changed",
+  a.active?"#16b88a":"#f2a53a"
+ );
+ renderAll();
+ openAgent(id);
+}
+
+function runTask(id){
+ const t=tasks.find(item=>item.id===id);
+ if(!t||t.status!=="Queued")return;
+
+ const agent=agents.find(a=>a.id===t.agent);
+ if(!agent||!agent.active){
+  notify("Assigned agent is paused. Resume it first.");
+  return;
+ }
+
+ // No actual AI inference or external action occurs.
+ if(t.priority==="Critical"||t.agent==="safety"||t.agent==="emergency"){
+  t.status="Pending Approval";
+  logActivity("Task sent for human review",t.title,"#f2a53a");
+  notify("Task moved to the simulated approval queue");
+ }else{
+  t.status="Completed";
+  agent.completed++;
+  logActivity("Simulation task completed",t.title,"#16b88a");
+  notify("Simulated task marked completed");
+ }
+
+ renderAll();
+}
+
+function reviewTask(id,approved){
+ const t=tasks.find(item=>item.id===id);
+ if(!t||t.status!=="Pending Approval")return;
+
+ if(approved){
+  t.status="Completed";
+  const agent=agents.find(a=>a.id===t.agent);
+  if(agent)agent.completed++;
+  logActivity("Human review marked approved",t.title,"#16b88a");
+  notify("Demo approval recorded; no real-world action executed");
+ }else{
+  t.status="Rejected";
+  logActivity("Human review marked rejected",t.title,"#eb6174");
+  notify("Demo task rejected");
+ }
+
+ renderAll();
+}
+
+function createTask(event){
+ event.preventDefault();
+
+ const title=$("taskName").value.trim();
+ const agent=$("taskAgent").value;
+ const priority=$("taskPriority").value;
+
+ if(!title||!agents.some(a=>a.id===agent))return;
+
+ tasks.unshift({
+  id:nextTaskId++,
+  title,
+  agent,
+  priority,
+  status:"Queued"
+ });
+
+ $("taskForm").reset();
+ bootstrap.Modal.getOrCreateInstance($("taskModal")).hide();
+
+ logActivity("New task added to queue",title);
+ renderAll();
+ notify("Simulation task created");
+}
+
+function resetSimulation(){
+ agents=seedAgents.map(a=>({...a,capabilities:[...a.capabilities]}));
+ tasks=seedTasks.map(t=>({...t}));
+ activities=[
+  {text:"Agent simulation reset",detail:"Initial demo state restored",color:"#6855eb"}
+ ];
+ nextTaskId=200;
+ renderAll();
+ notify("Simulation reset successfully");
+}
+
+function initNavigation(){
+ const sidebar=$("sidebar");
+ const shade=$("shade");
+
+ function close(){
+  sidebar.classList.remove("open");
+  shade.classList.remove("show");
+ }
+
+ $("menuButton").addEventListener("click",()=>{
+  sidebar.classList.add("open");
+  shade.classList.add("show");
+ });
+
+ shade.addEventListener("click",close);
+ document.addEventListener("keydown",event=>{
+  if(event.key==="Escape")close();
+ });
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+ initNavigation();
+
+ agents.forEach(a=>{
+  const option=document.createElement("option");
+  option.value=a.id;
+  option.textContent=a.name;
+  $("taskAgent").append(option);
+ });
+
+ renderAll();
+
+ $("taskForm").addEventListener("submit",createTask);
+
+ $("toggleAgentButton").addEventListener("click",()=>{
+  if(selectedAgentId!==null)toggleAgent(selectedAgentId);
+ });
+
+ $("pauseAllButton").addEventListener("click",()=>{
+  agents.forEach(a=>a.active=false);
+  logActivity("All agents paused","Simulation only","#f2a53a");
+  renderAll();
+  notify("All simulated agents paused");
+ });
+
+ $("resumeAllButton").addEventListener("click",()=>{
+  agents.forEach(a=>a.active=true);
+  logActivity("All agents resumed","Simulation only","#16b88a");
+  renderAll();
+  notify("All simulated agents resumed");
+ });
+
+ $("runQueuedButton").addEventListener("click",()=>{
+  const queued=tasks.filter(t=>t.status==="Queued");
+  queued.forEach(t=>runTask(t.id));
+  if(!queued.length)notify("No queued tasks to simulate");
+ });
+
+ $("refreshButton").addEventListener("click",()=>{
+  if(confirm("Reset the agent simulation to its original demo state?")){
+   resetSimulation();
+  }
+ });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1649 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>A I Copilot | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / copilot</p><h1 id="page-title">A I Copilot</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>A I Copilot workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>AI Copilot | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+ --sidebar:258px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5{font-family:"Manrope",sans-serif;letter-spacing:-.5px}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+button:disabled{opacity:.5;cursor:not-allowed}
+
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);color:white;z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto;
+ scrollbar-width:thin;scrollbar-color:#42496b transparent;
+}
+.brand{
+ display:flex;align-items:center;gap:11px;padding:26px 22px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;display:grid;place-items:center;
+ background:linear-gradient(135deg,#a28aff,#6752e8);font-size:22px;
+}
+.brand strong{font:800 18px "Manrope",sans-serif;color:white}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px;
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;font-size:9px;
+ font-weight:800;letter-spacing:1.7px;text-transform:uppercase;
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;margin:3px 12px;
+ padding:12px 13px;border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700;transition:.2s;
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);color:white;
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12;
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;justify-content:space-between;
+ align-items:center;gap:15px;
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;display:grid;place-items:center;
+ color:#68718e;font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800;
+}
+.mobile-menu{display:none}
+.content{padding:25px 30px 40px;max-width:1700px;margin:auto}
+
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;
+ padding:26px 30px;color:white;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ margin-bottom:22px;
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ border-radius:50%;border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;text-transform:uppercase;
+ letter-spacing:2px;color:#ddd6ff;
+}
+.hero h1{font-size:25px;font-weight:800;margin:11px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;line-height:1.8;
+ max-width:760px;margin:0;
+}
+.hero-tag{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;font-size:10px;
+ font-weight:700;margin-top:15px;
+}
+
+.panel{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105;
+}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;padding:11px 16px;
+ font-size:11px;font-weight:800;display:inline-flex;
+ align-items:center;justify-content:center;gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 13px;background:white;color:#69738e;
+ font-size:11px;font-weight:800;display:inline-flex;
+ align-items:center;justify-content:center;gap:8px;
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;border-radius:8px;
+ padding:7px 10px;font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a;
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.info{background:#eaf2ff;color:#438df5}
+.form-select,.form-control{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:42px;font-size:11px;padding:10px 12px;
+}
+.form-select:focus,.form-control:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12;
+}
+
+.workspace{
+ display:grid;grid-template-columns:260px minmax(0,1fr) 270px;
+ gap:17px;align-items:stretch;
+ min-height:670px;
+}
+.workspace-side,.workspace-main,.workspace-tools{
+ min-width:0;overflow:hidden;
+}
+.workspace-side{
+ display:flex;flex-direction:column;padding:16px;
+}
+.workspace-title{
+ font-size:12px;font-weight:800;margin-bottom:14px;
+ display:flex;align-items:center;justify-content:space-between;
+}
+.chat-history{
+ overflow-y:auto;flex:1;max-height:530px;
+ padding-right:3px;
+}
+.history-item{
+ display:flex;align-items:center;gap:9px;
+ padding:11px;border-radius:10px;
+ cursor:pointer;color:#67718b;
+ margin-bottom:5px;font-size:11px;
+ border:1px solid transparent;
+}
+.history-item:hover{background:#f6f5ff}
+.history-item.active{
+ background:#f1efff;color:var(--purple);
+ border-color:#e2ddff;
+}
+.history-item .history-name{
+ flex:1;min-width:0;overflow:hidden;
+ text-overflow:ellipsis;white-space:nowrap;
+ font-weight:700;
+}
+.history-delete{
+ border:0;background:transparent;
+ color:#9ca5b8;font-size:14px;
+ padding:3px;
+}
+.history-delete:hover{color:var(--red)}
+
+.workspace-main{
+ display:flex;flex-direction:column;
+ height:690px;
+}
+.chat-header{
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px;
+ padding:17px 19px;border-bottom:1px solid var(--border);
+}
+.chat-header-title{
+ display:flex;align-items:center;gap:11px;
+}
+.copilot-icon{
+ width:39px;height:39px;border-radius:12px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-size:20px;
+}
+.chat-header h3{
+ font-size:13px;font-weight:800;margin:0;
+}
+.chat-header small{color:var(--muted);font-size:10px}
+.chat-messages{
+ flex:1;min-height:0;overflow-y:auto;
+ padding:22px;background:#fdfdff;
+}
+.welcome{
+ max-width:680px;margin:45px auto;
+ text-align:center;
+}
+.welcome-icon{
+ width:65px;height:65px;border-radius:20px;
+ display:grid;place-items:center;margin:0 auto 20px;
+ background:#eeeaff;color:var(--purple);
+ font-size:29px;
+}
+.welcome h2{font-size:20px;font-weight:800}
+.welcome p{
+ color:var(--muted);font-size:12px;
+ line-height:1.9;margin:12px auto 22px;
+ max-width:510px;
+}
+.prompt-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:10px;
+}
+.prompt-card{
+ text-align:left;border:1px solid var(--border);
+ border-radius:12px;background:white;
+ padding:14px;color:var(--text);
+ transition:.2s;
+}
+.prompt-card:hover{
+ border-color:#c4baff;background:#faf9ff;
+}
+.prompt-card i{
+ color:var(--purple);font-size:18px;
+ display:block;margin-bottom:9px;
+}
+.prompt-card strong{
+ font-size:11px;display:block;margin-bottom:5px;
+}
+.prompt-card small{
+ color:var(--muted);font-size:10px;line-height:1.6;
+}
+
+.message{
+ display:flex;gap:11px;max-width:94%;
+ margin-bottom:22px;align-items:flex-start;
+}
+.message.user{
+ margin-left:auto;flex-direction:row-reverse;
+}
+.message-avatar{
+ width:32px;height:32px;flex-shrink:0;
+ display:grid;place-items:center;
+ border-radius:10px;background:#eeeaff;
+ color:var(--purple);font-size:15px;
+}
+.message.user .message-avatar{
+ background:#eaf2ff;color:var(--blue);
+}
+.message-content{min-width:0;max-width:100%}
+.message-meta{
+ font-size:10px;color:var(--muted);
+ margin-bottom:7px;font-weight:700;
+}
+.message.user .message-meta{text-align:right}
+.message-bubble{
+ background:white;border:1px solid var(--border);
+ border-radius:4px 13px 13px 13px;
+ padding:14px 17px;font-size:12px;
+ line-height:1.85;overflow-wrap:anywhere;
+}
+.message.user .message-bubble{
+ background:#6855eb;color:white;
+ border-color:#6855eb;
+ border-radius:13px 4px 13px 13px;
+}
+.message-bubble p:last-child{margin-bottom:0}
+.message-bubble pre{
+ background:#141a31;color:#e7e8f5;
+ border-radius:10px;padding:14px;
+ overflow-x:auto;font-size:11px;
+}
+.message-bubble code{
+ overflow-wrap:anywhere;
+}
+.message-bubble table{
+ display:block;overflow-x:auto;
+ width:100%;border-collapse:collapse;
+}
+.message-bubble th,.message-bubble td{
+ border:1px solid var(--border);
+ padding:7px 9px;
+}
+.message-bubble blockquote{
+ border-left:3px solid var(--purple);
+ padding-left:12px;color:#69738e;
+}
+.message-bubble a{color:var(--purple)}
+.message.user .message-bubble a{color:white}
+.message-actions{
+ display:flex;gap:7px;margin-top:8px;
+}
+.message.user .message-actions{justify-content:flex-end}
+.message-action{
+ background:transparent;border:0;
+ color:#9ba4b8;font-size:10px;
+ display:inline-flex;align-items:center;gap:5px;
+}
+.message-action:hover{color:var(--purple)}
+.message-source{
+ display:inline-block;margin-top:10px;
+ background:#f1efff;color:#6855eb;
+ border-radius:7px;padding:5px 8px;
+ font-size:9px;font-weight:800;
+}
+.chat-composer{
+ border-top:1px solid var(--border);
+ padding:15px 18px;background:white;
+}
+.attachment-list{
+ display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px;
+}
+.attachment-chip{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#f1efff;color:var(--purple);
+ border-radius:8px;padding:7px 9px;
+ font-size:10px;font-weight:700;
+ max-width:100%;
+}
+.attachment-chip span{
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.attachment-chip button{
+ border:0;background:transparent;color:var(--purple);
+ padding:0;
+}
+.composer-box{
+ border:1px solid var(--border);
+ border-radius:13px;overflow:hidden;
+}
+.composer-box:focus-within{
+ border-color:#b4a8ff;
+ box-shadow:0 0 0 3px #6855eb10;
+}
+.composer-box textarea{
+ width:100%;border:0;outline:0;resize:none;
+ padding:14px 15px 6px;min-height:66px;
+ max-height:170px;font-size:12px;
+ background:transparent;
+}
+.composer-footer{
+ display:flex;align-items:center;
+ justify-content:space-between;gap:10px;
+ padding:7px 9px 9px;
+}
+.composer-tools{display:flex;gap:5px}
+.composer-icon{
+ width:33px;height:33px;border:0;
+ background:transparent;border-radius:8px;
+ color:#7f89a3;font-size:16px;
+}
+.composer-icon:hover{
+ background:#f1efff;color:var(--purple);
+}
+.send-button{
+ width:37px;height:37px;border:0;
+ border-radius:10px;background:var(--purple);
+ color:white;font-size:16px;
+}
+.send-button:hover{background:#5744da}
+.composer-hint{
+ color:#a0a8ba;font-size:9px;margin-top:9px;
+}
+
+.workspace-tools{padding:18px}
+.tool-heading{
+ font-size:12px;font-weight:800;margin-bottom:17px;
+}
+.tool-group{margin-bottom:22px}
+.tool-label{
+ display:block;font-size:10px;color:#68718e;
+ font-weight:800;margin-bottom:9px;
+}
+.tool-card{
+ display:flex;align-items:center;gap:10px;
+ padding:11px;border:1px solid var(--border);
+ border-radius:11px;margin-bottom:9px;
+ background:#fff;
+}
+.tool-card i{
+ width:32px;height:32px;border-radius:9px;
+ background:#f1efff;color:var(--purple);
+ display:grid;place-items:center;font-size:16px;
+}
+.tool-card strong{font-size:10px;display:block}
+.tool-card small{
+ color:var(--muted);font-size:9px;
+ display:block;margin-top:3px;
+}
+.tool-divider{
+ height:1px;background:var(--border);
+ margin:18px 0;
+}
+.quick-prompt{
+ width:100%;border:1px solid var(--border);
+ background:#fff;border-radius:10px;
+ padding:11px;text-align:left;
+ margin-bottom:8px;color:#59637f;
+ font-size:10px;font-weight:700;
+ display:flex;gap:9px;align-items:center;
+}
+.quick-prompt i{color:var(--purple);font-size:15px}
+.quick-prompt:hover{
+ background:#faf9ff;border-color:#c8c0ff;
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;
+ padding:14px 16px;font-size:11px;
+ line-height:1.8;display:flex;
+ align-items:flex-start;gap:10px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+
+@media(max-width:1450px){
+ .workspace{grid-template-columns:230px minmax(0,1fr) 240px}
+}
+@media(max-width:1200px){
+ .workspace{grid-template-columns:220px minmax(0,1fr)}
+ .workspace-tools{display:none}
+}
+@media(max-width:900px){
+ .sidebar{
+  transform:translateX(-100%);
+  transition:transform .25s;width:260px;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+ .topbar{padding:0 20px}
+ .content{padding:20px}
+}
+@media(max-width:650px){
+ .workspace{grid-template-columns:minmax(0,1fr)}
+ .workspace-side{display:none}
+ .workspace-main{height:70vh;min-height:560px}
+ .content{padding:14px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:22px}
+ .hero h1{font-size:21px}
+ .mobile-hide{display:none}
+ .prompt-grid{grid-template-columns:1fr}
+ .chat-messages{padding:15px}
+ .message{max-width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html"><i class="bi bi-grid"></i> Dashboard</a>
+ <a class="side-link" href="command-center.html"><i class="bi bi-broadcast"></i> Command Center</a>
+ <a class="side-link" href="analytics.html"><i class="bi bi-graph-up-arrow"></i> Analytics</a>
+ <a class="side-link" href="reports.html"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+ <a class="side-link" href="notifications.html"><i class="bi bi-bell"></i> Notifications</a>
+
+ <div class="nav-section">AI Intelligence</div>
+ <a class="side-link active" href="a-i-copilot.html"><i class="bi bi-stars"></i> AI Copilot</a>
+ <a class="side-link" href="vision-dashboard.html"><i class="bi bi-eye"></i> Vision Dashboard</a>
+ <a class="side-link" href="equipment-condition.html"><i class="bi bi-cpu"></i> Equipment Condition</a>
+ <a class="side-link" href="inspection-history.html"><i class="bi bi-clock-history"></i> Inspection History</a>
+ <a class="side-link" href="detection-results.html"><i class="bi bi-clipboard-data"></i> Detection Results</a>
+
+ <div class="nav-section">Vision Intelligence</div>
+ <a class="side-link" href="live-camera.html"><i class="bi bi-camera-video"></i> Live Camera</a>
+ <a class="side-link" href="image-inspection.html"><i class="bi bi-image"></i> Image Inspection</a>
+ <a class="side-link" href="video-inspection.html"><i class="bi bi-film"></i> Video Inspection</a>
+ <a class="side-link" href="surface-inspection.html"><i class="bi bi-layers"></i> Surface Inspection</a>
+ <a class="side-link" href="corrosion-detection.html"><i class="bi bi-search"></i> Corrosion Detection</a>
+ <a class="side-link" href="crack-detection.html"><i class="bi bi-intersect"></i> Crack Detection</a>
+ <a class="side-link" href="defect-detection.html"><i class="bi bi-bounding-box-circles"></i> Defect Detection</a>
+
+ <div class="nav-section">Safety Intelligence</div>
+ <a class="side-link" href="p-p-e-detection.html"><i class="bi bi-shield-check"></i> PPE Detection</a>
+ <a class="side-link" href="smoke-detection.html"><i class="bi bi-cloud-haze2"></i> Smoke Detection</a>
+ <a class="side-link" href="fire-detection.html"><i class="bi bi-fire"></i> Fire Detection</a>
+ <a class="side-link" href="overheating-detection.html"><i class="bi bi-thermometer-high"></i> Overheating Detection</a>
+
+ <div class="nav-section">AI Agents</div>
+ <a class="side-link" href="agents/agent-dashboard.html"><i class="bi bi-diagram-3"></i> Agent Dashboard</a>
+ <a class="side-link" href="agents/maintenance-agent.html"><i class="bi bi-tools"></i> Maintenance Agent</a>
+ <a class="side-link" href="agents/safety-agent.html"><i class="bi bi-shield-check"></i> Safety Agent</a>
+ <a class="side-link" href="agents/supervisor-agent.html"><i class="bi bi-diagram-3"></i> Supervisor Agent</a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2" style="color:#18b58c;font-size:7px"></i>
+  Industrial AI Workspace
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton" aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">
+    AI Intelligence / <strong>AI Copilot</strong>
+   </div>
+   <div class="fw-bold mt-1" style="font-size:13px">
+    Industrial Intelligence Assistant
+   </div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span id="connectionBadge" class="status-badge info mobile-hide">
+   <i class="bi bi-flask"></i> Demo Mode
+  </span>
+  <a href="notifications.html" class="top-icon" aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">INDUSTRA AI / Intelligent Industrial Assistant</div>
+ <h1><i class="bi bi-stars me-2"></i> Industrial AI Copilot</h1>
+ <p>
+  Explore predictive maintenance, asset health, industrial safety,
+  equipment diagnostics, cost intelligence, and technical documentation
+  through a conversational AI workspace.
+ </p>
+ <div class="hero-tag">
+  <i class="bi bi-info-circle"></i>
+  Demo templates available · Connect FastAPI for real AI responses
+ </div>
+</section>
+
+<div class="workspace">
+
+ <!-- CONVERSATION HISTORY -->
+ <section class="panel workspace-side">
+  <button class="btn-purple w-100 mb-4" id="newChatButton">
+   <i class="bi bi-plus-lg"></i> New Conversation
+  </button>
+
+  <div class="workspace-title">
+   <span>Conversation History</span>
+   <span id="historyCount" class="status-badge">0</span>
+  </div>
+
+  <div class="chat-history" id="chatHistory"></div>
+
+  <div class="tool-divider"></div>
+
+  <button class="btn-outline-custom w-100 mb-2" id="exportChat">
+   <i class="bi bi-download"></i> Export Conversation
+  </button>
+
+  <button class="btn-outline-custom w-100" id="clearChats">
+   <i class="bi bi-trash"></i> Clear All Chats
+  </button>
+ </section>
+
+ <!-- CHAT WORKSPACE -->
+ <section class="panel workspace-main">
+
+  <div class="chat-header">
+   <div class="chat-header-title">
+    <div class="copilot-icon"><i class="bi bi-stars"></i></div>
+    <div>
+     <h3>INDUSTRA AI Copilot</h3>
+     <small id="chatSubtitle">Industrial engineering assistant</small>
+    </div>
+   </div>
+
+   <div class="d-flex gap-2 align-items-center">
+    <span class="status-badge info" id="modeBadge">DEMO</span>
+    <button class="btn-outline-custom" id="mobileHistoryButton" title="Conversation history">
+     <i class="bi bi-clock-history"></i>
+    </button>
+   </div>
+  </div>
+
+  <div class="chat-messages" id="chatMessages">
+
+   <div class="welcome" id="welcomeScreen">
+    <div class="welcome-icon"><i class="bi bi-stars"></i></div>
+    <h2>How can I help with your industrial operations?</h2>
+    <p>
+     Ask about equipment maintenance, asset condition, inspection
+     workflows, safety reviews, repair decisions, or technical manuals.
+    </p>
+
+    <div class="prompt-grid">
+     <button class="prompt-card" data-prompt="Explain a predictive maintenance workflow for an industrial motor.">
+      <i class="bi bi-cpu"></i>
+      <strong>Predictive Maintenance</strong>
+      <small>Understand condition monitoring and failure prevention.</small>
+     </button>
+
+     <button class="prompt-card" data-prompt="How should I investigate abnormal vibration in an industrial pump?">
+      <i class="bi bi-activity"></i>
+      <strong>Equipment Diagnostics</strong>
+      <small>Review common causes and inspection steps.</small>
+     </button>
+
+     <button class="prompt-card" data-prompt="Create a general industrial equipment safety inspection checklist.">
+      <i class="bi bi-shield-check"></i>
+      <strong>Safety Inspection</strong>
+      <small>Prepare a general equipment safety review.</small>
+     </button>
+
+     <button class="prompt-card" data-prompt="Explain how to compare equipment repair versus replacement costs.">
+      <i class="bi bi-cash-stack"></i>
+      <strong>Cost Intelligence</strong>
+      <small>Explore repair and replacement decision factors.</small>
+     </button>
+    </div>
+   </div>
+
+  </div>
+
+  <div class="chat-composer">
+
+   <div id="attachmentList" class="attachment-list"></div>
+
+   <div class="composer-box">
+    <textarea id="messageInput"
+     placeholder="Ask about maintenance, equipment health, inspections, industrial safety..."
+     rows="2" maxlength="12000"></textarea>
+
+    <div class="composer-footer">
+     <div class="composer-tools">
+      <input type="file" id="fileInput" hidden
+       accept=".pdf,.txt,.md,.csv,.json,.docx,.xlsx,.png,.jpg,.jpeg">
+      <button class="composer-icon" id="attachButton" title="Attach file">
+       <i class="bi bi-paperclip"></i>
+      </button>
+      <button class="composer-icon" id="clearInputButton" title="Clear input">
+       <i class="bi bi-eraser"></i>
+      </button>
+     </div>
+
+     <button class="send-button" id="sendButton" title="Send message">
+      <i class="bi bi-arrow-up"></i>
+     </button>
+    </div>
+   </div>
+
+   <div class="composer-hint">
+    Enter to send · Shift+Enter for a new line · AI output requires verification
+   </div>
+  </div>
+ </section>
+
+ <!-- RIGHT TOOLS PANEL -->
+ <aside class="panel workspace-tools">
+  <div class="tool-heading">
+   <i class="bi bi-sliders me-2" style="color:var(--purple)"></i>
+   Copilot Configuration
+  </div>
+
+  <div class="tool-group">
+   <label class="tool-label" for="executionMode">Execution Mode</label>
+   <select id="executionMode" class="form-select">
+    <option value="demo">Demo — Predefined Responses</option>
+    <option value="api">FastAPI — Real Backend</option>
+   </select>
+  </div>
+
+  <div class="tool-group">
+   <label class="tool-label" for="assistantMode">Assistant Specialty</label>
+   <select id="assistantMode" class="form-select">
+    <option value="general">Industrial General Assistant</option>
+    <option value="maintenance">Predictive Maintenance</option>
+    <option value="asset-health">Asset Health Diagnostics</option>
+    <option value="safety">Industrial Safety</option>
+    <option value="inspection">Visual Inspection</option>
+    <option value="cost">Cost Intelligence</option>
+    <option value="documentation">Technical Documentation</option>
+   </select>
+  </div>
+
+  <div class="tool-group">
+   <label class="tool-label" for="apiEndpoint">FastAPI Chat Endpoint</label>
+   <input id="apiEndpoint" class="form-control"
+    value="http://localhost:8000/api/v1/copilot/chat"
+    spellcheck="false">
+   <div class="text-secondary mt-2" style="font-size:9px;line-height:1.6">
+    Configure your backend URL. API request/response contracts must match.
+   </div>
+  </div>
+
+  <div class="tool-divider"></div>
+
+  <div class="tool-heading">Available Workspace Tools</div>
+
+  <div class="tool-card">
+   <i class="bi bi-file-earmark-text"></i>
+   <div><strong>Industrial RAG</strong><small>Requires backend</small></div>
+  </div>
+  <div class="tool-card">
+   <i class="bi bi-diagram-3"></i>
+   <div><strong>Multi-Agent Reasoning</strong><small>Requires backend</small></div>
+  </div>
+  <div class="tool-card">
+   <i class="bi bi-activity"></i>
+   <div><strong>Asset Telemetry</strong><small>Requires backend</small></div>
+  </div>
+  <div class="tool-card">
+   <i class="bi bi-shield-check"></i>
+   <div><strong>Safety Guardrails</strong><small>Requires backend</small></div>
+  </div>
+
+  <div class="tool-divider"></div>
+
+  <div class="tool-heading">Quick Industrial Prompts</div>
+
+  <button class="quick-prompt" data-prompt="Explain common causes of bearing overheating in an industrial motor.">
+   <i class="bi bi-thermometer-high"></i> Bearing Overheating
+  </button>
+
+  <button class="quick-prompt" data-prompt="What should a technician inspect when a centrifugal pump has abnormal vibration?">
+   <i class="bi bi-activity"></i> Pump Vibration
+  </button>
+
+  <button class="quick-prompt" data-prompt="Describe the main factors used to estimate remaining useful life of equipment.">
+   <i class="bi bi-hourglass-split"></i> Remaining Useful Life
+  </button>
+
+  <button class="quick-prompt" data-prompt="Create a preventive maintenance checklist for an industrial conveyor.">
+   <i class="bi bi-clipboard-check"></i> Conveyor Checklist
+  </button>
+ </aside>
+
+</div>
+
+<div class="notice mt-4">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Industrial safety notice:</strong>
+  Demo Mode provides predefined educational responses, not
+  live asset diagnoses or operational recommendations.
+  API Mode depends on your independently implemented backend.
+  The assistant must not independently authorize equipment
+  shutdowns, emergency actions, or safety-critical maintenance.
+  Qualified personnel must verify outputs against approved procedures.
+  Attached files and chat data may contain sensitive industrial information;
+  use an appropriately secured backend and approved data-handling policies.
+ </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+
+const STORAGE_KEY="industra-copilot-chats-v1";
+const MAX_FILE_BYTES=10*1024*1024;
+const MAX_CHATS=30;
+
+let chats=[];
+let activeChatId=null;
+let attachments=[];
+let pending=false;
+let requestController=null;
+let requestGeneration=0;
+
+const demoKnowledge={
+ maintenance:{
+  keywords:["maintenance","predictive","preventive"],
+  answer:`## Predictive Maintenance Workflow
+
+A general industrial predictive maintenance workflow includes:
+
+1. **Asset inventory:** Identify critical equipment and operating conditions.
+2. **Data collection:** Capture vibration, temperature, current, pressure, and operating hours.
+3. **Data validation:** Check missing measurements, sensor calibration, and abnormal readings.
+4. **Condition monitoring:** Compare validated measurements with equipment-specific baselines.
+5. **Failure analysis:** Review relevant failure modes and maintenance history.
+6. **Risk assessment:** Prioritize assets based on likelihood, impact, and uncertainty.
+7. **Maintenance planning:** Assign qualified personnel and follow approved procedures.
+8. **Verification:** Review maintenance outcomes and update equipment records.
+
+**Important:** Actual failure predictions require validated telemetry, suitable models, and equipment-specific engineering thresholds.
+
+*This is a predefined demonstration response.*`
+ },
+ vibration:{
+  keywords:["vibration","pump","bearing","alignment"],
+  answer:`## Industrial Vibration Investigation
+
+Abnormal vibration can be associated with several mechanical or operating conditions.
+
+| Potential cause | Typical investigation |
+|---|---|
+| Misalignment | Review coupling alignment records |
+| Imbalance | Inspect rotating components |
+| Bearing degradation | Review vibration spectrum and lubrication history |
+| Mechanical looseness | Inspect approved mounting and fastening points |
+| Cavitation | Review pump suction and operating conditions |
+| Resonance | Compare operating frequency with known equipment characteristics |
+
+### Suggested review process
+
+1. Record the equipment identifier and operating state.
+2. Review trends against an established baseline.
+3. Check relevant maintenance and alarm history.
+4. Escalate unusual or rapidly changing conditions to qualified personnel.
+5. Follow approved isolation and inspection procedures.
+
+Do not diagnose a fault from vibration amplitude alone.
+
+*This is a predefined demonstration response.*`
+ },
+ safety:{
+  keywords:["safety","ppe","checklist","hazard"],
+  answer:`## General Industrial Safety Inspection Checklist
+
+- [ ] Confirm authorized personnel and applicable work permits.
+- [ ] Review the equipment's approved operating and inspection procedures.
+- [ ] Check guards, barriers, labels, and access restrictions.
+- [ ] Verify that required PPE is available and appropriate.
+- [ ] Review housekeeping and potential slip or trip hazards.
+- [ ] Check for visible leaks, damage, or unusual operating conditions.
+- [ ] Confirm that emergency procedures and communication channels are understood.
+- [ ] Document observations and assign follow-up actions.
+- [ ] Escalate hazards according to site policy.
+
+**Safety:** This checklist is not a replacement for a site-specific risk assessment, lockout/tagout procedure, or statutory inspection.
+
+*This is a predefined demonstration response.*`
+ },
+ cost:{
+  keywords:["cost","repair","replacement","roi","financial"],
+  answer:`## Repair vs. Replacement Cost Analysis
+
+A useful comparison considers both immediate spending and lifecycle impact.
+
+### Repair scenario
+
+- Spare parts and consumables
+- Technician labor
+- Equipment downtime
+- Production losses
+- Post-repair inspection and validation
+- Expected remaining service life
+
+### Replacement scenario
+
+- New equipment purchase
+- Installation and commissioning
+- Training and integration
+- Planned downtime
+- Energy and maintenance savings
+- Disposal and environmental obligations
+
+### Simplified comparison
+
+\`Total Cost = Direct Cost + Downtime Cost + Expected Future Cost\`
+
+Use validated site-specific estimates, discounting where appropriate, and sensitivity analysis. Do not rely on a single assumed failure probability.
+
+*This is a predefined demonstration response.*`
+ },
+ overheating:{
+  keywords:["overheating","temperature","thermal","hot"],
+  answer:`## Equipment Overheating — General Investigation
+
+Potential contributors include:
+
+1. Excessive mechanical load.
+2. Inadequate cooling or blocked airflow.
+3. Lubrication problems.
+4. Electrical imbalance or abnormal current.
+5. Friction from worn or misaligned components.
+6. Sensor errors or incorrect measurement placement.
+
+### Engineering review
+
+Compare measurements with manufacturer specifications and approved operating limits. Review temperature trends alongside load, current, vibration, and ambient conditions.
+
+If site-defined limits or emergency criteria are met, follow the established response procedure and involve authorized personnel.
+
+**Do not infer equipment safety from a generic temperature threshold.**
+
+*This is a predefined demonstration response.*`
+ },
+ rul:{
+  keywords:["remaining useful life","rul","lifecycle"],
+  answer:`## Remaining Useful Life (RUL)
+
+RUL is an estimate of how much usable operating life remains before a defined failure or maintenance endpoint.
+
+### Common inputs
+
+- Historical failures and maintenance records
+- Vibration and temperature trends
+- Operating cycles and cumulative hours
+- Equipment load and environmental conditions
+- Degradation indicators
+
+### Modeling approaches
+
+- Survival analysis
+- Regression models
+- Time-series models
+- Physics-informed degradation models
+- Hybrid reliability and machine-learning methods
+
+RUL should be reported with **uncertainty**, validation metrics, and clearly defined failure criteria.
+
+A reliable estimate cannot be produced without representative data.
+
+*This is a predefined demonstration response.*`
+ },
+ documentation:{
+  keywords:["manual","document","rag","technical"],
+  answer:`## Industrial Document Intelligence
+
+A production industrial RAG system can support:
+
+1. Document ingestion from approved equipment manuals.
+2. OCR and structured text extraction.
+3. Metadata tagging by asset, model, revision, and manufacturer.
+4. Hybrid keyword and vector retrieval.
+5. Reranking and evidence-grounded answer generation.
+6. Source citations and document version checks.
+7. Human review for maintenance and safety decisions.
+
+**Current state:** This demo has not retrieved or verified any industrial manual. Connect your backend and approved document repository to enable grounded answers.
+
+*This is a predefined demonstration response.*`
+ }
+};
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function createId(){
+ if(window.crypto && typeof crypto.randomUUID==="function"){
+  return crypto.randomUUID();
+ }
+ return Date.now().toString(36)+"-"+Math.random().toString(36).slice(2);
+}
+
+function safeLoad(){
+ try{
+  const parsed=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+  if(!Array.isArray(parsed))return [];
+
+  return parsed.filter(chat=>
+   chat &&
+   typeof chat.id==="string" &&
+   Array.isArray(chat.messages)
+  ).slice(0,MAX_CHATS).map(chat=>({
+   id:chat.id,
+   title:String(chat.title||"New Conversation").slice(0,80),
+   createdAt:chat.createdAt||new Date().toISOString(),
+   messages:chat.messages.filter(message=>
+    message &&
+    ["user","assistant"].includes(message.role) &&
+    typeof message.content==="string"
+   ).slice(-100)
+  }));
+ }catch{
+  return [];
+ }
+}
+
+function persist(){
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(chats.slice(0,MAX_CHATS)));
+ }catch{
+  notify("Browser storage is full. Export your chat to preserve it.");
+ }
+}
+
+function currentChat(){
+ return chats.find(chat=>chat.id===activeChatId);
+}
+
+function createChat(){
+ if(pending)cancelPending();
+
+ const chat={
+  id:createId(),
+  title:"New Conversation",
+  createdAt:new Date().toISOString(),
+  messages:[]
+ };
+
+ chats.unshift(chat);
+ chats=chats.slice(0,MAX_CHATS);
+ activeChatId=chat.id;
+ attachments=[];
+
+ persist();
+ renderHistory();
+ renderAttachments();
+ renderMessages();
+}
+
+function switchChat(id){
+ if(pending)cancelPending();
+ if(!chats.some(chat=>chat.id===id))return;
+
+ activeChatId=id;
+ attachments=[];
+ renderHistory();
+ renderAttachments();
+ renderMessages();
+}
+
+function deleteChat(id){
+ if(pending)cancelPending();
+
+ chats=chats.filter(chat=>chat.id!==id);
+
+ if(activeChatId===id){
+  activeChatId=chats[0]?.id||null;
+ }
+
+ if(!activeChatId){
+  createChat();
+  return;
+ }
+
+ persist();
+ renderHistory();
+ renderMessages();
+}
+
+function renderHistory(){
+ const container=$("chatHistory");
+ container.replaceChildren();
+
+ $("historyCount").textContent=chats.length;
+
+ chats.forEach(chat=>{
+  const item=document.createElement("div");
+  item.className="history-item"+(
+   chat.id===activeChatId?" active":""
+  );
+
+  const icon=document.createElement("i");
+  icon.className="bi bi-chat-left-text";
+
+  const name=document.createElement("span");
+  name.className="history-name";
+  name.textContent=chat.title;
+
+  const remove=document.createElement("button");
+  remove.className="history-delete";
+  remove.title="Delete conversation";
+  remove.setAttribute("aria-label","Delete conversation");
+  remove.innerHTML='<i class="bi bi-x-lg"></i>';
+
+  remove.addEventListener("click",event=>{
+   event.stopPropagation();
+   deleteChat(chat.id);
+  });
+
+  item.addEventListener("click",()=>switchChat(chat.id));
+  item.append(icon,name,remove);
+  container.append(item);
+ });
+}
+
+function renderMarkdown(content){
+ if(typeof marked==="undefined"||typeof DOMPurify==="undefined"){
+  const safe=document.createElement("div");
+  safe.textContent=content;
+  return safe.innerHTML;
+ }
+
+ const html=marked.parse(content,{
+  breaks:true,
+  gfm:true
+ });
+
+ return DOMPurify.sanitize(html);
+}
+
+function renderMessages(){
+ const container=$("chatMessages");
+ container.replaceChildren();
+
+ const chat=currentChat();
+
+ if(!chat||!chat.messages.length){
+  const welcome=document.createElement("div");
+  welcome.className="welcome";
+  welcome.innerHTML=`
+   <div class="welcome-icon"><i class="bi bi-stars"></i></div>
+   <h2>How can I help with your industrial operations?</h2>
+   <p>Ask about maintenance, asset health, inspections,
+   safety reviews, cost intelligence, or technical documentation.</p>
+   <div class="prompt-grid">
+    <button class="prompt-card" data-prompt="Explain a predictive maintenance workflow for an industrial motor.">
+     <i class="bi bi-cpu"></i>
+     <strong>Predictive Maintenance</strong>
+     <small>Explore condition monitoring and maintenance planning.</small>
+    </button>
+    <button class="prompt-card" data-prompt="How should I investigate abnormal vibration in an industrial pump?">
+     <i class="bi bi-activity"></i>
+     <strong>Equipment Diagnostics</strong>
+     <small>Review possible causes and investigation steps.</small>
+    </button>
+    <button class="prompt-card" data-prompt="Create a general industrial equipment safety inspection checklist.">
+     <i class="bi bi-shield-check"></i>
+     <strong>Safety Inspection</strong>
+     <small>Prepare a general safety review checklist.</small>
+    </button>
+    <button class="prompt-card" data-prompt="Explain how to compare equipment repair versus replacement costs.">
+     <i class="bi bi-cash-stack"></i>
+     <strong>Cost Intelligence</strong>
+     <small>Compare lifecycle and maintenance costs.</small>
+    </button>
+   </div>
+  `;
+  container.append(welcome);
+  return;
+ }
+
+ chat.messages.forEach(message=>{
+  const wrapper=document.createElement("div");
+  wrapper.className="message "+message.role;
+
+  const avatar=document.createElement("div");
+  avatar.className="message-avatar";
+  avatar.innerHTML=message.role==="user"?
+   '<i class="bi bi-person-fill"></i>':
+   '<i class="bi bi-stars"></i>';
+
+  const content=document.createElement("div");
+  content.className="message-content";
+
+  const meta=document.createElement("div");
+  meta.className="message-meta";
+  meta.textContent=message.role==="user"?
+   "You":"INDUSTRA AI Copilot";
+
+  const bubble=document.createElement("div");
+  bubble.className="message-bubble";
+
+  if(message.role==="assistant"){
+   bubble.innerHTML=renderMarkdown(message.content);
+  }else{
+   bubble.textContent=message.content;
+  }
+
+  const actions=document.createElement("div");
+  actions.className="message-actions";
+
+  const copy=document.createElement("button");
+  copy.className="message-action";
+  copy.innerHTML='<i class="bi bi-copy"></i> Copy';
+  copy.addEventListener("click",async()=>{
+   try{
+    await navigator.clipboard.writeText(message.content);
+    notify("Message copied.");
+   }catch{
+    notify("Clipboard access is unavailable.");
+   }
+  });
+
+  actions.append(copy);
+
+  if(message.role==="assistant"&&message.demo){
+   const badge=document.createElement("span");
+   badge.className="message-source";
+   badge.textContent="PREDEFINED DEMO RESPONSE";
+   content.append(meta,bubble,badge,actions);
+  }else{
+   content.append(meta,bubble,actions);
+  }
+
+  wrapper.append(avatar,content);
+  container.append(wrapper);
+ });
+
+ container.scrollTop=container.scrollHeight;
+}
+
+function getDemoResponse(prompt){
+ const text=prompt.toLowerCase();
+
+ for(const topic of Object.values(demoKnowledge)){
+  if(topic.keywords.some(keyword=>text.includes(keyword))){
+   return topic.answer;
+  }
+ }
+
+ return `## Industrial AI Copilot — Demo Mode
+
+Your question was:
+
+> ${prompt.slice(0,400).replace(/\n/g," ")}
+
+This demonstration interface does not generate new AI answers.
+
+For a response based on actual equipment information, switch to **FastAPI Mode** and connect your industrial AI backend.
+
+A production implementation can combine:
+
+- Industrial RAG over approved technical manuals
+- Asset telemetry and maintenance history
+- Predictive maintenance models
+- Equipment inspection records
+- Multi-agent orchestration
+- Evidence citations and human approval workflows
+
+**No live asset data or documents were analyzed.**
+
+*This is a predefined demonstration response.*`;
+}
+
+function updateMode(){
+ const demo=$("executionMode").value==="demo";
+
+ $("modeBadge").textContent=demo?"DEMO":"API";
+ $("connectionBadge").innerHTML=demo?
+  '<i class="bi bi-flask"></i> Demo Mode':
+  '<i class="bi bi-plug"></i> API Configured';
+
+ $("connectionBadge").className=
+  "status-badge "+(demo?"info":"warning");
+
+ $("chatSubtitle").textContent=demo?
+  "Predefined educational responses":
+  "Backend connection required";
+}
+
+function setPending(value){
+ pending=value;
+ $("sendButton").disabled=value;
+ $("messageInput").disabled=value;
+ $("executionMode").disabled=value;
+ $("assistantMode").disabled=value;
+ $("apiEndpoint").disabled=value;
+ $("attachButton").disabled=value;
+ $("sendButton").innerHTML=value?
+  '<span class="spinner-border spinner-border-sm"></span>':
+  '<i class="bi bi-arrow-up"></i>';
+}
+
+function cancelPending(){
+ requestGeneration++;
+ if(requestController)requestController.abort();
+ requestController=null;
+ setPending(false);
+}
+
+async function sendMessage(){
+ if(pending)return;
+
+ const text=$("messageInput").value.trim();
+ if(!text)return;
+
+ const chat=currentChat();
+ if(!chat)return;
+
+ const chatId=chat.id;
+ const generation=++requestGeneration;
+ const mode=$("executionMode").value;
+ const specialty=$("assistantMode").value;
+
+ const fileNames=attachments.map(file=>file.name);
+
+ if(mode==="demo"&&attachments.length){
+  notify("Demo Mode cannot analyze attachments. Files will not be processed.");
+ }
+
+ chat.messages.push({
+  role:"user",
+  content:text,
+  createdAt:new Date().toISOString(),
+  attachments:fileNames
+ });
+
+ if(chat.title==="New Conversation"){
+  chat.title=text.slice(0,55);
+ }
+
+ $("messageInput").value="";
+ renderHistory();
+ renderMessages();
+ persist();
+ setPending(true);
+
+ try{
+  let answer;
+  let demo=false;
+
+  if(mode==="demo"){
+   demo=true;
+   answer=getDemoResponse(text);
+  }else{
+   const endpoint=$("apiEndpoint").value.trim();
+   const url=new URL(endpoint,window.location.href);
+
+   if(!["http:","https:"].includes(url.protocol)){
+    throw new Error("Only HTTP or HTTPS API endpoints are supported.");
+   }
+
+   requestController=new AbortController();
+
+   const history=chat.messages.map(message=>({
+    role:message.role,
+    content:message.content
+   }));
+
+   let response;
+
+   if(attachments.length){
+    const form=new FormData();
+    form.append("message",text);
+    form.append("specialty",specialty);
+    form.append("conversation_id",chatId);
+    form.append("history",JSON.stringify(history));
+
+    attachments.forEach(file=>{
+     form.append("files",file,file.name);
+    });
+
+    response=await fetch(url.toString(),{
+     method:"POST",
+     body:form,
+     signal:requestController.signal
+    });
+   }else{
+    response=await fetch(url.toString(),{
+     method:"POST",
+     headers:{"Content-Type":"application/json"},
+     body:JSON.stringify({
+      message:text,
+      specialty,
+      conversation_id:chatId,
+      history
+     }),
+     signal:requestController.signal
+    });
+   }
+
+   if(!response.ok){
+    throw new Error("Backend returned HTTP "+response.status);
+   }
+
+   const result=await response.json();
+
+   if(typeof result.answer!=="string"||!result.answer.trim()){
+    throw new Error("Backend response must contain a nonempty 'answer' string.");
+   }
+
+   answer=result.answer;
+  }
+
+  if(generation!==requestGeneration)return;
+
+  const target=chats.find(item=>item.id===chatId);
+  if(!target)return;
+
+  target.messages.push({
+   role:"assistant",
+   content:answer,
+   createdAt:new Date().toISOString(),
+   demo
+  });
+
+  attachments=[];
+  renderAttachments();
+  persist();
+  renderMessages();
+
+ }catch(error){
+  if(generation!==requestGeneration)return;
+
+  if(error.name!=="AbortError"){
+   const target=chats.find(item=>item.id===chatId);
+
+   if(target){
+    target.messages.push({
+     role:"assistant",
+     content:"**Backend request failed:** "+
+      error.message+
+      "\n\nCheck the FastAPI server, endpoint path, CORS configuration, authentication, and response schema.",
+     createdAt:new Date().toISOString(),
+     demo:false
+    });
+   }
+
+   persist();
+   renderMessages();
+  }
+ }finally{
+  if(generation===requestGeneration){
+   requestController=null;
+   setPending(false);
+  }
+ }
+}
+
+$("sendButton").addEventListener("click",sendMessage);
+
+$("messageInput").addEventListener("keydown",event=>{
+ if(event.key==="Enter"&&!event.shiftKey){
+  event.preventDefault();
+  sendMessage();
+ }
+});
+
+document.addEventListener("click",event=>{
+ const prompt=event.target.closest("[data-prompt]");
+ if(!prompt)return;
+
+ $("messageInput").value=prompt.dataset.prompt;
+ $("messageInput").focus();
+});
+
+$("newChatButton").addEventListener("click",createChat);
+
+$("mobileHistoryButton").addEventListener("click",()=>{
+ const chat=currentChat();
+ if(!chat)return;
+
+ const titles=chats.slice(0,10).map(
+  (item,index)=>(index+1)+". "+item.title
+ ).join("\n");
+
+ const choice=prompt(
+  "Enter a conversation number:\n\n"+titles
+ );
+
+ if(choice===null)return;
+
+ const index=Number(choice)-1;
+
+ if(Number.isInteger(index)&&chats[index]){
+  switchChat(chats[index].id);
+ }else{
+  notify("Invalid conversation number.");
+ }
+});
+
+$("clearChats").addEventListener("click",()=>{
+ if(!confirm("Delete all locally stored conversations?"))return;
+
+ if(pending)cancelPending();
+
+ chats=[];
+ activeChatId=null;
+ localStorage.removeItem(STORAGE_KEY);
+ createChat();
+ notify("Local conversation history cleared.");
+});
+
+$("exportChat").addEventListener("click",()=>{
+ const chat=currentChat();
+ if(!chat)return;
+
+ const report={
+  application:"INDUSTRA AI",
+  module:"Industrial AI Copilot",
+  exportedAt:new Date().toISOString(),
+  conversation:chat
+ };
+
+ downloadFile(
+  "industra-copilot-conversation.json",
+  JSON.stringify(report,null,2),
+  "application/json"
+ );
+
+ notify("Conversation exported.");
+});
+
+function downloadFile(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+
+ const anchor=document.createElement("a");
+ anchor.href=url;
+ anchor.download=filename;
+ document.body.append(anchor);
+ anchor.click();
+ anchor.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("attachButton").addEventListener("click",()=>{
+ $("fileInput").click();
+});
+
+$("fileInput").addEventListener("change",event=>{
+ for(const file of event.target.files){
+  if(file.size>MAX_FILE_BYTES){
+   notify(file.name+" exceeds the 10 MB limit.");
+   continue;
+  }
+
+  if(attachments.length>=5){
+   notify("Maximum five attachments per message.");
+   break;
+  }
+
+  attachments.push(file);
+ }
+
+ event.target.value="";
+ renderAttachments();
+});
+
+function renderAttachments(){
+ const container=$("attachmentList");
+ container.replaceChildren();
+
+ attachments.forEach((file,index)=>{
+  const chip=document.createElement("div");
+  chip.className="attachment-chip";
+
+  const icon=document.createElement("i");
+  icon.className="bi bi-paperclip";
+
+  const name=document.createElement("span");
+  name.textContent=file.name;
+
+  const remove=document.createElement("button");
+  remove.innerHTML='<i class="bi bi-x"></i>';
+  remove.setAttribute("aria-label","Remove attachment");
+  remove.addEventListener("click",()=>{
+   attachments.splice(index,1);
+   renderAttachments();
+  });
+
+  chip.append(icon,name,remove);
+  container.append(chip);
+ });
+}
+
+$("clearInputButton").addEventListener("click",()=>{
+ $("messageInput").value="";
+ $("messageInput").focus();
+});
+
+$("executionMode").addEventListener("change",updateMode);
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+window.addEventListener("pagehide",()=>{
+ if(requestController)requestController.abort();
+});
+
+/* INITIALIZATION */
+
+chats=safeLoad();
+
+if(chats.length){
+ activeChatId=chats[0].id;
+}else{
+ createChat();
+}
+
+updateMode();
+renderHistory();
+renderMessages();
+renderAttachments();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1039 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Emergency Cost | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / cost-intelligence</p><h1 id="page-title">Emergency Cost</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Emergency Cost workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emergency Cost Intelligence | INDUSTRA AI</title>
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--orange:#f4a443;--red:#ed6175;
+ --blue:#438df5;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px Arial,Helvetica,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:258px;
+ background:var(--navy);overflow:auto;z-index:100;
+}
+.brand{padding:25px 20px;color:white;font-size:19px;font-weight:800}
+.brand span{color:#a89aff}
+.nav-title{
+ padding:20px 20px 8px;color:#687399;
+ font-size:10px;font-weight:800;letter-spacing:1px;
+}
+.nav-link{
+ display:block;padding:12px;margin:3px;
+ border-radius:10px;color:#a4aecf;font-size:12px;
+}
+.nav-link:hover,.nav-link.active{background:var(--purple);color:white}
+.main{margin-left:258px;min-height:100vh}
+.topbar{
+ padding:19px 28px;background:white;border-bottom:1px solid var(--border);
+ display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+.content{padding:26px;max-width:1750px;margin:auto}
+.hero{
+ background:linear-gradient(110deg,#5140d3,#8b75f6);
+ padding:29px;color:white;border-radius:17px;margin-bottom:23px;
+}
+.hero h1{font-size:27px;margin:9px 0}
+.hero p{font-size:12px;color:#eeeaff;line-height:1.8}
+.panel,.stat{
+ background:white;border:1px solid var(--border);
+ border-radius:15px;padding:20px;box-shadow:0 5px 20px #10152d05;
+}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.layout{
+ display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);gap:17px;
+}
+.flex{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;flex-wrap:wrap;
+}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.mb{margin-bottom:23px}
+h3{font-size:14px;margin:0 0 10px}
+h4{font-size:12px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:11px;line-height:1.8}
+.stat-label{color:var(--muted);font-size:11px;font-weight:700}
+.stat-value{font-size:25px;font-weight:800;margin-top:12px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:8px}
+.btn{
+ border:1px solid var(--border);background:white;color:#69738e;
+ border-radius:9px;padding:10px 13px;font-size:11px;font-weight:700;
+}
+.btn.primary{background:var(--purple);border-color:var(--purple);color:white}
+.btn.danger{background:#ffedf0;border-color:#ffedf0;color:#d84b63}
+.input{
+ width:100%;padding:11px;border:1px solid var(--border);
+ border-radius:9px;background:white;color:var(--text);
+}
+label{
+ display:block;color:#69738e;font-size:11px;font-weight:700;margin-bottom:7px;
+}
+.badge{
+ display:inline-block;padding:7px 10px;border-radius:8px;
+ font-size:10px;font-weight:800;
+}
+.green{background:#e6f8f1;color:#119d72}
+.orange{background:#fff4e6;color:#cf8824}
+.red{background:#ffedf0;color:#d84b63}
+.purple{background:#eeeaff;color:#6855eb}
+.blue{background:#e8f2ff;color:#438df5}
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+ background:#f8f9fd;color:var(--muted);text-align:left;
+ padding:13px;white-space:nowrap;
+}
+td{padding:13px;border-bottom:1px solid #eef0f6;white-space:nowrap}
+tbody tr:hover{background:#faf9ff}
+.detail{
+ display:flex;justify-content:space-between;gap:12px;
+ padding:12px 0;border-bottom:1px solid var(--border);font-size:11px;
+}
+.detail span{color:var(--muted)}
+.detail strong{text-align:right}
+.record{
+ border:1px solid var(--border);border-radius:11px;
+ padding:14px;margin-bottom:12px;
+}
+.record p{font-size:11px;color:#69738e;line-height:1.8}
+.chart{width:100%;height:290px;display:block}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric{
+ padding:14px;background:#f8f9fd;
+ border:1px solid var(--border);border-radius:11px;
+}
+.metric strong{display:block;font-size:20px;margin-top:9px}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;color:#986b2d;
+ border-radius:11px;padding:15px;font-size:11px;line-height:1.8;
+}
+#toast{
+ position:fixed;bottom:20px;right:20px;background:var(--navy);
+ color:white;padding:13px 17px;border-radius:10px;display:none;z-index:300;
+}
+.mobile-menu{display:none}
+@media(max-width:1150px){
+ .layout{grid-template-columns:1fr}
+ .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+ .sidebar{transform:translateX(-100%)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:block}
+ .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+ .content{padding:15px}.topbar{padding:14px}
+ .grid,.grid-2,.filters,.metric-grid{grid-template-columns:1fr}
+ .hero h1{font-size:21px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.actions,.filters-panel,#toast,.notice{display:none!important}
+ .main{margin:0}.content{padding:0}
+ .panel,.stat{box-shadow:none;break-inside:avoid}
+ .grid{grid-template-columns:repeat(4,1fr)}
+ .grid-2{grid-template-columns:repeat(2,1fr)}
+ .layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><span>⬡</span> INDUSTRA AI</div>
+ <div class="nav-title">WORKSPACE</div>
+ <a class="nav-link" href="dashboard.html">▦ Dashboard</a>
+ <div class="nav-title">COST INTELLIGENCE</div>
+ <a class="nav-link" href="cost-intelligence.html">◆ Cost Intelligence</a>
+ <a class="nav-link" href="cost-analytics.html">▦ Cost Analytics</a>
+ <a class="nav-link" href="cost-forecasting.html">◇ Cost Forecasting</a>
+ <a class="nav-link" href="avoided-cost.html">◉ Avoided Cost</a>
+ <a class="nav-link" href="cost-reports.html">◆ Cost Reports</a>
+ <a class="nav-link" href="downtime-cost.html">▦ Downtime Cost</a>
+ <a class="nav-link active" href="emergency-cost.html">◇ Emergency Cost</a>
+ <a class="nav-link" href="repair-cost.html">◉ Repair Cost</a>
+ <a class="nav-link" href="replacement-cost.html">◆ Replacement Cost</a>
+ <a class="nav-link" href="roi-analysis.html">▦ ROI Analysis</a>
+ <div class="nav-title">SAFETY & EMERGENCY</div>
+ <a class="nav-link" href="safety-center.html">◇ Safety Center</a>
+ <a class="nav-link" href="safety-incidents.html">◉ Safety Incidents</a>
+ <a class="nav-link" href="emergency-response.html">◆ Emergency Response</a>
+ <a class="nav-link" href="risk-assessment.html">▦ Risk Assessment</a>
+</aside>
+
+<div class="main">
+<header class="topbar">
+ <div class="flex">
+  <button class="btn mobile-menu" id="menuBtn">☰</button>
+  <div>
+   <div class="muted">Cost Intelligence / Emergency Economics</div>
+   <strong>Industrial Emergency Cost</strong>
+  </div>
+ </div>
+ <span class="badge purple">SYNTHETIC FINANCIAL MODEL</span>
+</header>
+
+<main class="content">
+<section class="hero">
+ <div style="font-size:10px;letter-spacing:2px;font-weight:800">
+  INDUSTRA AI / EMERGENCY FINANCIAL INTELLIGENCE
+ </div>
+ <h1>Emergency Cost Intelligence</h1>
+ <p>
+  Model emergency response expenditure, equipment damage,
+  production interruption, environmental cleanup and recovery costs.
+  Compare incident categories, identify high-cost exposure,
+  and evaluate hypothetical prevention benefits.
+ </p>
+</section>
+
+<div class="flex mb">
+ <div>
+  <h3 style="font-size:18px">Emergency Financial Overview</h3>
+  <div class="muted" id="summaryText">Calculating incident costs...</div>
+ </div>
+ <div class="actions">
+  <button class="btn primary" id="calculateBtn">Recalculate</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="jsonBtn">Export JSON</button>
+  <button class="btn" id="printBtn">Print / PDF</button>
+  <button class="btn danger" id="resetBtn">Reset</button>
+ </div>
+</div>
+
+<section class="grid mb">
+ <div class="stat">
+  <div class="stat-label">Total Modeled Emergency Cost</div>
+  <div class="stat-value" id="totalCostKpi">₹0</div>
+  <div class="stat-note">Selected period incident expenditure</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Emergency Incidents</div>
+  <div class="stat-value" id="incidentsKpi">0</div>
+  <div class="stat-note">Synthetic incidents in selected period</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Production Interruption Loss</div>
+  <div class="stat-value" id="downtimeKpi">₹0</div>
+  <div class="stat-note">Emergency-specific production impact</div>
+ </div>
+ <div class="stat">
+  <div class="stat-label">Potential Prevented Cost</div>
+  <div class="stat-value" id="avoidedKpi">₹0</div>
+  <div class="stat-note">Hypothetical incident frequency reduction</div>
+ </div>
+</section>
+
+<section class="panel mb filters-panel">
+ <h3>Emergency Cost Filters</h3>
+ <div class="filters">
+  <div>
+   <label for="plantFilter">Plant</label>
+   <select class="input" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+  <div>
+   <label for="categoryFilter">Incident Category</label>
+   <select class="input" id="categoryFilter">
+    <option value="all">All Categories</option>
+    <option>Fire</option>
+    <option>Electrical</option>
+    <option>Mechanical</option>
+    <option>Chemical</option>
+    <option>Thermal</option>
+   </select>
+  </div>
+  <div>
+   <label for="severityFilter">Severity</label>
+   <select class="input" id="severityFilter">
+    <option value="all">All Severities</option>
+    <option>Low</option>
+    <option>Medium</option>
+    <option>High</option>
+    <option>Critical</option>
+   </select>
+  </div>
+  <div>
+   <label for="periodFilter">Analysis Period</label>
+   <select class="input" id="periodFilter">
+    <option value="3">3 Months</option>
+    <option value="6">6 Months</option>
+    <option value="12" selected>12 Months</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<section class="layout mb">
+ <div class="panel">
+  <div class="flex mb">
+   <div>
+    <h3>Emergency Incident Financial Records</h3>
+    <p class="muted">Synthetic incidents and estimated cost categories</p>
+   </div>
+   <span class="badge blue" id="visibleCount">0 incidents</span>
+  </div>
+  <div class="table-wrap">
+   <table>
+    <thead>
+     <tr>
+      <th>Incident</th><th>Plant</th><th>Category</th>
+      <th>Severity</th><th>Response</th><th>Damage</th>
+      <th>Production</th><th>Cleanup</th><th>Total</th><th>Action</th>
+     </tr>
+    </thead>
+    <tbody id="incidentTable"></tbody>
+   </table>
+  </div>
+ </div>
+ <div class="panel">
+  <div class="flex">
+   <h3>Emergency Cost Inspector</h3>
+   <span class="badge purple">INCIDENT ECONOMICS</span>
+  </div>
+  <div id="incidentDetails"></div>
+  <div class="metric-grid" style="margin-top:18px">
+   <div class="metric">
+    <span class="muted">Total Incident Cost</span>
+    <strong id="assetTotal">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Downtime Hours</span>
+    <strong id="assetHours">0 h</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Equipment Damage</span>
+    <strong id="assetDamage">₹0</strong>
+   </div>
+   <div class="metric">
+    <span class="muted">Preventable Cost</span>
+    <strong id="assetAvoided">₹0</strong>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <div class="flex">
+   <h3>Emergency Cost by Incident</h3>
+   <span class="badge purple">INCIDENT COMPARISON</span>
+  </div>
+  <p class="muted">Modeled total cost of each selected incident</p>
+  <svg class="chart" id="incidentChart" viewBox="0 0 640 290"
+   role="img" aria-label="Emergency cost by incident"></svg>
+ </div>
+ <div class="panel">
+  <div class="flex">
+   <h3>Emergency Cost Composition</h3>
+   <span class="badge blue">FINANCIAL CATEGORIES</span>
+  </div>
+  <p class="muted">Response, damage, production and cleanup costs</p>
+  <svg class="chart" id="categoryChart" viewBox="0 0 640 290"
+   role="img" aria-label="Emergency cost composition"></svg>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Emergency Cost Scenario Simulator</h3>
+  <div style="margin-bottom:15px">
+   <label for="responseMultiplier">Emergency Response Cost Multiplier</label>
+   <input class="input" id="responseMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+  <div style="margin-bottom:15px">
+   <label for="damageMultiplier">Equipment Damage Cost Multiplier</label>
+   <input class="input" id="damageMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+  <div style="margin-bottom:15px">
+   <label for="productionMultiplier">Production Loss Multiplier</label>
+   <input class="input" id="productionMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+  <div style="margin-bottom:15px">
+   <label for="cleanupMultiplier">Cleanup & Recovery Multiplier</label>
+   <input class="input" id="cleanupMultiplier"
+    type="number" min=".25" max="3" step=".05" value="1">
+  </div>
+  <div style="margin-bottom:15px">
+   <label for="preventionInput">Hypothetical Incident Frequency Reduction (%)</label>
+   <input class="input" id="preventionInput"
+    type="number" min="0" max="100" step="1" value="30">
+  </div>
+  <button class="btn primary" id="applyScenarioBtn">Apply Scenario</button>
+  <p class="muted">
+   Prevention benefits are illustrative financial expectations.
+   Emergency preparedness and safety controls must not be reduced
+   based on these estimates.
+  </p>
+ </div>
+ <div class="panel">
+  <h3>Emergency Financial Summary</h3>
+  <p class="muted">Aggregated costs and scenario outcomes</p>
+  <div id="economicsSummary"></div>
+ </div>
+</section>
+
+<section class="grid-2 mb">
+ <div class="panel">
+  <h3>Plant Emergency Cost Performance</h3>
+  <p class="muted">Incident counts, severity and financial exposure</p>
+  <div id="plantSummary"></div>
+ </div>
+ <div class="panel">
+  <h3>Emergency Cost Intelligence Insights</h3>
+  <p class="muted">Descriptive findings from synthetic incident data</p>
+  <div id="insightList"></div>
+ </div>
+</section>
+
+<div class="notice">
+ <strong>Safety-critical disclaimer:</strong>
+ This dashboard uses synthetic incidents and hypothetical financial
+ scenarios. It does not assess actual incident probability, establish
+ safety compliance, or replace emergency response procedures.
+ Financial optimization must never override evacuation, rescue,
+ medical response, environmental containment, or statutory obligations.
+ Real systems require trained safety personnel, validated incident
+ records, engineering risk assessments and independently certified
+ emergency controls.
+</div>
+</main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NS="http://www.w3.org/2000/svg";
+const KEY="industra-emergency-cost-v1";
+
+const INCIDENTS=[
+ {
+  id:"EMG-001",name:"Motor Overheating & Smoke",
+  plant:"Plant A",category:"Thermal",severity:"High",
+  monthsAgo:1,equipment:"MTR-001",hours:18,
+  response:85000,damage:240000,
+  production:310000,cleanup:42000
+ },
+ {
+  id:"EMG-002",name:"Compressor Electrical Fault",
+  plant:"Plant A",category:"Electrical",severity:"Medium",
+  monthsAgo:2,equipment:"CMP-001",hours:12,
+  response:45000,damage:125000,
+  production:170000,cleanup:18000
+ },
+ {
+  id:"EMG-003",name:"Cooling Fan Mechanical Failure",
+  plant:"Plant A",category:"Mechanical",severity:"Low",
+  monthsAgo:4,equipment:"FAN-001",hours:7,
+  response:18000,damage:48000,
+  production:62000,cleanup:9000
+ },
+ {
+  id:"EMG-004",name:"Generator Electrical Fire",
+  plant:"Plant B",category:"Fire",severity:"Critical",
+  monthsAgo:1,equipment:"GEN-001",hours:46,
+  response:350000,damage:920000,
+  production:1150000,cleanup:280000
+ },
+ {
+  id:"EMG-005",name:"Cooling Pump Seal Failure",
+  plant:"Plant B",category:"Mechanical",severity:"Medium",
+  monthsAgo:5,equipment:"PMP-001",hours:16,
+  response:42000,damage:110000,
+  production:145000,cleanup:55000
+ },
+ {
+  id:"EMG-006",name:"Gearbox Fire & Damage",
+  plant:"Plant B",category:"Fire",severity:"High",
+  monthsAgo:3,equipment:"GBX-001",hours:30,
+  response:175000,damage:480000,
+  production:620000,cleanup:115000
+ },
+ {
+  id:"EMG-007",name:"Hydraulic Fluid Leakage",
+  plant:"Plant C",category:"Chemical",severity:"High",
+  monthsAgo:2,equipment:"HYD-001",hours:20,
+  response:110000,damage:180000,
+  production:260000,cleanup:220000
+ },
+ {
+  id:"EMG-008",name:"Process Pump Thermal Failure",
+  plant:"Plant C",category:"Thermal",severity:"High",
+  monthsAgo:6,equipment:"PMP-002",hours:27,
+  response:105000,damage:320000,
+  production:430000,cleanup:68000
+ },
+ {
+  id:"EMG-009",name:"Conveyor Mechanical Jam",
+  plant:"Plant C",category:"Mechanical",severity:"Low",
+  monthsAgo:9,equipment:"CNV-001",hours:9,
+  response:25000,damage:75000,
+  production:85000,cleanup:12000
+ }
+];
+
+const DEFAULTS={
+ responseMultiplier:1,
+ damageMultiplier:1,
+ productionMultiplier:1,
+ cleanupMultiplier:1,
+ prevention:30
+};
+
+let scenario={...DEFAULTS};
+let selectedId=INCIDENTS[0].id;
+let results=[];
+let toastTimer;
+
+const formatter=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+const money=value=>formatter.format(value);
+
+function compact(value){
+ const sign=value<0?"-":"";
+ const n=Math.abs(value);
+ if(n>=10000000)return sign+"₹"+(n/10000000).toFixed(2)+"Cr";
+ if(n>=100000)return sign+"₹"+(n/100000).toFixed(2)+"L";
+ if(n>=1000)return sign+"₹"+(n/1000).toFixed(1)+"K";
+ return money(value);
+}
+
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function svgEl(tag,attrs={},text){
+ const node=document.createElementNS(NS,tag);
+ for(const [key,value] of Object.entries(attrs)){
+  node.setAttribute(key,value);
+ }
+ if(text!==undefined)node.textContent=String(text);
+ return node;
+}
+
+function sum(items,key){
+ return items.reduce((total,item)=>total+item[key],0);
+}
+
+function notify(message){
+ $("toast").textContent=message;
+ $("toast").style.display="block";
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>{
+  $("toast").style.display="none";
+ },2500);
+}
+
+function calculate(){
+ results=INCIDENTS.map(incident=>{
+  const response=incident.response*scenario.responseMultiplier;
+  const damage=incident.damage*scenario.damageMultiplier;
+  const production=incident.production*scenario.productionMultiplier;
+  const cleanup=incident.cleanup*scenario.cleanupMultiplier;
+  const total=response+damage+production+cleanup;
+  const avoided=total*scenario.prevention/100;
+
+  return{
+   ...incident,
+   responseCost:response,
+   damageCost:damage,
+   productionCost:production,
+   cleanupCost:cleanup,
+   totalCost:total,
+   avoidedCost:avoided,
+   residualCost:total-avoided
+  };
+ });
+
+ render();
+}
+
+function filtered(){
+ const plant=$("plantFilter").value;
+ const category=$("categoryFilter").value;
+ const severity=$("severityFilter").value;
+ const months=Number($("periodFilter").value);
+
+ return results.filter(item=>
+  item.monthsAgo<=months&&
+  (plant==="all"||item.plant===plant)&&
+  (category==="all"||item.category===category)&&
+  (severity==="all"||item.severity===severity)
+ );
+}
+
+function selected(){
+ return filtered().find(item=>item.id===selectedId)||
+  filtered()[0]||null;
+}
+
+function detail(label,value){
+ const row=el("div","detail");
+ row.append(el("span","",label),el("strong","",value));
+ return row;
+}
+
+function severityBadge(value){
+ const cls=value==="Critical"?"red":
+  value==="High"?"orange":
+  value==="Medium"?"blue":"green";
+ return el("span","badge "+cls,value);
+}
+
+function renderKpis(){
+ const list=filtered();
+ $("totalCostKpi").textContent=compact(sum(list,"totalCost"));
+ $("incidentsKpi").textContent=String(list.length);
+ $("downtimeKpi").textContent=compact(sum(list,"productionCost"));
+ $("avoidedKpi").textContent=compact(sum(list,"avoidedCost"));
+ $("summaryText").textContent=
+  $("periodFilter").value+"-month synthetic incident window · "+
+  list.length+" incidents · "+
+  scenario.prevention+"% illustrative prevention assumption";
+}
+
+function renderTable(){
+ const body=$("incidentTable");
+ body.replaceChildren();
+ const list=filtered();
+ $("visibleCount").textContent=list.length+" incidents";
+
+ list.forEach(item=>{
+  const row=el("tr");
+
+  [
+   item.name+" · "+item.id,
+   item.plant,
+   item.category
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const severity=el("td");
+  severity.append(severityBadge(item.severity));
+  row.append(severity);
+
+  [
+   money(item.responseCost),
+   money(item.damageCost),
+   money(item.productionCost),
+   money(item.cleanupCost),
+   money(item.totalCost)
+  ].forEach(value=>row.append(el("td","",value)));
+
+  const action=el("td");
+  const button=el("button","btn primary","Inspect");
+  button.onclick=()=>{
+   selectedId=item.id;
+   renderInspector();
+  };
+  action.append(button);
+  row.append(action);
+  body.append(row);
+ });
+
+ if(!list.length){
+  const row=el("tr");
+  const cell=el("td","","No incidents match the selected filters.");
+  cell.colSpan=10;
+  row.append(cell);
+  body.append(row);
+ }
+}
+
+function renderInspector(){
+ const item=selected();
+ const box=$("incidentDetails");
+ box.replaceChildren();
+
+ if(!item){
+  box.append(el("p","muted","No incident selected."));
+  ["assetTotal","assetHours","assetDamage","assetAvoided"]
+   .forEach(id=>$(id).textContent="--");
+  return;
+ }
+
+ [
+  ["Incident",item.name],
+  ["Incident ID",item.id],
+  ["Plant",item.plant],
+  ["Equipment",item.equipment],
+  ["Category",item.category],
+  ["Severity",item.severity],
+  ["Illustrative Incident Age",item.monthsAgo+" months"],
+  ["Downtime",item.hours+" hours"],
+  ["Emergency Response",money(item.responseCost)],
+  ["Equipment Damage",money(item.damageCost)],
+  ["Production Loss",money(item.productionCost)],
+  ["Cleanup & Recovery",money(item.cleanupCost)],
+  ["Residual Scenario Cost",money(item.residualCost)]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+
+ $("assetTotal").textContent=compact(item.totalCost);
+ $("assetHours").textContent=item.hours+" h";
+ $("assetDamage").textContent=compact(item.damageCost);
+ $("assetAvoided").textContent=compact(item.avoidedCost);
+}
+
+function drawIncidentChart(){
+ const svg=$("incidentChart");
+ svg.replaceChildren();
+
+ const list=filtered();
+ const max=Math.max(...list.map(item=>item.totalCost),1);
+
+ list.forEach((item,index)=>{
+  const y=10+index*29;
+  const width=item.totalCost/max*330;
+
+  svg.append(svgEl("text",{
+   x:8,y:y+15,fill:"#69738e","font-size":"11"
+  },item.id));
+
+  svg.append(svgEl("rect",{
+   x:110,y,width,height:18,rx:4,fill:"#6855eb"
+  }));
+
+  svg.append(svgEl("text",{
+   x:120+width,y:y+14,fill:"#202640","font-size":"11"
+  },compact(item.totalCost)));
+ });
+}
+
+function drawCategoryChart(){
+ const svg=$("categoryChart");
+ svg.replaceChildren();
+ const list=filtered();
+
+ const categories=[
+  {name:"Response",value:sum(list,"responseCost"),color:"#6855eb"},
+  {name:"Damage",value:sum(list,"damageCost"),color:"#438df5"},
+  {name:"Production",value:sum(list,"productionCost"),color:"#18b58c"},
+  {name:"Cleanup",value:sum(list,"cleanupCost"),color:"#f4a443"}
+ ];
+
+ const max=Math.max(...categories.map(item=>item.value),1);
+
+ categories.forEach((item,index)=>{
+  const y=22+index*55;
+  const width=item.value/max*330;
+
+  svg.append(svgEl("text",{
+   x:12,y:y+18,fill:"#69738e","font-size":"12"
+  },item.name));
+
+  svg.append(svgEl("rect",{
+   x:120,y,width,height:25,rx:5,fill:item.color
+  }));
+
+  svg.append(svgEl("text",{
+   x:130+width,y:y+17,fill:"#202640","font-size":"11"
+  },compact(item.value)));
+ });
+}
+
+function renderEconomics(){
+ const box=$("economicsSummary");
+ box.replaceChildren();
+ const list=filtered();
+
+ [
+  ["Total Incidents",String(list.length)],
+  ["Emergency Response",money(sum(list,"responseCost"))],
+  ["Equipment Damage",money(sum(list,"damageCost"))],
+  ["Production Loss",money(sum(list,"productionCost"))],
+  ["Cleanup & Recovery",money(sum(list,"cleanupCost"))],
+  ["Total Modeled Cost",money(sum(list,"totalCost"))],
+  ["Prevention Assumption",scenario.prevention+"%"],
+  ["Potential Prevented Cost",money(sum(list,"avoidedCost"))],
+  ["Residual Scenario Cost",money(sum(list,"residualCost"))]
+ ].forEach(([label,value])=>{
+  box.append(detail(label,value));
+ });
+}
+
+function renderPlants(){
+ const box=$("plantSummary");
+ box.replaceChildren();
+
+ ["Plant A","Plant B","Plant C"].forEach(plant=>{
+  const list=filtered().filter(item=>item.plant===plant);
+  const critical=list.filter(item=>item.severity==="Critical").length;
+
+  const card=el("div","record");
+  card.append(
+   el("h4","",plant),
+   el("p","",
+    list.length+" incidents · "+
+    critical+" critical · "+
+    compact(sum(list,"totalCost"))+" total modeled cost · "+
+    compact(sum(list,"avoidedCost"))+" potential prevented cost")
+  );
+  box.append(card);
+ });
+}
+
+function renderInsights(){
+ const box=$("insightList");
+ box.replaceChildren();
+ const list=filtered();
+
+ const highest=[...list].sort((a,b)=>b.totalCost-a.totalCost)[0];
+ const total=sum(list,"totalCost");
+ const damage=sum(list,"damageCost");
+
+ const insights=[
+  [
+   "Highest Financial Impact",
+   highest?
+    highest.name+" has the largest modeled emergency cost at "+
+    money(highest.totalCost)+".":
+    "No incidents match the selected filters."
+  ],
+  [
+   "Equipment Damage Exposure",
+   "Equipment damage represents "+
+   (total?(damage/total*100).toFixed(1):"0.0")+
+   "% of total modeled incident cost."
+  ],
+  [
+   "Potential Prevention Benefit",
+   "Under the assumed "+scenario.prevention+
+   "% reduction in incident frequency, modeled cost avoidance is "+
+   money(sum(list,"avoidedCost"))+"."
+  ],
+  [
+   "Safety Priority",
+   "Incident prevention, worker protection and emergency response obligations must be determined through safety engineering rather than financial optimization."
+  ]
+ ];
+
+ insights.forEach(([title,description])=>{
+  const card=el("div","record");
+  card.append(el("h4","",title),el("p","",description));
+  box.append(card);
+ });
+}
+
+function render(){
+ renderKpis();
+ renderTable();
+ renderInspector();
+ drawIncidentChart();
+ drawCategoryChart();
+ renderEconomics();
+ renderPlants();
+ renderInsights();
+}
+
+function validateScenario(){
+ const responseMultiplier=Number($("responseMultiplier").value);
+ const damageMultiplier=Number($("damageMultiplier").value);
+ const productionMultiplier=Number($("productionMultiplier").value);
+ const cleanupMultiplier=Number($("cleanupMultiplier").value);
+ const prevention=Number($("preventionInput").value);
+
+ const valid=(value,min,max)=>
+  Number.isFinite(value)&&value>=min&&value<=max;
+
+ if(
+  !valid(responseMultiplier,.25,3)||
+  !valid(damageMultiplier,.25,3)||
+  !valid(productionMultiplier,.25,3)||
+  !valid(cleanupMultiplier,.25,3)||
+  !valid(prevention,0,100)
+ ){
+  notify("Enter valid emergency cost scenario values.");
+  return false;
+ }
+
+ scenario={
+  responseMultiplier,
+  damageMultiplier,
+  productionMultiplier,
+  cleanupMultiplier,
+  prevention
+ };
+ return true;
+}
+
+function syncInputs(){
+ $("responseMultiplier").value=scenario.responseMultiplier;
+ $("damageMultiplier").value=scenario.damageMultiplier;
+ $("productionMultiplier").value=scenario.productionMultiplier;
+ $("cleanupMultiplier").value=scenario.cleanupMultiplier;
+ $("preventionInput").value=scenario.prevention;
+}
+
+function saveScenario(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(scenario));
+ }catch{
+  notify("Browser storage unavailable.");
+ }
+}
+
+function loadScenario(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+  const valid=(value,min,max)=>
+   typeof value==="number"&&
+   Number.isFinite(value)&&value>=min&&value<=max;
+
+  if(saved&&
+   valid(saved.responseMultiplier,.25,3)&&
+   valid(saved.damageMultiplier,.25,3)&&
+   valid(saved.productionMultiplier,.25,3)&&
+   valid(saved.cleanupMultiplier,.25,3)&&
+   valid(saved.prevention,0,100)
+  ){
+   scenario={...saved};
+  }
+ }catch{}
+ syncInputs();
+}
+
+function download(filename,content,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.append(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportCsv(){
+ const rows=[[
+  "incident_id","incident_name","plant","category",
+  "severity","equipment_id","incident_age_months",
+  "downtime_hours","response_cost_inr","damage_cost_inr",
+  "production_loss_inr","cleanup_cost_inr","total_cost_inr",
+  "potential_prevented_cost_inr","residual_cost_inr"
+ ]];
+
+ filtered().forEach(item=>{
+  rows.push([
+   item.id,item.name,item.plant,item.category,
+   item.severity,item.equipment,item.monthsAgo,item.hours,
+   item.responseCost.toFixed(2),
+   item.damageCost.toFixed(2),
+   item.productionCost.toFixed(2),
+   item.cleanupCost.toFixed(2),
+   item.totalCost.toFixed(2),
+   item.avoidedCost.toFixed(2),
+   item.residualCost.toFixed(2)
+  ]);
+ });
+
+ const csv=rows.map(row=>
+  row.map(value=>'"'+String(value).replaceAll('"','""')+'"')
+   .join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-emergency-cost.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+ notify("Emergency cost CSV exported.");
+}
+
+function exportJson(){
+ download(
+  "industra-emergency-cost.json",
+  JSON.stringify({
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   scenario,
+   filters:{
+    plant:$("plantFilter").value,
+    category:$("categoryFilter").value,
+    severity:$("severityFilter").value,
+    months:Number($("periodFilter").value)
+   },
+   results:filtered()
+  },null,2),
+  "application/json"
+ );
+ notify("Emergency cost JSON exported.");
+}
+
+$("calculateBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculate();
+ notify("Emergency financial scenario recalculated.");
+};
+
+$("applyScenarioBtn").onclick=()=>{
+ if(!validateScenario())return;
+ saveScenario();
+ calculate();
+ notify("Emergency cost scenario applied.");
+};
+
+$("csvBtn").onclick=exportCsv;
+$("jsonBtn").onclick=exportJson;
+$("printBtn").onclick=()=>window.print();
+
+$("resetBtn").onclick=()=>{
+ if(!confirm("Reset emergency cost assumptions?"))return;
+
+ scenario={...DEFAULTS};
+ selectedId=INCIDENTS[0].id;
+ $("plantFilter").value="all";
+ $("categoryFilter").value="all";
+ $("severityFilter").value="all";
+ $("periodFilter").value="12";
+
+ syncInputs();
+ saveScenario();
+ calculate();
+ notify("Emergency cost scenario reset.");
+};
+
+[
+ "plantFilter","categoryFilter",
+ "severityFilter","periodFilter"
+].forEach(id=>{
+ $(id).addEventListener("change",calculate);
+});
+
+$("menuBtn").onclick=()=>{
+ $("sidebar").classList.toggle("open");
+};
+
+loadScenario();
+calculate();
+</script>
+</body>
+</html>
