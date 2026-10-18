@@ -1,0 +1,1699 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Spare Parts | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / maintenance</p><h1 id="page-title">Spare Parts</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Spare Parts workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Spare Parts | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--red:#ed6175;--orange:#f4a443;
+ --blue:#438df5;--sidebar:258px
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5{font-family:"Manrope",sans-serif}
+a{text-decoration:none}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);z-index:1000;display:flex;
+ flex-direction:column;overflow-y:auto
+}
+.brand{
+ display:flex;align-items:center;gap:11px;
+ padding:26px 22px;border-bottom:1px solid #ffffff12
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;color:white;font-size:22px;
+ background:linear-gradient(135deg,#a28aff,#6752e8)
+}
+.brand strong{font:800 18px "Manrope",sans-serif;color:white}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;letter-spacing:1.7px;
+ text-transform:uppercase
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;
+ margin:3px 12px;padding:12px 13px;border-radius:10px;
+ color:#a4aecf;font-size:11px;font-weight:700
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);color:white
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;align-items:center;
+ justify-content:space-between;gap:15px
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;display:grid;
+ place-items:center;color:#68718e;font-size:16px
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800
+}
+.mobile-menu{display:none}
+.content{padding:27px 30px 45px;max-width:1650px;margin:auto}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;
+ padding:30px;color:white;margin-bottom:23px;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff)
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ border-radius:50%;border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;text-transform:uppercase;
+ letter-spacing:2px;color:#ddd6ff
+}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;line-height:1.9;
+ max-width:850px;margin:0
+}
+.hero-tag{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:17px
+}
+.panel,.stat-card{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105
+}
+.panel{padding:21px}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:15px
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 23px "Manrope",sans-serif;margin-top:7px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel-heading{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-bottom:19px
+}
+.panel-heading h3{font-size:14px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:10px;margin-top:5px}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;
+ padding:11px 16px;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 13px;background:white;color:#69738e;
+ font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.form-label{
+ font-size:10px;color:#68718e;font-weight:800;margin-bottom:8px
+}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:42px;font-size:11px;padding:10px 12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12
+}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffedf0;color:#d84b63}
+.status-badge.purple{background:#f0edff;color:#6855eb}
+.chart-box{height:270px;position:relative}
+.chart-box canvas{width:100%!important;height:100%!important}
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;font-size:10px;font-weight:800;
+ padding:13px;background:#f9faff;
+ border-bottom:1px solid var(--border);white-space:nowrap
+}
+.table tbody td{
+ padding:13px;vertical-align:middle;border-color:#f0f1f7
+}
+.progress-track{
+ width:100px;height:7px;background:#edf0f6;
+ border-radius:10px;overflow:hidden
+}
+.progress-fill{height:100%;border-radius:10px;background:var(--purple)}
+.detail-row{
+ display:flex;justify-content:space-between;gap:12px;
+ border-bottom:1px solid #eef0f6;padding:11px 0;font-size:11px
+}
+.detail-row span:first-child{color:#8992aa}
+.detail-row strong{text-align:right;overflow-wrap:anywhere}
+.alert-item{
+ display:flex;gap:12px;padding:13px 0;
+ border-bottom:1px solid #eef0f6
+}
+.alert-item:last-child{border-bottom:0}
+.alert-icon{
+ width:36px;height:36px;border-radius:10px;
+ display:grid;place-items:center;flex-shrink:0;
+ background:#ffedf0;color:#ed6175;font-size:16px
+}
+.alert-item strong{font-size:11px}
+.alert-item p{
+ color:#8992aa;font-size:10px;line-height:1.8;margin:5px 0 0
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;padding:15px 17px;
+ font-size:11px;line-height:1.8;
+ display:flex;align-items:flex-start;gap:11px
+}
+.notice i{font-size:18px;flex-shrink:0}
+.modal-content{
+ border:0;border-radius:17px;
+ box-shadow:0 20px 60px #10152d25
+}
+.modal-header,.modal-footer{border-color:var(--border)}
+.modal-title{font-size:16px;font-weight:800}
+.empty-state{padding:25px;text-align:center;color:#8992aa}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1100px){
+ :root{--sidebar:225px}
+ .content{padding:22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{width:260px;transform:translateX(-100%);transition:.25s}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:15px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:15px}
+ .stat-card{padding:16px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.action-bar,.filter-panel,
+ .notice,.toast-container,.print-hide{display:none!important}
+ .main{margin-left:0}
+ .content{padding:0;max-width:none}
+ body{background:white}
+ .panel,.stat-card{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html">
+  <i class="bi bi-grid"></i> Dashboard
+ </a>
+ <a class="side-link" href="command-center.html">
+  <i class="bi bi-broadcast"></i> Command Center
+ </a>
+ <a class="side-link" href="analytics.html">
+  <i class="bi bi-graph-up-arrow"></i> Analytics
+ </a>
+
+ <div class="nav-section">Maintenance Management</div>
+ <a class="side-link" href="maintenance-dashboard.html">
+  <i class="bi bi-speedometer2"></i> Maintenance Dashboard
+ </a>
+ <a class="side-link" href="work-orders.html">
+  <i class="bi bi-clipboard-check"></i> Work Orders
+ </a>
+ <a class="side-link" href="create-work-order.html">
+  <i class="bi bi-plus-square"></i> Create Work Order
+ </a>
+ <a class="side-link" href="maintenance-calendar.html">
+  <i class="bi bi-calendar3"></i> Maintenance Calendar
+ </a>
+ <a class="side-link" href="inventory.html">
+  <i class="bi bi-boxes"></i> Inventory
+ </a>
+ <a class="side-link active" href="spare-parts.html">
+  <i class="bi bi-gear-wide-connected"></i> Spare Parts
+ </a>
+ <a class="side-link" href="service-history.html">
+  <i class="bi bi-clock-history"></i> Service History
+ </a>
+ <a class="side-link" href="maintenance-reports.html">
+  <i class="bi bi-file-earmark-bar-graph"></i> Maintenance Reports
+ </a>
+
+ <div class="nav-section">Industrial Intelligence</div>
+ <a class="side-link" href="asset-health.html">
+  <i class="bi bi-heart-pulse"></i> Asset Health
+ </a>
+ <a class="side-link" href="predictive-maintenance.html">
+  <i class="bi bi-cpu"></i> Predictive Maintenance
+ </a>
+ <a class="side-link" href="cost-copilot.html">
+  <i class="bi bi-currency-rupee"></i> Cost Copilot
+ </a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2"
+   style="color:#18b58c;font-size:7px"></i>
+  Browser-Local Inventory Demo
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton"
+   aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">
+    Maintenance Management /
+    <strong>Spare Parts</strong>
+   </div>
+   <div class="fw-bold mt-1" style="font-size:13px">
+    Spare Parts Inventory & Stock Control
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="status-badge purple d-none d-sm-inline-flex">
+   <i class="bi bi-flask"></i> Demo Inventory
+  </span>
+  <a href="notifications.html" class="top-icon"
+   aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">
+  INDUSTRA AI / Maintenance / Spare Parts Intelligence
+ </div>
+ <h1>
+  <i class="bi bi-gear-wide-connected me-2"></i>
+  Spare Parts Management
+ </h1>
+ <p>
+  Track industrial replacement parts, warehouse stock,
+  reorder thresholds, suppliers, equipment compatibility,
+  maintenance consumption and inventory costs through
+  an interactive spare-parts management workspace.
+ </p>
+ <div class="hero-tag">
+  <i class="bi bi-box-seam"></i>
+  Local demonstration inventory — no physical stock movement
+ </div>
+</section>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 action-bar">
+ <div>
+  <h5 class="fw-bold mb-1">Spare Parts Control Center</h5>
+  <div class="text-secondary" style="font-size:11px">
+   Manage parts, review stock alerts and record simulated inventory movements.
+  </div>
+ </div>
+ <div class="d-flex flex-wrap gap-2">
+  <button class="btn-purple" id="addPartButton">
+   <i class="bi bi-plus-lg"></i> Add Spare Part
+  </button>
+  <button class="btn-outline-custom" id="exportCsv">
+   <i class="bi bi-filetype-csv"></i> Export CSV
+  </button>
+  <button class="btn-outline-custom" id="exportJson">
+   <i class="bi bi-download"></i> Export JSON
+  </button>
+  <button class="btn-outline-custom" id="printPage">
+   <i class="bi bi-printer"></i> Print
+  </button>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+    <i class="bi bi-boxes"></i>
+   </div>
+   <div class="stat-label">Total Part SKUs</div>
+   <div class="stat-value" id="totalParts">0</div>
+   <div class="stat-note">Unique spare-part records</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e7f8f1;color:#18b58c">
+    <i class="bi bi-check-circle"></i>
+   </div>
+   <div class="stat-label">Stock Available</div>
+   <div class="stat-value" id="availableParts">0</div>
+   <div class="stat-note">SKUs above reorder threshold</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#ffedf0;color:#ed6175">
+    <i class="bi bi-exclamation-triangle"></i>
+   </div>
+   <div class="stat-label">Reorder / Out of Stock</div>
+   <div class="stat-value" id="lowStockParts">0</div>
+   <div class="stat-note">SKUs requiring stock review</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eaf2ff;color:#438df5">
+    <i class="bi bi-currency-rupee"></i>
+   </div>
+   <div class="stat-label">Inventory Valuation</div>
+   <div class="stat-value" id="inventoryValue">₹0</div>
+   <div class="stat-note">Quantity × recorded unit cost</div>
+  </div>
+ </div>
+</div>
+
+<section class="panel mb-4 filter-panel">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-funnel me-2"
+     style="color:var(--purple)"></i>
+    Search & Filter Spare Parts
+   </h3>
+   <div class="panel-subtitle">
+    Find parts by name, category, supplier, warehouse or equipment.
+   </div>
+  </div>
+  <button class="btn-outline-custom" id="resetFilters">
+   <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
+  </button>
+ </div>
+
+ <div class="row g-3">
+  <div class="col-lg-4">
+   <label class="form-label" for="searchInput">Search Parts</label>
+   <input class="form-control" id="searchInput"
+    placeholder="Search part number, name, supplier or equipment...">
+  </div>
+
+  <div class="col-md-4 col-lg-2">
+   <label class="form-label" for="categoryFilter">Category</label>
+   <select class="form-select" id="categoryFilter">
+    <option value="all">All Categories</option>
+   </select>
+  </div>
+
+  <div class="col-md-4 col-lg-2">
+   <label class="form-label" for="warehouseFilter">Warehouse</label>
+   <select class="form-select" id="warehouseFilter">
+    <option value="all">All Warehouses</option>
+   </select>
+  </div>
+
+  <div class="col-md-4 col-lg-2">
+   <label class="form-label" for="stockFilter">Stock Status</label>
+   <select class="form-select" id="stockFilter">
+    <option value="all">All Statuses</option>
+    <option value="available">Available</option>
+    <option value="low">Low Stock</option>
+    <option value="out">Out of Stock</option>
+   </select>
+  </div>
+
+  <div class="col-lg-2">
+   <label class="form-label" for="sortFilter">Sort By</label>
+   <select class="form-select" id="sortFilter">
+    <option value="name">Part Name</option>
+    <option value="quantity">Lowest Quantity</option>
+    <option value="value">Highest Value</option>
+    <option value="lead">Longest Lead Time</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-8">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-bar-chart me-2"
+       style="color:var(--purple)"></i>
+      Inventory Stock by Category
+     </h3>
+     <div class="panel-subtitle">
+      Available unit counts across spare-part categories.
+     </div>
+    </div>
+   </div>
+   <div class="chart-box">
+    <canvas id="stockChart"></canvas>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-4">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-pie-chart me-2"
+       style="color:var(--purple)"></i>
+      Stock Health Distribution
+     </h3>
+     <div class="panel-subtitle">
+      Available, low-stock and out-of-stock SKUs.
+     </div>
+    </div>
+   </div>
+   <div class="chart-box">
+    <canvas id="stockHealthChart"></canvas>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-8">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-table me-2"
+       style="color:var(--purple)"></i>
+      Spare Parts Inventory Register
+     </h3>
+     <div class="panel-subtitle">
+      Select a part to inspect stock, supplier and compatibility details.
+     </div>
+    </div>
+    <span class="status-badge purple" id="tableCount">0 Parts</span>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table table-hover mb-0">
+     <thead>
+      <tr>
+       <th>Part Number</th>
+       <th>Spare Part</th>
+       <th>Category</th>
+       <th>Stock</th>
+       <th>Reorder</th>
+       <th>Unit Cost</th>
+       <th>Status</th>
+       <th>Actions</th>
+      </tr>
+     </thead>
+     <tbody id="partsTable"></tbody>
+    </table>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-4">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-info-square me-2"
+       style="color:var(--purple)"></i>
+      Part Details & Stock Actions
+     </h3>
+     <div class="panel-subtitle">
+      Inspect part specifications and record stock changes.
+     </div>
+    </div>
+   </div>
+   <div id="partInspector"></div>
+  </section>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-6">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-exclamation-triangle me-2"
+       style="color:var(--purple)"></i>
+      Reorder & Critical Stock Alerts
+     </h3>
+     <div class="panel-subtitle">
+      Parts at or below reorder level.
+     </div>
+    </div>
+   </div>
+   <div id="alertsContainer"></div>
+  </section>
+ </div>
+
+ <div class="col-xl-6">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-arrow-left-right me-2"
+       style="color:var(--purple)"></i>
+      Recent Inventory Movements
+     </h3>
+     <div class="panel-subtitle">
+      Browser-local receipts, issues and adjustments.
+     </div>
+    </div>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table mb-0">
+     <thead>
+      <tr>
+       <th>Date</th>
+       <th>Part</th>
+       <th>Movement</th>
+       <th>Quantity</th>
+       <th>Reference</th>
+      </tr>
+     </thead>
+     <tbody id="movementTable"></tbody>
+    </table>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="d-flex justify-content-end mb-4 print-hide">
+ <button class="btn-outline-custom" id="resetDemo">
+  <i class="bi bi-arrow-counterclockwise"></i>
+  Reset Demo Spare Parts
+ </button>
+</div>
+
+<div class="notice">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Demonstration inventory:</strong>
+  All initial quantities, suppliers, prices, warehouse locations
+  and compatibility details are fictional. Changes are stored only
+  in this browser. Stock movements do not reserve, order, receive
+  or physically issue any part, and do not update the separate
+  work-order, service-history or inventory pages. Verify part
+  compatibility, specifications and stock with authorized personnel
+  before real equipment maintenance.
+ </div>
+</div>
+
+</main>
+</div>
+
+<!-- Add / Edit Part Modal -->
+<div class="modal fade" id="partModal" tabindex="-1"
+ aria-labelledby="partModalTitle" aria-hidden="true">
+ <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-content">
+   <form id="partForm">
+    <div class="modal-header">
+     <h5 class="modal-title" id="partModalTitle">
+      Add Spare Part
+     </h5>
+     <button type="button" class="btn-close"
+      data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+     <div class="row g-3">
+      <div class="col-md-6">
+       <label class="form-label" for="partNumber">
+        Part Number / SKU *
+       </label>
+       <input class="form-control" id="partNumber"
+        maxlength="80" required placeholder="SP-001">
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="partName">
+        Part Name *
+       </label>
+       <input class="form-control" id="partName"
+        maxlength="120" required placeholder="Industrial Bearing">
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="partCategory">Category *</label>
+       <select class="form-select" id="partCategory" required>
+        <option>Bearings</option>
+        <option>Filters</option>
+        <option>Seals</option>
+        <option>Electrical</option>
+        <option>Mechanical</option>
+        <option>Lubricants</option>
+        <option>Sensors</option>
+        <option>Safety Components</option>
+        <option>Other</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="partWarehouse">
+        Warehouse *
+       </label>
+       <select class="form-select" id="partWarehouse" required>
+        <option>Warehouse A</option>
+        <option>Warehouse B</option>
+        <option>Warehouse C</option>
+       </select>
+      </div>
+
+      <div class="col-md-4">
+       <label class="form-label" for="partQuantity">
+        Stock Quantity *
+       </label>
+       <input type="number" class="form-control"
+        id="partQuantity" min="0" max="10000000"
+        step="1" value="0" required>
+      </div>
+
+      <div class="col-md-4">
+       <label class="form-label" for="partReorder">
+        Reorder Level *
+       </label>
+       <input type="number" class="form-control"
+        id="partReorder" min="0" max="10000000"
+        step="1" value="5" required>
+      </div>
+
+      <div class="col-md-4">
+       <label class="form-label" for="partUnitCost">
+        Unit Cost (₹) *
+       </label>
+       <input type="number" class="form-control"
+        id="partUnitCost" min="0" max="100000000"
+        step="0.01" value="0" required>
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="partSupplier">
+        Supplier
+       </label>
+       <input class="form-control" id="partSupplier"
+        maxlength="120" placeholder="Supplier name">
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="partLeadTime">
+        Supplier Lead Time (Days)
+       </label>
+       <input type="number" class="form-control"
+        id="partLeadTime" min="0" max="3650"
+        step="1" value="7" required>
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="partLocation">
+        Storage Bin / Rack
+       </label>
+       <input class="form-control" id="partLocation"
+        maxlength="100" placeholder="Rack A-12">
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="partEquipment">
+        Compatible Equipment
+       </label>
+       <input class="form-control" id="partEquipment"
+        maxlength="500"
+        placeholder="PMP-101, MTR-001">
+      </div>
+
+      <div class="col-12">
+       <label class="form-label" for="partDescription">
+        Description / Specifications
+       </label>
+       <textarea class="form-control" id="partDescription"
+        rows="3" maxlength="2000"
+        placeholder="Part specifications, dimensions or notes..."></textarea>
+      </div>
+     </div>
+    </div>
+
+    <div class="modal-footer">
+     <button type="button" class="btn-outline-custom"
+      data-bs-dismiss="modal">Cancel</button>
+     <button type="submit" class="btn-purple">
+      <i class="bi bi-save"></i> Save Spare Part
+     </button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>
+
+<!-- Stock Movement Modal -->
+<div class="modal fade" id="movementModal" tabindex="-1"
+ aria-labelledby="movementModalTitle" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+   <form id="movementForm">
+    <div class="modal-header">
+     <h5 class="modal-title" id="movementModalTitle">
+      Record Stock Movement
+     </h5>
+     <button type="button" class="btn-close"
+      data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+     <div class="mb-3">
+      <label class="form-label" for="movementPart">
+       Selected Part
+      </label>
+      <input class="form-control" id="movementPart" readonly>
+     </div>
+
+     <div class="mb-3">
+      <label class="form-label" for="movementType">
+       Movement Type
+      </label>
+      <select class="form-select" id="movementType">
+       <option value="receipt">Stock Receipt (+)</option>
+       <option value="issue">Maintenance Issue (-)</option>
+       <option value="adjustment">Inventory Adjustment (+/-)</option>
+      </select>
+     </div>
+
+     <div class="mb-3">
+      <label class="form-label" for="movementQuantity">
+       Quantity *
+      </label>
+      <input type="number" class="form-control"
+       id="movementQuantity" step="1" min="1"
+       value="1" required>
+     </div>
+
+     <div class="mb-3">
+      <label class="form-label" for="movementReference">
+       Reference / Work Order
+      </label>
+      <input class="form-control" id="movementReference"
+       maxlength="100" placeholder="WO-001 / PO-001">
+     </div>
+
+     <div class="mb-3">
+      <label class="form-label" for="movementNote">
+       Movement Note
+      </label>
+      <textarea class="form-control" id="movementNote"
+       rows="2" maxlength="500"></textarea>
+     </div>
+
+     <div class="text-secondary" style="font-size:10px">
+      Adjustments use a signed quantity. Positive values add
+      stock and negative values reduce stock.
+     </div>
+    </div>
+
+    <div class="modal-footer">
+     <button type="button" class="btn-outline-custom"
+      data-bs-dismiss="modal">Cancel</button>
+     <button type="submit" class="btn-purple">
+      <i class="bi bi-check-lg"></i> Record Movement
+     </button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+
+const PARTS_KEY="industra-spare-parts-v1";
+const MOVEMENTS_KEY="industra-spare-movements-v1";
+
+const categories=[
+ "Bearings","Filters","Seals","Electrical",
+ "Mechanical","Lubricants","Sensors","Safety Components","Other"
+];
+
+const warehouses=["Warehouse A","Warehouse B","Warehouse C"];
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+const charts={};
+let selectedPartId=null;
+let editingPartId=null;
+let movementPartId=null;
+
+function demoParts(){
+ return [
+  ["SP-001","Deep Groove Ball Bearing","Bearings",18,8,2450,"Demo Supplier A",7,"Warehouse A","Rack A-01","PMP-101, MTR-001"],
+  ["SP-002","Compressor Air Filter","Filters",5,10,1850,"Demo Supplier B",5,"Warehouse A","Rack A-02","CMP-008"],
+  ["SP-003","Mechanical Seal Kit","Seals",3,6,4200,"Demo Supplier A",12,"Warehouse B","Rack B-04","PMP-101"],
+  ["SP-004","Motor Contactor","Electrical",12,5,3150,"Demo Supplier C",9,"Warehouse B","Rack B-07","MTR-001"],
+  ["SP-005","Gearbox Coupling","Mechanical",0,4,8900,"Demo Supplier D",18,"Warehouse C","Rack C-01","GBX-014"],
+  ["SP-006","Industrial Gear Oil","Lubricants",24,10,1200,"Demo Supplier E",4,"Warehouse C","Rack C-03","GBX-014"],
+  ["SP-007","Vibration Sensor","Sensors",6,5,12500,"Demo Supplier F",14,"Warehouse A","Rack A-08","PMP-101, CMP-008"],
+  ["SP-008","Emergency Stop Switch","Safety Components",2,5,3600,"Demo Supplier C",11,"Warehouse B","Rack B-10","CNV-022"],
+  ["SP-009","Conveyor Belt Roller","Mechanical",14,8,5100,"Demo Supplier D",10,"Warehouse C","Rack C-06","CNV-022"],
+  ["SP-010","Pressure Transducer","Sensors",9,4,7800,"Demo Supplier F",13,"Warehouse A","Rack A-11","BLR-003, CMP-008"],
+  ["SP-011","Valve Gasket","Seals",35,12,650,"Demo Supplier A",6,"Warehouse B","Rack B-12","BLR-003"],
+  ["SP-012","Thermal Overload Relay","Electrical",4,6,4300,"Demo Supplier C",8,"Warehouse B","Rack B-15","MTR-001"]
+ ].map(row=>({
+  id:row[0],name:row[1],category:row[2],
+  quantity:row[3],reorder:row[4],unitCost:row[5],
+  supplier:row[6],leadTime:row[7],
+  warehouse:row[8],location:row[9],
+  equipment:row[10],
+  description:"Synthetic spare-part demonstration record."
+ }));
+}
+
+function readArray(key,fallback){
+ try{
+  const value=JSON.parse(localStorage.getItem(key));
+  if(Array.isArray(value))return value;
+ }catch{}
+ return fallback;
+}
+
+let parts=readArray(PARTS_KEY,demoParts());
+let movements=readArray(MOVEMENTS_KEY,[]);
+
+function saveParts(next){
+ try{
+  localStorage.setItem(PARTS_KEY,JSON.stringify(next));
+  parts=next;
+  return true;
+ }catch{
+  notify("Unable to save spare parts to browser storage.");
+  return false;
+ }
+}
+
+function saveMovementTransaction(nextParts,nextMovements){
+ try{
+  const oldParts=localStorage.getItem(PARTS_KEY);
+  const oldMovements=localStorage.getItem(MOVEMENTS_KEY);
+
+  localStorage.setItem(PARTS_KEY,JSON.stringify(nextParts));
+
+  try{
+   localStorage.setItem(
+    MOVEMENTS_KEY,JSON.stringify(nextMovements)
+   );
+  }catch(error){
+   if(oldParts===null)localStorage.removeItem(PARTS_KEY);
+   else localStorage.setItem(PARTS_KEY,oldParts);
+   throw error;
+  }
+
+  parts=nextParts;
+  movements=nextMovements;
+  return true;
+ }catch{
+  notify("Stock movement could not be saved.");
+  return false;
+ }
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function stockStatus(part){
+ if(Number(part.quantity)===0)return "out";
+ if(Number(part.quantity)<=Number(part.reorder))return "low";
+ return "available";
+}
+
+function statusBadge(part){
+ const status=stockStatus(part);
+ const span=document.createElement("span");
+
+ span.className="status-badge "+
+  (status==="available"?"success":
+   status==="low"?"warning":"danger");
+
+ span.textContent=
+  status==="available"?"Available":
+  status==="low"?"Low Stock":"Out of Stock";
+
+ return span;
+}
+
+function inventoryValue(part){
+ return Number(part.quantity)*Number(part.unitCost);
+}
+
+function filteredParts(){
+ const search=$("searchInput").value.trim().toLowerCase();
+ const category=$("categoryFilter").value;
+ const warehouse=$("warehouseFilter").value;
+ const stock=$("stockFilter").value;
+ const sort=$("sortFilter").value;
+
+ const result=parts.filter(part=>{
+  const searchable=[
+   part.id,part.name,part.category,
+   part.supplier,part.equipment,part.location
+  ].join(" ").toLowerCase();
+
+  return (!search||searchable.includes(search))&&
+   (category==="all"||part.category===category)&&
+   (warehouse==="all"||part.warehouse===warehouse)&&
+   (stock==="all"||stockStatus(part)===stock);
+ });
+
+ result.sort((a,b)=>{
+  if(sort==="quantity")return a.quantity-b.quantity;
+  if(sort==="value")return inventoryValue(b)-inventoryValue(a);
+  if(sort==="lead")return b.leadTime-a.leadTime;
+  return a.name.localeCompare(b.name);
+ });
+
+ return result;
+}
+
+function renderStats(list){
+ const available=list.filter(p=>stockStatus(p)==="available").length;
+ const reorder=list.filter(p=>stockStatus(p)!=="available").length;
+ const value=list.reduce((sum,p)=>sum+inventoryValue(p),0);
+
+ $("totalParts").textContent=list.length;
+ $("availableParts").textContent=available;
+ $("lowStockParts").textContent=reorder;
+ $("inventoryValue").textContent=currency.format(value);
+ $("tableCount").textContent=list.length+" Parts";
+}
+
+function destroyChart(name){
+ if(charts[name])charts[name].destroy();
+}
+
+function chartOptions(){
+ return {
+  responsive:true,maintainAspectRatio:false,
+  plugins:{
+   legend:{
+    position:"bottom",
+    labels:{usePointStyle:true,boxWidth:8,font:{size:10}}
+   }
+  }
+ };
+}
+
+function renderCharts(list){
+ destroyChart("stock");
+ destroyChart("health");
+
+ charts.stock=new Chart($("stockChart"),{
+  type:"bar",
+  data:{
+   labels:categories,
+   datasets:[{
+    label:"Stock Units",
+    data:categories.map(category=>
+     list.filter(p=>p.category===category)
+      .reduce((sum,p)=>sum+Number(p.quantity),0)
+    ),
+    backgroundColor:"#6855eb",
+    borderRadius:7
+   }]
+  },
+  options:{
+   ...chartOptions(),
+   scales:{y:{beginAtZero:true}}
+  }
+ });
+
+ charts.health=new Chart($("stockHealthChart"),{
+  type:"doughnut",
+  data:{
+   labels:["Available","Low Stock","Out of Stock"],
+   datasets:[{
+    data:[
+     list.filter(p=>stockStatus(p)==="available").length,
+     list.filter(p=>stockStatus(p)==="low").length,
+     list.filter(p=>stockStatus(p)==="out").length
+    ],
+    backgroundColor:["#18b58c","#f4a443","#ed6175"],
+    borderWidth:3,borderColor:"#fff"
+   }]
+  },
+  options:{...chartOptions(),cutout:"65%"}
+ });
+}
+
+function cell(row,value){
+ const td=document.createElement("td");
+ if(value instanceof Node)td.append(value);
+ else td.textContent=String(value??"—");
+ row.append(td);
+ return td;
+}
+
+function renderTable(list){
+ const tbody=$("partsTable");
+ tbody.replaceChildren();
+
+ list.forEach(part=>{
+  const tr=document.createElement("tr");
+
+  cell(tr,part.id);
+
+  const name=document.createElement("strong");
+  name.textContent=part.name;
+  cell(tr,name);
+
+  cell(tr,part.category);
+
+  const stockCell=document.createElement("div");
+
+  const quantity=document.createElement("strong");
+  quantity.textContent=part.quantity+" units";
+
+  const track=document.createElement("div");
+  track.className="progress-track mt-2";
+
+  const fill=document.createElement("div");
+  fill.className="progress-fill";
+
+  const scale=Math.max(part.reorder*2,1);
+  fill.style.width=Math.min(100,part.quantity/scale*100)+"%";
+  fill.style.background=
+   stockStatus(part)==="out"?"#ed6175":
+   stockStatus(part)==="low"?"#f4a443":"#18b58c";
+
+  track.append(fill);
+  stockCell.append(quantity,track);
+  cell(tr,stockCell);
+
+  cell(tr,part.reorder);
+  cell(tr,currency.format(part.unitCost));
+  cell(tr,statusBadge(part));
+
+  const actions=document.createElement("div");
+  actions.className="d-flex gap-2";
+
+  const view=document.createElement("button");
+  view.type="button";
+  view.className="btn-outline-custom";
+  view.textContent="View";
+  view.addEventListener("click",()=>{
+   selectedPartId=part.id;
+   renderInspector();
+  });
+
+  const edit=document.createElement("button");
+  edit.type="button";
+  edit.className="btn-outline-custom";
+  edit.setAttribute("aria-label","Edit spare part");
+  const editIcon=document.createElement("i");
+  editIcon.className="bi bi-pencil";
+  edit.append(editIcon);
+  edit.addEventListener("click",()=>openEdit(part.id));
+
+  const remove=document.createElement("button");
+  remove.type="button";
+  remove.className="btn-outline-custom";
+  remove.setAttribute("aria-label","Delete spare part");
+  const removeIcon=document.createElement("i");
+  removeIcon.className="bi bi-trash";
+  remove.append(removeIcon);
+  remove.addEventListener("click",()=>deletePart(part.id));
+
+  actions.append(view,edit,remove);
+  cell(tr,actions);
+
+  tbody.append(tr);
+ });
+
+ if(!list.length){
+  const tr=document.createElement("tr");
+  const td=cell(tr,"No matching spare parts.");
+  td.colSpan=8;
+  td.className="text-center text-secondary py-4";
+  tbody.append(tr);
+ }
+}
+
+function detailRow(label,value){
+ const row=document.createElement("div");
+ row.className="detail-row";
+
+ const left=document.createElement("span");
+ left.textContent=label;
+
+ const right=document.createElement("strong");
+ right.textContent=String(value??"—");
+
+ row.append(left,right);
+ return row;
+}
+
+function renderInspector(){
+ const container=$("partInspector");
+ container.replaceChildren();
+
+ const part=parts.find(p=>p.id===selectedPartId);
+
+ if(!part){
+  const empty=document.createElement("div");
+  empty.className="empty-state";
+  empty.textContent="Select a spare part to view its details.";
+  container.append(empty);
+  return;
+ }
+
+ const title=document.createElement("h5");
+ title.className="fw-bold mb-2";
+ title.textContent=part.name;
+
+ const badge=statusBadge(part);
+ badge.classList.add("mb-3");
+
+ container.append(
+  title,badge,
+  detailRow("Part Number",part.id),
+  detailRow("Category",part.category),
+  detailRow("Current Stock",part.quantity+" units"),
+  detailRow("Reorder Level",part.reorder+" units"),
+  detailRow("Unit Cost",currency.format(part.unitCost)),
+  detailRow("Stock Value",currency.format(inventoryValue(part))),
+  detailRow("Supplier",part.supplier||"Not specified"),
+  detailRow("Lead Time",part.leadTime+" days"),
+  detailRow("Warehouse",part.warehouse),
+  detailRow("Storage Location",part.location||"—"),
+  detailRow("Compatible Equipment",part.equipment||"Not specified")
+ );
+
+ const description=document.createElement("p");
+ description.className="text-secondary mt-3";
+ description.style.lineHeight="1.8";
+ description.textContent=part.description||"No specifications recorded.";
+ container.append(description);
+
+ const movementButton=document.createElement("button");
+ movementButton.className="btn-purple w-100 mt-3 print-hide";
+ movementButton.textContent="Record Stock Movement";
+ movementButton.addEventListener("click",()=>openMovement(part.id));
+
+ const editButton=document.createElement("button");
+ editButton.className="btn-outline-custom w-100 mt-2 print-hide";
+ editButton.textContent="Edit Spare Part";
+ editButton.addEventListener("click",()=>openEdit(part.id));
+
+ container.append(movementButton,editButton);
+}
+
+function renderAlerts(){
+ const container=$("alertsContainer");
+ container.replaceChildren();
+
+ const critical=parts.filter(p=>stockStatus(p)!=="available")
+  .sort((a,b)=>a.quantity-b.quantity);
+
+ if(!critical.length){
+  const empty=document.createElement("div");
+  empty.className="empty-state";
+  empty.textContent="No low-stock or out-of-stock parts.";
+  container.append(empty);
+  return;
+ }
+
+ critical.slice(0,8).forEach(part=>{
+  const item=document.createElement("div");
+  item.className="alert-item";
+
+  const icon=document.createElement("div");
+  icon.className="alert-icon";
+
+  const symbol=document.createElement("i");
+  symbol.className="bi bi-exclamation-triangle";
+  icon.append(symbol);
+
+  const content=document.createElement("div");
+
+  const title=document.createElement("strong");
+  title.textContent=part.name+" ("+part.id+")";
+
+  const description=document.createElement("p");
+  description.textContent=
+   "Available: "+part.quantity+
+   " • Reorder level: "+part.reorder+
+   " • Supplier lead time: "+part.leadTime+" days";
+
+  content.append(title,description);
+  item.append(icon,content);
+  container.append(item);
+ });
+}
+
+function renderMovements(){
+ const tbody=$("movementTable");
+ tbody.replaceChildren();
+
+ const recent=[...movements]
+  .sort((a,b)=>b.date.localeCompare(a.date))
+  .slice(0,10);
+
+ recent.forEach(movement=>{
+  const tr=document.createElement("tr");
+
+  cell(tr,new Date(movement.date).toLocaleDateString("en-IN"));
+  cell(tr,movement.partId);
+  cell(tr,movement.type);
+  cell(tr,(movement.change>0?"+":"")+movement.change);
+  cell(tr,movement.reference||"—");
+
+  tbody.append(tr);
+ });
+
+ if(!recent.length){
+  const tr=document.createElement("tr");
+  const td=cell(tr,"No stock movements recorded yet.");
+  td.colSpan=5;
+  td.className="text-center text-secondary py-4";
+  tbody.append(tr);
+ }
+}
+
+function renderAll(){
+ const list=filteredParts();
+
+ if(!list.some(p=>p.id===selectedPartId)){
+  selectedPartId=list[0]?.id||null;
+ }
+
+ renderStats(list);
+ renderCharts(list);
+ renderTable(list);
+ renderInspector();
+ renderAlerts();
+ renderMovements();
+}
+
+const partModal=bootstrap.Modal.getOrCreateInstance($("partModal"));
+const movementModal=bootstrap.Modal.getOrCreateInstance($("movementModal"));
+
+function openNew(){
+ editingPartId=null;
+ $("partForm").reset();
+ $("partModalTitle").textContent="Add Spare Part";
+ partModal.show();
+}
+
+function openEdit(id){
+ const part=parts.find(p=>p.id===id);
+ if(!part)return;
+
+ editingPartId=id;
+ $("partModalTitle").textContent="Edit Spare Part";
+
+ const mapping={
+  partNumber:part.id,
+  partName:part.name,
+  partCategory:part.category,
+  partWarehouse:part.warehouse,
+  partQuantity:part.quantity,
+  partReorder:part.reorder,
+  partUnitCost:part.unitCost,
+  partSupplier:part.supplier,
+  partLeadTime:part.leadTime,
+  partLocation:part.location,
+  partEquipment:part.equipment,
+  partDescription:part.description
+ };
+
+ Object.entries(mapping).forEach(([id,value])=>{
+  $(id).value=value??"";
+ });
+
+ $("partNumber").readOnly=true;
+ partModal.show();
+}
+
+$("partModal").addEventListener("hidden.bs.modal",()=>{
+ $("partNumber").readOnly=false;
+});
+
+$("partForm").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ if(!$("partForm").checkValidity()){
+  $("partForm").reportValidity();
+  return;
+ }
+
+ const id=$("partNumber").value.trim();
+
+ if(!editingPartId&&parts.some(p=>p.id===id)){
+  notify("This part number already exists.");
+  return;
+ }
+
+ const numericIds=[
+  "partQuantity","partReorder","partUnitCost","partLeadTime"
+ ];
+
+ if(numericIds.some(key=>
+  !Number.isFinite(Number($(key).value))||
+  Number($(key).value)<0
+ )){
+  notify("Enter valid nonnegative quantities, costs and lead times.");
+  return;
+ }
+
+ if(["partQuantity","partReorder","partLeadTime"].some(key=>
+  !Number.isInteger(Number($(key).value))
+ )){
+  notify("Stock quantities and lead times must be whole numbers.");
+  return;
+ }
+
+ const part={
+  id,
+  name:$("partName").value.trim(),
+  category:$("partCategory").value,
+  warehouse:$("partWarehouse").value,
+  quantity:Number($("partQuantity").value),
+  reorder:Number($("partReorder").value),
+  unitCost:Number($("partUnitCost").value),
+  supplier:$("partSupplier").value.trim(),
+  leadTime:Number($("partLeadTime").value),
+  location:$("partLocation").value.trim(),
+  equipment:$("partEquipment").value.trim(),
+  description:$("partDescription").value.trim()
+ };
+
+ const next=structuredClone(parts);
+
+ if(editingPartId){
+  const index=next.findIndex(p=>p.id===editingPartId);
+  if(index<0)return;
+  next[index]=part;
+ }else{
+  next.push(part);
+ }
+
+ if(saveParts(next)){
+  selectedPartId=part.id;
+  partModal.hide();
+  renderAll();
+  notify(editingPartId?"Spare part updated.":"Spare part added.");
+ }
+});
+
+function deletePart(id){
+ if(!confirm("Delete spare part "+id+"?"))return;
+
+ if(saveParts(parts.filter(p=>p.id!==id))){
+  if(selectedPartId===id)selectedPartId=null;
+  renderAll();
+  notify("Spare part deleted.");
+ }
+}
+
+function openMovement(id){
+ const part=parts.find(p=>p.id===id);
+ if(!part)return;
+
+ movementPartId=id;
+ $("movementForm").reset();
+ $("movementPart").value=id+" — "+part.name;
+ $("movementQuantity").value="1";
+ updateMovementInput();
+ movementModal.show();
+}
+
+function updateMovementInput(){
+ const adjustment=$("movementType").value==="adjustment";
+ $("movementQuantity").min=adjustment?"-10000000":"1";
+}
+
+$("movementType").addEventListener("change",updateMovementInput);
+
+$("movementForm").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ if(!$("movementForm").checkValidity()){
+  $("movementForm").reportValidity();
+  return;
+ }
+
+ const part=parts.find(p=>p.id===movementPartId);
+ if(!part)return;
+
+ const type=$("movementType").value;
+ const quantity=Number($("movementQuantity").value);
+
+ if(!Number.isSafeInteger(quantity)||
+  quantity===0||Math.abs(quantity)>10000000){
+  notify("Enter a valid nonzero whole-number quantity.");
+  return;
+ }
+
+ if(type!=="adjustment"&&quantity<1){
+  notify("Receipt and issue quantities must be positive.");
+  return;
+ }
+
+ const change=type==="receipt"?quantity:
+  type==="issue"?-quantity:quantity;
+
+ if(part.quantity+change<0){
+  notify("Insufficient stock for this movement.");
+  return;
+ }
+
+ const nextParts=structuredClone(parts);
+ const index=nextParts.findIndex(p=>p.id===part.id);
+ nextParts[index].quantity+=change;
+
+ const nextMovements=[
+  ...movements,
+  {
+   id:crypto.randomUUID(),
+   date:new Date().toISOString(),
+   partId:part.id,
+   type,
+   change,
+   reference:$("movementReference").value.trim(),
+   note:$("movementNote").value.trim()
+  }
+ ];
+
+ if(saveMovementTransaction(nextParts,nextMovements)){
+  selectedPartId=part.id;
+  movementModal.hide();
+  renderAll();
+  notify("Demo stock movement recorded.");
+ }
+});
+
+function download(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function csvEscape(value){
+ return '"'+String(value??"").replace(/"/g,'""')+'"';
+}
+
+$("exportCsv").addEventListener("click",()=>{
+ const columns=[
+  "id","name","category","quantity","reorder",
+  "unitCost","supplier","leadTime","warehouse",
+  "location","equipment","description"
+ ];
+
+ const rows=[
+  columns,
+  ...filteredParts().map(part=>columns.map(key=>part[key]))
+ ];
+
+ const csv=rows.map(row=>
+  row.map(csvEscape).join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-spare-parts.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Filtered spare parts exported as CSV.");
+});
+
+$("exportJson").addEventListener("click",()=>{
+ download(
+  "industra-spare-parts.json",
+  JSON.stringify({
+   application:"INDUSTRA AI",
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   parts:filteredParts(),
+   movements
+  },null,2),
+  "application/json"
+ );
+
+ notify("Spare parts and movement history exported as JSON.");
+});
+
+$("printPage").addEventListener("click",()=>window.print());
+
+$("resetDemo").addEventListener("click",()=>{
+ if(!confirm("Reset all locally saved spare parts and movements?"))return;
+
+ if(saveMovementTransaction(demoParts(),[])){
+  selectedPartId=null;
+  renderAll();
+  notify("Spare parts reset to demo data.");
+ }
+});
+
+$("addPartButton").addEventListener("click",openNew);
+
+["searchInput","categoryFilter","warehouseFilter",
+ "stockFilter","sortFilter"].forEach(id=>{
+ $(id).addEventListener(
+  id==="searchInput"?"input":"change",renderAll
+ );
+});
+
+$("resetFilters").addEventListener("click",()=>{
+ $("searchInput").value="";
+ $("categoryFilter").value="all";
+ $("warehouseFilter").value="all";
+ $("stockFilter").value="all";
+ $("sortFilter").value="name";
+ renderAll();
+});
+
+categories.forEach(category=>{
+ const option=document.createElement("option");
+ option.value=category;
+ option.textContent=category;
+ $("categoryFilter").append(option);
+});
+
+warehouses.forEach(warehouse=>{
+ const option=document.createElement("option");
+ option.value=warehouse;
+ option.textContent=warehouse;
+ $("warehouseFilter").append(option);
+});
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+renderAll();
+</script>
+
+</body>
+</html>

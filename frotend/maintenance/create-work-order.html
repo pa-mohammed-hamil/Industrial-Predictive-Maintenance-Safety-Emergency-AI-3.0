@@ -1,0 +1,1952 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Create Work Order | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / maintenance</p><h1 id="page-title">Create Work Order</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Create Work Order workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Create Work Order | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --red:#ed6175;
+ --orange:#f4a443;
+ --blue:#438df5;
+ --sidebar:258px
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif
+}
+h1,h2,h3,h4,h5{font-family:"Manrope",sans-serif}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto;
+ scrollbar-width:thin;scrollbar-color:#42496b transparent
+}
+.brand{
+ display:flex;align-items:center;gap:11px;
+ padding:26px 22px;border-bottom:1px solid #ffffff12
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;color:white;font-size:22px;
+ background:linear-gradient(135deg,#a28aff,#6752e8)
+}
+.brand strong{
+ font:800 18px "Manrope",sans-serif;color:white
+}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;letter-spacing:1.7px;
+ text-transform:uppercase
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;
+ margin:3px 12px;padding:12px 13px;
+ border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700;transition:.2s
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+ color:white
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;
+ border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;align-items:center;
+ justify-content:space-between;gap:15px
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;
+ display:grid;place-items:center;color:#68718e;font-size:16px
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800
+}
+.mobile-menu{display:none}
+.content{
+ padding:27px 30px 45px;
+ max-width:1600px;margin:auto
+}
+.hero{
+ position:relative;overflow:hidden;
+ border-radius:19px;padding:30px;
+ color:white;margin-bottom:23px;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff)
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ border-radius:50%;border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;
+ text-transform:uppercase;letter-spacing:2px;color:#ddd6ff
+}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;
+ line-height:1.9;max-width:850px;margin:0
+}
+.hero-tag{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:17px
+}
+.panel,.stat-card{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105
+}
+.panel{padding:22px}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:15px
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 23px "Manrope",sans-serif;margin-top:7px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel-heading{
+ display:flex;justify-content:space-between;
+ align-items:center;flex-wrap:wrap;gap:10px;
+ margin-bottom:20px
+}
+.panel-heading h3{font-size:14px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:10px;margin-top:5px}
+.section-icon{
+ width:36px;height:36px;border-radius:10px;
+ background:#f0edff;color:var(--purple);
+ display:grid;place-items:center;font-size:17px
+}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;
+ padding:11px 16px;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;cursor:pointer
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);
+ border-radius:10px;padding:10px 13px;
+ background:white;color:#69738e;
+ font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px;cursor:pointer
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.btn-danger-soft{
+ background:#ffedf0;color:#d84b63;
+ border:0;border-radius:9px;padding:9px 11px
+}
+.form-label{
+ font-size:10px;color:#68718e;
+ font-weight:800;margin-bottom:8px
+}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;min-height:43px;
+ font-size:11px;padding:10px 12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12
+}
+textarea.form-control{min-height:110px;resize:vertical}
+.form-check-label{font-size:11px;color:#68718e}
+.form-check-input:checked{
+ background-color:var(--purple);border-color:var(--purple)
+}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffedf0;color:#d84b63}
+.status-badge.purple{background:#f0edff;color:#6855eb}
+.info-tile{
+ background:#f8f7ff;border:1px solid #eeebff;
+ border-radius:12px;padding:16px;height:100%
+}
+.info-tile span{font-size:10px;color:#8992aa}
+.info-tile strong{
+ display:block;font:800 18px "Manrope",sans-serif;margin-top:8px
+}
+.task-row,.part-row{
+ display:grid;gap:12px;align-items:center;
+ margin-bottom:12px
+}
+.task-row{grid-template-columns:1fr auto}
+.part-row{grid-template-columns:2fr 1fr 1fr 1fr auto}
+.summary-row{
+ display:flex;justify-content:space-between;
+ gap:15px;padding:12px 0;
+ border-bottom:1px solid #eef0f6
+}
+.summary-row:last-child{border:0}
+.summary-row span{color:#8992aa;font-size:11px}
+.summary-row strong{font-size:12px;text-align:right}
+.total-box{
+ background:linear-gradient(110deg,#f0edff,#f8f7ff);
+ border:1px solid #e9e4ff;border-radius:13px;
+ padding:18px;margin-top:17px
+}
+.total-box strong{
+ font:800 26px "Manrope",sans-serif;color:var(--purple)
+}
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;font-size:10px;font-weight:800;
+ padding:13px;background:#f9faff;
+ border-bottom:1px solid var(--border);white-space:nowrap
+}
+.table tbody td{
+ padding:13px;vertical-align:middle;border-color:#f0f1f7
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;
+ padding:15px 17px;font-size:11px;
+ line-height:1.8;display:flex;align-items:flex-start;gap:11px
+}
+.notice i{font-size:18px;flex-shrink:0}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1100px){
+ :root{--sidebar:225px}
+ .content{padding:22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{
+  width:260px;transform:translateX(-100%);
+  transition:transform .25s
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:15px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:16px}
+ .stat-card{padding:16px}
+ .part-row{grid-template-columns:1fr 1fr}
+ .part-row .part-name{grid-column:1/-1}
+ .part-row .remove-part{grid-column:1/-1}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html">
+  <i class="bi bi-grid"></i> Dashboard
+ </a>
+ <a class="side-link" href="command-center.html">
+  <i class="bi bi-broadcast"></i> Command Center
+ </a>
+ <a class="side-link" href="analytics.html">
+  <i class="bi bi-graph-up-arrow"></i> Analytics
+ </a>
+
+ <div class="nav-section">Maintenance Management</div>
+ <a class="side-link" href="predictive-maintenance.html">
+  <i class="bi bi-gear-wide-connected"></i> Predictive Maintenance
+ </a>
+ <a class="side-link" href="maintenance-dashboard.html">
+  <i class="bi bi-speedometer2"></i> Maintenance Dashboard
+ </a>
+ <a class="side-link" href="work-orders.html">
+  <i class="bi bi-clipboard-check"></i> Work Orders
+ </a>
+ <a class="side-link active" href="create-work-order.html">
+  <i class="bi bi-plus-square"></i> Create Work Order
+ </a>
+ <a class="side-link" href="maintenance-schedule.html">
+  <i class="bi bi-calendar3"></i> Maintenance Schedule
+ </a>
+ <a class="side-link" href="asset-health.html">
+  <i class="bi bi-heart-pulse"></i> Asset Health
+ </a>
+ <a class="side-link" href="spare-parts.html">
+  <i class="bi bi-box-seam"></i> Spare Parts
+ </a>
+
+ <div class="nav-section">Industrial Intelligence</div>
+ <a class="side-link" href="equipment-condition.html">
+  <i class="bi bi-activity"></i> Equipment Condition
+ </a>
+ <a class="side-link" href="failure-prediction.html">
+  <i class="bi bi-exclamation-triangle"></i> Failure Prediction
+ </a>
+ <a class="side-link" href="cost-copilot.html">
+  <i class="bi bi-currency-rupee"></i> Cost Copilot
+ </a>
+ <a class="side-link" href="safety-copilot.html">
+  <i class="bi bi-shield-check"></i> Safety Copilot
+ </a>
+ <a class="side-link" href="emergency-center.html">
+  <i class="bi bi-broadcast-pin"></i> Emergency Center
+ </a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2"
+   style="color:#18b58c;font-size:7px"></i>
+  Browser-Local Maintenance Workspace
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton"
+   aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">
+    Maintenance Management /
+    <strong>Create Work Order</strong>
+   </div>
+   <div class="fw-bold mt-1" style="font-size:13px">
+    Maintenance Planning & Work Order Creation
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="status-badge purple d-none d-sm-inline-flex">
+   <i class="bi bi-flask"></i> Demo Workspace
+  </span>
+  <a href="notifications.html" class="top-icon"
+   aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">
+  INDUSTRA AI / Maintenance / Work Orders
+ </div>
+ <h1>
+  <i class="bi bi-clipboard-plus me-2"></i>
+  Create Maintenance Work Order
+ </h1>
+ <p>
+  Prepare structured industrial maintenance work orders,
+  assign technicians, schedule tasks, specify required
+  spare parts, estimate maintenance costs and document
+  safety precautions before review and approval.
+ </p>
+ <div class="hero-tag">
+  <i class="bi bi-shield-check"></i>
+  Draft planning only — no equipment actions are performed
+ </div>
+</section>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+ <div>
+  <h5 class="fw-bold mb-1">New Maintenance Work Order</h5>
+  <div class="text-secondary" style="font-size:11px">
+   Complete the details and save a browser-local work order.
+  </div>
+ </div>
+ <div class="d-flex flex-wrap gap-2">
+  <button class="btn-outline-custom" id="resetForm">
+   <i class="bi bi-arrow-counterclockwise"></i> Reset Form
+  </button>
+  <button class="btn-outline-custom" id="exportCurrent">
+   <i class="bi bi-download"></i> Export Draft
+  </button>
+  <button class="btn-purple" id="saveWorkOrder">
+   <i class="bi bi-save"></i> Save Work Order
+  </button>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+    <i class="bi bi-clipboard-data"></i>
+   </div>
+   <div class="stat-label">Local Work Orders</div>
+   <div class="stat-value" id="totalOrders">0</div>
+   <div class="stat-note">Saved in this browser</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#fff4e6;color:#f4a443">
+    <i class="bi bi-exclamation-triangle"></i>
+   </div>
+   <div class="stat-label">High / Critical Priority</div>
+   <div class="stat-value" id="highPriorityOrders">0</div>
+   <div class="stat-note">Locally saved work orders</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e7f8f1;color:#18b58c">
+    <i class="bi bi-person-check"></i>
+   </div>
+   <div class="stat-label">Assigned Orders</div>
+   <div class="stat-value" id="assignedOrders">0</div>
+   <div class="stat-note">Technician selected</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eaf2ff;color:#438df5">
+    <i class="bi bi-currency-rupee"></i>
+   </div>
+   <div class="stat-label">Current Estimated Cost</div>
+   <div class="stat-value" id="topEstimatedCost">₹0</div>
+   <div class="stat-note">Calculated planning estimate</div>
+  </div>
+ </div>
+</div>
+
+<form id="workOrderForm" novalidate>
+<div class="row g-3">
+
+<div class="col-xl-8">
+
+<section class="panel mb-3">
+ <div class="panel-heading">
+  <div class="d-flex align-items-center gap-3">
+   <div class="section-icon"><i class="bi bi-clipboard-data"></i></div>
+   <div>
+    <h3>Work Order Information</h3>
+    <div class="panel-subtitle">
+     Enter the maintenance request and service classification.
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="row g-3">
+  <div class="col-md-6">
+   <label class="form-label" for="workOrderId">Work Order ID</label>
+   <input class="form-control" id="workOrderId"
+    readonly aria-readonly="true">
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="workOrderType">
+    Maintenance Type *
+   </label>
+   <select class="form-select" id="workOrderType" required>
+    <option value="">Select maintenance type</option>
+    <option>Preventive Maintenance</option>
+    <option>Predictive Maintenance</option>
+    <option>Corrective Maintenance</option>
+    <option>Emergency Maintenance</option>
+    <option>Inspection</option>
+    <option>Repair</option>
+    <option>Replacement</option>
+   </select>
+  </div>
+
+  <div class="col-12">
+   <label class="form-label" for="workOrderTitle">
+    Work Order Title *
+   </label>
+   <input class="form-control" id="workOrderTitle"
+    maxlength="160" required
+    placeholder="Example: Inspect Pump P-101 bearing vibration">
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="priority">Priority *</label>
+   <select class="form-select" id="priority" required>
+    <option value="">Select priority</option>
+    <option>Low</option>
+    <option>Medium</option>
+    <option>High</option>
+    <option>Critical</option>
+   </select>
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="status">Work Order Status</label>
+   <select class="form-select" id="status">
+    <option>Draft</option>
+    <option>Pending Review</option>
+   </select>
+  </div>
+
+  <div class="col-12">
+   <label class="form-label" for="description">
+    Maintenance Description *
+   </label>
+   <textarea class="form-control" id="description"
+    maxlength="3000" required
+    placeholder="Describe the observed issue, inspection findings and maintenance requirements..."></textarea>
+  </div>
+
+  <div class="col-12">
+   <label class="form-label" for="failureCause">
+    Suspected Failure Cause
+   </label>
+   <textarea class="form-control" id="failureCause"
+    maxlength="2000"
+    placeholder="Describe possible causes or diagnostic observations..."></textarea>
+  </div>
+ </div>
+</section>
+
+<section class="panel mb-3">
+ <div class="panel-heading">
+  <div class="d-flex align-items-center gap-3">
+   <div class="section-icon"><i class="bi bi-gear-wide-connected"></i></div>
+   <div>
+    <h3>Equipment & Asset Details</h3>
+    <div class="panel-subtitle">
+     Associate the work order with an industrial asset.
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="row g-3">
+  <div class="col-md-6">
+   <label class="form-label" for="assetSelect">Asset *</label>
+   <select class="form-select" id="assetSelect" required>
+    <option value="">Select equipment</option>
+   </select>
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="assetCategory">Asset Category</label>
+   <input class="form-control" id="assetCategory" readonly>
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="assetLocation">Equipment Location</label>
+   <input class="form-control" id="assetLocation" readonly>
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="assetCondition">Reported Condition</label>
+   <input class="form-control" id="assetCondition" readonly>
+  </div>
+
+  <div class="col-12">
+   <div class="info-tile">
+    <span>Selected Asset Summary</span>
+    <strong id="assetSummary">No asset selected</strong>
+    <div class="text-secondary mt-2" id="assetSummaryNote"
+     style="font-size:11px">
+     Choose an asset to view its demonstration metadata.
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="panel mb-3">
+ <div class="panel-heading">
+  <div class="d-flex align-items-center gap-3">
+   <div class="section-icon"><i class="bi bi-calendar-check"></i></div>
+   <div>
+    <h3>Scheduling & Technician Assignment</h3>
+    <div class="panel-subtitle">
+     Plan the proposed maintenance window and responsibility.
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="row g-3">
+  <div class="col-md-6">
+   <label class="form-label" for="startDate">
+    Planned Start *
+   </label>
+   <input class="form-control" id="startDate"
+    type="datetime-local" required>
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="endDate">
+    Planned End *
+   </label>
+   <input class="form-control" id="endDate"
+    type="datetime-local" required>
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="technician">
+    Assigned Technician
+   </label>
+   <select class="form-select" id="technician">
+    <option value="">Unassigned</option>
+    <option>Demo Technician A</option>
+    <option>Demo Technician B</option>
+    <option>Demo Technician C</option>
+    <option>Demo Maintenance Supervisor</option>
+   </select>
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="team">Maintenance Team</label>
+   <select class="form-select" id="team">
+    <option value="">Select team</option>
+    <option>Mechanical Maintenance</option>
+    <option>Electrical Maintenance</option>
+    <option>Instrumentation</option>
+    <option>Safety & Inspection</option>
+    <option>Emergency Maintenance</option>
+   </select>
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="laborHours">
+    Estimated Labor Hours
+   </label>
+   <input class="form-control" id="laborHours"
+    type="number" min="0" max="10000" step="0.5" value="4">
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="hourlyRate">
+    Labor Rate (₹ / hour)
+   </label>
+   <input class="form-control" id="hourlyRate"
+    type="number" min="0" max="1000000" step="1" value="650">
+  </div>
+ </div>
+</section>
+
+<section class="panel mb-3">
+ <div class="panel-heading">
+  <div class="d-flex align-items-center gap-3">
+   <div class="section-icon"><i class="bi bi-list-check"></i></div>
+   <div>
+    <h3>Maintenance Task Checklist</h3>
+    <div class="panel-subtitle">
+     Define proposed tasks for the maintenance team to review.
+    </div>
+   </div>
+  </div>
+  <button class="btn-outline-custom" type="button" id="addTask">
+   <i class="bi bi-plus-lg"></i> Add Task
+  </button>
+ </div>
+
+ <div id="taskContainer"></div>
+</section>
+
+<section class="panel mb-3">
+ <div class="panel-heading">
+  <div class="d-flex align-items-center gap-3">
+   <div class="section-icon"><i class="bi bi-box-seam"></i></div>
+   <div>
+    <h3>Spare Parts & Materials</h3>
+    <div class="panel-subtitle">
+     Record estimated quantities and unit costs.
+    </div>
+   </div>
+  </div>
+  <button class="btn-outline-custom" type="button" id="addPart">
+   <i class="bi bi-plus-lg"></i> Add Part
+  </button>
+ </div>
+
+ <div id="partsContainer"></div>
+ <div class="text-secondary mt-2" style="font-size:10px">
+  Parts and prices are entered manually; no live inventory is checked.
+ </div>
+</section>
+
+<section class="panel mb-3">
+ <div class="panel-heading">
+  <div class="d-flex align-items-center gap-3">
+   <div class="section-icon"><i class="bi bi-shield-check"></i></div>
+   <div>
+    <h3>Safety & Approval Requirements</h3>
+    <div class="panel-subtitle">
+     Document required safety reviews before field work.
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="row g-3">
+  <div class="col-md-6">
+   <label class="form-label" for="permitType">
+    Proposed Permit Requirement
+   </label>
+   <select class="form-select" id="permitType">
+    <option value="">To be assessed</option>
+    <option>General Work Permit</option>
+    <option>Hot Work Permit</option>
+    <option>Electrical Work Permit</option>
+    <option>Confined Space Permit</option>
+    <option>Working at Height Permit</option>
+   </select>
+  </div>
+
+  <div class="col-md-6">
+   <label class="form-label" for="approval">
+    Approval Workflow
+   </label>
+   <select class="form-select" id="approval">
+    <option>Supervisor Review Required</option>
+    <option>Safety Officer Review Required</option>
+    <option>Maintenance Manager Review Required</option>
+    <option>Multi-Level Review Required</option>
+   </select>
+  </div>
+
+  <div class="col-12">
+   <label class="form-label">Safety Review Checklist</label>
+
+   <div class="row g-2">
+    <div class="col-md-6">
+     <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="safetyPpe">
+      <label class="form-check-label" for="safetyPpe">
+       PPE requirements identified
+      </label>
+     </div>
+    </div>
+
+    <div class="col-md-6">
+     <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="safetyLoto">
+      <label class="form-check-label" for="safetyLoto">
+       Isolation / LOTO review required
+      </label>
+     </div>
+    </div>
+
+    <div class="col-md-6">
+     <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="safetyHazard">
+      <label class="form-check-label" for="safetyHazard">
+       Hazard assessment required
+      </label>
+     </div>
+    </div>
+
+    <div class="col-md-6">
+     <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="safetyPermit">
+      <label class="form-check-label" for="safetyPermit">
+       Work permit review required
+      </label>
+     </div>
+    </div>
+   </div>
+  </div>
+
+  <div class="col-12">
+   <label class="form-label" for="safetyNotes">
+    Safety Precautions & Review Notes
+   </label>
+   <textarea class="form-control" id="safetyNotes"
+    maxlength="3000"
+    placeholder="Describe hazards, required controls and approval considerations..."></textarea>
+  </div>
+
+  <div class="col-12">
+   <div class="notice">
+    <i class="bi bi-shield-exclamation"></i>
+    <div>
+     Creating or saving this work order does not authorize
+     maintenance, isolation, energized work, permit issuance
+     or equipment restart. Site-approved procedures and
+     qualified personnel remain mandatory.
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+</div>
+
+<div class="col-xl-4">
+
+<section class="panel mb-3">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-receipt me-2" style="color:var(--purple)"></i>
+    Work Order Summary
+   </h3>
+   <div class="panel-subtitle">
+    Live preview of the current form.
+   </div>
+  </div>
+ </div>
+
+ <div class="summary-row">
+  <span>Work Order</span>
+  <strong id="summaryId">—</strong>
+ </div>
+ <div class="summary-row">
+  <span>Asset</span>
+  <strong id="summaryAsset">Not selected</strong>
+ </div>
+ <div class="summary-row">
+  <span>Maintenance Type</span>
+  <strong id="summaryType">Not selected</strong>
+ </div>
+ <div class="summary-row">
+  <span>Priority</span>
+  <div id="summaryPriority">
+   <span class="status-badge">Not selected</span>
+  </div>
+ </div>
+ <div class="summary-row">
+  <span>Technician</span>
+  <strong id="summaryTechnician">Unassigned</strong>
+ </div>
+ <div class="summary-row">
+  <span>Planned Duration</span>
+  <strong id="summaryDuration">—</strong>
+ </div>
+ <div class="summary-row">
+  <span>Tasks</span>
+  <strong id="summaryTasks">0</strong>
+ </div>
+ <div class="summary-row">
+  <span>Spare Parts</span>
+  <strong id="summaryParts">0</strong>
+ </div>
+</section>
+
+<section class="panel mb-3">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-currency-rupee me-2"
+     style="color:var(--purple)"></i>
+    Maintenance Cost Estimate
+   </h3>
+   <div class="panel-subtitle">
+    Indicative values calculated from entered amounts.
+   </div>
+  </div>
+ </div>
+
+ <div class="summary-row">
+  <span>Labor Cost</span>
+  <strong id="laborCost">₹0</strong>
+ </div>
+ <div class="summary-row">
+  <span>Spare Parts Cost</span>
+  <strong id="partsCost">₹0</strong>
+ </div>
+ <div class="summary-row">
+  <span>Other Cost</span>
+  <strong id="otherCostDisplay">₹0</strong>
+ </div>
+
+ <div class="mt-3">
+  <label class="form-label" for="otherCost">
+   Other Estimated Cost (₹)
+  </label>
+  <input class="form-control" id="otherCost"
+   type="number" min="0" max="1000000000"
+   step="1" value="0">
+ </div>
+
+ <div class="total-box">
+  <div class="text-secondary mb-2" style="font-size:11px">
+   Total Estimated Maintenance Cost
+  </div>
+  <strong id="totalCost">₹0</strong>
+  <div class="text-secondary mt-2" style="font-size:10px">
+   Planning estimate only. Taxes, downtime and
+   procurement adjustments are not included.
+  </div>
+ </div>
+</section>
+
+<section class="panel mb-3">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-shield-check me-2"
+     style="color:var(--purple)"></i>
+    Planning Readiness
+   </h3>
+   <div class="panel-subtitle">
+    Form completeness, not operational approval.
+   </div>
+  </div>
+ </div>
+
+ <div class="d-flex justify-content-between mb-2">
+  <span class="text-secondary" style="font-size:11px">
+   Required Information
+  </span>
+  <strong id="readinessPercent">0%</strong>
+ </div>
+
+ <div style="height:9px;background:#eef0f6;border-radius:9px;overflow:hidden">
+  <div id="readinessBar"
+   style="width:0;height:100%;background:linear-gradient(90deg,#6855eb,#a08fff);transition:.2s"></div>
+ </div>
+
+ <div class="mt-3 text-secondary" id="readinessMessage"
+  style="font-size:11px;line-height:1.8">
+  Complete required fields to prepare the draft.
+ </div>
+
+ <div class="notice mt-3">
+  <i class="bi bi-info-circle"></i>
+  <div>
+   A complete form is not evidence that a maintenance
+   plan is safe, feasible, approved or ready to execute.
+  </div>
+ </div>
+</section>
+
+<section class="panel">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-lightning-charge me-2"
+     style="color:var(--purple)"></i>
+    Quick Actions
+   </h3>
+   <div class="panel-subtitle">
+    Convenient work-order drafting shortcuts.
+   </div>
+  </div>
+ </div>
+
+ <div class="d-grid gap-2">
+  <button class="btn-outline-custom" type="button"
+   id="loadExample">
+   <i class="bi bi-file-earmark-text"></i>
+   Load Example Work Order
+  </button>
+
+  <button class="btn-outline-custom" type="button"
+   id="addInspectionTasks">
+   <i class="bi bi-list-check"></i>
+   Add Inspection Checklist
+  </button>
+
+  <button class="btn-outline-custom" type="button"
+   id="printDraft">
+   <i class="bi bi-printer"></i>
+   Print Work Order Draft
+  </button>
+
+  <a class="btn-outline-custom" href="work-orders.html">
+   <i class="bi bi-arrow-left"></i>
+   Work Orders Page
+  </a>
+ </div>
+</section>
+
+</div>
+</div>
+</form>
+
+<section class="panel mt-4 mb-4">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-clock-history me-2"
+     style="color:var(--purple)"></i>
+    Recently Saved Work Orders
+   </h3>
+   <div class="panel-subtitle">
+    Drafts stored locally in this browser.
+   </div>
+  </div>
+  <span class="status-badge purple" id="historyCount">0 Orders</span>
+ </div>
+
+ <div class="table-responsive">
+  <table class="table mb-0">
+   <thead>
+    <tr>
+     <th>Work Order ID</th>
+     <th>Title</th>
+     <th>Asset</th>
+     <th>Priority</th>
+     <th>Status</th>
+     <th>Estimated Cost</th>
+     <th>Created</th>
+     <th>Actions</th>
+    </tr>
+   </thead>
+   <tbody id="historyTable"></tbody>
+  </table>
+ </div>
+</section>
+
+<div class="notice">
+ <i class="bi bi-info-circle"></i>
+ <div>
+  <strong>Demonstration workspace:</strong>
+  This page uses fictional assets and browser-local storage.
+  It does not create work orders in a production CMMS,
+  reserve spare parts, assign real employees, approve permits,
+  dispatch technicians or control industrial equipment.
+  Connect it to your authenticated FastAPI backend for
+  persistent enterprise workflows.
+ </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const STORAGE_KEY="industra-work-orders-v1";
+
+const assets=[
+ {
+  id:"PMP-101",
+  name:"Centrifugal Pump P-101",
+  category:"Pump",
+  location:"Plant A / Process Line 1",
+  condition:"Inspection Recommended"
+ },
+ {
+  id:"CMP-008",
+  name:"Air Compressor C-008",
+  category:"Compressor",
+  location:"Plant A / Utility Room",
+  condition:"Maintenance Review"
+ },
+ {
+  id:"MTR-001",
+  name:"Electric Motor M-001",
+  category:"Motor",
+  location:"Plant B / Production Floor",
+  condition:"Monitoring"
+ },
+ {
+  id:"GBX-014",
+  name:"Industrial Gearbox G-014",
+  category:"Gearbox",
+  location:"Plant B / Drive Assembly",
+  condition:"Inspection Recommended"
+ },
+ {
+  id:"CNV-022",
+  name:"Conveyor System CV-022",
+  category:"Conveyor",
+  location:"Plant C / Packaging",
+  condition:"Monitoring"
+ },
+ {
+  id:"BLR-003",
+  name:"Industrial Boiler B-003",
+  category:"Boiler",
+  location:"Plant C / Utility Zone",
+  condition:"Maintenance Review"
+ }
+];
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+let orders=loadOrders();
+let editingId=null;
+
+function loadOrders(){
+ try{
+  const value=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if(!Array.isArray(value))return [];
+
+  return value.filter(o=>
+   o&&typeof o.id==="string"&&
+   typeof o.title==="string"&&
+   Number.isFinite(o.totalCost)&&
+   o.totalCost>=0
+  ).slice(-200);
+ }catch{return [];}
+}
+
+function saveOrders(){
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(orders));
+  return true;
+ }catch{
+  notify("Unable to save: browser storage is unavailable or full.");
+  return false;
+ }
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function newId(){
+ const date=new Date();
+ const stamp=[
+  date.getFullYear(),
+  String(date.getMonth()+1).padStart(2,"0"),
+  String(date.getDate()).padStart(2,"0")
+ ].join("");
+
+ const suffix=crypto.randomUUID().slice(0,8).toUpperCase();
+ return "WO-"+stamp+"-"+suffix;
+}
+
+function numberValue(id){
+ const input=$(id);
+ const value=Number(input.value);
+
+ if(!input.value.trim()||!Number.isFinite(value)||value<0)
+  return 0;
+
+ return value;
+}
+
+function addTask(text=""){
+ const row=document.createElement("div");
+ row.className="task-row";
+
+ const input=document.createElement("input");
+ input.className="form-control task-input";
+ input.type="text";
+ input.maxLength=250;
+ input.placeholder="Enter maintenance task...";
+ input.value=text;
+ input.addEventListener("input",updateSummary);
+
+ const remove=document.createElement("button");
+ remove.type="button";
+ remove.className="btn-danger-soft";
+ remove.setAttribute("aria-label","Remove task");
+ remove.innerHTML='<i class="bi bi-trash"></i>';
+
+ remove.addEventListener("click",()=>{
+  row.remove();
+  updateSummary();
+ });
+
+ row.append(input,remove);
+ $("taskContainer").append(row);
+ updateSummary();
+}
+
+function addPart(part={}){
+ const row=document.createElement("div");
+ row.className="part-row";
+
+ const fields=[
+  {
+   className:"part-name",
+   placeholder:"Part / material name",
+   type:"text",
+   value:part.name||"",
+   maxLength:150
+  },
+  {
+   className:"part-code",
+   placeholder:"Part code",
+   type:"text",
+   value:part.code||"",
+   maxLength:60
+  },
+  {
+   className:"part-qty",
+   placeholder:"Quantity",
+   type:"number",
+   value:part.quantity??1
+  },
+  {
+   className:"part-price",
+   placeholder:"Unit price ₹",
+   type:"number",
+   value:part.price??0
+  }
+ ];
+
+ fields.forEach(field=>{
+  const input=document.createElement("input");
+  input.className="form-control "+field.className;
+  input.type=field.type;
+  input.placeholder=field.placeholder;
+  input.value=field.value;
+
+  if(field.type==="number"){
+   input.min="0";
+   input.max="1000000000";
+   input.step=field.className==="part-qty"?"1":"0.01";
+  }else{
+   input.maxLength=field.maxLength;
+  }
+
+  input.addEventListener("input",updateSummary);
+  row.append(input);
+ });
+
+ const remove=document.createElement("button");
+ remove.type="button";
+ remove.className="btn-danger-soft remove-part";
+ remove.setAttribute("aria-label","Remove spare part");
+ remove.innerHTML='<i class="bi bi-trash"></i>';
+
+ remove.addEventListener("click",()=>{
+  row.remove();
+  updateSummary();
+ });
+
+ row.append(remove);
+ $("partsContainer").append(row);
+ updateSummary();
+}
+
+function getTasks(){
+ return [...document.querySelectorAll(".task-input")]
+  .map(input=>input.value.trim())
+  .filter(Boolean);
+}
+
+function getParts(){
+ return [...document.querySelectorAll(".part-row")]
+  .map(row=>{
+   const quantity=Number(row.querySelector(".part-qty").value);
+   const price=Number(row.querySelector(".part-price").value);
+
+   return {
+    name:row.querySelector(".part-name").value.trim(),
+    code:row.querySelector(".part-code").value.trim(),
+    quantity:Number.isFinite(quantity)?quantity:0,
+    price:Number.isFinite(price)?price:0
+   };
+  })
+  .filter(part=>part.name||part.code);
+}
+
+function calculateCosts(){
+ const labor=numberValue("laborHours")*numberValue("hourlyRate");
+ const parts=getParts().reduce(
+  (sum,part)=>sum+part.quantity*part.price,0
+ );
+ const other=numberValue("otherCost");
+
+ return {
+  labor,parts,other,
+  total:labor+parts+other
+ };
+}
+
+function getAsset(){
+ return assets.find(a=>a.id===$("assetSelect").value)||null;
+}
+
+function updateAsset(){
+ const asset=getAsset();
+
+ $("assetCategory").value=asset?.category||"";
+ $("assetLocation").value=asset?.location||"";
+ $("assetCondition").value=asset?.condition||"";
+
+ $("assetSummary").textContent=
+  asset?asset.name:"No asset selected";
+
+ $("assetSummaryNote").textContent=asset?
+  asset.id+" • "+asset.location+" • "+asset.condition:
+  "Choose an asset to view its demonstration metadata.";
+
+ updateSummary();
+}
+
+function priorityBadge(priority){
+ const span=document.createElement("span");
+ const variants={
+  Low:"success",
+  Medium:"purple",
+  High:"warning",
+  Critical:"danger"
+ };
+
+ span.className="status-badge "+(variants[priority]||"");
+ span.textContent=priority||"Not selected";
+ return span;
+}
+
+function plannedDuration(){
+ const start=$("startDate").value;
+ const end=$("endDate").value;
+
+ if(!start||!end)return null;
+
+ const hours=(new Date(end)-new Date(start))/3600000;
+ return Number.isFinite(hours)&&hours>0?hours:null;
+}
+
+function readiness(){
+ const fields=[
+  "workOrderTitle","workOrderType","priority",
+  "description","assetSelect","startDate","endDate"
+ ];
+
+ let completed=fields.filter(id=>$(id).value.trim()).length;
+
+ if(plannedDuration()!==null&&
+    $("startDate").value&&$("endDate").value){
+  completed++;
+ }
+
+ return {
+  completed,
+  total:fields.length+1,
+  percent:Math.round(completed/(fields.length+1)*100)
+ };
+}
+
+function updateSummary(){
+ const asset=getAsset();
+ const costs=calculateCosts();
+
+ $("summaryId").textContent=$("workOrderId").value;
+ $("summaryAsset").textContent=asset?.id||"Not selected";
+ $("summaryType").textContent=
+  $("workOrderType").value||"Not selected";
+
+ $("summaryPriority").replaceChildren(
+  priorityBadge($("priority").value)
+ );
+
+ $("summaryTechnician").textContent=
+  $("technician").value||"Unassigned";
+
+ const duration=plannedDuration();
+ $("summaryDuration").textContent=
+  duration===null?"—":duration.toFixed(1)+" hours";
+
+ $("summaryTasks").textContent=getTasks().length;
+ $("summaryParts").textContent=getParts().length;
+
+ $("laborCost").textContent=currency.format(costs.labor);
+ $("partsCost").textContent=currency.format(costs.parts);
+ $("otherCostDisplay").textContent=currency.format(costs.other);
+ $("totalCost").textContent=currency.format(costs.total);
+ $("topEstimatedCost").textContent=currency.format(costs.total);
+
+ const ready=readiness();
+ $("readinessPercent").textContent=ready.percent+"%";
+ $("readinessBar").style.width=ready.percent+"%";
+
+ $("readinessMessage").textContent=
+  ready.percent===100?
+  "Required draft fields are complete. Supervisor and safety approval are still required.":
+  "Complete the required fields and enter a valid maintenance window.";
+}
+
+function validateWorkOrder(){
+ const required=[
+  "workOrderTitle","workOrderType","priority",
+  "description","assetSelect","startDate","endDate"
+ ];
+
+ for(const id of required){
+  const field=$(id);
+  if(!field.value.trim()){
+   field.focus();
+   notify("Complete all required work-order fields.");
+   return false;
+  }
+ }
+
+ if(plannedDuration()===null){
+  $("endDate").focus();
+  notify("Planned end must be after planned start.");
+  return false;
+ }
+
+ const numericIds=[
+  "laborHours","hourlyRate","otherCost"
+ ];
+
+ for(const id of numericIds){
+  const input=$(id);
+  const value=Number(input.value);
+
+  if(!input.value.trim()||!Number.isFinite(value)||
+     value<0||!input.checkValidity()){
+   input.focus();
+   notify("Enter valid nonnegative cost and labor values.");
+   return false;
+  }
+ }
+
+ for(const row of document.querySelectorAll(".part-row")){
+  const name=row.querySelector(".part-name");
+  const quantity=row.querySelector(".part-qty");
+  const price=row.querySelector(".part-price");
+
+  if(!name.value.trim()||
+     !quantity.value.trim()||
+     !price.value.trim()||
+     !quantity.checkValidity()||
+     !price.checkValidity()||
+     Number(quantity.value)<1||
+     !Number.isInteger(Number(quantity.value))){
+   name.focus();
+   notify("Each spare part needs a name, whole-number quantity and valid unit price.");
+   return false;
+  }
+ }
+
+ return true;
+}
+
+function collectWorkOrder(){
+ const asset=getAsset();
+ const costs=calculateCosts();
+
+ return {
+  id:$("workOrderId").value,
+  title:$("workOrderTitle").value.trim(),
+  type:$("workOrderType").value,
+  priority:$("priority").value,
+  status:$("status").value,
+  description:$("description").value.trim(),
+  suspectedCause:$("failureCause").value.trim(),
+
+  assetId:asset?.id||"",
+  assetName:asset?.name||"",
+  assetCategory:asset?.category||"",
+  assetLocation:asset?.location||"",
+
+  startDate:$("startDate").value,
+  endDate:$("endDate").value,
+  technician:$("technician").value,
+  team:$("team").value,
+  laborHours:numberValue("laborHours"),
+  hourlyRate:numberValue("hourlyRate"),
+
+  tasks:getTasks(),
+  parts:getParts(),
+
+  permitType:$("permitType").value,
+  approval:$("approval").value,
+
+  safety:{
+   ppe:$("safetyPpe").checked,
+   loto:$("safetyLoto").checked,
+   hazardAssessment:$("safetyHazard").checked,
+   permitReview:$("safetyPermit").checked,
+   notes:$("safetyNotes").value.trim()
+  },
+
+  laborCost:costs.labor,
+  partsCost:costs.parts,
+  otherCost:costs.other,
+  totalCost:costs.total,
+
+  demo:true,
+  approved:false,
+  executionAuthorized:false
+ };
+}
+
+function saveWorkOrder(){
+ if(!validateWorkOrder())return;
+
+ const data=collectWorkOrder();
+ const existingIndex=orders.findIndex(o=>o.id===data.id);
+
+ if(existingIndex>=0){
+  const existing=orders[existingIndex];
+  orders[existingIndex]={
+   ...data,
+   createdAt:existing.createdAt,
+   updatedAt:new Date().toISOString()
+  };
+ }else{
+  orders.push({
+   ...data,
+   createdAt:new Date().toISOString(),
+   updatedAt:new Date().toISOString()
+  });
+ }
+
+ orders=orders.slice(-200);
+
+ if(saveOrders()){
+  editingId=data.id;
+  renderHistory();
+  notify("Work order saved locally. No operational approval was granted.");
+ }
+}
+
+function resetForm(){
+ $("workOrderForm").reset();
+ editingId=null;
+ $("workOrderId").value=newId();
+
+ $("taskContainer").replaceChildren();
+ $("partsContainer").replaceChildren();
+
+ $("laborHours").value=4;
+ $("hourlyRate").value=650;
+ $("otherCost").value=0;
+
+ addTask("");
+ updateAsset();
+ updateSummary();
+}
+
+function loadWorkOrder(order){
+ resetForm();
+
+ editingId=order.id;
+
+ const mapping={
+  workOrderId:order.id,
+  workOrderTitle:order.title,
+  workOrderType:order.type,
+  priority:order.priority,
+  status:order.status,
+  description:order.description,
+  failureCause:order.suspectedCause,
+  assetSelect:order.assetId,
+  startDate:order.startDate,
+  endDate:order.endDate,
+  technician:order.technician,
+  team:order.team,
+  laborHours:order.laborHours,
+  hourlyRate:order.hourlyRate,
+  permitType:order.permitType,
+  approval:order.approval,
+  safetyNotes:order.safety?.notes,
+  otherCost:order.otherCost
+ };
+
+ Object.entries(mapping).forEach(([id,value])=>{
+  if($(id))$(id).value=value??"";
+ });
+
+ $("safetyPpe").checked=!!order.safety?.ppe;
+ $("safetyLoto").checked=!!order.safety?.loto;
+ $("safetyHazard").checked=!!order.safety?.hazardAssessment;
+ $("safetyPermit").checked=!!order.safety?.permitReview;
+
+ $("taskContainer").replaceChildren();
+ (order.tasks||[]).forEach(task=>addTask(task));
+ if(!order.tasks?.length)addTask("");
+
+ $("partsContainer").replaceChildren();
+ (order.parts||[]).forEach(part=>addPart(part));
+
+ updateAsset();
+ updateSummary();
+
+ window.scrollTo({top:0,behavior:"smooth"});
+ notify("Saved work order loaded for editing.");
+}
+
+function renderHistory(){
+ const tbody=$("historyTable");
+ tbody.replaceChildren();
+
+ $("totalOrders").textContent=orders.length;
+ $("highPriorityOrders").textContent=
+  orders.filter(o=>["High","Critical"].includes(o.priority)).length;
+ $("assignedOrders").textContent=
+  orders.filter(o=>o.technician).length;
+ $("historyCount").textContent=orders.length+" Orders";
+
+ if(!orders.length){
+  const tr=document.createElement("tr");
+  const td=document.createElement("td");
+  td.colSpan=8;
+  td.className="text-center text-secondary py-4";
+  td.textContent="No work orders saved yet.";
+  tr.append(td);
+  tbody.append(tr);
+  return;
+ }
+
+ [...orders].reverse().forEach(order=>{
+  const tr=document.createElement("tr");
+
+  [
+   order.id,
+   order.title,
+   order.assetId
+  ].forEach(value=>{
+   const td=document.createElement("td");
+   td.textContent=value||"—";
+   tr.append(td);
+  });
+
+  const priorityTd=document.createElement("td");
+  priorityTd.append(priorityBadge(order.priority));
+  tr.append(priorityTd);
+
+  const statusTd=document.createElement("td");
+  statusTd.textContent=order.status||"Draft";
+  tr.append(statusTd);
+
+  const costTd=document.createElement("td");
+  costTd.textContent=currency.format(order.totalCost);
+  tr.append(costTd);
+
+  const dateTd=document.createElement("td");
+  dateTd.textContent=order.createdAt?
+   new Date(order.createdAt).toLocaleString("en-IN"):"—";
+  tr.append(dateTd);
+
+  const actionTd=document.createElement("td");
+  const actions=document.createElement("div");
+  actions.className="d-flex gap-2";
+
+  const edit=document.createElement("button");
+  edit.type="button";
+  edit.className="btn-outline-custom";
+  edit.textContent="Edit";
+  edit.addEventListener("click",()=>loadWorkOrder(order));
+
+  const remove=document.createElement("button");
+  remove.type="button";
+  remove.className="btn-danger-soft";
+  remove.setAttribute("aria-label","Delete work order");
+  remove.innerHTML='<i class="bi bi-trash"></i>';
+
+  remove.addEventListener("click",()=>{
+   if(!confirm("Delete this locally saved work order?"))return;
+
+   const previous=orders;
+   orders=orders.filter(o=>o.id!==order.id);
+
+   if(saveOrders()){
+    if(editingId===order.id)resetForm();
+    renderHistory();
+    notify("Local work order deleted.");
+   }else{
+    orders=previous;
+   }
+  });
+
+  actions.append(edit,remove);
+  actionTd.append(actions);
+  tr.append(actionTd);
+
+  tbody.append(tr);
+ });
+}
+
+function downloadJson(filename,data){
+ const blob=new Blob(
+  [JSON.stringify(data,null,2)],
+  {type:"application/json"}
+ );
+
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportDraft(){
+ if(!validateWorkOrder())return;
+
+ downloadJson(
+  $("workOrderId").value+".json",
+  {
+   application:"INDUSTRA AI",
+   exportedAt:new Date().toISOString(),
+   workOrder:collectWorkOrder()
+  }
+ );
+
+ notify("Work order draft exported.");
+}
+
+function loadExample(){
+ resetForm();
+
+ $("workOrderTitle").value=
+  "Inspect Pump P-101 bearing vibration";
+
+ $("workOrderType").value="Predictive Maintenance";
+ $("priority").value="High";
+ $("description").value=
+  "Demo work order: inspect a fictional centrifugal pump for elevated bearing vibration and document inspection findings.";
+
+ $("failureCause").value=
+  "Possible bearing wear or alignment issue. Requires technician verification.";
+
+ $("assetSelect").value="PMP-101";
+ $("technician").value="Demo Technician A";
+ $("team").value="Mechanical Maintenance";
+
+ const start=new Date(Date.now()+86400000);
+ start.setMinutes(0,0,0);
+
+ const end=new Date(start.getTime()+3*3600000);
+
+ const localDate=date=>{
+  const offset=date.getTimezoneOffset()*60000;
+  return new Date(date.getTime()-offset)
+   .toISOString().slice(0,16);
+ };
+
+ $("startDate").value=localDate(start);
+ $("endDate").value=localDate(end);
+
+ $("taskContainer").replaceChildren();
+ addTask("Review approved work instructions");
+ addTask("Record vibration measurements");
+ addTask("Inspect bearing condition");
+ addTask("Document findings and recommendations");
+
+ addPart({
+  name:"Demo Bearing Kit",
+  code:"BRG-DEMO-01",
+  quantity:1,
+  price:4200
+ });
+
+ $("safetyPpe").checked=true;
+ $("safetyLoto").checked=true;
+ $("safetyHazard").checked=true;
+ $("safetyPermit").checked=true;
+
+ $("safetyNotes").value=
+  "Demo only: qualified personnel must determine required isolation, permits and controls under approved site procedures.";
+
+ updateAsset();
+ updateSummary();
+
+ notify("Example work order loaded.");
+}
+
+function printDraft(){
+ if(!validateWorkOrder())return;
+
+ const data=collectWorkOrder();
+ const popup=window.open("","_blank");
+
+ if(!popup){
+  notify("Allow pop-ups to print the draft.");
+  return;
+ }
+
+ const escapeHtml=value=>String(value??"")
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#39;");
+
+ const fields=[
+  ["ID",data.id],
+  ["Title",data.title],
+  ["Asset",data.assetName],
+  ["Maintenance Type",data.type],
+  ["Priority",data.priority],
+  ["Status",data.status],
+  ["Description",data.description],
+  ["Technician",data.technician||"Unassigned"],
+  ["Planned Start",data.startDate],
+  ["Planned End",data.endDate],
+  ["Approval Workflow",data.approval],
+  ["Safety Notes",data.safety.notes],
+  ["Estimated Cost",currency.format(data.totalCost)]
+ ];
+
+ const rows=fields.map(([key,value])=>
+  "<tr><th>"+escapeHtml(key)+"</th><td>"+
+  escapeHtml(value)+"</td></tr>"
+ ).join("");
+
+ const tasks=data.tasks.map(task=>
+  "<li>"+escapeHtml(task)+"</li>"
+ ).join("");
+
+ const parts=data.parts.map(part=>
+  "<li>"+escapeHtml(part.name)+" — "+
+  escapeHtml(part.quantity)+" × "+
+  escapeHtml(currency.format(part.price))+"</li>"
+ ).join("");
+
+ popup.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Work Order Draft</title>
+<style>
+body{font:14px Arial,sans-serif;padding:30px;color:#202640}
+h1{color:#5443d4}
+table{border-collapse:collapse;width:100%;margin:20px 0}
+th,td{border:1px solid #ddd;padding:10px;text-align:left;vertical-align:top}
+th{width:30%;background:#f5f6fb}
+.notice{margin-top:25px;padding:15px;background:#fff5e6}
+</style>
+</head>
+<body>
+<h1>INDUSTRA AI — Work Order Draft</h1>
+<p>Not approved for execution.</p>
+<table>${rows}</table>
+<h2>Tasks</h2><ul>${tasks}</ul>
+<h2>Parts</h2><ul>${parts}</ul>
+<div class="notice">
+Demo planning document only. Requires independent safety
+review, authorization and site-approved procedures.
+</div>
+</body>
+</html>`);
+
+ popup.document.close();
+ popup.focus();
+ popup.print();
+}
+
+assets.forEach(asset=>{
+ const option=document.createElement("option");
+ option.value=asset.id;
+ option.textContent=asset.id+" — "+asset.name;
+ $("assetSelect").append(option);
+});
+
+$("assetSelect").addEventListener("change",updateAsset);
+
+$("workOrderForm").addEventListener("input",updateSummary);
+$("workOrderForm").addEventListener("change",updateSummary);
+
+$("workOrderForm").addEventListener("submit",event=>{
+ event.preventDefault();
+ saveWorkOrder();
+});
+
+$("saveWorkOrder").addEventListener("click",saveWorkOrder);
+$("resetForm").addEventListener("click",()=>{
+ if(confirm("Clear the current work order form?"))resetForm();
+});
+
+$("addTask").addEventListener("click",()=>addTask());
+$("addPart").addEventListener("click",()=>addPart());
+
+$("addInspectionTasks").addEventListener("click",()=>{
+ [
+  "Review approved maintenance instructions",
+  "Document initial asset condition",
+  "Record inspection measurements",
+  "Verify findings with responsible supervisor",
+  "Prepare maintenance completion report"
+ ].forEach(task=>addTask(task));
+
+ notify("Example inspection tasks added.");
+});
+
+$("loadExample").addEventListener("click",loadExample);
+$("exportCurrent").addEventListener("click",exportDraft);
+$("printDraft").addEventListener("click",printDraft);
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+resetForm();
+renderHistory();
+</script>
+
+</body>
+</html>

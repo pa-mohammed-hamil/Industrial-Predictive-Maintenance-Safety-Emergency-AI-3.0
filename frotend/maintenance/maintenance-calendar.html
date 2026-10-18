@@ -1,0 +1,1749 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Maintenance Calendar | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / maintenance</p><h1 id="page-title">Maintenance Calendar</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Maintenance Calendar workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Maintenance Calendar | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--red:#ed6175;--orange:#f4a443;
+ --blue:#438df5;--sidebar:258px
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif
+}
+h1,h2,h3,h4,h5{font-family:"Manrope",sans-serif}
+a{text-decoration:none}
+button,input,select,textarea{font:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto
+}
+.brand{
+ display:flex;align-items:center;gap:11px;
+ padding:26px 22px;border-bottom:1px solid #ffffff12
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;color:white;font-size:22px;
+ background:linear-gradient(135deg,#a28aff,#6752e8)
+}
+.brand strong{
+ font:800 18px "Manrope",sans-serif;color:white
+}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;letter-spacing:1.7px;
+ text-transform:uppercase
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;
+ margin:3px 12px;padding:12px 13px;
+ border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+ color:white
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;
+ border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;align-items:center;
+ justify-content:space-between;gap:15px
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;
+ display:grid;place-items:center;color:#68718e;font-size:16px
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800
+}
+.mobile-menu{display:none}
+.content{padding:27px 30px 45px;max-width:1650px;margin:auto}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;
+ padding:30px;color:white;margin-bottom:23px;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff)
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ border-radius:50%;border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;text-transform:uppercase;
+ letter-spacing:2px;color:#ddd6ff
+}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;line-height:1.9;
+ max-width:850px;margin:0
+}
+.hero-tag{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:17px
+}
+.panel,.stat-card{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105
+}
+.panel{padding:21px}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:15px
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 23px "Manrope",sans-serif;margin-top:7px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel-heading{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-bottom:19px
+}
+.panel-heading h3{font-size:14px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:10px;margin-top:5px}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;
+ padding:11px 16px;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 13px;background:white;color:#69738e;
+ font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.btn-outline-custom.active{
+ color:var(--purple);background:#f0edff;
+ border-color:#dcd5ff
+}
+.btn-danger-soft{
+ border:0;background:#ffedf0;color:#d84b63;
+ border-radius:9px;padding:10px 13px;font-weight:700
+}
+.form-label{
+ font-size:10px;color:#68718e;
+ font-weight:800;margin-bottom:8px
+}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:42px;font-size:11px;padding:10px 12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12
+}
+textarea.form-control{min-height:95px}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffedf0;color:#d84b63}
+.status-badge.purple{background:#f0edff;color:#6855eb}
+.calendar-controls{
+ display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:wrap;gap:12px;margin-bottom:18px
+}
+.calendar-title{
+ font:800 19px "Manrope",sans-serif;
+ min-width:200px;text-align:center
+}
+.calendar-grid{
+ display:grid;grid-template-columns:repeat(7,minmax(0,1fr));
+ border-top:1px solid var(--border);
+ border-left:1px solid var(--border)
+}
+.calendar-weekday{
+ text-align:center;background:#f9faff;padding:13px 4px;
+ font-size:10px;font-weight:800;color:#8791aa;
+ border-right:1px solid var(--border);
+ border-bottom:1px solid var(--border)
+}
+.calendar-day{
+ min-height:120px;padding:8px;
+ border-right:1px solid var(--border);
+ border-bottom:1px solid var(--border);
+ cursor:pointer;transition:.15s;min-width:0
+}
+.calendar-day:hover{background:#faf9ff}
+.calendar-day.other-month{background:#fafbfe}
+.calendar-day.other-month .day-number{color:#c3c9d6}
+.calendar-day.today{background:#f8f6ff}
+.day-number{
+ display:inline-grid;place-items:center;
+ width:27px;height:27px;border-radius:9px;
+ font-weight:800;font-size:11px
+}
+.today .day-number{background:var(--purple);color:white}
+.calendar-event{
+ display:block;width:100%;text-align:left;
+ border:0;border-left:3px solid var(--purple);
+ border-radius:5px;background:#f0edff;
+ padding:6px 7px;margin-top:5px;
+ font-size:9px;font-weight:700;
+ color:#5545c3;overflow:hidden;
+ text-overflow:ellipsis;white-space:nowrap
+}
+.calendar-event.preventive{
+ background:#e7f8f1;border-color:#18b58c;color:#12876a
+}
+.calendar-event.predictive{
+ background:#f0edff;border-color:#6855eb;color:#5545c3
+}
+.calendar-event.corrective{
+ background:#fff4e6;border-color:#f4a443;color:#b77c22
+}
+.calendar-event.emergency{
+ background:#ffedf0;border-color:#ed6175;color:#d84b63
+}
+.calendar-event.inspection{
+ background:#eaf2ff;border-color:#438df5;color:#3676c9
+}
+.more-events{
+ display:block;color:#8992aa;
+ font-size:9px;margin-top:5px;font-weight:800
+}
+.week-list,.day-list{display:grid;gap:10px}
+.agenda-card{
+ display:flex;align-items:flex-start;gap:12px;
+ padding:14px;border:1px solid var(--border);
+ border-radius:12px;background:white
+}
+.agenda-date{
+ min-width:60px;padding:11px 7px;text-align:center;
+ background:#f0edff;border-radius:10px;color:var(--purple)
+}
+.agenda-date strong{font-size:20px;display:block}
+.agenda-date small{font-size:9px;font-weight:800}
+.agenda-body{flex:1;min-width:0}
+.agenda-body strong{font-size:12px}
+.agenda-body p{
+ font-size:10px;color:#8992aa;
+ margin:6px 0 0;line-height:1.7
+}
+.legend{
+ display:flex;flex-wrap:wrap;gap:14px;
+ color:#8992aa;font-size:10px
+}
+.legend-item{display:flex;align-items:center;gap:7px}
+.legend-dot{width:9px;height:9px;border-radius:50%}
+.upcoming-item{
+ padding:13px 0;border-bottom:1px solid #eef0f6;
+ display:flex;justify-content:space-between;
+ align-items:center;gap:10px
+}
+.upcoming-item:last-child{border-bottom:0}
+.upcoming-item strong{font-size:11px}
+.upcoming-item small{
+ display:block;color:#8992aa;font-size:10px;margin-top:5px
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;padding:15px 17px;
+ font-size:11px;line-height:1.8;
+ display:flex;align-items:flex-start;gap:11px
+}
+.notice i{font-size:18px;flex-shrink:0}
+.modal-content{
+ border:0;border-radius:17px;
+ box-shadow:0 20px 60px #10152d25
+}
+.modal-header,.modal-footer{border-color:var(--border)}
+.modal-title{font-size:16px;font-weight:800}
+.empty-state{
+ padding:35px;text-align:center;color:#8992aa
+}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1100px){
+ :root{--sidebar:225px}
+ .content{padding:22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{width:260px;transform:translateX(-100%);transition:.25s}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:15px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:15px}
+ .calendar-day{min-height:77px;padding:3px}
+ .calendar-event{font-size:8px;padding:4px}
+ .day-number{width:23px;height:23px;font-size:10px}
+ .calendar-title{min-width:auto;font-size:15px}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html">
+  <i class="bi bi-grid"></i> Dashboard
+ </a>
+ <a class="side-link" href="command-center.html">
+  <i class="bi bi-broadcast"></i> Command Center
+ </a>
+ <a class="side-link" href="analytics.html">
+  <i class="bi bi-graph-up-arrow"></i> Analytics
+ </a>
+
+ <div class="nav-section">Maintenance Management</div>
+ <a class="side-link" href="maintenance-dashboard.html">
+  <i class="bi bi-speedometer2"></i> Maintenance Dashboard
+ </a>
+ <a class="side-link" href="work-orders.html">
+  <i class="bi bi-clipboard-check"></i> Work Orders
+ </a>
+ <a class="side-link" href="create-work-order.html">
+  <i class="bi bi-plus-square"></i> Create Work Order
+ </a>
+ <a class="side-link active" href="maintenance-calendar.html">
+  <i class="bi bi-calendar3"></i> Maintenance Calendar
+ </a>
+ <a class="side-link" href="maintenance-schedule.html">
+  <i class="bi bi-calendar-check"></i> Maintenance Schedule
+ </a>
+ <a class="side-link" href="inventory.html">
+  <i class="bi bi-boxes"></i> Inventory
+ </a>
+ <a class="side-link" href="spare-parts.html">
+  <i class="bi bi-box-seam"></i> Spare Parts
+ </a>
+
+ <div class="nav-section">Industrial Intelligence</div>
+ <a class="side-link" href="asset-health.html">
+  <i class="bi bi-heart-pulse"></i> Asset Health
+ </a>
+ <a class="side-link" href="failure-prediction.html">
+  <i class="bi bi-exclamation-triangle"></i> Failure Prediction
+ </a>
+ <a class="side-link" href="safety-copilot.html">
+  <i class="bi bi-shield-check"></i> Safety Copilot
+ </a>
+ <a class="side-link" href="reports.html">
+  <i class="bi bi-file-earmark-bar-graph"></i> Reports
+ </a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2"
+   style="color:#18b58c;font-size:7px"></i>
+  Browser-Local Scheduling Demo
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton"
+   aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">
+    Maintenance Management /
+    <strong>Maintenance Calendar</strong>
+   </div>
+   <div class="fw-bold mt-1" style="font-size:13px">
+    Maintenance Scheduling & Planning
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="status-badge purple d-none d-sm-inline-flex">
+   <i class="bi bi-flask"></i> Demo Calendar
+  </span>
+  <a class="top-icon" href="notifications.html"
+   aria-label="Notifications"><i class="bi bi-bell"></i></a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">
+  INDUSTRA AI / Maintenance / Scheduling Intelligence
+ </div>
+ <h1>
+  <i class="bi bi-calendar3 me-2"></i>
+  Maintenance Calendar
+ </h1>
+ <p>
+  Plan preventive, predictive, corrective and inspection
+  activities across industrial equipment. Coordinate proposed
+  maintenance windows, assign technicians, review priorities
+  and organize recurring service schedules.
+ </p>
+ <div class="hero-tag">
+  <i class="bi bi-shield-check"></i>
+  Planning simulation — no real technician dispatch
+ </div>
+</section>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+ <div>
+  <h5 class="fw-bold mb-1">Maintenance Scheduling Center</h5>
+  <div class="text-secondary" style="font-size:11px">
+   Calendar overview and locally stored maintenance events.
+  </div>
+ </div>
+ <div class="d-flex flex-wrap gap-2">
+  <button class="btn-purple" id="newEventButton">
+   <i class="bi bi-plus-lg"></i> Schedule Maintenance
+  </button>
+  <button class="btn-outline-custom" id="exportEvents">
+   <i class="bi bi-download"></i> Export JSON
+  </button>
+  <button class="btn-outline-custom" id="exportCalendar">
+   <i class="bi bi-calendar-plus"></i> Export ICS
+  </button>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+    <i class="bi bi-calendar-event"></i>
+   </div>
+   <div class="stat-label">Scheduled Activities</div>
+   <div class="stat-value" id="totalEvents">0</div>
+   <div class="stat-note">Calendar occurrences</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e7f8f1;color:#18b58c">
+    <i class="bi bi-calendar-check"></i>
+   </div>
+   <div class="stat-label">Upcoming 7 Days</div>
+   <div class="stat-value" id="upcomingCount">0</div>
+   <div class="stat-note">Scheduled upcoming events</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#fff4e6;color:#f4a443">
+    <i class="bi bi-exclamation-triangle"></i>
+   </div>
+   <div class="stat-label">High / Critical Priority</div>
+   <div class="stat-value" id="highPriorityCount">0</div>
+   <div class="stat-note">Active planned occurrences</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eaf2ff;color:#438df5">
+    <i class="bi bi-arrow-repeat"></i>
+   </div>
+   <div class="stat-label">Recurring Schedules</div>
+   <div class="stat-value" id="recurringCount">0</div>
+   <div class="stat-note">Saved recurring event series</div>
+  </div>
+ </div>
+</div>
+
+<section class="panel mb-4">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-funnel me-2"
+     style="color:var(--purple)"></i>
+    Maintenance Calendar Filters
+   </h3>
+   <div class="panel-subtitle">
+    Filter by maintenance type, equipment and technician.
+   </div>
+  </div>
+  <button class="btn-outline-custom" id="clearFilters">
+   <i class="bi bi-arrow-counterclockwise"></i> Clear Filters
+  </button>
+ </div>
+
+ <div class="row g-3">
+  <div class="col-md-4">
+   <label class="form-label" for="typeFilter">
+    Maintenance Type
+   </label>
+   <select class="form-select" id="typeFilter">
+    <option value="all">All Types</option>
+    <option value="Preventive">Preventive</option>
+    <option value="Predictive">Predictive</option>
+    <option value="Corrective">Corrective</option>
+    <option value="Emergency">Emergency</option>
+    <option value="Inspection">Inspection</option>
+   </select>
+  </div>
+
+  <div class="col-md-4">
+   <label class="form-label" for="assetFilter">Equipment</label>
+   <select class="form-select" id="assetFilter">
+    <option value="all">All Equipment</option>
+   </select>
+  </div>
+
+  <div class="col-md-4">
+   <label class="form-label" for="technicianFilter">
+    Technician
+   </label>
+   <select class="form-select" id="technicianFilter">
+    <option value="all">All Technicians</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-9">
+  <section class="panel h-100">
+   <div class="calendar-controls">
+    <div class="d-flex align-items-center gap-2">
+     <button class="btn-outline-custom" id="previousPeriod"
+      aria-label="Previous period">
+      <i class="bi bi-chevron-left"></i>
+     </button>
+     <button class="btn-outline-custom" id="todayButton">
+      Today
+     </button>
+     <button class="btn-outline-custom" id="nextPeriod"
+      aria-label="Next period">
+      <i class="bi bi-chevron-right"></i>
+     </button>
+    </div>
+
+    <div class="calendar-title" id="calendarTitle"></div>
+
+    <div class="d-flex gap-2">
+     <button class="btn-outline-custom active" data-view="month">
+      Month
+     </button>
+     <button class="btn-outline-custom" data-view="week">
+      Week
+     </button>
+     <button class="btn-outline-custom" data-view="day">
+      Day
+     </button>
+    </div>
+   </div>
+
+   <div id="calendarContent"></div>
+
+   <div class="legend mt-4">
+    <div class="legend-item">
+     <span class="legend-dot" style="background:#18b58c"></span>
+     Preventive
+    </div>
+    <div class="legend-item">
+     <span class="legend-dot" style="background:#6855eb"></span>
+     Predictive
+    </div>
+    <div class="legend-item">
+     <span class="legend-dot" style="background:#f4a443"></span>
+     Corrective
+    </div>
+    <div class="legend-item">
+     <span class="legend-dot" style="background:#ed6175"></span>
+     Emergency
+    </div>
+    <div class="legend-item">
+     <span class="legend-dot" style="background:#438df5"></span>
+     Inspection
+    </div>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-3">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-clock-history me-2"
+       style="color:var(--purple)"></i>
+      Upcoming Maintenance
+     </h3>
+     <div class="panel-subtitle">
+      Next scheduled activities.
+     </div>
+    </div>
+   </div>
+
+   <div id="upcomingList"></div>
+  </section>
+ </div>
+</div>
+
+<section class="panel mb-4">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-list-task me-2"
+     style="color:var(--purple)"></i>
+    Scheduled Maintenance Register
+   </h3>
+   <div class="panel-subtitle">
+    Review and edit scheduled maintenance events.
+   </div>
+  </div>
+  <span class="status-badge purple" id="registerCount">0 Events</span>
+ </div>
+
+ <div class="table-responsive">
+  <table class="table table-hover align-middle" style="font-size:11px">
+   <thead>
+    <tr>
+     <th class="p-3">Schedule</th>
+     <th class="p-3">Maintenance</th>
+     <th class="p-3">Asset</th>
+     <th class="p-3">Technician</th>
+     <th class="p-3">Priority</th>
+     <th class="p-3">Status</th>
+     <th class="p-3">Recurrence</th>
+     <th class="p-3">Actions</th>
+    </tr>
+   </thead>
+   <tbody id="registerTable"></tbody>
+  </table>
+ </div>
+</section>
+
+<div class="d-flex justify-content-end mb-4">
+ <button class="btn-outline-custom" id="resetDemo">
+  <i class="bi bi-arrow-counterclockwise"></i>
+  Reset Demo Calendar
+ </button>
+</div>
+
+<div class="notice">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Demonstration scheduling:</strong>
+  The example assets, technicians and maintenance events are fictional.
+  Events are stored locally in your browser and do not synchronize
+  with a CMMS, shared technician calendar, work-order database
+  or industrial control system. Scheduling an event does not approve
+  maintenance, reserve equipment downtime, issue permits or
+  authorize field work.
+ </div>
+</div>
+
+</main>
+</div>
+
+<!-- Maintenance Event Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1"
+ aria-labelledby="eventModalTitle" aria-hidden="true">
+ <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-content">
+   <form id="eventForm">
+    <div class="modal-header">
+     <h5 class="modal-title" id="eventModalTitle">
+      Schedule Maintenance
+     </h5>
+     <button class="btn-close" type="button"
+      data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+     <div class="row g-3">
+      <div class="col-12">
+       <label class="form-label" for="eventTitle">
+        Maintenance Title *
+       </label>
+       <input class="form-control" id="eventTitle"
+        maxlength="160" required
+        placeholder="Example: Pump P-101 Bearing Inspection">
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="eventType">
+        Maintenance Type *
+       </label>
+       <select class="form-select" id="eventType" required>
+        <option value="">Select type</option>
+        <option>Preventive</option>
+        <option>Predictive</option>
+        <option>Corrective</option>
+        <option>Emergency</option>
+        <option>Inspection</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="eventAsset">
+        Equipment *
+       </label>
+       <select class="form-select" id="eventAsset" required>
+        <option value="">Select asset</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="eventStart">
+        Start Date & Time *
+       </label>
+       <input class="form-control" id="eventStart"
+        type="datetime-local" required>
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="eventEnd">
+        End Date & Time *
+       </label>
+       <input class="form-control" id="eventEnd"
+        type="datetime-local" required>
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="eventTechnician">
+        Assigned Technician
+       </label>
+       <select class="form-select" id="eventTechnician">
+        <option value="">Unassigned</option>
+        <option>Demo Technician A</option>
+        <option>Demo Technician B</option>
+        <option>Demo Technician C</option>
+        <option>Demo Maintenance Supervisor</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="eventPriority">
+        Priority *
+       </label>
+       <select class="form-select" id="eventPriority" required>
+        <option>Low</option>
+        <option selected>Medium</option>
+        <option>High</option>
+        <option>Critical</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="eventStatus">
+        Schedule Status
+       </label>
+       <select class="form-select" id="eventStatus">
+        <option>Planned</option>
+        <option>Pending Review</option>
+        <option>Confirmed</option>
+        <option>Completed</option>
+        <option>Cancelled</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="eventWorkOrder">
+        Work Order Reference
+       </label>
+       <input class="form-control" id="eventWorkOrder"
+        maxlength="80" placeholder="WO-2026-001">
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="eventRecurrence">
+        Repeat Schedule
+       </label>
+       <select class="form-select" id="eventRecurrence">
+        <option value="none">Does Not Repeat</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+       </select>
+      </div>
+
+      <div class="col-md-6">
+       <label class="form-label" for="eventOccurrences">
+        Number of Occurrences
+       </label>
+       <input class="form-control" id="eventOccurrences"
+        type="number" min="1" max="52" step="1" value="1">
+      </div>
+
+      <div class="col-12">
+       <label class="form-label" for="eventNotes">
+        Maintenance Notes
+       </label>
+       <textarea class="form-control" id="eventNotes"
+        maxlength="3000"
+        placeholder="Describe planned tasks, maintenance requirements and scheduling considerations..."></textarea>
+      </div>
+
+      <div class="col-12">
+       <div class="notice">
+        <i class="bi bi-info-circle"></i>
+        <div>
+         Recurring schedules are generated as a finite series
+         of calendar occurrences. Editing an occurrence updates
+         that occurrence only; it does not reschedule the entire series.
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+
+    <div class="modal-footer">
+     <button class="btn-outline-custom" type="button"
+      data-bs-dismiss="modal">Cancel</button>
+     <button class="btn-purple" type="submit">
+      <i class="bi bi-save"></i> Save Schedule
+     </button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const STORAGE_KEY="industra-maintenance-calendar-v1";
+
+const assets=[
+ {id:"PMP-101",name:"Centrifugal Pump P-101"},
+ {id:"CMP-008",name:"Air Compressor C-008"},
+ {id:"MTR-001",name:"Electric Motor M-001"},
+ {id:"GBX-014",name:"Industrial Gearbox G-014"},
+ {id:"CNV-022",name:"Conveyor System CV-022"},
+ {id:"BLR-003",name:"Industrial Boiler B-003"}
+];
+
+const technicians=[
+ "Demo Technician A",
+ "Demo Technician B",
+ "Demo Technician C",
+ "Demo Maintenance Supervisor"
+];
+
+const weekdays=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+let currentDate=new Date();
+currentDate.setHours(12,0,0,0);
+let currentView="month";
+let editingId=null;
+
+function localDateTime(date){
+ const offset=date.getTimezoneOffset()*60000;
+ return new Date(date.getTime()-offset).toISOString().slice(0,16);
+}
+
+function dateKey(date){
+ const year=date.getFullYear();
+ const month=String(date.getMonth()+1).padStart(2,"0");
+ const day=String(date.getDate()).padStart(2,"0");
+ return year+"-"+month+"-"+day;
+}
+
+function addDays(date,days){
+ const next=new Date(date);
+ next.setDate(next.getDate()+days);
+ return next;
+}
+
+function addMonthsClamped(date,months){
+ const result=new Date(date);
+ const day=result.getDate();
+
+ result.setDate(1);
+ result.setMonth(result.getMonth()+months);
+
+ const lastDay=new Date(
+  result.getFullYear(),result.getMonth()+1,0
+ ).getDate();
+
+ result.setDate(Math.min(day,lastDay));
+ return result;
+}
+
+function createDemoEvents(){
+ const today=new Date();
+ today.setHours(9,0,0,0);
+
+ const templates=[
+  ["Pump Bearing Inspection","Predictive","PMP-101",1,2,"High","Demo Technician A"],
+  ["Compressor Filter Service","Preventive","CMP-008",3,3,"Medium","Demo Technician B"],
+  ["Motor Thermal Inspection","Inspection","MTR-001",5,2,"Medium","Demo Technician C"],
+  ["Gearbox Lubrication","Preventive","GBX-014",8,2,"Low","Demo Technician A"],
+  ["Conveyor Belt Alignment","Corrective","CNV-022",11,4,"High","Demo Technician B"],
+  ["Boiler Safety Inspection","Inspection","BLR-003",15,3,"High","Demo Maintenance Supervisor"],
+  ["Pump Preventive Service","Preventive","PMP-101",19,3,"Medium","Demo Technician C"],
+  ["Compressor Condition Review","Predictive","CMP-008",24,2,"Medium","Demo Technician A"]
+ ];
+
+ return templates.map((template,index)=>{
+  const start=addDays(today,template[3]);
+  const end=new Date(start.getTime()+template[4]*3600000);
+
+  return {
+   id:crypto.randomUUID(),
+   seriesId:null,
+   title:template[0],
+   type:template[1],
+   asset:template[2],
+   start:localDateTime(start),
+   end:localDateTime(end),
+   priority:template[5],
+   technician:template[6],
+   status:"Planned",
+   workOrder:"DEMO-WO-"+String(index+1).padStart(3,"0"),
+   recurrence:"none",
+   notes:"Synthetic demonstration maintenance activity."
+  };
+ });
+}
+
+function initialState(){
+ return {events:createDemoEvents()};
+}
+
+function loadState(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+  if(saved&&Array.isArray(saved.events)){
+   return {
+    events:saved.events.filter(event=>
+     event&&typeof event.id==="string"&&
+     typeof event.title==="string"&&
+     typeof event.start==="string"&&
+     typeof event.end==="string"&&
+     Number.isFinite(new Date(event.start).getTime())&&
+     Number.isFinite(new Date(event.end).getTime())
+    ).slice(0,2000)
+   };
+  }
+ }catch{}
+ return initialState();
+}
+
+let state=loadState();
+
+function persist(nextState){
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(nextState));
+  state=nextState;
+  return true;
+ }catch{
+  notify("Browser storage is unavailable or full.");
+  return false;
+ }
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function filteredEvents(){
+ const type=$("typeFilter").value;
+ const asset=$("assetFilter").value;
+ const technician=$("technicianFilter").value;
+
+ return state.events.filter(event=>
+  (type==="all"||event.type===type)&&
+  (asset==="all"||event.asset===asset)&&
+  (technician==="all"||event.technician===technician)
+ ).sort((a,b)=>new Date(a.start)-new Date(b.start));
+}
+
+function eventDates(event){
+ return {
+  start:new Date(event.start),
+  end:new Date(event.end)
+ };
+}
+
+function eventsOnDay(date){
+ const dayStart=new Date(
+  date.getFullYear(),date.getMonth(),date.getDate()
+ );
+ const dayEnd=addDays(dayStart,1);
+
+ return filteredEvents().filter(event=>{
+  const {start,end}=eventDates(event);
+  return start<dayEnd&&end>dayStart;
+ });
+}
+
+function isActive(event){
+ return event.status!=="Cancelled"&&
+  event.status!=="Completed";
+}
+
+function renderStats(){
+ const now=new Date();
+ const weekLater=new Date(now.getTime()+7*86400000);
+
+ $("totalEvents").textContent=state.events.length;
+
+ $("upcomingCount").textContent=state.events.filter(event=>
+  isActive(event)&&
+  new Date(event.start)>=now&&
+  new Date(event.start)<weekLater
+ ).length;
+
+ $("highPriorityCount").textContent=state.events.filter(event=>
+  isActive(event)&&
+  ["High","Critical"].includes(event.priority)
+ ).length;
+
+ $("recurringCount").textContent=new Set(
+  state.events.filter(event=>event.seriesId)
+   .map(event=>event.seriesId)
+ ).size;
+}
+
+function typeClass(type){
+ const names={
+  Preventive:"preventive",
+  Predictive:"predictive",
+  Corrective:"corrective",
+  Emergency:"emergency",
+  Inspection:"inspection"
+ };
+ return names[type]||"inspection";
+}
+
+function formatTime(value){
+ return new Date(value).toLocaleTimeString("en-IN",{
+  hour:"2-digit",minute:"2-digit"
+ });
+}
+
+function formatDate(value){
+ return new Date(value).toLocaleDateString("en-IN",{
+  day:"2-digit",month:"short",year:"numeric"
+ });
+}
+
+function createEventButton(event){
+ const button=document.createElement("button");
+ button.type="button";
+ button.className="calendar-event "+typeClass(event.type);
+ button.textContent=formatTime(event.start)+" "+event.title;
+ button.title=event.title+" — "+event.asset;
+ button.addEventListener("click",e=>{
+  e.stopPropagation();
+  openEditEvent(event.id);
+ });
+ return button;
+}
+
+function renderMonth(){
+ const container=$("calendarContent");
+ container.replaceChildren();
+
+ const grid=document.createElement("div");
+ grid.className="calendar-grid";
+
+ weekdays.forEach(day=>{
+  const heading=document.createElement("div");
+  heading.className="calendar-weekday";
+  heading.textContent=day;
+  grid.append(heading);
+ });
+
+ const first=new Date(
+  currentDate.getFullYear(),currentDate.getMonth(),1
+ );
+
+ const gridStart=addDays(first,-first.getDay());
+ const today=dateKey(new Date());
+
+ for(let i=0;i<42;i++){
+  const date=addDays(gridStart,i);
+  const cell=document.createElement("div");
+  cell.className="calendar-day";
+
+  if(date.getMonth()!==currentDate.getMonth())
+   cell.classList.add("other-month");
+
+  if(dateKey(date)===today)
+   cell.classList.add("today");
+
+  const number=document.createElement("span");
+  number.className="day-number";
+  number.textContent=date.getDate();
+  cell.append(number);
+
+  const events=eventsOnDay(date);
+
+  events.slice(0,3).forEach(event=>
+   cell.append(createEventButton(event))
+  );
+
+  if(events.length>3){
+   const more=document.createElement("span");
+   more.className="more-events";
+   more.textContent="+"+(events.length-3)+" more";
+   cell.append(more);
+  }
+
+  cell.addEventListener("click",()=>openNewEvent(date));
+  grid.append(cell);
+ }
+
+ container.append(grid);
+}
+
+function createAgendaCard(event){
+ const card=document.createElement("div");
+ card.className="agenda-card";
+
+ const start=new Date(event.start);
+ const dateBox=document.createElement("div");
+ dateBox.className="agenda-date";
+
+ const day=document.createElement("strong");
+ day.textContent=start.getDate();
+
+ const month=document.createElement("small");
+ month.textContent=start.toLocaleDateString("en-IN",{
+  month:"short"
+ }).toUpperCase();
+
+ dateBox.append(day,month);
+
+ const body=document.createElement("div");
+ body.className="agenda-body";
+
+ const title=document.createElement("strong");
+ title.textContent=event.title;
+
+ const description=document.createElement("p");
+ description.textContent=[
+  formatTime(event.start)+" – "+formatTime(event.end),
+  event.asset,
+  event.technician||"Unassigned"
+ ].join(" • ");
+
+ const badge=document.createElement("span");
+ badge.className="status-badge purple mt-2";
+ badge.textContent=event.type+" • "+event.priority;
+
+ body.append(title,description,badge);
+
+ const edit=document.createElement("button");
+ edit.className="btn-outline-custom";
+ edit.type="button";
+ edit.innerHTML='<i class="bi bi-pencil"></i>';
+ edit.setAttribute("aria-label","Edit event");
+ edit.addEventListener("click",()=>openEditEvent(event.id));
+
+ card.append(dateBox,body,edit);
+ return card;
+}
+
+function renderAgenda(start,end){
+ const container=$("calendarContent");
+ container.replaceChildren();
+
+ const events=filteredEvents().filter(event=>{
+  const dates=eventDates(event);
+  return dates.start<end&&dates.end>start;
+ });
+
+ const list=document.createElement("div");
+ list.className="week-list";
+
+ if(!events.length){
+  const empty=document.createElement("div");
+  empty.className="empty-state";
+  empty.textContent="No maintenance events scheduled for this period.";
+  list.append(empty);
+ }else{
+  events.forEach(event=>list.append(createAgendaCard(event)));
+ }
+
+ container.append(list);
+}
+
+function renderCalendar(){
+ document.querySelectorAll("[data-view]").forEach(button=>{
+  button.classList.toggle(
+   "active",button.dataset.view===currentView
+  );
+ });
+
+ if(currentView==="month"){
+  $("calendarTitle").textContent=
+   currentDate.toLocaleDateString("en-IN",{
+    month:"long",year:"numeric"
+   });
+  renderMonth();
+  return;
+ }
+
+ if(currentView==="week"){
+  const start=addDays(currentDate,-currentDate.getDay());
+  start.setHours(0,0,0,0);
+  const end=addDays(start,7);
+
+  $("calendarTitle").textContent=
+   formatDate(start)+" – "+formatDate(addDays(end,-1));
+
+  renderAgenda(start,end);
+  return;
+ }
+
+ const start=new Date(
+  currentDate.getFullYear(),
+  currentDate.getMonth(),
+  currentDate.getDate()
+ );
+ const end=addDays(start,1);
+
+ $("calendarTitle").textContent=
+  currentDate.toLocaleDateString("en-IN",{
+   weekday:"long",day:"numeric",
+   month:"long",year:"numeric"
+  });
+
+ renderAgenda(start,end);
+}
+
+function renderUpcoming(){
+ const container=$("upcomingList");
+ container.replaceChildren();
+
+ const now=new Date();
+
+ const events=filteredEvents().filter(event=>
+  isActive(event)&&new Date(event.start)>=now
+ ).slice(0,8);
+
+ if(!events.length){
+  const empty=document.createElement("div");
+  empty.className="empty-state";
+  empty.textContent="No upcoming maintenance activities.";
+  container.append(empty);
+  return;
+ }
+
+ events.forEach(event=>{
+  const row=document.createElement("div");
+  row.className="upcoming-item";
+
+  const info=document.createElement("div");
+  const title=document.createElement("strong");
+  title.textContent=event.title;
+
+  const details=document.createElement("small");
+  details.textContent=
+   formatDate(event.start)+" • "+formatTime(event.start);
+
+  info.append(title,details);
+
+  const button=document.createElement("button");
+  button.type="button";
+  button.className="btn-outline-custom";
+  button.innerHTML='<i class="bi bi-chevron-right"></i>';
+  button.setAttribute("aria-label","Edit upcoming event");
+  button.addEventListener("click",()=>openEditEvent(event.id));
+
+  row.append(info,button);
+  container.append(row);
+ });
+}
+
+function priorityBadge(priority){
+ const badge=document.createElement("span");
+ badge.className="status-badge "+
+  (priority==="Critical"?"danger":
+   priority==="High"?"warning":
+   priority==="Medium"?"purple":"success");
+ badge.textContent=priority;
+ return badge;
+}
+
+function addCell(row,value){
+ const td=document.createElement("td");
+ td.className="p-3";
+ if(value instanceof Node)td.append(value);
+ else td.textContent=String(value||"—");
+ row.append(td);
+ return td;
+}
+
+function renderRegister(){
+ const tbody=$("registerTable");
+ tbody.replaceChildren();
+
+ const events=filteredEvents();
+ $("registerCount").textContent=events.length+" Events";
+
+ if(!events.length){
+  const tr=document.createElement("tr");
+  const td=addCell(tr,"No matching scheduled events.");
+  td.colSpan=8;
+  td.className="text-center text-secondary py-4";
+  tbody.append(tr);
+  return;
+ }
+
+ events.slice(0,150).forEach(event=>{
+  const tr=document.createElement("tr");
+
+  addCell(tr,formatDate(event.start)+" "+formatTime(event.start));
+
+  const title=document.createElement("div");
+  const strong=document.createElement("strong");
+  strong.textContent=event.title;
+  const subtitle=document.createElement("div");
+  subtitle.className="text-secondary mt-1";
+  subtitle.textContent=event.type;
+  title.append(strong,subtitle);
+
+  addCell(tr,title);
+  addCell(tr,event.asset);
+  addCell(tr,event.technician||"Unassigned");
+  addCell(tr,priorityBadge(event.priority));
+  addCell(tr,event.status);
+  addCell(tr,event.recurrence==="none"?"Once":event.recurrence);
+
+  const actions=document.createElement("div");
+  actions.className="d-flex gap-2";
+
+  const edit=document.createElement("button");
+  edit.type="button";
+  edit.className="btn-outline-custom";
+  edit.textContent="Edit";
+  edit.addEventListener("click",()=>openEditEvent(event.id));
+
+  const remove=document.createElement("button");
+  remove.type="button";
+  remove.className="btn-danger-soft";
+  remove.innerHTML='<i class="bi bi-trash"></i>';
+  remove.setAttribute("aria-label","Delete event");
+  remove.addEventListener("click",()=>deleteEvent(event.id));
+
+  actions.append(edit,remove);
+  addCell(tr,actions);
+  tbody.append(tr);
+ });
+}
+
+function renderAll(){
+ renderStats();
+ renderCalendar();
+ renderUpcoming();
+ renderRegister();
+}
+
+const eventModal=bootstrap.Modal.getOrCreateInstance($("eventModal"));
+
+function openNewEvent(date=new Date()){
+ editingId=null;
+ $("eventForm").reset();
+ $("eventModalTitle").textContent="Schedule Maintenance";
+
+ const start=new Date(date);
+ start.setHours(9,0,0,0);
+ const end=new Date(start.getTime()+2*3600000);
+
+ $("eventStart").value=localDateTime(start);
+ $("eventEnd").value=localDateTime(end);
+ $("eventOccurrences").value=1;
+ $("eventRecurrence").disabled=false;
+ $("eventOccurrences").disabled=false;
+
+ eventModal.show();
+}
+
+function openEditEvent(id){
+ const event=state.events.find(e=>e.id===id);
+ if(!event)return;
+
+ editingId=id;
+ $("eventModalTitle").textContent="Edit Maintenance Event";
+
+ const fields={
+  eventTitle:event.title,
+  eventType:event.type,
+  eventAsset:event.asset,
+  eventStart:event.start,
+  eventEnd:event.end,
+  eventTechnician:event.technician,
+  eventPriority:event.priority,
+  eventStatus:event.status,
+  eventWorkOrder:event.workOrder,
+  eventRecurrence:event.recurrence,
+  eventNotes:event.notes
+ };
+
+ Object.entries(fields).forEach(([id,value])=>{
+  $(id).value=value??"";
+ });
+
+ $("eventOccurrences").value=1;
+ $("eventRecurrence").disabled=true;
+ $("eventOccurrences").disabled=true;
+
+ eventModal.show();
+}
+
+function generateOccurrences(base,count,recurrence){
+ const result=[];
+ const originalStart=new Date(base.start);
+ const originalEnd=new Date(base.end);
+ const seriesId=count>1?crypto.randomUUID():null;
+
+ for(let i=0;i<count;i++){
+  let start,end;
+
+  if(recurrence==="daily"){
+   start=addDays(originalStart,i);
+   end=addDays(originalEnd,i);
+  }else if(recurrence==="weekly"){
+   start=addDays(originalStart,i*7);
+   end=addDays(originalEnd,i*7);
+  }else if(recurrence==="monthly"){
+   start=addMonthsClamped(originalStart,i);
+   end=new Date(
+    start.getTime()+(originalEnd-originalStart)
+   );
+  }else{
+   start=new Date(originalStart);
+   end=new Date(originalEnd);
+  }
+
+  result.push({
+   ...base,
+   id:crypto.randomUUID(),
+   seriesId,
+   start:localDateTime(start),
+   end:localDateTime(end)
+  });
+ }
+
+ return result;
+}
+
+$("eventForm").addEventListener("submit",e=>{
+ e.preventDefault();
+
+ if(!$("eventForm").checkValidity()){
+  $("eventForm").reportValidity();
+  return;
+ }
+
+ const start=new Date($("eventStart").value);
+ const end=new Date($("eventEnd").value);
+
+ if(!Number.isFinite(start.getTime())||
+    !Number.isFinite(end.getTime())||end<=start){
+  notify("Maintenance end must be after the start.");
+  return;
+ }
+
+ const recurrence=$("eventRecurrence").value;
+ const count=editingId?1:
+  recurrence==="none"?1:Number($("eventOccurrences").value);
+
+ if(!Number.isSafeInteger(count)||count<1||count>52){
+  notify("Choose between 1 and 52 occurrences.");
+  return;
+ }
+
+ const base={
+  title:$("eventTitle").value.trim(),
+  type:$("eventType").value,
+  asset:$("eventAsset").value,
+  start:$("eventStart").value,
+  end:$("eventEnd").value,
+  technician:$("eventTechnician").value,
+  priority:$("eventPriority").value,
+  status:$("eventStatus").value,
+  workOrder:$("eventWorkOrder").value.trim(),
+  recurrence,
+  notes:$("eventNotes").value.trim()
+ };
+
+ const next=structuredClone(state);
+
+ if(editingId){
+  const index=next.events.findIndex(e=>e.id===editingId);
+  if(index<0)return;
+
+  next.events[index]={
+   ...next.events[index],
+   ...base,
+   recurrence:next.events[index].recurrence
+  };
+ }else{
+  next.events.push(...generateOccurrences(
+   base,count,recurrence
+  ));
+ }
+
+ if(next.events.length>2000){
+  notify("Demo calendar limit of 2,000 events reached.");
+  return;
+ }
+
+ if(persist(next)){
+  eventModal.hide();
+  renderAll();
+  notify(editingId?
+   "Maintenance event updated.":
+   "Maintenance schedule saved locally.");
+ }
+});
+
+function deleteEvent(id){
+ if(!confirm("Delete this maintenance occurrence?"))return;
+
+ const next=structuredClone(state);
+ next.events=next.events.filter(event=>event.id!==id);
+
+ if(persist(next)){
+  renderAll();
+  notify("Maintenance occurrence deleted.");
+ }
+}
+
+function download(filename,content,type){
+ const blob=new Blob([content],{type});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$("exportEvents").addEventListener("click",()=>{
+ download(
+  "industra-maintenance-calendar.json",
+  JSON.stringify({
+   application:"INDUSTRA AI",
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   ...state
+  },null,2),
+  "application/json"
+ );
+ notify("Calendar JSON exported.");
+});
+
+function icsEscape(value){
+ return String(value??"")
+  .replace(/\\/g,"\\\\")
+  .replace(/\r?\n/g,"\\n")
+  .replace(/,/g,"\\,")
+  .replace(/;/g,"\\;");
+}
+
+function icsUtc(value){
+ return new Date(value).toISOString()
+  .replace(/[-:]/g,"")
+  .replace(/\.\d{3}Z$/,"Z");
+}
+
+$("exportCalendar").addEventListener("click",()=>{
+ const lines=[
+  "BEGIN:VCALENDAR",
+  "VERSION:2.0",
+  "PRODID:-//INDUSTRA AI//Maintenance Demo//EN",
+  "CALSCALE:GREGORIAN",
+  "X-WR-CALNAME:INDUSTRA AI Maintenance Demo"
+ ];
+
+ state.events.forEach(event=>{
+  lines.push(
+   "BEGIN:VEVENT",
+   "UID:"+event.id+"@industra-demo.local",
+   "DTSTAMP:"+icsUtc(new Date().toISOString()),
+   "DTSTART:"+icsUtc(event.start),
+   "DTEND:"+icsUtc(event.end),
+   "SUMMARY:"+icsEscape("[DEMO] "+event.title),
+   "DESCRIPTION:"+icsEscape(
+    event.type+" | "+event.asset+" | "+
+    event.priority+" | "+event.notes
+   ),
+   "STATUS:TENTATIVE",
+   "END:VEVENT"
+  );
+ });
+
+ lines.push("END:VCALENDAR");
+
+ download(
+  "industra-maintenance-calendar.ics",
+  lines.join("\r\n")+"\r\n",
+  "text/calendar;charset=utf-8"
+ );
+
+ notify("Demo calendar ICS exported.");
+});
+
+$("resetDemo").addEventListener("click",()=>{
+ if(!confirm("Reset all locally saved maintenance events?"))return;
+
+ if(persist(initialState())){
+  currentDate=new Date();
+  renderAll();
+  notify("Demo calendar reset.");
+ }
+});
+
+$("newEventButton").addEventListener("click",()=>openNewEvent());
+
+$("previousPeriod").addEventListener("click",()=>{
+ if(currentView==="month")
+  currentDate=addMonthsClamped(currentDate,-1);
+ else
+  currentDate=addDays(currentDate,currentView==="week"?-7:-1);
+ renderCalendar();
+});
+
+$("nextPeriod").addEventListener("click",()=>{
+ if(currentView==="month")
+  currentDate=addMonthsClamped(currentDate,1);
+ else
+  currentDate=addDays(currentDate,currentView==="week"?7:1);
+ renderCalendar();
+});
+
+$("todayButton").addEventListener("click",()=>{
+ currentDate=new Date();
+ renderCalendar();
+});
+
+document.querySelectorAll("[data-view]").forEach(button=>{
+ button.addEventListener("click",()=>{
+  currentView=button.dataset.view;
+  renderCalendar();
+ });
+});
+
+["typeFilter","assetFilter","technicianFilter"].forEach(id=>{
+ $(id).addEventListener("change",renderAll);
+});
+
+$("clearFilters").addEventListener("click",()=>{
+ $("typeFilter").value="all";
+ $("assetFilter").value="all";
+ $("technicianFilter").value="all";
+ renderAll();
+});
+
+assets.forEach(asset=>{
+ ["eventAsset","assetFilter"].forEach(id=>{
+  const option=document.createElement("option");
+  option.value=asset.id;
+  option.textContent=asset.id+" — "+asset.name;
+  $(id).append(option);
+ });
+});
+
+technicians.forEach(technician=>{
+ const option=document.createElement("option");
+ option.value=technician;
+ option.textContent=technician;
+ $("technicianFilter").append(option);
+});
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+renderAll();
+</script>
+
+</body>
+</html>

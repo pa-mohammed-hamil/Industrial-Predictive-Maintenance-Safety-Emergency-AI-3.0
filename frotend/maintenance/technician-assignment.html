@@ -1,0 +1,1692 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Technician Assignment | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / maintenance</p><h1 id="page-title">Technician Assignment</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Technician Assignment workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Technician Assignment | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--red:#ed6175;--orange:#f4a443;
+ --blue:#438df5;--sidebar:258px
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:13px "DM Sans",sans-serif}
+h1,h2,h3,h4,h5{font-family:"Manrope",sans-serif}
+a{text-decoration:none}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto
+}
+.brand{
+ display:flex;align-items:center;gap:11px;
+ padding:26px 22px;border-bottom:1px solid #ffffff12
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;color:white;font-size:22px;
+ background:linear-gradient(135deg,#a28aff,#6752e8)
+}
+.brand strong{font:800 18px "Manrope",sans-serif;color:white}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;letter-spacing:1.7px;
+ text-transform:uppercase
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;
+ margin:3px 12px;padding:12px 13px;
+ border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);color:white
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;align-items:center;
+ justify-content:space-between;gap:15px
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;display:grid;
+ place-items:center;color:#68718e;font-size:16px
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800
+}
+.mobile-menu{display:none}
+.content{padding:27px 30px 45px;max-width:1650px;margin:auto}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;
+ padding:30px;color:white;margin-bottom:23px;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff)
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ border-radius:50%;border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;text-transform:uppercase;
+ letter-spacing:2px;color:#ddd6ff
+}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;line-height:1.9;
+ max-width:850px;margin:0
+}
+.hero-tag{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:17px
+}
+.panel,.stat-card{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105
+}
+.panel{padding:21px}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:15px
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 23px "Manrope",sans-serif;margin-top:7px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel-heading{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-bottom:19px
+}
+.panel-heading h3{font-size:14px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:10px;margin-top:5px}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;
+ padding:11px 16px;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 13px;background:white;color:#69738e;
+ font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;justify-content:center;gap:8px
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.btn-purple:disabled,.btn-outline-custom:disabled{
+ opacity:.45;cursor:not-allowed
+}
+.form-label{
+ font-size:10px;color:#68718e;font-weight:800;margin-bottom:8px
+}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:42px;font-size:11px;padding:10px 12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12
+}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffedf0;color:#d84b63}
+.status-badge.purple{background:#f0edff;color:#6855eb}
+.status-badge.blue{background:#eaf2ff;color:#438df5}
+.chart-box{height:270px;position:relative}
+.chart-box canvas{width:100%!important;height:100%!important}
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;font-size:10px;font-weight:800;
+ padding:13px;background:#f9faff;
+ border-bottom:1px solid var(--border);white-space:nowrap
+}
+.table tbody td{
+ padding:13px;vertical-align:middle;border-color:#f0f1f7
+}
+.tech-avatar{
+ width:39px;height:39px;border-radius:12px;
+ display:grid;place-items:center;flex-shrink:0;
+ color:#6855eb;background:#f0edff;font-weight:800
+}
+.tech-card{
+ border:1px solid var(--border);border-radius:13px;
+ padding:15px;height:100%;background:white
+}
+.skill-chip{
+ display:inline-flex;align-items:center;
+ padding:5px 8px;border-radius:7px;
+ background:#f1f2fa;color:#69738e;
+ font-size:9px;font-weight:700;margin:3px 3px 0 0
+}
+.progress-track{
+ height:8px;background:#edf0f6;
+ border-radius:10px;overflow:hidden
+}
+.progress-fill{
+ height:100%;background:var(--purple);
+ border-radius:10px;transition:width .2s
+}
+.recommendation{
+ border:1px solid var(--border);
+ border-radius:12px;padding:13px;margin-bottom:10px
+}
+.recommendation.top{
+ border-color:#bcb2ff;background:#faf9ff
+}
+.score{
+ font:800 19px "Manrope",sans-serif;color:var(--purple)
+}
+.detail-row{
+ display:flex;justify-content:space-between;gap:12px;
+ border-bottom:1px solid #eef0f6;padding:11px 0;font-size:11px
+}
+.detail-row span:first-child{color:#8992aa}
+.detail-row strong{text-align:right;overflow-wrap:anywhere}
+.warning-box{
+ padding:12px;border:1px solid #ffe0b5;
+ border-radius:10px;background:#fff8ec;
+ color:#986b2d;font-size:10px;line-height:1.7
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;padding:15px 17px;
+ font-size:11px;line-height:1.8;
+ display:flex;align-items:flex-start;gap:11px
+}
+.notice i{font-size:18px;flex-shrink:0}
+.modal-content{
+ border:0;border-radius:17px;
+ box-shadow:0 20px 60px #10152d25
+}
+.modal-header,.modal-footer{border-color:var(--border)}
+.modal-title{font-size:16px;font-weight:800}
+.empty-state{padding:28px;text-align:center;color:#8992aa}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1100px){
+ :root{--sidebar:225px}
+ .content{padding:22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{width:260px;transform:translateX(-100%);transition:.25s}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:15px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:15px}
+ .stat-card{padding:16px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.action-bar,.filter-panel,
+ .notice,.toast-container,.print-hide{display:none!important}
+ .main{margin-left:0}
+ .content{padding:0;max-width:none}
+ body{background:white}
+ .panel,.stat-card{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html">
+  <i class="bi bi-grid"></i> Dashboard
+ </a>
+ <a class="side-link" href="command-center.html">
+  <i class="bi bi-broadcast"></i> Command Center
+ </a>
+ <a class="side-link" href="analytics.html">
+  <i class="bi bi-graph-up-arrow"></i> Analytics
+ </a>
+
+ <div class="nav-section">Maintenance Management</div>
+ <a class="side-link" href="maintenance-dashboard.html">
+  <i class="bi bi-speedometer2"></i> Maintenance Dashboard
+ </a>
+ <a class="side-link" href="work-orders.html">
+  <i class="bi bi-clipboard-check"></i> Work Orders
+ </a>
+ <a class="side-link" href="create-work-order.html">
+  <i class="bi bi-plus-square"></i> Create Work Order
+ </a>
+ <a class="side-link active" href="technician-assignment.html">
+  <i class="bi bi-person-check"></i> Technician Assignment
+ </a>
+ <a class="side-link" href="maintenance-calendar.html">
+  <i class="bi bi-calendar3"></i> Maintenance Calendar
+ </a>
+ <a class="side-link" href="inventory.html">
+  <i class="bi bi-boxes"></i> Inventory
+ </a>
+ <a class="side-link" href="spare-parts.html">
+  <i class="bi bi-gear-wide-connected"></i> Spare Parts
+ </a>
+ <a class="side-link" href="service-history.html">
+  <i class="bi bi-clock-history"></i> Service History
+ </a>
+ <a class="side-link" href="maintenance-reports.html">
+  <i class="bi bi-file-earmark-bar-graph"></i> Maintenance Reports
+ </a>
+
+ <div class="nav-section">Industrial Intelligence</div>
+ <a class="side-link" href="asset-health.html">
+  <i class="bi bi-heart-pulse"></i> Asset Health
+ </a>
+ <a class="side-link" href="predictive-maintenance.html">
+  <i class="bi bi-cpu"></i> Predictive Maintenance
+ </a>
+ <a class="side-link" href="safety-copilot.html">
+  <i class="bi bi-shield-check"></i> Safety Copilot
+ </a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2"
+   style="color:#18b58c;font-size:7px"></i>
+  Browser-Local Scheduling Demo
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton"
+   aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">
+    Maintenance Management /
+    <strong>Technician Assignment</strong>
+   </div>
+   <div class="fw-bold mt-1" style="font-size:13px">
+    Workforce Scheduling & Maintenance Allocation
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="status-badge purple d-none d-sm-inline-flex">
+   <i class="bi bi-flask"></i> Demo Scheduling
+  </span>
+  <a class="top-icon" href="notifications.html"
+   aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">
+  INDUSTRA AI / Maintenance / Workforce Intelligence
+ </div>
+ <h1>
+  <i class="bi bi-person-check me-2"></i>
+  Technician Assignment & Scheduling
+ </h1>
+ <p>
+  Assign maintenance work orders using technician skills,
+  shift availability, workload capacity and scheduling
+  constraints. Explore rule-based recommendations,
+  assignment conflicts and maintenance workforce utilization.
+ </p>
+ <div class="hero-tag">
+  <i class="bi bi-shield-check"></i>
+  Human-reviewed scheduling demo — no live dispatch
+ </div>
+</section>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 action-bar">
+ <div>
+  <h5 class="fw-bold mb-1">Technician Workforce Control Center</h5>
+  <div class="text-secondary" style="font-size:11px">
+   Manage demo technician records and maintenance allocations.
+  </div>
+ </div>
+ <div class="d-flex flex-wrap gap-2">
+  <button class="btn-purple" id="newAssignmentButton">
+   <i class="bi bi-plus-lg"></i> Create Assignment
+  </button>
+  <button class="btn-outline-custom" id="addTechnicianButton">
+   <i class="bi bi-person-plus"></i> Add Technician
+  </button>
+  <button class="btn-outline-custom" id="exportCsv">
+   <i class="bi bi-filetype-csv"></i> Export CSV
+  </button>
+  <button class="btn-outline-custom" id="exportJson">
+   <i class="bi bi-download"></i> Export JSON
+  </button>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+    <i class="bi bi-people"></i>
+   </div>
+   <div class="stat-label">Total Technicians</div>
+   <div class="stat-value" id="totalTechnicians">0</div>
+   <div class="stat-note">Registered demo workforce</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e7f8f1;color:#18b58c">
+    <i class="bi bi-person-check"></i>
+   </div>
+   <div class="stat-label">Available Today</div>
+   <div class="stat-value" id="availableTechnicians">0</div>
+   <div class="stat-note">On duty and below capacity</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#fff4e6;color:#f4a443">
+    <i class="bi bi-clipboard2-check"></i>
+   </div>
+   <div class="stat-label">Active Assignments</div>
+   <div class="stat-value" id="activeAssignments">0</div>
+   <div class="stat-note">Scheduled or in-progress tasks</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#ffedf0;color:#ed6175">
+    <i class="bi bi-exclamation-triangle"></i>
+   </div>
+   <div class="stat-label">Scheduling Conflicts</div>
+   <div class="stat-value" id="conflictCount">0</div>
+   <div class="stat-note">Detected assignment conflicts</div>
+  </div>
+ </div>
+</div>
+
+<section class="panel mb-4 filter-panel">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-funnel me-2" style="color:var(--purple)"></i>
+    Workforce Filters
+   </h3>
+   <div class="panel-subtitle">
+    Filter technicians by skill, shift and availability.
+   </div>
+  </div>
+  <button class="btn-outline-custom" id="resetFilters">
+   <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
+  </button>
+ </div>
+
+ <div class="row g-3">
+  <div class="col-lg-4">
+   <label class="form-label" for="searchInput">Search Technician</label>
+   <input class="form-control" id="searchInput"
+    placeholder="Search name, ID or skill...">
+  </div>
+  <div class="col-md-4 col-lg-3">
+   <label class="form-label" for="skillFilter">Required Skill</label>
+   <select class="form-select" id="skillFilter">
+    <option value="all">All Skills</option>
+   </select>
+  </div>
+  <div class="col-md-4 col-lg-3">
+   <label class="form-label" for="shiftFilter">Shift</label>
+   <select class="form-select" id="shiftFilter">
+    <option value="all">All Shifts</option>
+    <option>Morning</option>
+    <option>Evening</option>
+    <option>Night</option>
+   </select>
+  </div>
+  <div class="col-md-4 col-lg-2">
+   <label class="form-label" for="availabilityFilter">
+    Availability
+   </label>
+   <select class="form-select" id="availabilityFilter">
+    <option value="all">All</option>
+    <option value="available">Available</option>
+    <option value="busy">Busy / Full</option>
+    <option value="off">Off Duty</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-7">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-bar-chart me-2"
+       style="color:var(--purple)"></i>
+      Technician Workload
+     </h3>
+     <div class="panel-subtitle">
+      Active assigned hours against demo shift capacity.
+     </div>
+    </div>
+   </div>
+   <div class="chart-box">
+    <canvas id="workloadChart"></canvas>
+   </div>
+  </section>
+ </div>
+ <div class="col-xl-5">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-pie-chart me-2"
+       style="color:var(--purple)"></i>
+      Workforce Availability
+     </h3>
+     <div class="panel-subtitle">
+      Current simulated workforce status.
+     </div>
+    </div>
+   </div>
+   <div class="chart-box">
+    <canvas id="availabilityChart"></canvas>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-8">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-people me-2"
+       style="color:var(--purple)"></i>
+      Technician Directory
+     </h3>
+     <div class="panel-subtitle">
+      Skills, shifts, workload and availability.
+     </div>
+    </div>
+    <span class="status-badge purple" id="technicianCount">
+     0 Technicians
+    </span>
+   </div>
+   <div class="row g-3" id="technicianCards"></div>
+  </section>
+ </div>
+
+ <div class="col-xl-4">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-stars me-2"
+       style="color:var(--purple)"></i>
+      Skill-Based Recommendations
+     </h3>
+     <div class="panel-subtitle">
+      Deterministic ranking, not a trained AI model.
+     </div>
+    </div>
+   </div>
+
+   <label class="form-label" for="recommendWorkOrder">
+    Select Work Order
+   </label>
+   <select class="form-select mb-3" id="recommendWorkOrder"></select>
+
+   <label class="form-label" for="recommendDate">
+    Planned Date
+   </label>
+   <input type="date" class="form-control mb-3" id="recommendDate">
+
+   <div id="recommendations"></div>
+  </section>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-8">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-calendar-check me-2"
+       style="color:var(--purple)"></i>
+      Work Order Assignments
+     </h3>
+     <div class="panel-subtitle">
+      Review, complete or remove locally recorded assignments.
+     </div>
+    </div>
+    <span class="status-badge purple" id="assignmentCount">
+     0 Assignments
+    </span>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table table-hover mb-0">
+     <thead>
+      <tr>
+       <th>Work Order</th>
+       <th>Equipment</th>
+       <th>Technician</th>
+       <th>Schedule</th>
+       <th>Hours</th>
+       <th>Priority</th>
+       <th>Status</th>
+       <th>Actions</th>
+      </tr>
+     </thead>
+     <tbody id="assignmentTable"></tbody>
+    </table>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-4">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-exclamation-triangle me-2"
+       style="color:var(--purple)"></i>
+      Scheduling Conflict Inspector
+     </h3>
+     <div class="panel-subtitle">
+      Overlapping shifts, missing skills and capacity limits.
+     </div>
+    </div>
+   </div>
+   <div id="conflictInspector"></div>
+  </section>
+ </div>
+</div>
+
+<div class="d-flex justify-content-end mb-4 print-hide">
+ <button class="btn-outline-custom" id="resetDemo">
+  <i class="bi bi-arrow-counterclockwise"></i>
+  Reset Demo Scheduling
+ </button>
+</div>
+
+<div class="notice">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Demonstration only:</strong>
+  Technician identities, qualifications, work orders and
+  schedules are fictional. The recommendation score is
+  rule-based and does not verify licenses, training,
+  certifications, permits, fatigue, legal working hours,
+  lockout/tagout procedures or site-specific safety conditions.
+  All assignments are browser-local and do not dispatch
+  technicians or update a production maintenance system.
+  A qualified supervisor must approve real maintenance work.
+ </div>
+</div>
+
+</main>
+</div>
+
+<!-- Assignment Modal -->
+<div class="modal fade" id="assignmentModal" tabindex="-1"
+ aria-labelledby="assignmentModalTitle" aria-hidden="true">
+ <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-content">
+   <form id="assignmentForm">
+    <div class="modal-header">
+     <h5 class="modal-title" id="assignmentModalTitle">
+      Create Technician Assignment
+     </h5>
+     <button type="button" class="btn-close"
+      data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+     <div class="row g-3">
+      <div class="col-md-6">
+       <label class="form-label" for="assignmentWorkOrder">
+        Work Order *
+       </label>
+       <select class="form-select" id="assignmentWorkOrder" required></select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="assignmentTechnician">
+        Technician *
+       </label>
+       <select class="form-select" id="assignmentTechnician" required></select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="assignmentDate">
+        Scheduled Date *
+       </label>
+       <input type="date" class="form-control"
+        id="assignmentDate" required>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="assignmentShift">
+        Assigned Shift *
+       </label>
+       <select class="form-select" id="assignmentShift" required>
+        <option>Morning</option>
+        <option>Evening</option>
+        <option>Night</option>
+       </select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="assignmentHours">
+        Estimated Work Hours *
+       </label>
+       <input type="number" class="form-control"
+        id="assignmentHours" min="0.5" max="24"
+        step="0.5" value="2" required>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="assignmentStatus">
+        Assignment Status
+       </label>
+       <select class="form-select" id="assignmentStatus">
+        <option>Scheduled</option>
+        <option>In Progress</option>
+       </select>
+      </div>
+      <div class="col-12">
+       <label class="form-label" for="assignmentNotes">
+        Assignment Notes
+       </label>
+       <textarea class="form-control" id="assignmentNotes"
+        rows="3" maxlength="1000"
+        placeholder="Supervisor notes, task instructions or prerequisites..."></textarea>
+      </div>
+      <div class="col-12">
+       <div id="assignmentValidation" class="warning-box hidden"></div>
+      </div>
+     </div>
+    </div>
+    <div class="modal-footer">
+     <button type="button" class="btn-outline-custom"
+      data-bs-dismiss="modal">Cancel</button>
+     <button type="submit" class="btn-purple">
+      <i class="bi bi-check-lg"></i> Save Assignment
+     </button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>
+
+<!-- Technician Modal -->
+<div class="modal fade" id="technicianModal" tabindex="-1"
+ aria-labelledby="technicianModalTitle" aria-hidden="true">
+ <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-content">
+   <form id="technicianForm">
+    <div class="modal-header">
+     <h5 class="modal-title" id="technicianModalTitle">
+      Add Technician
+     </h5>
+     <button type="button" class="btn-close"
+      data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+     <div class="row g-3">
+      <div class="col-md-6">
+       <label class="form-label" for="technicianName">Name *</label>
+       <input class="form-control" id="technicianName"
+        maxlength="120" required>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="technicianRole">Role *</label>
+       <input class="form-control" id="technicianRole"
+        maxlength="120" required
+        placeholder="Maintenance Technician">
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="technicianShift">Shift *</label>
+       <select class="form-select" id="technicianShift" required>
+        <option>Morning</option>
+        <option>Evening</option>
+        <option>Night</option>
+       </select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="technicianStatus">
+        Duty Status
+       </label>
+       <select class="form-select" id="technicianStatus">
+        <option>On Duty</option>
+        <option>Off Duty</option>
+        <option>On Leave</option>
+       </select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="technicianCapacity">
+        Shift Capacity (Hours)
+       </label>
+       <input type="number" class="form-control"
+        id="technicianCapacity" min="1" max="24"
+        step="0.5" value="8" required>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="technicianExperience">
+        Experience (Years)
+       </label>
+       <input type="number" class="form-control"
+        id="technicianExperience" min="0" max="60"
+        step="0.5" value="1" required>
+      </div>
+      <div class="col-12">
+       <label class="form-label" for="technicianSkills">
+        Skills (Comma Separated) *
+       </label>
+       <input class="form-control" id="technicianSkills"
+        maxlength="500" required
+        placeholder="Mechanical, Electrical, Vibration Analysis">
+      </div>
+     </div>
+    </div>
+    <div class="modal-footer">
+     <button type="button" class="btn-outline-custom"
+      data-bs-dismiss="modal">Cancel</button>
+     <button type="submit" class="btn-purple">
+      <i class="bi bi-save"></i> Save Technician
+     </button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const TECH_KEY="industra-technicians-v1";
+const ASSIGN_KEY="industra-technician-assignments-v1";
+
+const skills=[
+ "Mechanical","Electrical","Vibration Analysis",
+ "Hydraulics","Pneumatics","Instrumentation",
+ "Safety Inspection","PLC","Welding","Thermal Inspection"
+];
+
+const shifts=["Morning","Evening","Night"];
+
+const today=()=>{
+ const date=new Date();
+ return date.getFullYear()+"-"+
+  String(date.getMonth()+1).padStart(2,"0")+"-"+
+  String(date.getDate()).padStart(2,"0");
+};
+
+const workOrders=[
+ {id:"WO-101",asset:"PMP-101",title:"Pump Bearing Inspection",
+  skill:"Mechanical",priority:"High",hours:3},
+ {id:"WO-102",asset:"CMP-008",title:"Compressor Pressure Check",
+  skill:"Pneumatics",priority:"Medium",hours:2},
+ {id:"WO-103",asset:"MTR-001",title:"Motor Electrical Inspection",
+  skill:"Electrical",priority:"Critical",hours:4},
+ {id:"WO-104",asset:"GBX-014",title:"Gearbox Vibration Analysis",
+  skill:"Vibration Analysis",priority:"High",hours:3},
+ {id:"WO-105",asset:"CNV-022",title:"Conveyor Safety Inspection",
+  skill:"Safety Inspection",priority:"High",hours:2},
+ {id:"WO-106",asset:"BLR-003",title:"Boiler Thermal Inspection",
+  skill:"Thermal Inspection",priority:"Medium",hours:3},
+ {id:"WO-107",asset:"PMP-101",title:"Hydraulic System Check",
+  skill:"Hydraulics",priority:"Medium",hours:2},
+ {id:"WO-108",asset:"CNV-022",title:"PLC Control Diagnostics",
+  skill:"PLC",priority:"High",hours:4}
+];
+
+function demoTechnicians(){
+ return [
+  ["TECH-001","Demo Technician A","Mechanical Technician","Morning","On Duty",8,6,["Mechanical","Hydraulics","Vibration Analysis"]],
+  ["TECH-002","Demo Technician B","Electrical Technician","Morning","On Duty",8,5,["Electrical","PLC","Instrumentation"]],
+  ["TECH-003","Demo Technician C","Safety Technician","Evening","On Duty",8,4,["Safety Inspection","Thermal Inspection"]],
+  ["TECH-004","Demo Technician D","Maintenance Specialist","Morning","On Duty",8,8,["Mechanical","Pneumatics","Welding"]],
+  ["TECH-005","Demo Technician E","Automation Technician","Night","On Duty",8,7,["PLC","Electrical","Instrumentation"]],
+  ["TECH-006","Demo Technician F","Reliability Technician","Evening","On Duty",8,3,["Vibration Analysis","Mechanical","Thermal Inspection"]],
+  ["TECH-007","Demo Technician G","Mechanical Technician","Morning","On Leave",8,2,["Mechanical","Hydraulics"]],
+  ["TECH-008","Demo Technician H","Industrial Technician","Night","On Duty",8,5,["Pneumatics","Safety Inspection","Mechanical"]]
+ ].map(row=>({
+  id:row[0],name:row[1],role:row[2],
+  shift:row[3],status:row[4],
+  capacity:row[5],experience:row[6],skills:row[7]
+ }));
+}
+
+function demoAssignments(){
+ return [
+  {id:"ASG-DEMO-001",workOrder:"WO-101",technician:"TECH-001",
+   date:today(),shift:"Morning",hours:3,status:"Scheduled",notes:"Demo assignment"},
+  {id:"ASG-DEMO-002",workOrder:"WO-103",technician:"TECH-002",
+   date:today(),shift:"Morning",hours:4,status:"In Progress",notes:"Demo assignment"},
+  {id:"ASG-DEMO-003",workOrder:"WO-105",technician:"TECH-003",
+   date:today(),shift:"Evening",hours:2,status:"Scheduled",notes:"Demo assignment"},
+  {id:"ASG-DEMO-004",workOrder:"WO-102",technician:"TECH-004",
+   date:today(),shift:"Morning",hours:2,status:"Scheduled",notes:"Demo assignment"}
+ ];
+}
+
+function readArray(key,fallback){
+ try{
+  const data=JSON.parse(localStorage.getItem(key));
+  if(Array.isArray(data))return data;
+ }catch{}
+ return fallback;
+}
+
+let technicians=readArray(TECH_KEY,demoTechnicians());
+let assignments=readArray(ASSIGN_KEY,demoAssignments());
+
+const charts={};
+const assignmentModal=bootstrap.Modal.getOrCreateInstance($("assignmentModal"));
+const technicianModal=bootstrap.Modal.getOrCreateInstance($("technicianModal"));
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function persist(){
+ try{
+  localStorage.setItem(TECH_KEY,JSON.stringify(technicians));
+  localStorage.setItem(ASSIGN_KEY,JSON.stringify(assignments));
+  return true;
+ }catch{
+  notify("Browser storage is unavailable or full.");
+  return false;
+ }
+}
+
+function isActive(a){
+ return a.status==="Scheduled"||a.status==="In Progress";
+}
+
+function workload(id,date=today(),shift=null,excludeId=null){
+ return assignments.filter(a=>
+  a.technician===id&&a.date===date&&isActive(a)&&
+  (!shift||a.shift===shift)&&a.id!==excludeId
+ ).reduce((sum,a)=>sum+Number(a.hours),0);
+}
+
+function availability(tech){
+ if(tech.status!=="On Duty")return "off";
+ if(workload(tech.id,today(),tech.shift)>=tech.capacity)return "busy";
+ return "available";
+}
+
+function eligible(tech,order,date,shift,hours,excludeId=null){
+ const issues=[];
+
+ if(tech.status!=="On Duty")issues.push("Technician is not on duty");
+ if(tech.shift!==shift)issues.push("Shift mismatch");
+ if(!tech.skills.includes(order.skill)){
+  issues.push("Required skill not listed: "+order.skill);
+ }
+
+ const existing=workload(tech.id,date,shift,excludeId);
+ if(existing+hours>tech.capacity){
+  issues.push("Shift capacity exceeded");
+ }
+
+ const duplicate=assignments.some(a=>
+  a.workOrder===order.id&&a.date===date&&
+  isActive(a)&&a.id!==excludeId
+ );
+ if(duplicate)issues.push("Work order already actively assigned on this date");
+
+ return issues;
+}
+
+function conflictList(){
+ const problems=[];
+
+ assignments.filter(isActive).forEach(a=>{
+  const tech=technicians.find(t=>t.id===a.technician);
+  const order=workOrders.find(w=>w.id===a.workOrder);
+
+  if(!tech||!order){
+   problems.push({id:a.id,message:"Missing technician or work order"});
+   return;
+  }
+
+  const issues=eligible(
+   tech,order,a.date,a.shift,Number(a.hours),a.id
+  );
+
+  issues.forEach(issue=>problems.push({
+   id:a.id,message:issue
+  }));
+ });
+
+ return problems;
+}
+
+function scoreTechnician(tech,order,date){
+ const matched=tech.skills.includes(order.skill);
+ const used=workload(tech.id,date,tech.shift);
+ const remaining=Math.max(0,tech.capacity-used);
+
+ const score=Math.max(0,Math.min(100,Math.round(
+  (matched?50:0)+
+  (tech.status==="On Duty"?15:0)+
+  (remaining>=order.hours?15:0)+
+  Math.min(10,tech.experience)+
+  Math.round(10*remaining/Math.max(1,tech.capacity))
+ )));
+
+ const issues=eligible(
+  tech,order,date,tech.shift,order.hours
+ );
+
+ return {tech,score,issues,remaining};
+}
+
+function badge(label,kind="purple"){
+ const element=document.createElement("span");
+ element.className="status-badge "+kind;
+ element.textContent=label;
+ return element;
+}
+
+function addText(parent,tag,text,className=""){
+ const node=document.createElement(tag);
+ node.textContent=String(text??"");
+ if(className)node.className=className;
+ parent.append(node);
+ return node;
+}
+
+function makeButton(label,callback,primary=false){
+ const button=document.createElement("button");
+ button.type="button";
+ button.className=primary?"btn-purple":"btn-outline-custom";
+ button.textContent=label;
+ button.addEventListener("click",callback);
+ return button;
+}
+
+function filteredTechnicians(){
+ const search=$("searchInput").value.trim().toLowerCase();
+ const skill=$("skillFilter").value;
+ const shift=$("shiftFilter").value;
+ const status=$("availabilityFilter").value;
+
+ return technicians.filter(tech=>
+  (!search||[
+   tech.name,tech.id,tech.role,...tech.skills
+  ].join(" ").toLowerCase().includes(search))&&
+  (skill==="all"||tech.skills.includes(skill))&&
+  (shift==="all"||tech.shift===shift)&&
+  (status==="all"||availability(tech)===status)
+ );
+}
+
+function renderStats(){
+ $("totalTechnicians").textContent=technicians.length;
+ $("availableTechnicians").textContent=
+  technicians.filter(t=>availability(t)==="available").length;
+ $("activeAssignments").textContent=
+  assignments.filter(isActive).length;
+ $("conflictCount").textContent=conflictList().length;
+}
+
+function renderCharts(){
+ Object.values(charts).forEach(chart=>chart.destroy());
+
+ charts.workload=new Chart($("workloadChart"),{
+  type:"bar",
+  data:{
+   labels:technicians.map(t=>t.name),
+   datasets:[
+    {
+     label:"Assigned Hours",
+     data:technicians.map(t=>workload(t.id,today(),t.shift)),
+     backgroundColor:"#6855eb",borderRadius:6
+    },
+    {
+     label:"Shift Capacity",
+     data:technicians.map(t=>t.capacity),
+     backgroundColor:"#dcd6ff",borderRadius:6
+    }
+   ]
+  },
+  options:{
+   responsive:true,maintainAspectRatio:false,
+   scales:{y:{beginAtZero:true}},
+   plugins:{legend:{position:"bottom"}}
+  }
+ });
+
+ charts.availability=new Chart($("availabilityChart"),{
+  type:"doughnut",
+  data:{
+   labels:["Available","Busy / Full","Off Duty"],
+   datasets:[{
+    data:[
+     technicians.filter(t=>availability(t)==="available").length,
+     technicians.filter(t=>availability(t)==="busy").length,
+     technicians.filter(t=>availability(t)==="off").length
+    ],
+    backgroundColor:["#18b58c","#f4a443","#ed6175"],
+    borderWidth:3,borderColor:"#fff"
+   }]
+  },
+  options:{
+   responsive:true,maintainAspectRatio:false,cutout:"65%",
+   plugins:{legend:{position:"bottom"}}
+  }
+ });
+}
+
+function renderTechnicians(){
+ const list=filteredTechnicians();
+ const container=$("technicianCards");
+ container.replaceChildren();
+
+ $("technicianCount").textContent=list.length+" Technicians";
+
+ if(!list.length){
+  addText(container,"div","No matching technicians.","empty-state");
+  return;
+ }
+
+ list.forEach(tech=>{
+  const column=document.createElement("div");
+  column.className="col-md-6";
+
+  const card=document.createElement("div");
+  card.className="tech-card";
+
+  const header=document.createElement("div");
+  header.className="d-flex gap-3 align-items-center mb-3";
+
+  const avatar=document.createElement("div");
+  avatar.className="tech-avatar";
+  avatar.textContent=tech.name.split(" ")
+   .map(word=>word[0]).slice(-2).join("").toUpperCase();
+
+  const info=document.createElement("div");
+  addText(info,"strong",tech.name);
+  addText(info,"div",tech.role,"text-secondary mt-1");
+  addText(info,"div",tech.id+" • "+tech.shift+" Shift",
+   "text-secondary mt-1");
+
+  header.append(avatar,info);
+
+  const state=availability(tech);
+  const status=badge(
+   state==="available"?"Available":
+   state==="busy"?"Busy / Full":"Off Duty",
+   state==="available"?"success":
+   state==="busy"?"warning":"danger"
+  );
+
+  const skillContainer=document.createElement("div");
+  skillContainer.className="my-3";
+  tech.skills.forEach(skill=>{
+   addText(skillContainer,"span",skill,"skill-chip");
+  });
+
+  const used=workload(tech.id,today(),tech.shift);
+  const utilization=Math.round(used/Math.max(1,tech.capacity)*100);
+
+  const loadText=document.createElement("div");
+  loadText.className="d-flex justify-content-between mb-2";
+  addText(loadText,"span","Today's Workload","text-secondary");
+  addText(loadText,"strong",used+" / "+tech.capacity+" h");
+
+  const track=document.createElement("div");
+  track.className="progress-track";
+  const fill=document.createElement("div");
+  fill.className="progress-fill";
+  fill.style.width=Math.min(100,utilization)+"%";
+  fill.style.background=utilization>=100?"#ed6175":
+   utilization>=75?"#f4a443":"#6855eb";
+  track.append(fill);
+
+  const footer=document.createElement("div");
+  footer.className="d-flex justify-content-between align-items-center mt-3";
+  addText(footer,"span",tech.experience+" years experience",
+   "text-secondary");
+  footer.append(makeButton("Assign",()=>openAssignment(null,tech.id)));
+
+  card.append(header,status,skillContainer,loadText,track,footer);
+  column.append(card);
+  container.append(column);
+ });
+}
+
+function renderRecommendations(){
+ const container=$("recommendations");
+ container.replaceChildren();
+
+ const order=workOrders.find(
+  w=>w.id===$("recommendWorkOrder").value
+ );
+
+ if(!order)return;
+
+ const date=$("recommendDate").value||today();
+
+ addText(container,"div",
+  "Required skill: "+order.skill+
+  " • Estimated: "+order.hours+" h",
+  "text-secondary mb-3"
+ );
+
+ const ranked=technicians.map(tech=>
+  scoreTechnician(tech,order,date)
+ ).sort((a,b)=>
+  Number(b.issues.length===0)-Number(a.issues.length===0)||
+  b.score-a.score
+ ).slice(0,5);
+
+ ranked.forEach((item,index)=>{
+  const box=document.createElement("div");
+  box.className="recommendation"+
+   (index===0&&item.issues.length===0?" top":"");
+
+  const header=document.createElement("div");
+  header.className="d-flex justify-content-between gap-2";
+
+  const info=document.createElement("div");
+  addText(info,"strong",item.tech.name);
+  addText(info,"div",item.tech.shift+
+   " • "+item.remaining+" h remaining",
+   "text-secondary mt-1");
+
+  addText(header,"strong",item.score+"/100","score");
+  header.prepend(info);
+
+  const note=document.createElement("p");
+  note.className="text-secondary mt-2 mb-2";
+  note.style.fontSize="10px";
+  note.textContent=item.issues.length?
+   item.issues.join("; "):
+   "Meets configured demo scheduling checks.";
+
+  const button=makeButton("Assign Technician",()=>{
+   openAssignment(order.id,item.tech.id,date);
+  },true);
+
+  button.disabled=item.issues.length>0;
+  box.append(header,note,button);
+  container.append(box);
+ });
+}
+
+function cell(row,value){
+ const td=document.createElement("td");
+ if(value instanceof Node)td.append(value);
+ else td.textContent=String(value??"—");
+ row.append(td);
+ return td;
+}
+
+function renderAssignments(){
+ const tbody=$("assignmentTable");
+ tbody.replaceChildren();
+
+ $("assignmentCount").textContent=assignments.length+" Assignments";
+
+ [...assignments].sort((a,b)=>
+  b.date.localeCompare(a.date)
+ ).forEach(a=>{
+  const order=workOrders.find(w=>w.id===a.workOrder);
+  const tech=technicians.find(t=>t.id===a.technician);
+  const tr=document.createElement("tr");
+
+  cell(tr,a.workOrder);
+  cell(tr,order?.asset||"Unknown");
+  cell(tr,tech?.name||"Unknown");
+  cell(tr,a.date+" / "+a.shift);
+  cell(tr,a.hours+" h");
+
+  const priority=order?.priority||"Unknown";
+  cell(tr,badge(priority,
+   priority==="Critical"?"danger":
+   priority==="High"?"warning":"blue"
+  ));
+
+  cell(tr,badge(a.status,
+   a.status==="Completed"?"success":
+   a.status==="In Progress"?"purple":"blue"
+  ));
+
+  const actions=document.createElement("div");
+  actions.className="d-flex gap-2";
+
+  if(isActive(a)){
+   actions.append(makeButton("Complete",()=>{
+    const next=structuredClone(assignments);
+    const item=next.find(x=>x.id===a.id);
+    item.status="Completed";
+    if(saveAssignments(next)){
+     renderAll();
+     notify("Demo assignment marked completed.");
+    }
+   }));
+  }
+
+  actions.append(makeButton("Remove",()=>{
+   if(!confirm("Remove this assignment?"))return;
+   if(saveAssignments(assignments.filter(x=>x.id!==a.id))){
+    renderAll();
+    notify("Assignment removed.");
+   }
+  }));
+
+  cell(tr,actions);
+  tbody.append(tr);
+ });
+
+ if(!assignments.length){
+  const tr=document.createElement("tr");
+  const td=cell(tr,"No assignments recorded.");
+  td.colSpan=8;
+  td.className="text-center text-secondary py-4";
+  tbody.append(tr);
+ }
+}
+
+function renderConflicts(){
+ const container=$("conflictInspector");
+ container.replaceChildren();
+
+ const conflicts=conflictList();
+
+ if(!conflicts.length){
+  const box=document.createElement("div");
+  box.className="status-badge success";
+  box.textContent="No conflicts detected in demo rules.";
+  container.append(box);
+  return;
+ }
+
+ conflicts.forEach(conflict=>{
+  const box=document.createElement("div");
+  box.className="warning-box mb-2";
+  addText(box,"strong",conflict.id);
+  addText(box,"div",conflict.message,"mt-1");
+  container.append(box);
+ });
+}
+
+function populateSelect(id,items,label){
+ const select=$(id);
+ const previous=select.value;
+ select.replaceChildren();
+
+ items.forEach(item=>{
+  const option=document.createElement("option");
+  option.value=item.id;
+  option.textContent=label(item);
+  select.append(option);
+ });
+
+ if(items.some(item=>item.id===previous))select.value=previous;
+}
+
+function renderAll(){
+ populateSelect("assignmentTechnician",technicians,
+  t=>t.name+" ("+t.shift+")");
+ populateSelect("assignmentWorkOrder",workOrders,
+  w=>w.id+" — "+w.title);
+ populateSelect("recommendWorkOrder",workOrders,
+  w=>w.id+" — "+w.title);
+
+ renderStats();
+ renderCharts();
+ renderTechnicians();
+ renderRecommendations();
+ renderAssignments();
+ renderConflicts();
+}
+
+function saveAssignments(next){
+ try{
+  localStorage.setItem(ASSIGN_KEY,JSON.stringify(next));
+  assignments=next;
+  return true;
+ }catch{
+  notify("Unable to save assignments.");
+  return false;
+ }
+}
+
+function openAssignment(orderId=null,techId=null,date=null){
+ $("assignmentForm").reset();
+ $("assignmentValidation").classList.add("hidden");
+
+ if(orderId)$("assignmentWorkOrder").value=orderId;
+ if(techId)$("assignmentTechnician").value=techId;
+
+ $("assignmentDate").value=date||today();
+ $("assignmentStatus").value="Scheduled";
+
+ syncAssignmentDefaults();
+ assignmentModal.show();
+}
+
+function syncAssignmentDefaults(){
+ const order=workOrders.find(
+  w=>w.id===$("assignmentWorkOrder").value
+ );
+ const tech=technicians.find(
+  t=>t.id===$("assignmentTechnician").value
+ );
+
+ if(order)$("assignmentHours").value=order.hours;
+ if(tech)$("assignmentShift").value=tech.shift;
+}
+
+$("assignmentWorkOrder").addEventListener("change",syncAssignmentDefaults);
+$("assignmentTechnician").addEventListener("change",syncAssignmentDefaults);
+
+$("assignmentForm").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ if(!$("assignmentForm").checkValidity()){
+  $("assignmentForm").reportValidity();
+  return;
+ }
+
+ const order=workOrders.find(
+  w=>w.id===$("assignmentWorkOrder").value
+ );
+ const tech=technicians.find(
+  t=>t.id===$("assignmentTechnician").value
+ );
+
+ if(!order||!tech)return;
+
+ const date=$("assignmentDate").value;
+ const shift=$("assignmentShift").value;
+ const hours=Number($("assignmentHours").value);
+
+ if(!Number.isFinite(hours)||hours<=0||hours>24){
+  notify("Enter a valid estimated work duration.");
+  return;
+ }
+
+ const issues=eligible(tech,order,date,shift,hours);
+
+ if(issues.length){
+  $("assignmentValidation").textContent=
+   "Assignment blocked: "+issues.join("; ");
+  $("assignmentValidation").classList.remove("hidden");
+  return;
+ }
+
+ const next=[
+  ...assignments,
+  {
+   id:"ASG-"+crypto.randomUUID(),
+   workOrder:order.id,
+   technician:tech.id,
+   date,shift,hours,
+   status:$("assignmentStatus").value,
+   notes:$("assignmentNotes").value.trim()
+  }
+ ];
+
+ if(saveAssignments(next)){
+  assignmentModal.hide();
+  renderAll();
+  notify("Demo technician assignment saved.");
+ }
+});
+
+$("technicianForm").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ if(!$("technicianForm").checkValidity()){
+  $("technicianForm").reportValidity();
+  return;
+ }
+
+ const capacity=Number($("technicianCapacity").value);
+ const experience=Number($("technicianExperience").value);
+ const enteredSkills=$("technicianSkills").value.split(",")
+  .map(s=>s.trim()).filter(Boolean);
+
+ if(!Number.isFinite(capacity)||capacity<=0||
+  !Number.isFinite(experience)||experience<0||
+  !enteredSkills.length){
+  notify("Enter valid technician details.");
+  return;
+ }
+
+ const next=[
+  ...technicians,
+  {
+   id:"TECH-"+crypto.randomUUID(),
+   name:$("technicianName").value.trim(),
+   role:$("technicianRole").value.trim(),
+   shift:$("technicianShift").value,
+   status:$("technicianStatus").value,
+   capacity,experience,
+   skills:[...new Set(enteredSkills)]
+  }
+ ];
+
+ try{
+  localStorage.setItem(TECH_KEY,JSON.stringify(next));
+  technicians=next;
+  technicianModal.hide();
+  renderAll();
+  notify("Demo technician added.");
+ }catch{
+  notify("Unable to save technician.");
+ }
+});
+
+function download(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+
+ link.href=url;
+ link.download=filename;
+ document.body.append(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function csvEscape(value){
+ return '"'+String(value??"").replace(/"/g,'""')+'"';
+}
+
+$("exportCsv").addEventListener("click",()=>{
+ const columns=[
+  "id","workOrder","technician","date",
+  "shift","hours","status","notes"
+ ];
+
+ const rows=[
+  columns,
+  ...assignments.map(a=>columns.map(key=>a[key]))
+ ];
+
+ const csv=rows.map(row=>
+  row.map(csvEscape).join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-technician-assignments.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Assignments exported as CSV.");
+});
+
+$("exportJson").addEventListener("click",()=>{
+ download(
+  "industra-technician-scheduling.json",
+  JSON.stringify({
+   application:"INDUSTRA AI",
+   demo:true,
+   exportedAt:new Date().toISOString(),
+   technicians,
+   workOrders,
+   assignments,
+   conflicts:conflictList()
+  },null,2),
+  "application/json"
+ );
+
+ notify("Scheduling data exported as JSON.");
+});
+
+$("resetDemo").addEventListener("click",()=>{
+ if(!confirm("Reset technicians and assignments to demo data?"))return;
+
+ const nextTech=demoTechnicians();
+ const nextAssignments=demoAssignments();
+
+ try{
+  localStorage.setItem(TECH_KEY,JSON.stringify(nextTech));
+  localStorage.setItem(ASSIGN_KEY,JSON.stringify(nextAssignments));
+  technicians=nextTech;
+  assignments=nextAssignments;
+  renderAll();
+  notify("Demo scheduling restored.");
+ }catch{
+  notify("Unable to reset demo scheduling.");
+ }
+});
+
+$("newAssignmentButton").addEventListener("click",()=>openAssignment());
+
+$("addTechnicianButton").addEventListener("click",()=>{
+ $("technicianForm").reset();
+ technicianModal.show();
+});
+
+$("recommendWorkOrder").addEventListener("change",renderRecommendations);
+$("recommendDate").addEventListener("change",renderRecommendations);
+
+["searchInput","skillFilter","shiftFilter","availabilityFilter"]
+ .forEach(id=>{
+  $(id).addEventListener(
+   id==="searchInput"?"input":"change",renderTechnicians
+  );
+ });
+
+$("resetFilters").addEventListener("click",()=>{
+ $("searchInput").value="";
+ $("skillFilter").value="all";
+ $("shiftFilter").value="all";
+ $("availabilityFilter").value="all";
+ renderTechnicians();
+});
+
+skills.forEach(skill=>{
+ const option=document.createElement("option");
+ option.value=skill;
+ option.textContent=skill;
+ $("skillFilter").append(option);
+});
+
+$("recommendDate").value=today();
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+renderAll();
+</script>
+
+</body>
+</html>

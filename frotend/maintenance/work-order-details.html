@@ -1,0 +1,1573 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Work Order Details | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / maintenance</p><h1 id="page-title">Work Order Details</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Work Order Details workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Work Order Details | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+ --navy:#10152d;
+ --purple:#6855eb;
+ --purple-light:#f0edff;
+ --bg:#f5f6fb;
+ --text:#202640;
+ --muted:#8992aa;
+ --border:#e8eaf3;
+ --green:#18b58c;
+ --orange:#f4a443;
+ --red:#ed6175;
+ --blue:#438df5;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font:13px "DM Sans",sans-serif;
+}
+h1,h2,h3,h4,h5{
+ font-family:"Manrope",sans-serif;
+}
+a{text-decoration:none}
+.sidebar{
+ position:fixed;
+ left:0;top:0;bottom:0;
+ width:258px;
+ background:var(--navy);
+ overflow-y:auto;
+ z-index:1000;
+ display:flex;
+ flex-direction:column;
+}
+.brand{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ padding:25px 21px;
+ border-bottom:1px solid #ffffff12;
+}
+.brand-icon{
+ width:43px;height:43px;
+ display:grid;place-items:center;
+ border-radius:13px;
+ background:linear-gradient(135deg,#a28aff,#6752e8);
+ color:white;font-size:21px;
+}
+.brand strong{
+ color:white;
+ font:800 18px "Manrope",sans-serif;
+}
+.brand small{
+ display:block;
+ color:#8994bd;
+ font-size:8px;
+ letter-spacing:1.5px;
+ margin-top:4px;
+}
+.nav-section{
+ color:#687399;
+ font-size:9px;
+ font-weight:800;
+ letter-spacing:1.5px;
+ text-transform:uppercase;
+ padding:23px 20px 8px;
+}
+.side-link{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ color:#a4aecf;
+ font-size:11px;
+ font-weight:700;
+ padding:12px 13px;
+ margin:3px 12px;
+ border-radius:10px;
+}
+.side-link i{font-size:17px}
+.side-link:hover{
+ color:white;
+ background:#ffffff0b;
+}
+.side-link.active{
+ color:white;
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+}
+.sidebar-footer{
+ margin-top:auto;
+ color:#7884ac;
+ font-size:10px;
+ padding:20px;
+ border-top:1px solid #ffffff12;
+}
+.main{
+ margin-left:258px;
+ min-height:100vh;
+}
+.topbar{
+ height:76px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 30px;
+ background:white;
+ border-bottom:1px solid var(--border);
+ gap:12px;
+}
+.breadcrumb-text{
+ color:#9299ad;
+ font-size:11px;
+}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{
+ display:flex;
+ align-items:center;
+ gap:12px;
+}
+.top-icon{
+ width:37px;height:37px;
+ display:grid;place-items:center;
+ border:1px solid var(--border);
+ background:white;
+ border-radius:11px;
+ color:#68718e;
+ font-size:16px;
+}
+.avatar{
+ width:37px;height:37px;
+ display:grid;place-items:center;
+ border-radius:11px;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;
+ font-weight:800;
+}
+.content{
+ max-width:1600px;
+ margin:auto;
+ padding:27px 30px 45px;
+}
+.hero{
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff);
+ color:white;
+ border-radius:19px;
+ padding:30px;
+ margin-bottom:24px;
+ position:relative;
+ overflow:hidden;
+}
+.hero:after{
+ content:"";
+ position:absolute;
+ right:-80px;
+ top:-130px;
+ width:320px;
+ height:320px;
+ border:1px solid #ffffff25;
+ border-radius:50%;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ color:#ddd6ff;
+ text-transform:uppercase;
+ letter-spacing:2px;
+ font-size:10px;
+ font-weight:800;
+}
+.hero h1{
+ font-size:26px;
+ font-weight:800;
+ margin:12px 0;
+}
+.hero p{
+ color:#e6e0ff;
+ line-height:1.8;
+ font-size:12px;
+ max-width:780px;
+ margin:0;
+}
+.panel,.stat-card{
+ background:white;
+ border:1px solid var(--border);
+ border-radius:16px;
+ box-shadow:0 5px 23px #18204105;
+}
+.panel{padding:21px}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;
+ display:grid;place-items:center;
+ border-radius:12px;
+ font-size:19px;
+ margin-bottom:15px;
+}
+.stat-label{
+ color:var(--muted);
+ font-size:11px;
+ font-weight:700;
+}
+.stat-value{
+ font:800 22px "Manrope",sans-serif;
+ margin-top:7px;
+}
+.stat-note{
+ color:#a0a8ba;
+ font-size:10px;
+ margin-top:6px;
+}
+.panel-heading{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ flex-wrap:wrap;
+ margin-bottom:19px;
+}
+.panel-heading h3{
+ font-size:14px;
+ font-weight:800;
+ margin:0;
+}
+.panel-subtitle{
+ color:var(--muted);
+ font-size:10px;
+ margin-top:5px;
+}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;
+ border:0;
+ border-radius:10px;
+ padding:11px 16px;
+ font-size:11px;
+ font-weight:800;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);
+ border-radius:10px;
+ padding:10px 13px;
+ background:white;
+ color:#69738e;
+ font-size:11px;
+ font-weight:800;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:8px;
+}
+.btn-outline-custom:hover{
+ background:#f5f3ff;
+ color:var(--purple);
+}
+.status-badge{
+ display:inline-flex;
+ align-items:center;
+ gap:6px;
+ padding:7px 10px;
+ border-radius:8px;
+ font-size:10px;
+ font-weight:800;
+ background:#f1f2f8;
+ color:#77819a;
+}
+.status-badge.success{
+ background:#e7f8f1;color:#119d72;
+}
+.status-badge.warning{
+ background:#fff4e6;color:#d68a22;
+}
+.status-badge.danger{
+ background:#ffedf0;color:#d84b63;
+}
+.status-badge.purple{
+ background:#f0edff;color:#6855eb;
+}
+.status-badge.blue{
+ background:#eaf2ff;color:#438df5;
+}
+.detail-row{
+ display:flex;
+ align-items:flex-start;
+ justify-content:space-between;
+ gap:15px;
+ border-bottom:1px solid #eef0f6;
+ padding:12px 0;
+ font-size:11px;
+}
+.detail-row:last-child{border-bottom:0}
+.detail-row span:first-child{color:#8992aa}
+.detail-row strong{
+ text-align:right;
+ overflow-wrap:anywhere;
+}
+.progress-track{
+ height:10px;
+ background:#edf0f6;
+ border-radius:10px;
+ overflow:hidden;
+}
+.progress-fill{
+ height:100%;
+ background:linear-gradient(90deg,#6855eb,#9c8cfb);
+ border-radius:10px;
+ transition:width .2s;
+}
+.step{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:12px 0;
+ border-bottom:1px solid #eef0f6;
+}
+.step-icon{
+ width:34px;height:34px;
+ border-radius:10px;
+ display:grid;place-items:center;
+ background:#f0edff;
+ color:#6855eb;
+ font-size:16px;
+ flex-shrink:0;
+}
+.step-icon.done{
+ background:#e7f8f1;
+ color:#18b58c;
+}
+.step-title{font-size:11px;font-weight:800}
+.step-note{font-size:10px;color:#8992aa;margin-top:4px}
+.timeline{
+ position:relative;
+ padding-left:25px;
+}
+.timeline:before{
+ content:"";
+ position:absolute;
+ left:10px;
+ top:12px;bottom:12px;
+ width:2px;
+ background:#e9e5ff;
+}
+.timeline-item{
+ position:relative;
+ padding:0 0 22px 12px;
+}
+.timeline-item:before{
+ content:"";
+ position:absolute;
+ left:-20px;top:5px;
+ width:13px;height:13px;
+ border-radius:50%;
+ background:#6855eb;
+ border:3px solid #eae5ff;
+}
+.timeline-item strong{font-size:11px}
+.timeline-item p{
+ font-size:10px;
+ color:#8992aa;
+ line-height:1.8;
+ margin:5px 0;
+}
+.table{font-size:11px}
+.table thead th{
+ background:#f9faff;
+ color:#8992aa;
+ font-size:10px;
+ font-weight:800;
+ padding:13px;
+ border-bottom:1px solid var(--border);
+}
+.table tbody td{
+ padding:13px;
+ vertical-align:middle;
+ border-color:#f0f1f7;
+}
+.form-label{
+ color:#68718e;
+ font-size:10px;
+ font-weight:800;
+ margin-bottom:8px;
+}
+.form-control,.form-select{
+ border:1px solid var(--border);
+ border-radius:10px;
+ min-height:42px;
+ font-size:11px;
+ padding:10px 12px;
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;
+ box-shadow:0 0 0 3px #6855eb12;
+}
+.check-item{
+ display:flex;
+ gap:10px;
+ align-items:flex-start;
+ padding:11px 0;
+ border-bottom:1px solid #eef0f6;
+ font-size:11px;
+}
+.check-item input{
+ accent-color:#6855eb;
+ margin-top:3px;
+}
+.check-item label{flex:1}
+.notice{
+ background:#fff8eb;
+ border:1px solid #ffe8c3;
+ color:#986b2d;
+ border-radius:12px;
+ padding:15px 17px;
+ font-size:11px;
+ line-height:1.8;
+ display:flex;
+ gap:11px;
+}
+.notice i{font-size:18px;flex-shrink:0}
+.modal-content{
+ border:0;
+ border-radius:17px;
+}
+.modal-header,.modal-footer{border-color:var(--border)}
+.modal-title{font-size:16px;font-weight:800}
+.mobile-menu{display:none}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:900px){
+ .sidebar{
+  transform:translateX(-100%);
+  transition:.25s;
+ }
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;
+  position:fixed;
+  inset:0;
+  background:#10152d88;
+  z-index:999;
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:15px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:15px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.action-bar,
+ .notice,.toast-container,.print-hide{
+  display:none!important;
+ }
+ .main{margin-left:0}
+ .content{padding:0}
+ body{background:white}
+ .panel,.stat-card{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon">
+   <i class="bi bi-hexagon-half"></i>
+  </div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html">
+  <i class="bi bi-grid"></i> Dashboard
+ </a>
+ <a class="side-link" href="command-center.html">
+  <i class="bi bi-broadcast"></i> Command Center
+ </a>
+ <a class="side-link" href="analytics.html">
+  <i class="bi bi-graph-up-arrow"></i> Analytics
+ </a>
+
+ <div class="nav-section">Maintenance Management</div>
+ <a class="side-link" href="maintenance-dashboard.html">
+  <i class="bi bi-speedometer2"></i> Maintenance Dashboard
+ </a>
+ <a class="side-link" href="work-orders.html">
+  <i class="bi bi-clipboard-check"></i> Work Orders
+ </a>
+ <a class="side-link active" href="work-order-details.html">
+  <i class="bi bi-file-earmark-text"></i> Work Order Details
+ </a>
+ <a class="side-link" href="create-work-order.html">
+  <i class="bi bi-plus-square"></i> Create Work Order
+ </a>
+ <a class="side-link" href="technicians.html">
+  <i class="bi bi-people"></i> Technicians
+ </a>
+ <a class="side-link" href="technician-assignment.html">
+  <i class="bi bi-person-check"></i> Technician Assignment
+ </a>
+ <a class="side-link" href="technician-tracking.html">
+  <i class="bi bi-geo-alt"></i> Technician Tracking
+ </a>
+ <a class="side-link" href="maintenance-calendar.html">
+  <i class="bi bi-calendar3"></i> Maintenance Calendar
+ </a>
+ <a class="side-link" href="spare-parts.html">
+  <i class="bi bi-gear-wide-connected"></i> Spare Parts
+ </a>
+ <a class="side-link" href="service-history.html">
+  <i class="bi bi-clock-history"></i> Service History
+ </a>
+ <a class="side-link" href="maintenance-reports.html">
+  <i class="bi bi-file-earmark-bar-graph"></i> Maintenance Reports
+ </a>
+
+ <div class="sidebar-footer">
+  Browser-Local Work Order Demo
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton"
+   aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">
+    Maintenance / Work Orders /
+    <strong>Work Order Details</strong>
+   </div>
+   <div class="fw-bold mt-1" style="font-size:13px">
+    Maintenance Task Inspector
+   </div>
+  </div>
+ </div>
+ <div class="top-actions">
+  <span class="status-badge purple d-none d-sm-inline-flex">
+   <i class="bi bi-flask"></i> Demo Work Order
+  </span>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">
+  INDUSTRA AI / Maintenance Operations
+ </div>
+ <h1>
+  <i class="bi bi-clipboard2-check me-2"></i>
+  Work Order Details
+ </h1>
+ <p>
+  Review equipment maintenance tasks, technician assignment,
+  safety requirements, spare parts, repair costs, progress
+  tracking and maintenance activity history.
+ </p>
+</section>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 action-bar">
+ <div>
+  <h5 class="fw-bold mb-1" id="headerWorkOrder">
+   Work Order
+  </h5>
+  <div class="text-secondary" style="font-size:11px"
+   id="headerDescription"></div>
+ </div>
+ <div class="d-flex flex-wrap gap-2">
+  <a href="work-orders.html" class="btn-outline-custom">
+   <i class="bi bi-arrow-left"></i> All Work Orders
+  </a>
+  <button class="btn-purple" id="editButton">
+   <i class="bi bi-pencil"></i> Edit Work Order
+  </button>
+  <button class="btn-outline-custom" id="printButton">
+   <i class="bi bi-printer"></i> Print
+  </button>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon"
+    style="background:#eeeaff;color:#6855eb">
+    <i class="bi bi-activity"></i>
+   </div>
+   <div class="stat-label">Work Order Status</div>
+   <div class="mt-3" id="statusKpi"></div>
+   <div class="stat-note">Current task state</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon"
+    style="background:#fff4e6;color:#f4a443">
+    <i class="bi bi-exclamation-triangle"></i>
+   </div>
+   <div class="stat-label">Priority</div>
+   <div class="mt-3" id="priorityKpi"></div>
+   <div class="stat-note">Maintenance urgency</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon"
+    style="background:#e7f8f1;color:#18b58c">
+    <i class="bi bi-percent"></i>
+   </div>
+   <div class="stat-label">Task Progress</div>
+   <div class="stat-value" id="progressKpi">0%</div>
+   <div class="stat-note">Recorded completion percentage</div>
+  </div>
+ </div>
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon"
+    style="background:#eaf2ff;color:#438df5">
+    <i class="bi bi-currency-rupee"></i>
+   </div>
+   <div class="stat-label">Estimated Total Cost</div>
+   <div class="stat-value" id="costKpi">₹0</div>
+   <div class="stat-note">Labor + parts + external services</div>
+  </div>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+
+ <div class="col-xl-8">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-file-earmark-text me-2"
+       style="color:var(--purple)"></i>
+      Work Order Information
+     </h3>
+     <div class="panel-subtitle">
+      General task information and maintenance scope.
+     </div>
+    </div>
+   </div>
+
+   <div id="workOrderInfo"></div>
+
+   <h6 class="fw-bold mt-4">Issue Description</h6>
+   <p class="text-secondary" id="issueDescription"
+    style="line-height:1.9;overflow-wrap:anywhere"></p>
+
+   <h6 class="fw-bold mt-4">Maintenance Instructions</h6>
+   <p class="text-secondary" id="maintenanceInstructions"
+    style="line-height:1.9;overflow-wrap:anywhere"></p>
+  </section>
+ </div>
+
+ <div class="col-xl-4">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-gear me-2"
+       style="color:var(--purple)"></i>
+      Equipment Details
+     </h3>
+     <div class="panel-subtitle">
+      Associated industrial asset.
+     </div>
+    </div>
+   </div>
+   <div id="equipmentDetails"></div>
+
+   <a href="asset-health.html"
+    class="btn-outline-custom w-100 mt-4">
+    <i class="bi bi-heart-pulse"></i> Asset Health Dashboard
+   </a>
+  </section>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-7">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-bar-chart-steps me-2"
+       style="color:var(--purple)"></i>
+      Maintenance Progress
+     </h3>
+     <div class="panel-subtitle">
+      Update task progress and status.
+     </div>
+    </div>
+   </div>
+
+   <div class="d-flex justify-content-between mb-2">
+    <strong id="progressLabel">0% Completed</strong>
+    <span class="text-secondary" id="progressStatus"></span>
+   </div>
+
+   <div class="progress-track mb-4">
+    <div class="progress-fill" id="progressFill"
+     style="width:0%"></div>
+   </div>
+
+   <div id="progressSteps"></div>
+
+   <div class="row g-3 mt-3 print-hide">
+    <div class="col-md-5">
+     <label class="form-label" for="updateProgress">
+      Progress (%)
+     </label>
+     <input type="number" class="form-control"
+      id="updateProgress" min="0" max="100" step="1">
+    </div>
+    <div class="col-md-5">
+     <label class="form-label" for="updateStatus">
+      Task Status
+     </label>
+     <select class="form-select" id="updateStatus">
+      <option>Open</option>
+      <option>Assigned</option>
+      <option>In Progress</option>
+      <option>On Hold</option>
+      <option>Completed</option>
+      <option>Cancelled</option>
+     </select>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+     <button class="btn-purple w-100"
+      id="saveProgress">Save</button>
+    </div>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-5">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-person-check me-2"
+       style="color:var(--purple)"></i>
+      Assigned Technician
+     </h3>
+     <div class="panel-subtitle">
+      Technician responsible for this work order.
+     </div>
+    </div>
+   </div>
+
+   <div id="technicianDetails"></div>
+
+   <a href="technician-assignment.html"
+    class="btn-outline-custom w-100 mt-4">
+    <i class="bi bi-person-plus"></i> Technician Assignment
+   </a>
+   <a href="technician-tracking.html"
+    class="btn-outline-custom w-100 mt-2">
+    <i class="bi bi-geo-alt"></i> Technician Tracking
+   </a>
+  </section>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-6">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-shield-check me-2"
+       style="color:var(--purple)"></i>
+      Safety Checklist
+     </h3>
+     <div class="panel-subtitle">
+      Local checklist for demonstration purposes only.
+     </div>
+    </div>
+   </div>
+   <div id="safetyChecklist"></div>
+   <div class="mt-3" id="safetySummary"></div>
+  </section>
+ </div>
+
+ <div class="col-xl-6">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-gear-wide-connected me-2"
+       style="color:var(--purple)"></i>
+      Spare Parts Required
+     </h3>
+     <div class="panel-subtitle">
+      Planned maintenance replacement components.
+     </div>
+    </div>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table mb-0">
+     <thead>
+      <tr>
+       <th>Part</th>
+       <th>Quantity</th>
+       <th>Unit Cost</th>
+       <th>Total</th>
+      </tr>
+     </thead>
+     <tbody id="partsTable"></tbody>
+    </table>
+   </div>
+
+   <a href="spare-parts.html"
+    class="btn-outline-custom w-100 mt-3">
+    <i class="bi bi-box-seam"></i> Spare Parts Inventory
+   </a>
+  </section>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-5">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-cash-stack me-2"
+       style="color:var(--purple)"></i>
+      Maintenance Cost Breakdown
+     </h3>
+     <div class="panel-subtitle">
+      Estimated costs recorded for the work order.
+     </div>
+    </div>
+   </div>
+   <div id="costDetails"></div>
+  </section>
+ </div>
+
+ <div class="col-xl-7">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-clock-history me-2"
+       style="color:var(--purple)"></i>
+      Activity Timeline
+     </h3>
+     <div class="panel-subtitle">
+      Locally recorded work-order changes.
+     </div>
+    </div>
+   </div>
+   <div class="timeline" id="activityTimeline"></div>
+  </section>
+ </div>
+</div>
+
+<section class="panel mb-4">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-journal-text me-2"
+     style="color:var(--purple)"></i>
+    Maintenance Notes
+   </h3>
+   <div class="panel-subtitle">
+    Record technician observations and follow-up actions.
+   </div>
+  </div>
+ </div>
+
+ <div id="notesList" class="mb-3"></div>
+
+ <div class="print-hide">
+  <label class="form-label" for="newNote">Add Maintenance Note</label>
+  <textarea class="form-control" id="newNote"
+   rows="3" maxlength="1500"
+   placeholder="Enter inspection findings, repair notes or follow-up recommendations..."></textarea>
+  <button class="btn-purple mt-3" id="addNoteButton">
+   <i class="bi bi-plus-lg"></i> Add Note
+  </button>
+ </div>
+</section>
+
+<div class="notice">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Demo data only:</strong>
+  Work-order records and maintenance results are fictional.
+  Changes are stored in this browser, not in a production
+  maintenance management system. Completing a digital checklist
+  or changing the work-order status does not constitute equipment
+  safety approval, lockout/tagout verification, technician
+  certification or authorization to return machinery to service.
+ </div>
+</div>
+
+</main>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1"
+ aria-labelledby="editModalTitle" aria-hidden="true">
+ <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-content">
+   <form id="editForm">
+    <div class="modal-header">
+     <h5 class="modal-title" id="editModalTitle">
+      Edit Work Order
+     </h5>
+     <button type="button" class="btn-close"
+      data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+     <div class="row g-3">
+      <div class="col-md-6">
+       <label class="form-label" for="editTitle">Work Order Title</label>
+       <input class="form-control" id="editTitle"
+        maxlength="150" required>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="editPriority">Priority</label>
+       <select class="form-select" id="editPriority">
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+        <option>Critical</option>
+       </select>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="editTechnician">
+        Assigned Technician
+       </label>
+       <input class="form-control" id="editTechnician"
+        maxlength="120">
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="editDueDate">Due Date</label>
+       <input type="date" class="form-control" id="editDueDate">
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="editLaborCost">
+        Labor Cost (₹)
+       </label>
+       <input type="number" class="form-control"
+        id="editLaborCost" min="0" max="100000000"
+        step="0.01" required>
+      </div>
+      <div class="col-md-6">
+       <label class="form-label" for="editExternalCost">
+        External Service Cost (₹)
+       </label>
+       <input type="number" class="form-control"
+        id="editExternalCost" min="0" max="100000000"
+        step="0.01" required>
+      </div>
+      <div class="col-12">
+       <label class="form-label" for="editIssue">Issue Description</label>
+       <textarea class="form-control" id="editIssue"
+        rows="3" maxlength="2000"></textarea>
+      </div>
+      <div class="col-12">
+       <label class="form-label" for="editInstructions">
+        Maintenance Instructions
+       </label>
+       <textarea class="form-control" id="editInstructions"
+        rows="3" maxlength="2000"></textarea>
+      </div>
+     </div>
+    </div>
+
+    <div class="modal-footer">
+     <button type="button" class="btn-outline-custom"
+      data-bs-dismiss="modal">Cancel</button>
+     <button type="submit" class="btn-purple">
+      <i class="bi bi-save"></i> Save Changes
+     </button>
+    </div>
+   </form>
+  </div>
+ </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const STORAGE_KEY="industra-work-order-details-v1";
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",
+ currency:"INR",
+ maximumFractionDigits:0
+});
+
+function localDate(offset=0){
+ const date=new Date();
+ date.setDate(date.getDate()+offset);
+ return date.getFullYear()+"-"+
+  String(date.getMonth()+1).padStart(2,"0")+"-"+
+  String(date.getDate()).padStart(2,"0");
+}
+
+function demoWorkOrder(){
+ return {
+  id:"WO-DEMO-101",
+  title:"Centrifugal Pump Bearing Replacement",
+  type:"Corrective Maintenance",
+  priority:"High",
+  status:"In Progress",
+  progress:55,
+  created:localDate(-4),
+  dueDate:localDate(2),
+  asset:{
+   id:"PMP-101",
+   name:"Centrifugal Pump P-101",
+   location:"Plant A / Pump Station 2",
+   category:"Rotating Equipment",
+   manufacturer:"Demo Industrial Equipment",
+   condition:"Requires Review"
+  },
+  technician:"Demo Technician A",
+  issue:"Elevated vibration readings and abnormal bearing noise were reported during the fictional condition-monitoring inspection.",
+  instructions:"Review isolation and work authorization, inspect the bearing assembly, document findings, replace approved components where required, and record post-maintenance observations.",
+  laborCost:8500,
+  externalCost:1500,
+  parts:[
+   {name:"Bearing Kit",quantity:1,unitCost:6200},
+   {name:"Mechanical Seal",quantity:1,unitCost:3500},
+   {name:"Industrial Lubricant",quantity:2,unitCost:850}
+  ],
+  checklist:[
+   {label:"Review maintenance permit and authorization",done:true},
+   {label:"Verify isolation procedure with authorized personnel",done:false},
+   {label:"Review PPE requirements",done:true},
+   {label:"Record inspection findings",done:true},
+   {label:"Record post-maintenance checks",done:false}
+  ],
+  notes:[
+   {
+    id:"NOTE-DEMO-001",
+    date:new Date().toISOString(),
+    text:"Initial inspection observations recorded in this synthetic demonstration."
+   }
+  ],
+  activity:[
+   {
+    id:"ACT-DEMO-001",
+    date:new Date(Date.now()-86400000*4).toISOString(),
+    text:"Demo work order created."
+   },
+   {
+    id:"ACT-DEMO-002",
+    date:new Date(Date.now()-86400000*2).toISOString(),
+    text:"Demo technician assigned."
+   },
+   {
+    id:"ACT-DEMO-003",
+    date:new Date().toISOString(),
+    text:"Maintenance progress recorded at 55%."
+   }
+  ]
+ };
+}
+
+function loadWorkOrder(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if(saved&&saved.id&&Array.isArray(saved.parts)&&
+   Array.isArray(saved.checklist)&&
+   Array.isArray(saved.activity)){
+   return saved;
+  }
+ }catch{}
+ return demoWorkOrder();
+}
+
+let workOrder=loadWorkOrder();
+
+function saveWorkOrder(){
+ try{
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(workOrder));
+  return true;
+ }catch{
+  notify("Unable to save: browser storage is unavailable.");
+  return false;
+ }
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function addActivity(text){
+ workOrder.activity.unshift({
+  id:crypto.randomUUID(),
+  date:new Date().toISOString(),
+  text
+ });
+}
+
+function totalPartsCost(){
+ return workOrder.parts.reduce(
+  (sum,p)=>sum+p.quantity*p.unitCost,0
+ );
+}
+
+function totalCost(){
+ return Number(workOrder.laborCost)+
+  Number(workOrder.externalCost)+totalPartsCost();
+}
+
+function badge(value,kind){
+ const span=document.createElement("span");
+ span.className="status-badge "+kind;
+ span.textContent=value;
+ return span;
+}
+
+function statusKind(status){
+ return status==="Completed"?"success":
+  status==="In Progress"?"purple":
+  status==="On Hold"?"warning":
+  status==="Cancelled"?"danger":"blue";
+}
+
+function priorityKind(priority){
+ return priority==="Critical"?"danger":
+  priority==="High"?"warning":
+  priority==="Medium"?"blue":"success";
+}
+
+function detailRow(label,value){
+ const row=document.createElement("div");
+ row.className="detail-row";
+
+ const left=document.createElement("span");
+ left.textContent=label;
+
+ const right=document.createElement("strong");
+ right.textContent=String(value??"—");
+
+ row.append(left,right);
+ return row;
+}
+
+function renderHeader(){
+ $("headerWorkOrder").textContent=
+  workOrder.id+" — "+workOrder.title;
+ $("headerDescription").textContent=
+  workOrder.type+" • "+workOrder.asset.id;
+
+ $("statusKpi").replaceChildren(
+  badge(workOrder.status,statusKind(workOrder.status))
+ );
+
+ $("priorityKpi").replaceChildren(
+  badge(workOrder.priority,priorityKind(workOrder.priority))
+ );
+
+ $("progressKpi").textContent=workOrder.progress+"%";
+ $("costKpi").textContent=currency.format(totalCost());
+}
+
+function renderInformation(){
+ const container=$("workOrderInfo");
+ container.replaceChildren(
+  detailRow("Work Order ID",workOrder.id),
+  detailRow("Maintenance Title",workOrder.title),
+  detailRow("Maintenance Type",workOrder.type),
+  detailRow("Created Date",workOrder.created),
+  detailRow("Due Date",workOrder.dueDate),
+  detailRow("Current Status",workOrder.status),
+  detailRow("Priority",workOrder.priority)
+ );
+
+ $("issueDescription").textContent=workOrder.issue||"Not recorded.";
+ $("maintenanceInstructions").textContent=
+  workOrder.instructions||"Not recorded.";
+}
+
+function renderEquipment(){
+ const asset=workOrder.asset;
+
+ $("equipmentDetails").replaceChildren(
+  detailRow("Equipment ID",asset.id),
+  detailRow("Equipment Name",asset.name),
+  detailRow("Category",asset.category),
+  detailRow("Plant / Location",asset.location),
+  detailRow("Manufacturer",asset.manufacturer),
+  detailRow("Condition",asset.condition)
+ );
+}
+
+function renderProgress(){
+ $("progressLabel").textContent=workOrder.progress+"% Completed";
+ $("progressStatus").textContent=workOrder.status;
+ $("progressFill").style.width=workOrder.progress+"%";
+
+ $("updateProgress").value=workOrder.progress;
+ $("updateStatus").value=workOrder.status;
+
+ const steps=[
+  ["Work Order Created",true],
+  ["Technician Assigned",Boolean(workOrder.technician)],
+  ["Maintenance Started",workOrder.progress>0],
+  ["Maintenance Completed",workOrder.status==="Completed"],
+  ["Administrative Closeout",workOrder.status==="Completed"]
+ ];
+
+ const container=$("progressSteps");
+ container.replaceChildren();
+
+ steps.forEach(([label,done])=>{
+  const row=document.createElement("div");
+  row.className="step";
+
+  const icon=document.createElement("div");
+  icon.className="step-icon"+(done?" done":"");
+
+  const symbol=document.createElement("i");
+  symbol.className=done?
+   "bi bi-check-lg":"bi bi-circle";
+  icon.append(symbol);
+
+  const text=document.createElement("div");
+  text.className="step-title";
+  text.textContent=label;
+
+  row.append(icon,text);
+  container.append(row);
+ });
+}
+
+function renderTechnician(){
+ $("technicianDetails").replaceChildren(
+  detailRow("Assigned Technician",
+   workOrder.technician||"Unassigned"),
+  detailRow("Work Order",workOrder.id),
+  detailRow("Equipment",workOrder.asset.id),
+  detailRow("Task Status",workOrder.status)
+ );
+}
+
+function renderChecklist(){
+ const container=$("safetyChecklist");
+ container.replaceChildren();
+
+ workOrder.checklist.forEach((item,index)=>{
+  const row=document.createElement("div");
+  row.className="check-item";
+
+  const input=document.createElement("input");
+  input.type="checkbox";
+  input.id="safety-"+index;
+  input.checked=item.done;
+
+  const label=document.createElement("label");
+  label.htmlFor=input.id;
+  label.textContent=item.label;
+
+  input.addEventListener("change",()=>{
+   const previous=item.done;
+   item.done=input.checked;
+
+   if(!saveWorkOrder()){
+    item.done=previous;
+    input.checked=previous;
+    return;
+   }
+
+   addActivity("Checklist item updated: "+item.label);
+   saveWorkOrder();
+   renderChecklist();
+   renderTimeline();
+  });
+
+  row.append(input,label);
+  container.append(row);
+ });
+
+ const completed=workOrder.checklist.filter(x=>x.done).length;
+
+ $("safetySummary").replaceChildren(
+  badge(
+   completed+" / "+workOrder.checklist.length+
+   " items checked",
+   completed===workOrder.checklist.length?"success":"warning"
+  )
+ );
+}
+
+function renderParts(){
+ const tbody=$("partsTable");
+ tbody.replaceChildren();
+
+ workOrder.parts.forEach(part=>{
+  const tr=document.createElement("tr");
+
+  [
+   part.name,
+   part.quantity,
+   currency.format(part.unitCost),
+   currency.format(part.quantity*part.unitCost)
+  ].forEach(value=>{
+   const td=document.createElement("td");
+   td.textContent=value;
+   tr.append(td);
+  });
+
+  tbody.append(tr);
+ });
+}
+
+function renderCosts(){
+ $("costDetails").replaceChildren(
+  detailRow("Labor Cost",currency.format(workOrder.laborCost)),
+  detailRow("Spare Parts Cost",currency.format(totalPartsCost())),
+  detailRow("External Service Cost",
+   currency.format(workOrder.externalCost)),
+  detailRow("Estimated Total",currency.format(totalCost()))
+ );
+}
+
+function renderTimeline(){
+ const container=$("activityTimeline");
+ container.replaceChildren();
+
+ workOrder.activity.forEach(activity=>{
+  const item=document.createElement("div");
+  item.className="timeline-item";
+
+  const title=document.createElement("strong");
+  title.textContent=activity.text;
+
+  const date=document.createElement("p");
+  date.textContent=new Date(activity.date)
+   .toLocaleString("en-IN");
+
+  item.append(title,date);
+  container.append(item);
+ });
+}
+
+function renderNotes(){
+ const container=$("notesList");
+ container.replaceChildren();
+
+ if(!workOrder.notes.length){
+  const empty=document.createElement("p");
+  empty.className="text-secondary";
+  empty.textContent="No maintenance notes recorded.";
+  container.append(empty);
+  return;
+ }
+
+ workOrder.notes.forEach(note=>{
+  const block=document.createElement("div");
+  block.className="border-bottom py-3";
+
+  const date=document.createElement("strong");
+  date.textContent=new Date(note.date).toLocaleString("en-IN");
+
+  const text=document.createElement("p");
+  text.className="text-secondary mt-2 mb-0";
+  text.style.whiteSpace="pre-wrap";
+  text.style.overflowWrap="anywhere";
+  text.textContent=note.text;
+
+  block.append(date,text);
+  container.append(block);
+ });
+}
+
+function renderAll(){
+ renderHeader();
+ renderInformation();
+ renderEquipment();
+ renderProgress();
+ renderTechnician();
+ renderChecklist();
+ renderParts();
+ renderCosts();
+ renderTimeline();
+ renderNotes();
+}
+
+$("saveProgress").addEventListener("click",()=>{
+ const progress=Number($("updateProgress").value);
+ const status=$("updateStatus").value;
+
+ if(!Number.isInteger(progress)||progress<0||progress>100){
+  notify("Progress must be a whole number between 0 and 100.");
+  return;
+ }
+
+ if(status==="Completed"&&progress!==100){
+  notify("Set progress to 100% before marking completed.");
+  return;
+ }
+
+ if(status==="Completed"&&
+  workOrder.checklist.some(item=>!item.done)){
+  notify("Complete the demo checklist before closing the task.");
+  return;
+ }
+
+ const previous=structuredClone(workOrder);
+
+ workOrder.progress=progress;
+ workOrder.status=status;
+ addActivity("Status updated to "+status+
+  " with "+progress+"% progress.");
+
+ if(!saveWorkOrder()){
+  workOrder=previous;
+  return;
+ }
+
+ renderAll();
+ notify("Work order progress updated.");
+});
+
+$("addNoteButton").addEventListener("click",()=>{
+ const text=$("newNote").value.trim();
+
+ if(!text){
+  notify("Enter a maintenance note.");
+  return;
+ }
+
+ const previous=structuredClone(workOrder);
+
+ workOrder.notes.unshift({
+  id:crypto.randomUUID(),
+  date:new Date().toISOString(),
+  text
+ });
+
+ addActivity("Maintenance note added.");
+
+ if(!saveWorkOrder()){
+  workOrder=previous;
+  return;
+ }
+
+ $("newNote").value="";
+ renderAll();
+ notify("Maintenance note saved.");
+});
+
+const editModal=bootstrap.Modal.getOrCreateInstance($("editModal"));
+
+$("editButton").addEventListener("click",()=>{
+ $("editTitle").value=workOrder.title;
+ $("editPriority").value=workOrder.priority;
+ $("editTechnician").value=workOrder.technician;
+ $("editDueDate").value=workOrder.dueDate;
+ $("editLaborCost").value=workOrder.laborCost;
+ $("editExternalCost").value=workOrder.externalCost;
+ $("editIssue").value=workOrder.issue;
+ $("editInstructions").value=workOrder.instructions;
+
+ editModal.show();
+});
+
+$("editForm").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ if(!$("editForm").checkValidity()){
+  $("editForm").reportValidity();
+  return;
+ }
+
+ const labor=Number($("editLaborCost").value);
+ const external=Number($("editExternalCost").value);
+
+ if(!Number.isFinite(labor)||labor<0||
+  !Number.isFinite(external)||external<0){
+  notify("Enter valid nonnegative maintenance costs.");
+  return;
+ }
+
+ const previous=structuredClone(workOrder);
+
+ workOrder.title=$("editTitle").value.trim();
+ workOrder.priority=$("editPriority").value;
+ workOrder.technician=$("editTechnician").value.trim();
+ workOrder.dueDate=$("editDueDate").value;
+ workOrder.laborCost=labor;
+ workOrder.externalCost=external;
+ workOrder.issue=$("editIssue").value.trim();
+ workOrder.instructions=$("editInstructions").value.trim();
+
+ addActivity("Work order information edited.");
+
+ if(!saveWorkOrder()){
+  workOrder=previous;
+  return;
+ }
+
+ editModal.hide();
+ renderAll();
+ notify("Work order updated.");
+});
+
+$("printButton").addEventListener("click",()=>window.print());
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+renderAll();
+</script>
+
+</body>
+</html>

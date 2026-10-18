@@ -1,0 +1,1370 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Maintenance Reports | Industrial AI</title><link rel="stylesheet" href="/css/main.css"></head><body><div class="shell"><aside class="sidebar" id="sidebar"><div class="brand">⚙ INDUSTRIAL AI<small>Maintenance • Safety • Intelligence</small></div><div style="padding:12px"><input class="input" id="search" aria-label="Search navigation" placeholder="Search pages" style="width:100%;min-width:0"></div></aside><div class="content"><header class="topbar"><div><button class="btn menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button> <span id="group-title">COMMAND CENTER</span></div><span class="chip">API CONNECTION REQUIRED</span></header><main class="main"><p class="muted">INDUSTRIAL OPERATIONS / maintenance</p><h1 id="page-title">Maintenance Reports</h1><p class="subtitle">Industrial intelligence, monitoring and operational workflows</p><div class="toolbar"><button class="btn primary" id="refresh">↻ Refresh</button><a class="btn" href="/dashboard.html">Dashboard</a><a class="btn" href="/command-center.html">Command Center</a></div><div class="grid"><div class="card"><div class="muted">Assets monitored</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Health status</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Active incidents</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div><div class="card"><div class="muted">Alerts</div><div class="metric">—</div><small class="muted">Awaiting backend data</small></div></div><section class="card"><h2>Maintenance Reports workspace</h2><p id="endpoint" class="muted" role="status"></p><div class="empty">No live records loaded. Configure this page's FastAPI endpoint and permissions to activate this workspace.</div></section></main></div></div><script type="module" src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10152d">
+<title>Maintenance Reports | INDUSTRA AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+ --navy:#10152d;--purple:#6855eb;--bg:#f5f6fb;
+ --text:#202640;--muted:#8992aa;--border:#e8eaf3;
+ --green:#18b58c;--red:#ed6175;--orange:#f4a443;
+ --blue:#438df5;--sidebar:258px
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:13px "DM Sans",sans-serif
+}
+h1,h2,h3,h4,h5{font-family:"Manrope",sans-serif}
+a{text-decoration:none}
+button,input,select{font:inherit}
+.sidebar{
+ position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+ background:var(--navy);z-index:1000;
+ display:flex;flex-direction:column;overflow-y:auto
+}
+.brand{
+ display:flex;align-items:center;gap:11px;
+ padding:26px 22px;border-bottom:1px solid #ffffff12
+}
+.brand-icon{
+ width:43px;height:43px;border-radius:13px;
+ display:grid;place-items:center;color:white;font-size:22px;
+ background:linear-gradient(135deg,#a28aff,#6752e8)
+}
+.brand strong{
+ font:800 18px "Manrope",sans-serif;color:white
+}
+.brand small{
+ display:block;color:#8994bd;font-size:8px;
+ letter-spacing:1.7px;margin-top:4px
+}
+.nav-section{
+ padding:23px 20px 8px;color:#687399;
+ font-size:9px;font-weight:800;letter-spacing:1.7px;
+ text-transform:uppercase
+}
+.side-link{
+ display:flex;align-items:center;gap:12px;
+ margin:3px 12px;padding:12px 13px;
+ border-radius:10px;color:#a4aecf;
+ font-size:11px;font-weight:700
+}
+.side-link i{font-size:17px}
+.side-link:hover{background:#ffffff0b;color:white}
+.side-link.active{
+ background:linear-gradient(95deg,#6855eb,#5145b4);
+ color:white
+}
+.sidebar-footer{
+ margin-top:auto;padding:20px;color:#7884ac;
+ font-size:10px;border-top:1px solid #ffffff12
+}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+ height:76px;background:white;border-bottom:1px solid var(--border);
+ padding:0 32px;display:flex;align-items:center;
+ justify-content:space-between;gap:15px
+}
+.breadcrumb-text{font-size:11px;color:#9299ad}
+.breadcrumb-text strong{color:var(--text)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.top-icon{
+ width:37px;height:37px;border:1px solid var(--border);
+ border-radius:11px;background:white;display:grid;
+ place-items:center;color:#68718e;font-size:16px
+}
+.avatar{
+ width:37px;height:37px;border-radius:11px;
+ display:grid;place-items:center;
+ background:linear-gradient(135deg,#6855eb,#9c8cfb);
+ color:white;font-weight:800
+}
+.mobile-menu{display:none}
+.content{padding:27px 30px 45px;max-width:1650px;margin:auto}
+.hero{
+ position:relative;overflow:hidden;border-radius:19px;
+ padding:30px;color:white;margin-bottom:23px;
+ background:linear-gradient(115deg,#5443d4,#7a62f1 70%,#9985ff)
+}
+.hero:after{
+ content:"";position:absolute;width:330px;height:330px;
+ border-radius:50%;border:1px solid #ffffff25;
+ right:-85px;top:-130px;
+ box-shadow:0 0 0 50px #ffffff08,0 0 0 100px #ffffff05;
+ pointer-events:none
+}
+.hero>*{position:relative;z-index:1}
+.hero-label{
+ font-size:10px;font-weight:800;text-transform:uppercase;
+ letter-spacing:2px;color:#ddd6ff
+}
+.hero h1{font-size:26px;font-weight:800;margin:12px 0}
+.hero p{
+ color:#e6e0ff;font-size:12px;line-height:1.9;
+ max-width:850px;margin:0
+}
+.hero-tag{
+ display:inline-flex;align-items:center;gap:7px;
+ background:#ffffff20;border:1px solid #ffffff25;
+ border-radius:9px;padding:8px 11px;
+ font-size:10px;font-weight:700;margin-top:17px
+}
+.panel,.stat-card{
+ background:white;border:1px solid var(--border);
+ border-radius:16px;box-shadow:0 5px 23px #18204105
+}
+.panel{padding:21px}
+.stat-card{padding:20px;height:100%}
+.stat-icon{
+ width:42px;height:42px;display:grid;place-items:center;
+ border-radius:12px;font-size:19px;margin-bottom:15px
+}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700}
+.stat-value{font:800 23px "Manrope",sans-serif;margin-top:7px}
+.stat-note{color:#a0a8ba;font-size:10px;margin-top:6px}
+.panel-heading{
+ display:flex;justify-content:space-between;align-items:center;
+ flex-wrap:wrap;gap:10px;margin-bottom:19px
+}
+.panel-heading h3{font-size:14px;font-weight:800;margin:0}
+.panel-subtitle{color:var(--muted);font-size:10px;margin-top:5px}
+.btn-purple{
+ background:linear-gradient(100deg,#6855eb,#8a76f5);
+ color:white;border:0;border-radius:10px;
+ padding:11px 16px;font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px
+}
+.btn-purple:hover{color:white;filter:brightness(.97)}
+.btn-outline-custom{
+ border:1px solid var(--border);border-radius:10px;
+ padding:10px 13px;background:white;color:#69738e;
+ font-size:11px;font-weight:800;
+ display:inline-flex;align-items:center;
+ justify-content:center;gap:8px
+}
+.btn-outline-custom:hover{background:#f5f3ff;color:var(--purple)}
+.form-label{
+ font-size:10px;color:#68718e;font-weight:800;margin-bottom:8px
+}
+.form-control,.form-select{
+ border:1px solid var(--border);border-radius:10px;
+ min-height:42px;font-size:11px;padding:10px 12px
+}
+.form-control:focus,.form-select:focus{
+ border-color:#b4a8ff;box-shadow:0 0 0 3px #6855eb12
+}
+.status-badge{
+ display:inline-flex;align-items:center;gap:6px;
+ border-radius:8px;padding:7px 10px;
+ font-size:10px;font-weight:800;
+ background:#f1f2f8;color:#77819a
+}
+.status-badge.success{background:#e7f8f1;color:#119d72}
+.status-badge.warning{background:#fff4e6;color:#d68a22}
+.status-badge.danger{background:#ffedf0;color:#d84b63}
+.status-badge.purple{background:#f0edff;color:#6855eb}
+.chart-box{height:295px;position:relative}
+.chart-box canvas{width:100%!important;height:100%!important}
+.table{font-size:11px}
+.table thead th{
+ color:#8992aa;font-size:10px;font-weight:800;
+ padding:13px;background:#f9faff;
+ border-bottom:1px solid var(--border);white-space:nowrap
+}
+.table tbody td{
+ padding:13px;vertical-align:middle;border-color:#f0f1f7
+}
+.progress-track{
+ width:115px;height:7px;background:#edf0f6;
+ border-radius:10px;overflow:hidden
+}
+.progress-fill{height:100%;border-radius:10px;background:var(--purple)}
+.insight-item{
+ display:flex;gap:12px;padding:15px 0;
+ border-bottom:1px solid #eef0f6
+}
+.insight-item:last-child{border-bottom:0}
+.insight-icon{
+ width:37px;height:37px;border-radius:10px;
+ display:grid;place-items:center;flex-shrink:0;
+ background:#f0edff;color:var(--purple);font-size:16px
+}
+.insight-item strong{font-size:11px}
+.insight-item p{
+ color:#8992aa;font-size:10px;line-height:1.8;margin:5px 0 0
+}
+.notice{
+ background:#fff8eb;border:1px solid #ffe8c3;
+ color:#986b2d;border-radius:12px;padding:15px 17px;
+ font-size:11px;line-height:1.8;
+ display:flex;align-items:flex-start;gap:11px
+}
+.notice i{font-size:18px;flex-shrink:0}
+.empty-state{padding:25px;text-align:center;color:#8992aa}
+.sidebar-backdrop{display:none}
+.hidden{display:none!important}
+@media(max-width:1100px){
+ :root{--sidebar:225px}
+ .content{padding:22px}
+ .topbar{padding:0 22px}
+}
+@media(max-width:900px){
+ .sidebar{width:260px;transform:translateX(-100%);transition:.25s}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .sidebar-backdrop{
+  display:block;position:fixed;inset:0;
+  background:#10152d88;z-index:999
+ }
+ .sidebar-backdrop.hidden{display:none}
+}
+@media(max-width:575px){
+ .content{padding:15px}
+ .topbar{height:65px;padding:0 14px}
+ .hero{padding:23px}
+ .hero h1{font-size:21px}
+ .panel{padding:15px}
+ .stat-card{padding:16px}
+}
+@media print{
+ .sidebar,.topbar,.hero,.filter-panel,
+ .action-bar,.notice,.toast-container,
+ .print-hide{display:none!important}
+ .main{margin-left:0}
+ .content{padding:0;max-width:none}
+ body{background:white}
+ .panel,.stat-card{
+  box-shadow:none;break-inside:avoid;
+  border:1px solid #ddd
+ }
+ .chart-box{height:230px}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+ <a class="brand" href="dashboard.html">
+  <div class="brand-icon"><i class="bi bi-hexagon-half"></i></div>
+  <div>
+   <strong>INDUSTRA <span style="color:#a89aff">AI</span></strong>
+   <small>INDUSTRIAL INTELLIGENCE</small>
+  </div>
+ </a>
+
+ <div class="nav-section">Workspace</div>
+ <a class="side-link" href="dashboard.html">
+  <i class="bi bi-grid"></i> Dashboard
+ </a>
+ <a class="side-link" href="command-center.html">
+  <i class="bi bi-broadcast"></i> Command Center
+ </a>
+ <a class="side-link" href="analytics.html">
+  <i class="bi bi-graph-up-arrow"></i> Analytics
+ </a>
+
+ <div class="nav-section">Maintenance Management</div>
+ <a class="side-link" href="maintenance-dashboard.html">
+  <i class="bi bi-speedometer2"></i> Maintenance Dashboard
+ </a>
+ <a class="side-link" href="work-orders.html">
+  <i class="bi bi-clipboard-check"></i> Work Orders
+ </a>
+ <a class="side-link" href="create-work-order.html">
+  <i class="bi bi-plus-square"></i> Create Work Order
+ </a>
+ <a class="side-link" href="maintenance-calendar.html">
+  <i class="bi bi-calendar3"></i> Maintenance Calendar
+ </a>
+ <a class="side-link" href="inventory.html">
+  <i class="bi bi-boxes"></i> Inventory
+ </a>
+ <a class="side-link active" href="maintenance-reports.html">
+  <i class="bi bi-file-earmark-bar-graph"></i> Maintenance Reports
+ </a>
+
+ <div class="nav-section">Industrial Intelligence</div>
+ <a class="side-link" href="asset-health.html">
+  <i class="bi bi-heart-pulse"></i> Asset Health
+ </a>
+ <a class="side-link" href="predictive-maintenance.html">
+  <i class="bi bi-cpu"></i> Predictive Maintenance
+ </a>
+ <a class="side-link" href="failure-prediction.html">
+  <i class="bi bi-exclamation-triangle"></i> Failure Prediction
+ </a>
+ <a class="side-link" href="cost-copilot.html">
+  <i class="bi bi-currency-rupee"></i> Cost Copilot
+ </a>
+ <a class="side-link" href="reports.html">
+  <i class="bi bi-files"></i> All Reports
+ </a>
+
+ <div class="sidebar-footer">
+  <i class="bi bi-circle-fill me-2"
+   style="color:#18b58c;font-size:7px"></i>
+  Synthetic Maintenance Analytics
+  <div class="mt-2">© 2026 INDUSTRA AI</div>
+ </div>
+</aside>
+
+<div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+<div class="main">
+<header class="topbar">
+ <div class="d-flex align-items-center gap-3">
+  <button class="top-icon mobile-menu" id="menuButton"
+   aria-label="Open navigation">
+   <i class="bi bi-list"></i>
+  </button>
+  <div>
+   <div class="breadcrumb-text">
+    Maintenance Management /
+    <strong>Maintenance Reports</strong>
+   </div>
+   <div class="fw-bold mt-1" style="font-size:13px">
+    Reliability, Downtime & Maintenance Performance
+   </div>
+  </div>
+ </div>
+
+ <div class="top-actions">
+  <span class="status-badge purple d-none d-sm-inline-flex">
+   <i class="bi bi-flask"></i> Synthetic Analytics
+  </span>
+  <a href="notifications.html" class="top-icon"
+   aria-label="Notifications">
+   <i class="bi bi-bell"></i>
+  </a>
+  <div class="avatar">AI</div>
+ </div>
+</header>
+
+<main class="content">
+
+<section class="hero">
+ <div class="hero-label">
+  INDUSTRA AI / Maintenance / Performance Intelligence
+ </div>
+ <h1>
+  <i class="bi bi-file-earmark-bar-graph me-2"></i>
+  Maintenance Reports & Analytics
+ </h1>
+ <p>
+  Analyze equipment maintenance activity, repair times,
+  failure intervals, downtime, work-order completion,
+  maintenance spending and reliability performance
+  using an interactive synthetic reporting dataset.
+ </p>
+ <div class="hero-tag">
+  <i class="bi bi-graph-up"></i>
+  Demonstration metrics — not verified plant performance
+ </div>
+</section>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 action-bar">
+ <div>
+  <h5 class="fw-bold mb-1">Maintenance Reporting Center</h5>
+  <div class="text-secondary" style="font-size:11px">
+   Generate filtered reports and export maintenance records.
+  </div>
+ </div>
+ <div class="d-flex flex-wrap gap-2">
+  <button class="btn-purple" id="generateReport">
+   <i class="bi bi-arrow-repeat"></i> Generate Report
+  </button>
+  <button class="btn-outline-custom" id="exportCsv">
+   <i class="bi bi-filetype-csv"></i> Export CSV
+  </button>
+  <button class="btn-outline-custom" id="exportJson">
+   <i class="bi bi-download"></i> Export JSON
+  </button>
+  <button class="btn-outline-custom" id="printReport">
+   <i class="bi bi-printer"></i> Print / PDF
+  </button>
+ </div>
+</div>
+
+<section class="panel mb-4 filter-panel">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-sliders me-2"
+     style="color:var(--purple)"></i>
+    Report Configuration
+   </h3>
+   <div class="panel-subtitle">
+    Choose the reporting period, plant, equipment and maintenance type.
+   </div>
+  </div>
+  <span class="status-badge purple" id="reportTimestamp">
+   Not generated
+  </span>
+ </div>
+
+ <div class="row g-3">
+  <div class="col-md-3">
+   <label class="form-label" for="periodFilter">
+    Reporting Period
+   </label>
+   <select class="form-select" id="periodFilter">
+    <option value="7">Last 7 Days</option>
+    <option value="30" selected>Last 30 Days</option>
+    <option value="90">Last 90 Days</option>
+    <option value="180">Last 180 Days</option>
+    <option value="365">Last 365 Days</option>
+   </select>
+  </div>
+
+  <div class="col-md-3">
+   <label class="form-label" for="plantFilter">
+    Plant / Facility
+   </label>
+   <select class="form-select" id="plantFilter">
+    <option value="all">All Plants</option>
+    <option>Plant A</option>
+    <option>Plant B</option>
+    <option>Plant C</option>
+   </select>
+  </div>
+
+  <div class="col-md-3">
+   <label class="form-label" for="assetFilter">
+    Equipment
+   </label>
+   <select class="form-select" id="assetFilter">
+    <option value="all">All Equipment</option>
+   </select>
+  </div>
+
+  <div class="col-md-3">
+   <label class="form-label" for="typeFilter">
+    Maintenance Type
+   </label>
+   <select class="form-select" id="typeFilter">
+    <option value="all">All Types</option>
+    <option>Preventive</option>
+    <option>Predictive</option>
+    <option>Corrective</option>
+    <option>Emergency</option>
+    <option>Inspection</option>
+   </select>
+  </div>
+ </div>
+</section>
+
+<div class="row g-3 mb-4">
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eeeaff;color:#6855eb">
+    <i class="bi bi-clipboard-check"></i>
+   </div>
+   <div class="stat-label">Completed Work Orders</div>
+   <div class="stat-value" id="completedOrders">0</div>
+   <div class="stat-note" id="completionNote">
+    Completion rate: —
+   </div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#e7f8f1;color:#18b58c">
+    <i class="bi bi-tools"></i>
+   </div>
+   <div class="stat-label">Mean Repair Time (MTTR)</div>
+   <div class="stat-value" id="mttrValue">—</div>
+   <div class="stat-note">Completed failure repairs only</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#fff4e6;color:#f4a443">
+    <i class="bi bi-clock-history"></i>
+   </div>
+   <div class="stat-label">Recorded Downtime</div>
+   <div class="stat-value" id="downtimeValue">0 h</div>
+   <div class="stat-note">Summed work-order downtime</div>
+  </div>
+ </div>
+
+ <div class="col-6 col-xl-3">
+  <div class="stat-card">
+   <div class="stat-icon" style="background:#eaf2ff;color:#438df5">
+    <i class="bi bi-currency-rupee"></i>
+   </div>
+   <div class="stat-label">Maintenance Cost</div>
+   <div class="stat-value" id="costValue">₹0</div>
+   <div class="stat-note">Synthetic labor + parts + service</div>
+  </div>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-8">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-graph-up-arrow me-2"
+       style="color:var(--purple)"></i>
+      Maintenance Activity Trend
+     </h3>
+     <div class="panel-subtitle">
+      Completed and pending work orders by reporting interval.
+     </div>
+    </div>
+   </div>
+   <div class="chart-box">
+    <canvas id="activityChart"></canvas>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-4">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-pie-chart me-2"
+       style="color:var(--purple)"></i>
+      Maintenance Type Distribution
+     </h3>
+     <div class="panel-subtitle">
+      Work-order counts by maintenance category.
+     </div>
+    </div>
+   </div>
+   <div class="chart-box">
+    <canvas id="typeChart"></canvas>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-6">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-bar-chart me-2"
+       style="color:var(--purple)"></i>
+      Equipment Downtime
+     </h3>
+     <div class="panel-subtitle">
+      Total downtime hours by industrial asset.
+     </div>
+    </div>
+   </div>
+   <div class="chart-box">
+    <canvas id="downtimeChart"></canvas>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-6">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-currency-rupee me-2"
+       style="color:var(--purple)"></i>
+      Maintenance Cost Breakdown
+     </h3>
+     <div class="panel-subtitle">
+      Labor, spare parts and external service costs.
+     </div>
+    </div>
+   </div>
+   <div class="chart-box">
+    <canvas id="costChart"></canvas>
+   </div>
+  </section>
+ </div>
+</div>
+
+<div class="row g-3 mb-4">
+ <div class="col-xl-8">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-speedometer2 me-2"
+       style="color:var(--purple)"></i>
+      Equipment Reliability & Maintenance Performance
+     </h3>
+     <div class="panel-subtitle">
+      Work-order metrics and recorded failure repair activity by asset.
+     </div>
+    </div>
+   </div>
+
+   <div class="table-responsive">
+    <table class="table mb-0">
+     <thead>
+      <tr>
+       <th>Equipment</th>
+       <th>Orders</th>
+       <th>Failures</th>
+       <th>MTTR</th>
+       <th>Downtime</th>
+       <th>Completion</th>
+      </tr>
+     </thead>
+     <tbody id="equipmentTable"></tbody>
+    </table>
+   </div>
+  </section>
+ </div>
+
+ <div class="col-xl-4">
+  <section class="panel h-100">
+   <div class="panel-heading">
+    <div>
+     <h3>
+      <i class="bi bi-lightbulb me-2"
+       style="color:var(--purple)"></i>
+      Report Observations
+     </h3>
+     <div class="panel-subtitle">
+      Automatically calculated descriptive observations.
+     </div>
+    </div>
+   </div>
+   <div id="insightsContainer"></div>
+  </section>
+ </div>
+</div>
+
+<section class="panel mb-4">
+ <div class="panel-heading">
+  <div>
+   <h3>
+    <i class="bi bi-table me-2"
+     style="color:var(--purple)"></i>
+    Maintenance Work Order Report
+   </h3>
+   <div class="panel-subtitle">
+    Filtered maintenance records used in this report.
+   </div>
+  </div>
+  <span class="status-badge purple" id="recordCount">0 Records</span>
+ </div>
+
+ <div class="table-responsive">
+  <table class="table mb-0">
+   <thead>
+    <tr>
+     <th>Work Order</th>
+     <th>Date</th>
+     <th>Plant</th>
+     <th>Equipment</th>
+     <th>Type</th>
+     <th>Status</th>
+     <th>Repair Time</th>
+     <th>Downtime</th>
+     <th>Cost</th>
+    </tr>
+   </thead>
+   <tbody id="reportTable"></tbody>
+  </table>
+ </div>
+</section>
+
+<div class="notice">
+ <i class="bi bi-shield-exclamation"></i>
+ <div>
+  <strong>Data and metric limitations:</strong>
+  This report uses generated demonstration work-order data,
+  not live equipment records. MTTR is calculated only for
+  completed corrective/emergency records marked as failures.
+  True MTBF cannot be reliably derived from these work orders
+  because validated operating-hour exposure and complete
+  failure-event histories are unavailable. No production
+  reliability, availability or safety claims should be based
+  on these illustrative metrics.
+ </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+ <div id="appToast" class="toast" role="status" aria-live="polite">
+  <div class="toast-header">
+   <i class="bi bi-info-circle text-primary me-2"></i>
+   <strong class="me-auto">INDUSTRA AI</strong>
+   <button class="btn-close" data-bs-dismiss="toast"
+    aria-label="Close"></button>
+  </div>
+  <div class="toast-body" id="toastMessage"></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+
+const assets=[
+ {id:"PMP-101",name:"Centrifugal Pump",plant:"Plant A"},
+ {id:"CMP-008",name:"Air Compressor",plant:"Plant A"},
+ {id:"MTR-001",name:"Electric Motor",plant:"Plant B"},
+ {id:"GBX-014",name:"Industrial Gearbox",plant:"Plant B"},
+ {id:"CNV-022",name:"Conveyor System",plant:"Plant C"},
+ {id:"BLR-003",name:"Industrial Boiler",plant:"Plant C"}
+];
+
+const types=[
+ "Preventive","Predictive","Corrective","Emergency","Inspection"
+];
+
+const statuses=[
+ "Completed","Completed","Completed",
+ "Completed","In Progress","Pending"
+];
+
+const currency=new Intl.NumberFormat("en-IN",{
+ style:"currency",currency:"INR",maximumFractionDigits:0
+});
+
+const charts={};
+let currentRecords=[];
+let reportGeneratedAt=null;
+
+function seededRandom(seed){
+ let value=seed>>>0;
+ return ()=>{
+  value=(1664525*value+1013904223)>>>0;
+  return value/4294967296;
+ };
+}
+
+function generateDataset(){
+ const random=seededRandom(20261010);
+ const now=new Date();
+ const records=[];
+
+ for(let i=0;i<720;i++){
+  const asset=assets[Math.floor(random()*assets.length)];
+  const type=types[Math.floor(random()*types.length)];
+  const status=statuses[Math.floor(random()*statuses.length)];
+
+  const daysAgo=Math.floor(random()*365);
+  const date=new Date(now);
+  date.setDate(date.getDate()-daysAgo);
+  date.setHours(8,0,0,0);
+
+  const failure=["Corrective","Emergency"].includes(type);
+
+  const repairHours=failure?
+   +(1+random()*11).toFixed(1):0;
+
+  const downtimeHours=
+   +(failure?(repairHours+random()*4):
+    random()<.3?random()*2:0).toFixed(1);
+
+  const laborCost=Math.round(800+random()*9000);
+  const partsCost=Math.round(500+random()*19000);
+  const serviceCost=Math.round(random()*6500);
+
+  records.push({
+   id:"WO-"+String(i+1).padStart(5,"0"),
+   date:date.toISOString().slice(0,10),
+   asset:asset.id,
+   assetName:asset.name,
+   plant:asset.plant,
+   type,status,
+   failure,
+   repairHours,
+   downtimeHours,
+   laborCost,
+   partsCost,
+   serviceCost,
+   totalCost:laborCost+partsCost+serviceCost
+  });
+ }
+
+ return records.sort((a,b)=>b.date.localeCompare(a.date));
+}
+
+const dataset=generateDataset();
+
+assets.forEach(asset=>{
+ const option=document.createElement("option");
+ option.value=asset.id;
+ option.textContent=asset.id+" — "+asset.name;
+ $("assetFilter").append(option);
+});
+
+function getFilteredRecords(){
+ const days=Number($("periodFilter").value);
+ const plant=$("plantFilter").value;
+ const asset=$("assetFilter").value;
+ const type=$("typeFilter").value;
+
+ const today=new Date();
+ today.setHours(23,59,59,999);
+
+ const start=new Date(today);
+ start.setDate(start.getDate()-(days-1));
+ start.setHours(0,0,0,0);
+
+ return dataset.filter(record=>{
+  const date=new Date(record.date+"T12:00:00");
+
+  return date>=start&&date<=today&&
+   (plant==="all"||record.plant===plant)&&
+   (asset==="all"||record.asset===asset)&&
+   (type==="all"||record.type===type);
+ });
+}
+
+function sum(records,key){
+ return records.reduce((total,record)=>total+record[key],0);
+}
+
+function average(values){
+ return values.length?
+  values.reduce((a,b)=>a+b,0)/values.length:null;
+}
+
+function metrics(records){
+ const completed=records.filter(
+  record=>record.status==="Completed"
+ );
+
+ const repairs=completed.filter(record=>
+  record.failure&&record.repairHours>0
+ );
+
+ return {
+  count:records.length,
+  completed:completed.length,
+  completionRate:records.length?
+   completed.length/records.length*100:0,
+  mttr:average(repairs.map(record=>record.repairHours)),
+  downtime:sum(records,"downtimeHours"),
+  cost:sum(records,"totalCost"),
+  failures:records.filter(record=>record.failure).length
+ };
+}
+
+function notify(message){
+ $("toastMessage").textContent=message;
+ bootstrap.Toast.getOrCreateInstance($("appToast")).show();
+}
+
+function formatHours(value){
+ return value===null?"N/A":value.toFixed(1)+" h";
+}
+
+function renderStats(){
+ const result=metrics(currentRecords);
+
+ $("completedOrders").textContent=result.completed;
+ $("completionNote").textContent=
+  "Completion rate: "+result.completionRate.toFixed(1)+"%";
+
+ $("mttrValue").textContent=formatHours(result.mttr);
+ $("downtimeValue").textContent=
+  result.downtime.toFixed(1)+" h";
+
+ $("costValue").textContent=currency.format(result.cost);
+ $("recordCount").textContent=result.count+" Records";
+}
+
+function destroyChart(name){
+ if(charts[name]){
+  charts[name].destroy();
+  charts[name]=null;
+ }
+}
+
+function baseOptions(){
+ return {
+  responsive:true,
+  maintainAspectRatio:false,
+  plugins:{
+   legend:{
+    position:"bottom",
+    labels:{usePointStyle:true,boxWidth:8,font:{size:10}}
+   }
+  }
+ };
+}
+
+function renderActivityChart(){
+ destroyChart("activity");
+
+ const days=Number($("periodFilter").value);
+ const bucketSize=days<=30?5:days<=90?15:30;
+
+ const now=new Date();
+ now.setHours(0,0,0,0);
+
+ const buckets=[];
+
+ for(let offset=days;offset>0;offset-=bucketSize){
+  const start=new Date(now);
+  start.setDate(start.getDate()-offset+1);
+
+  const end=new Date(start);
+  end.setDate(end.getDate()+Math.min(bucketSize,offset));
+
+  const records=currentRecords.filter(record=>{
+   const date=new Date(record.date+"T12:00:00");
+   return date>=start&&date<end;
+  });
+
+  buckets.push({
+   label:start.toLocaleDateString("en-IN",{
+    day:"numeric",month:"short"
+   }),
+   completed:records.filter(r=>r.status==="Completed").length,
+   pending:records.filter(r=>r.status!=="Completed").length
+  });
+ }
+
+ charts.activity=new Chart($("activityChart"),{
+  type:"line",
+  data:{
+   labels:buckets.map(b=>b.label),
+   datasets:[
+    {
+     label:"Completed",
+     data:buckets.map(b=>b.completed),
+     borderColor:"#6855eb",
+     backgroundColor:"#6855eb20",
+     fill:true,tension:.35
+    },
+    {
+     label:"Pending / In Progress",
+     data:buckets.map(b=>b.pending),
+     borderColor:"#f4a443",
+     backgroundColor:"#f4a44320",
+     fill:true,tension:.35
+    }
+   ]
+  },
+  options:{
+   ...baseOptions(),
+   scales:{y:{beginAtZero:true}}
+  }
+ });
+}
+
+function renderTypeChart(){
+ destroyChart("type");
+
+ const counts=types.map(type=>
+  currentRecords.filter(record=>record.type===type).length
+ );
+
+ charts.type=new Chart($("typeChart"),{
+  type:"doughnut",
+  data:{
+   labels:types,
+   datasets:[{
+    data:counts,
+    backgroundColor:[
+     "#18b58c","#6855eb","#f4a443","#ed6175","#438df5"
+    ],
+    borderWidth:3,borderColor:"#fff"
+   }]
+  },
+  options:{
+   ...baseOptions(),
+   cutout:"65%"
+  }
+ });
+}
+
+function renderDowntimeChart(){
+ destroyChart("downtime");
+
+ const values=assets.map(asset=>
+  currentRecords.filter(record=>record.asset===asset.id)
+   .reduce((total,record)=>total+record.downtimeHours,0)
+ );
+
+ charts.downtime=new Chart($("downtimeChart"),{
+  type:"bar",
+  data:{
+   labels:assets.map(asset=>asset.id),
+   datasets:[{
+    label:"Downtime (hours)",
+    data:values,
+    backgroundColor:"#6855eb",
+    borderRadius:7
+   }]
+  },
+  options:{
+   ...baseOptions(),
+   plugins:{legend:{display:false}},
+   scales:{y:{beginAtZero:true}}
+  }
+ });
+}
+
+function renderCostChart(){
+ destroyChart("cost");
+
+ const costs=[
+  sum(currentRecords,"laborCost"),
+  sum(currentRecords,"partsCost"),
+  sum(currentRecords,"serviceCost")
+ ];
+
+ charts.cost=new Chart($("costChart"),{
+  type:"doughnut",
+  data:{
+   labels:["Labor","Spare Parts","External Service"],
+   datasets:[{
+    data:costs,
+    backgroundColor:["#6855eb","#438df5","#18b58c"],
+    borderWidth:3,borderColor:"#fff"
+   }]
+  },
+  options:{
+   ...baseOptions(),
+   cutout:"65%"
+  }
+ });
+}
+
+function renderCharts(){
+ renderActivityChart();
+ renderTypeChart();
+ renderDowntimeChart();
+ renderCostChart();
+}
+
+function addCell(row,value){
+ const cell=document.createElement("td");
+ cell.textContent=String(value??"—");
+ row.append(cell);
+ return cell;
+}
+
+function renderEquipment(){
+ const tbody=$("equipmentTable");
+ tbody.replaceChildren();
+
+ assets.forEach(asset=>{
+  const records=currentRecords.filter(
+   record=>record.asset===asset.id
+  );
+
+  if(!records.length)return;
+
+  const result=metrics(records);
+  const tr=document.createElement("tr");
+
+  const name=document.createElement("td");
+  const strong=document.createElement("strong");
+  strong.textContent=asset.id;
+
+  const sub=document.createElement("div");
+  sub.className="text-secondary mt-1";
+  sub.style.fontSize="10px";
+  sub.textContent=asset.name;
+
+  name.append(strong,sub);
+  tr.append(name);
+
+  addCell(tr,result.count);
+  addCell(tr,result.failures);
+  addCell(tr,formatHours(result.mttr));
+  addCell(tr,result.downtime.toFixed(1)+" h");
+
+  const completion=document.createElement("td");
+
+  const label=document.createElement("strong");
+  label.textContent=result.completionRate.toFixed(1)+"%";
+
+  const bar=document.createElement("div");
+  bar.className="progress-track mt-2";
+
+  const fill=document.createElement("div");
+  fill.className="progress-fill";
+  fill.style.width=result.completionRate+"%";
+
+  bar.append(fill);
+  completion.append(label,bar);
+  tr.append(completion);
+
+  tbody.append(tr);
+ });
+
+ if(!tbody.children.length){
+  const tr=document.createElement("tr");
+  const td=addCell(tr,"No equipment data for this filter.");
+  td.colSpan=6;
+  td.className="text-center text-secondary py-4";
+  tbody.append(tr);
+ }
+}
+
+function addInsight(title,description,icon){
+ const row=document.createElement("div");
+ row.className="insight-item";
+
+ const iconBox=document.createElement("div");
+ iconBox.className="insight-icon";
+
+ const symbol=document.createElement("i");
+ symbol.className="bi "+icon;
+ iconBox.append(symbol);
+
+ const content=document.createElement("div");
+
+ const heading=document.createElement("strong");
+ heading.textContent=title;
+
+ const paragraph=document.createElement("p");
+ paragraph.textContent=description;
+
+ content.append(heading,paragraph);
+ row.append(iconBox,content);
+
+ $("insightsContainer").append(row);
+}
+
+function renderInsights(){
+ $("insightsContainer").replaceChildren();
+
+ const result=metrics(currentRecords);
+
+ if(!result.count){
+  addInsight(
+   "No matching records",
+   "Change the report filters to view synthetic maintenance activity.",
+   "bi-info-circle"
+  );
+  return;
+ }
+
+ addInsight(
+  "Work Order Completion",
+  result.completed+" of "+result.count+
+  " filtered work orders are marked completed ("+
+  result.completionRate.toFixed(1)+"%).",
+  "bi-clipboard-check"
+ );
+
+ const downtimeByAsset=assets.map(asset=>({
+  id:asset.id,
+  hours:sum(
+   currentRecords.filter(r=>r.asset===asset.id),
+   "downtimeHours"
+  )
+ })).sort((a,b)=>b.hours-a.hours);
+
+ if(downtimeByAsset[0].hours>0){
+  addInsight(
+   "Highest Recorded Downtime",
+   downtimeByAsset[0].id+" accounts for "+
+   downtimeByAsset[0].hours.toFixed(1)+
+   " downtime hours in the selected dataset.",
+   "bi-clock-history"
+  );
+ }
+
+ const repairRecords=currentRecords.filter(
+  r=>r.status==="Completed"&&r.failure
+ );
+
+ addInsight(
+  "Repair Performance",
+  repairRecords.length?
+   "Mean completed failure repair time is "+
+   formatHours(result.mttr)+" across "+
+   repairRecords.length+" records.":
+   "No completed failure repairs are available for MTTR.",
+  "bi-tools"
+ );
+
+ addInsight(
+  "Recorded Maintenance Spending",
+  currency.format(result.cost)+
+  " is the summed synthetic work-order cost for this report.",
+  "bi-currency-rupee"
+ );
+}
+
+function statusBadge(status){
+ const span=document.createElement("span");
+ span.className="status-badge "+
+  (status==="Completed"?"success":
+   status==="In Progress"?"purple":"warning");
+ span.textContent=status;
+ return span;
+}
+
+function renderTable(){
+ const tbody=$("reportTable");
+ tbody.replaceChildren();
+
+ currentRecords.slice(0,100).forEach(record=>{
+  const tr=document.createElement("tr");
+
+  addCell(tr,record.id);
+  addCell(tr,record.date);
+  addCell(tr,record.plant);
+  addCell(tr,record.asset);
+  addCell(tr,record.type);
+
+  const statusCell=document.createElement("td");
+  statusCell.append(statusBadge(record.status));
+  tr.append(statusCell);
+
+  addCell(
+   tr,record.failure?record.repairHours.toFixed(1)+" h":"—"
+  );
+
+  addCell(tr,record.downtimeHours.toFixed(1)+" h");
+  addCell(tr,currency.format(record.totalCost));
+
+  tbody.append(tr);
+ });
+
+ if(!currentRecords.length){
+  const tr=document.createElement("tr");
+  const td=addCell(tr,"No matching maintenance records.");
+  td.colSpan=9;
+  td.className="text-center text-secondary py-4";
+  tbody.append(tr);
+ }
+}
+
+function generateReport(){
+ currentRecords=getFilteredRecords();
+ reportGeneratedAt=new Date();
+
+ $("reportTimestamp").textContent=
+  "Generated "+reportGeneratedAt.toLocaleTimeString("en-IN",{
+   hour:"2-digit",minute:"2-digit"
+  });
+
+ renderStats();
+ renderCharts();
+ renderEquipment();
+ renderInsights();
+ renderTable();
+}
+
+function download(filename,content,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+
+ link.href=url;
+ link.download=filename;
+
+ document.body.append(link);
+ link.click();
+ link.remove();
+
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function csvEscape(value){
+ return '"'+String(value??"").replace(/"/g,'""')+'"';
+}
+
+$("exportCsv").addEventListener("click",()=>{
+ const columns=[
+  "id","date","plant","asset","assetName","type",
+  "status","failure","repairHours","downtimeHours",
+  "laborCost","partsCost","serviceCost","totalCost"
+ ];
+
+ const rows=[
+  columns,
+  ...currentRecords.map(record=>
+   columns.map(column=>record[column])
+  )
+ ];
+
+ const csv=rows.map(row=>
+  row.map(csvEscape).join(",")
+ ).join("\r\n");
+
+ download(
+  "industra-maintenance-report.csv",
+  "\uFEFF"+csv,
+  "text/csv;charset=utf-8"
+ );
+
+ notify("Filtered maintenance CSV exported.");
+});
+
+$("exportJson").addEventListener("click",()=>{
+ download(
+  "industra-maintenance-report.json",
+  JSON.stringify({
+   application:"INDUSTRA AI",
+   report:"Maintenance Performance",
+   syntheticData:true,
+   generatedAt:reportGeneratedAt?.toISOString(),
+   filters:{
+    periodDays:Number($("periodFilter").value),
+    plant:$("plantFilter").value,
+    asset:$("assetFilter").value,
+    type:$("typeFilter").value
+   },
+   metrics:metrics(currentRecords),
+   records:currentRecords
+  },null,2),
+  "application/json"
+ );
+
+ notify("Maintenance report JSON exported.");
+});
+
+$("generateReport").addEventListener("click",()=>{
+ generateReport();
+ notify("Synthetic maintenance report generated.");
+});
+
+$("printReport").addEventListener("click",()=>window.print());
+
+[
+ "periodFilter","plantFilter","assetFilter","typeFilter"
+].forEach(id=>{
+ $(id).addEventListener("change",generateReport);
+});
+
+$("menuButton").addEventListener("click",()=>{
+ $("sidebar").classList.add("open");
+ $("sidebarBackdrop").classList.remove("hidden");
+});
+
+$("sidebarBackdrop").addEventListener("click",()=>{
+ $("sidebar").classList.remove("open");
+ $("sidebarBackdrop").classList.add("hidden");
+});
+
+generateReport();
+</script>
+
+</body>
+</html>
